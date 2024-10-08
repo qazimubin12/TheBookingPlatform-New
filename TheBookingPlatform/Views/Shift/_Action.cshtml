@@ -1,0 +1,583 @@
+﻿@model TheBookingPlatform.ViewModels.ShiftActionViewModel
+@{
+    ViewBag.Title = "_Action";
+}
+
+
+<style>
+    .radio-inputs {
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+        justify-content: center;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        .radio-inputs > * {
+            margin: 0px 10px 0px 10px;
+        }
+
+    .radio-input:checked + .radio-tile {
+        border-color: blueviolet;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        color: blueviolet;
+    }
+
+        .radio-input:checked + .radio-tile:before {
+            transform: scale(1);
+            opacity: 1;
+            background-color: blueviolet;
+            border-color: blueviolet;
+        }
+
+        .radio-input:checked + .radio-tile .radio-icon svg {
+            fill: blueviolet;
+        }
+
+        .radio-input:checked + .radio-tile .radio-label {
+            color: blueviolet;
+        }
+
+    .radio-input:focus + .radio-tile {
+        border-color: blueviolet;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1), 0 0 0 4px #b5c9fc;
+    }
+
+        .radio-input:focus + .radio-tile:before {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+    .radio-tile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        min-height: 80px;
+        border-radius: 0.5rem;
+        border: 2px solid #b5bfd9;
+        background-color: #fff;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        transition: 0.15s ease;
+        cursor: pointer;
+        position: relative;
+    }
+
+        .radio-tile:before {
+            content: "";
+            position: absolute;
+            display: block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid #b5bfd9;
+            background-color: #fff;
+            border-radius: 50%;
+            top: 0.25rem;
+            left: 0.25rem;
+            opacity: 0;
+            transform: scale(0);
+            transition: 0.25s ease;
+        }
+
+        .radio-tile:hover {
+            border-color: blueviolet;
+        }
+
+            .radio-tile:hover:before {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+    .radio-icon svg {
+        width: 2rem;
+        height: 2rem;
+        fill: #494949;
+    }
+
+    .radio-label {
+        color: #707070;
+        transition: 0.375s ease;
+        text-align: center;
+        font-size: 15px;
+    }
+
+    .radio-input {
+        clip: rect(0 0 0 0);
+        -webkit-clip-path: inset(100%);
+        clip-path: inset(100%);
+        height: 1px;
+        overflow: hidden;
+        position: absolute;
+        white-space: nowrap;
+        width: 1px;
+    }
+</style>
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">
+            @if (Model.ID == 0)
+            {
+
+                <span id="LBLTitle">Add Shift for:</span>
+            }
+            else
+            {
+                <span id="LBLTitle">Update Shift for:</span>
+
+            }
+            <span class="bg-primary">@Model.Date.ToString("yyyy-MM-dd")</span>
+        </h5>
+
+
+    </div>
+    <div class="modal-body">
+        <form id="actionForm">
+            <input type="hidden" value="@Model.Date" id="Date" name="Date" />
+            <input style="display:none;" type="text" value="@Model.IsRecurring" name="IsRecurring" id="IsRecurring" />
+            <input style="display:none;" type="text" value="@Model.ID" name="ID" id="ID" />
+            <input style="display:none;" type="text" value="@Model.Employee.ID" name="EmployeeID" id="EmployeeID" />
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="radio-inputs">
+                        <label id="IsRecurringCBO">
+                            <input @if (Model.IsRecurring) { <text> checked</text>} class="radio-input" id="IsRecurringCB" type="radio" name="CheckBoxes">
+                            <span class="radio-tile">
+                                <span class="radio-icon">
+                                    <i class="fa fa-repeat"></i>
+                                </span>
+                                <span class="radio-label">Is Recurring</span>
+                            </span>
+                        </label>
+
+                        @if (Model.ID != 0)
+                        {
+                            <label>
+                                <input class="radio-input" type="radio" @if (Model.OnlyThis) { <text> checked</text>} name="CheckBoxes" id="OnlyThis">
+                                <span class="radio-tile">
+                                    <span class="radio-icon">
+                                        <i class="fa fa-calendar"></i>
+                                    </span>
+                                    <span class="radio-label">Edit for this day?</span>
+                                </span>
+                            </label>
+                        }
+                        @if (Model.ID != 0)
+                        {
+                            <label id="IsNotWORKINGCB">
+                                <input class="radio-input" type="radio" @if (Model.IsNotWorking) { <text> checked</text>} name="CheckBoxes" id="IsNotWorking">
+                                <span class="radio-tile">
+                                    <span class="radio-icon">
+                                        <i class="fa fa-ban"></i>
+                                    </span>
+                                    <span class="radio-label">Close this day?</span>
+                                </span>
+                            </label>
+                        }
+                    </div>
+                   
+                </div>
+            </div>
+            <div class="row" id="AllOtherRow">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        @if (Model.ID == 0)
+                        {
+                            <input type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+
+                        }
+                        else
+                        {
+                            <input type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Parse(Model.StartTime).ToString("HH:mm")" />
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>End Time</label>
+                        @if (Model.ID == 0)
+                        {
+                            <input type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                        }
+                        else
+                        {
+                            <input type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Parse(Model.EndTime).ToString("HH:mm")" />
+                        }
+                    </div>
+                </div>
+
+
+                <div class="row" id="FrequencyROW">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Frequency
+                            </label>
+                            <select class="form-control" name="Frequency" id="Frequency">
+                                @if (Model.Frequency == "Weekly")
+                                {
+                                    <option value="Weekly" selected>Weekly</option>
+                                    <option value="Bi-Weekly">Bi-Weekly</option>
+                                }
+                                else if (Model.Frequency == "Bi-Weekly")
+                                {
+                                    <option value="Weekly">Weekly</option>
+                                    <option selected value="Bi-Weekly">Bi-Weekly</option>
+                                }
+                                else
+                                {
+
+                                    <option value="Weekly">Weekly</option>
+                                    <option value="Bi-Weekly">Bi-Weekly</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Recur End
+                            </label>
+                            <select class="form-control" name="RecurEnd" id="RecurEnd">
+                                @if (Model.RecurEnd == "Never")
+                                {
+                                    <option value="Never" selected>Never</option>
+                                    <option value="Custom Date">Custom Date</option>
+                                }
+                                else if (Model.RecurEnd == "Custom Date")
+                                {
+                                    <option value="Never">Never</option>
+                                    <option selected value="Custom Date">Custom Date</option>
+                                }
+                                else
+                                {
+
+                                    <option selected value="Never">Never</option>
+                                    <option value="Custom Date">Custom Date</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="RecurEndDateROW">
+                        <div class="form-group">
+                            <label id="LBLRecurEndDate">
+                                Recur End Date
+                            </label>
+                            @if (Model.RecurEndDate != null && Model.RecurEndDate != "")
+                            {
+                                <input type="date" class="form-control" name="RecurEndDate" id="RecurEndDate" value="@DateTime.Parse(Model.RecurEndDate).ToString("yyyy-MM-dd")" />
+                            }
+                            else
+                            {
+                                <input type="date" class="form-control" name="RecurEndDate" id="RecurEndDate" value="@Model.Date.ToString("yyyy-MM-dd")" />
+
+                            }
+                        </div>
+                    </div>
+
+                    @*<div class="col-md-6">
+                            <div class="form-group">
+                                <div class="checkbox form-horizontal-checkbox">
+                                    <label>
+                                        <input @if (Model.OnlyThis) { <text> checked</text>} type="checkbox" name="OnlyThis" id="OnlyThis">
+                                        Is this Exception Shift?
+                                    </label>
+                                </div>
+                            </div>
+                            <span id="Note" class="text-danger text-muted"></span>
+                        </div>*@
+
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        @if (Model.ID != 0)
+        {
+            <button id="DeleteactionButton" data-href="@Url.Action("Delete", "Shift")" data-id="@Model.ID" data-isrecur="@Model.IsRecurring" style="display:block;" class="btn btn-danger data-btn2" data-toggle="modal" data-target="#actionModal2">Delete Shift</button>
+            <button id="actionButton" type="button" class="btn btn-info"> Update Shift</button>
+
+        }
+        else
+        {
+            <button id="actionButton" type="button" class="btn btn-primary"> Save Shift</button>
+        }
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"> Close</button>
+    </div>
+</div>
+
+
+
+<div class="modal  fade center" id="actionModalNew" tabindex="-1" role="dialog">
+    <h6 id="Conf" class="text-danger"></h6>
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#OnlyThis, #IsNotWorking').on('click', function () {
+            $('#DeleteactionButton').hide(); // Assuming your delete button has the ID 'DeleteButton'
+        });
+
+        // Optionally, you might want to show the delete button when the other radio buttons are clicked
+        $('#IsRecurringCB').on('click', function () {
+            $('#DeleteactionButton').show();
+        });
+
+
+        CheckAllowBooking();
+        CheckRecurEnd();
+        $('#IsRecurringCB').change(function () {
+            var isChecked = $(this).is(':checked');
+            if (isChecked) {
+                $("#IsRecurring").val("True");
+                $("#FrequencyROW").show();
+            } else {
+                $("#IsRecurring").val("False");
+                $("#FrequencyROW").hide();
+
+
+            }
+            CheckOnlyThis()
+            IsNotWorking();
+        });
+        $('#RecurEnd').change(function () {
+            if ($(this).val() == "Custom Date") {
+                $("#RecurEndDateROW").show();
+            } else {
+                $("#RecurEndDateROW").hide();
+
+            }
+            IsNotWorking();
+        });
+        function CheckRecurEnd() {
+            if ($("#RecurEnd").val() == "Custom Date") {
+                $("#RecurEndDateROW").show();
+            } else {
+                $("#RecurEndDateROW").hide();
+
+            }
+            IsNotWorking();
+        }
+        function CheckAllowBooking() {
+            var isChecked = $("#IsRecurringCB").is(':checked');
+            if (isChecked) {
+                $("#IsRecurring").val("True");
+                $("#FrequencyROW").show();
+
+            } else {
+                $("#IsRecurring").val("False");
+                $("#FrequencyROW").hide();
+
+
+            }
+            IsNotWorking();
+        }
+
+        $("#IsNotWorking").change(function () {
+            if ($(this).is(":checked")) {
+                $("#AllOtherRow").hide();
+                $("#actionButton").text("Save Shift");
+                $("#LBLTitle").text("Save for:");
+            } else {
+                $("#AllOtherRow").show();
+
+            }
+        });
+
+        function IsNotWorking() {
+            if ($("#IsNotWorking").is(":checked")) {
+                $("#AllOtherRow").hide();
+                $("#LBLTitle").text("Save Shift");
+                $("#actionButton").text("Save Shift");
+            } else {
+                $("#AllOtherRow").show();
+
+
+            }
+        }
+
+        CheckOnlyThis();
+        IsNotWorking();
+        function CheckOnlyThis() {
+            var isChecked = $("#OnlyThis").is(':checked');
+
+            if (isChecked) {
+                $("#Note").text("This would be exception shift, Kindly check the recurring end date");
+                $("#actionButton").text("Save Exception Shift");
+                $("#RecurEnd").val("Custom Date");
+                if ($("#ID").val() != "0") {
+                    $("#LBLTitle").text("Update Exception Shift for:");
+                    $("#actionButton").text("Update Exception Shift");
+                    $("#IsNotWORKINGCB").hide();
+                    $("#IsRecurringCBO").hide();
+
+
+                } else {
+                    $("#LBLTitle").text("Save Exception Shift for:");
+                    $("#actionButton").text("Save Exception Shift");
+
+                }
+                $("#RecurEndDateROW").hide();
+                $("#RecurEndDate").val('@Model.Date.ToString("yyyy-MM-dd")');
+                CheckRecurEnd();
+            }
+            else {
+                if ($("#ID").val() != "0") {
+                    $("#Note").text("");
+                    $("#actionButton").text("Update Shift");
+                    if ('@Model.RecurEnd' == "") {
+                        $("#RecurEnd").val('Never');
+                    } else {
+                        $("#RecurEnd").val('@Model.RecurEnd');
+                    }
+                    $("#RecurEndDateROW").show();
+                    $("#LBLTitle").text("Update Shift for:");
+                    CheckRecurEnd();
+                } else {
+                    $("#Note").text("");
+                    $("#actionButton").text("Save Shift");
+                    if ('@Model.RecurEnd' == "") {
+                        $("#RecurEnd").val('Never');
+                    } else {
+                        $("#RecurEnd").val('@Model.RecurEnd');
+                    }
+                    $("#RecurEndDateROW").show();
+                    $("#LBLTitle").text("Save Shift for:");
+                    CheckRecurEnd();
+                }
+            }
+            CheckAllowBooking();
+        }
+        $("#OnlyThis").change(function () {
+            var isChecked = $(this).is(':checked');
+             if (isChecked) {
+                $("#Note").text("This would be exception shift, Kindly check the recurring end date");
+                $("#actionButton").text("Save Exception Shift");
+                $("#RecurEnd").val("Custom Date");
+                 $("#LBLTitle").text("Save Exception Shift for:");
+                $("#RecurEndDate").val('@Model.Date.ToString("yyyy-MM-dd")');
+                $("#RecurEndDateROW").hide();
+                CheckRecurEnd();
+             }
+             else {
+                if ($("#ID").val() != "0") {
+                    $("#Note").text("");
+                    $("#actionButton").text("Update Shift");
+  if ('@Model.RecurEnd' == "") {
+                        $("#RecurEnd").val('Never');
+                    } else {
+                        $("#RecurEnd").val('@Model.RecurEnd');
+                    }                    $("#RecurEndDateROW").show();
+                    $("#LBLTitle").text("Update Shift for:");
+                    CheckRecurEnd();
+                } else {
+                    $("#Note").text("");
+                    $("#actionButton").text("Save Shift");
+  if ('@Model.RecurEnd' == "") {
+                        $("#RecurEnd").val('Never');
+                    } else {
+                        $("#RecurEnd").val('@Model.RecurEnd');
+                    }                    $("#RecurEndDateROW").show();
+                    $("#LBLTitle").text("Save Shift for:");
+                    CheckRecurEnd();
+                }
+            }
+            CheckAllowBooking();
+            IsNotWorking();
+        });
+    });
+
+    $(".data-btn2").click(function () {
+        var IsRecur = $(this).data("isrecur");
+        var ID = $(this).data("id");
+        var OnlyThis = $("#OnlyThis").is(":checked");
+        var confirmMessage = 'Are you sure?';
+        if ($("#IsRecurringCB").is(":checked"))
+        {
+            confirmMessage = 'This is a recurring shift, deleting this shift will delete all the shifts recurring with it including exception shifts. Are you sure?';
+        }
+
+        var userConfirmed = confirm(confirmMessage);
+        if (userConfirmed) {
+            showLoadingSpinner();
+
+            $.ajax({
+                url: $(this).attr("data-href"),
+                data: { IsRecur: IsRecur, ID: ID, IsException: OnlyThis }
+            })
+                .done(function (response) {
+                    hideLoadingSpinner();
+                    window.location.href = '@Url.Action("Index","Shift")';
+
+                    // Handle success scenario
+                })
+                .fail(function () {
+                    hideLoadingSpinner();
+                    // Handle failure scenario
+                });
+        } else {
+            // User canceled the action
+        }
+    });
+
+
+    $("#actionButton").click(function () {
+        showLoadingSpinner();
+        var IsRecurring = $("#IsRecurring").val();
+        var Date = $("#Date").val();
+        var StartTime = $("#StartTime").val();
+        var EndTime = $("#EndTime").val();
+        var ID = $("#ID").val();
+        var Frequency = $("#Frequency").val();
+        var RecurEnd = $("#RecurEnd").val();
+        var RecurEndDate = $("#RecurEndDate").val();
+        var OnlyThis = $("#OnlyThis").is(":checked");
+        var EmployeeID = $("#EmployeeID").val();
+        var IsNotWorking = $("#IsNotWorking").is(":checked");
+
+
+        var StartDate = $("#StartDate").val();
+        var EndDate = $("#EndDate").val();
+        $.ajax({
+            url: '@Url.Action("Action","Shift")',
+            type: 'POST',
+            data: {
+                Date: Date, ID: ID, EmployeeID: EmployeeID, IsRecurring: IsRecurring, StartTime: StartTime, EndTime: EndTime,
+                Frequency: Frequency, RecurEnd: RecurEnd, RecurEndDate: RecurEndDate, OnlyThis: OnlyThis, IsNotWorking: IsNotWorking
+            }
+        })
+            .done(function (response) {
+                hideLoadingSpinner();
+                if (response.success) {
+                    var startDate = encodeURIComponent($("#StartDate").val());
+                    var endDate = encodeURIComponent($("#EndDate").val());
+
+                    // Construct the URL with the parameters
+                    var urlWithParams = '@Url.Action("Index", "Shift")' + '?StartOfWeek=' + startDate + '&EndOfWeek=' + endDate;
+
+                    // Redirect to the constructed URL
+                    window.location.href = urlWithParams;
+                } else {
+                    alert(response.Message);
+                }
+            })
+            .fail(function () {
+
+                hideLoadingSpinner();
+
+            });
+    });
+
+</script>

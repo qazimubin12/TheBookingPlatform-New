@@ -1,0 +1,243 @@
+﻿@model TheBookingPlatform.ViewModels.EmailTemplateActionViewModel
+@{
+    ViewBag.Title = "Action";
+}
+
+
+<style>
+
+
+    .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: black;
+        font-weight: 400;
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: black;
+    }
+</style>
+<form id="actionForm">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">
+                    Available Variables
+                </h4>
+            </div>
+            <div class="card-content">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Code
+                            </th>
+                            <th>
+                                Description
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            @foreach (var item in Model.Variables)
+                            {
+                                <tr style="cursor:pointer" id="@item.VariableCode" onclick="AddToSummerNote('@item.VariableCode')">
+                                    <td>
+                                        @item.VariableCode
+                                    </td>
+                                    <td>
+                                        @item.VariableDescription
+                                    </td>
+                                </tr>
+
+                            }
+                    </tbody>
+                </table>
+               
+                   
+                </div>
+            </div>
+        </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit Email Template
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create Email Template
+                    </h4>
+                }
+            </div>
+
+
+            <div class="card-content">
+                <div style="display:flex;align-items:end;" class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>
+                                Email Template Name
+                            </label>
+                            <input type="hidden" value="@Model.ID" name="ID" id="ID" />
+
+                            @if (User.IsInRole("Super Admin"))
+                            {
+                                <input type="text" value="@Model.Name"  class="form-control" id="Name" name="Name" />
+                            }
+                            else
+                            {
+                                <input type="text" value="@Model.Name" readonly class="form-control" id="Name" name="Name" />
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>
+                               Select Duration (when the notification should send)
+                            </label>
+                            <select class="form-control" id="duration" name="Duration">
+                                @if (Model.Name == "Feedback Request")
+                                {
+                                    foreach (var item in Model.DurationsForFeedback)
+                                    {
+                                        if (item == Model.Duration)
+                                        {
+                                            if (item == "Always")
+                                            {
+                                                <option selected value="@item">@item</option>
+
+                                            }
+                                            else
+                                            {
+                                                <option selected value="@item">After @item</option>
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (item == "Always")
+                                            {
+                                                <option value="@item">@item</option>
+
+                                            }
+                                            else
+                                            {
+                                                <option value="@item">After @item</option>
+                                            }
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var item in Model.Durations)
+                                    {
+                                        if (item == Model.Duration)
+                                        {
+                                            <option selected value="@item">@item</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+
+                                    }
+                                }
+
+
+                            </select>
+                        </div>
+                    </div>
+
+
+                </div>
+                <input type="hidden" value="@Model.TemplateCode" id="Code" />
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="SummerNote" name="TemplateCode">
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+            </div>
+
+
+            <div class="col-md-12">
+                @if (Model.Name != "Rebook Reminder (Newsletter)")
+                {
+                    if (Model.ID == 0)
+                    {
+                        <button id="ActionBtn" type="button" class="btn btn-primary btn-rounded">SAVE</button>
+                    }
+                    else
+                    {
+                        <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+
+                    }
+                }
+                    <a href="@Url.Action("Settings", "User", new {Selected="Email Template"})" class="btn btn-secondary  btn-rounded">CLOSE</a>
+                </div>
+        </div>
+    </div>
+</form>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+
+<script>
+    
+
+    function AddToSummerNote(data) {
+        var $editable = $('.note-editable.card-block');
+        var currentHtml = $editable.html();
+        currentHtml += data;
+        $editable.html(currentHtml);
+    }
+    $(document).ready(function () {
+        $('#SummerNote').summernote();
+        if ($("#ID") != "0") {
+            var $editable = $('.note-editable.card-block');
+            $editable.html($("#Code").val());
+        }
+      
+    });
+
+
+    $("#ActionBtn").click(function () {
+        var string = $('.note-editable.card-block').html();
+        var TemplateCode = encodeURIComponent(string);
+        var ID = $("#ID").val();
+        var Name = $("#Name").val();
+        var Duration = $("#duration").val();
+        $.ajax({
+            url: '@Url.Action("Action", "EmailTemplate")',
+            type: "post",
+            data: { ID: ID, Name: Name, TemplateCode: TemplateCode, duration: Duration }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    window.location.href = '@Url.Action("Settings", "User", new {Selected="Email Template"})';
+                }
+                else {
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+    });
+</script>

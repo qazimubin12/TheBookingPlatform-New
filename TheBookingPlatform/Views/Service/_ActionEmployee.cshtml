@@ -1,0 +1,179 @@
+﻿@model TheBookingPlatform.ViewModels.EmployeeActionViewModel
+
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+
+                <span>Create Employee </span>
+
+            </h5>
+
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="hidden" name="ID" />
+                        <div class="form-group">
+                            <label>Employee Name</label>
+                            <input class="form-control" name="Name" placeholder="Enter Name.">
+                        </div>
+
+                     
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="Gender" class="form-control" name="Gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <div class="checkbox form-horizontal-checkbox">
+                                <label>
+                                    <input type="checkbox" name="AllowOnlineBookingCB" id="AllowOnlineBookingCB">
+                                    Allow this employee to be bookable online
+                                </label>
+                                <input type="hidden" name="AllowOnlineBooking" id="AllowOnlineBooking" />
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Specialization
+                            </label>
+                            <input type="text" class="form-control" name="Specialization" value="@Model.Specialization" placeholder="Enter Specialization" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="Description" rows="3" class="col-md-12">@Model.Description</textarea>
+                        </div>
+                        <div style="margin-top:50px;cursor:pointer;" class="form-group">
+                            <label>Choose Image (Click on Image to Change)</label>
+                            @if (Model.Photo == "" || Model.Photo == null)
+                            {
+                                <img id="MainThumb" style="width:150px;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                            }
+                            else
+                            {
+                                <img id="MainThumb" style="width:150px;" src="@Model.Photo" alt="...">
+
+                            }
+
+                            <input value="@Model.Photo" type="hidden" name="Photo" id="Photo" />
+                            <input type="file" id="PhotoUpload" accept="image/*" />
+
+                        </div>
+                    </div>
+
+                    <button id="ActionBtn" class="btn btn-primary btn-round">
+                        <i class="material-icons">person</i>
+                        SAVE EMPLOYEE
+                        <div class="ripple-container"></div>
+                    </button>
+                </div>
+            </form>
+
+
+
+
+            <div class="errorDiv">
+
+            </div>
+        </div>
+
+    </div>
+}
+
+
+<script>
+    function CheckAllowBooking() {
+        var isChecked = $("#AllowOnlineBookingCB").is(':checked');
+        if (isChecked) {
+            $("#AllowOnlineBooking").val("True");
+        } else {
+            $("#AllowOnlineBooking").val("False");
+
+        }
+    }
+
+    $(document).ready(function () {
+        CheckAllowBooking();
+    })
+
+    $('#AllowOnlineBookingCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#AllowOnlineBooking").val("True");
+        } else {
+            $("#AllowOnlineBooking").val("False");
+
+        }
+    });
+
+   
+
+        $("#PhotoUpload").change(function () {
+
+        showLoadingSpinner();
+        var element = this;
+        var formData = new FormData();
+        var totalFiles = element.files.length;
+
+        for (var i = 0; i < totalFiles; i++) {
+            var file = element.files[i];
+            formData.append("Logo", file);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("UploadImage", "Shared")',
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false
+        })
+            .done(function (response) {
+
+                if (response.Success)
+                {
+                    // For now, we'll just delay the fade out for demonstration
+                    hideLoadingSpinner();
+                    $("#Photo").val(response.DocURL);
+                    $("#MainThumb").attr("src", response.DocURL);
+                }
+
+            })
+            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("FAIL");
+            })
+    });
+
+
+
+    $("#ActionBtn").click(function () {
+		$.ajax({
+			url: '@Url.Action("Action", "Employee")',
+			type: "post",
+			data: $("#actionForm").serialize()
+		})
+		.done(function (response) {
+			if(response.success)
+            {
+                RepopulateEmployees();       
+			}
+			else {
+				$(".errorDiv").html(response.Message);
+			}
+		});
+	});
+</script>

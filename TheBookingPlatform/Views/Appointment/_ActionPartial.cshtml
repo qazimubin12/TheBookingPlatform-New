@@ -1,0 +1,2166 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentListingViewModel
+@{
+    ViewBag.Title = "Action";
+    int NewCount = 0;
+}
+
+<link rel="stylesheet" href="~/Content/build/css/intlTelInput.css" />
+<link rel="stylesheet" href="~/Content/build/css/demo.css" />
+<link href="~/Content/TBPContent/autocomplete/content/styles.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Content/TBPContent/autocomplete/src/jquery.autocomplete.js"></script>
+
+<script src="~/Content/MainTemplate/assets/js/bootstrap-datetimepicker.js"></script>
+
+<style>
+
+    .modal-content .modal-body {
+        padding-top: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        padding-left: 10px;
+    }
+
+    .autocomplete-suggestions {
+        box-sizing: border-box;
+        border-radius: 5px;
+        background: #FFF;
+        cursor: default;
+        overflow: auto;
+        -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        /* Customize the scrollbar */
+        scrollbar-width: thin; /* For Firefox */
+        scrollbar-color: #999 #FFF; /* For Firefox */
+    }
+
+        .autocomplete-suggestions::-webkit-scrollbar {
+            width: 10px; /* Set the width of the scrollbar */
+        }
+
+        /* Define the scrollbar thumb */
+        .autocomplete-suggestions::-webkit-scrollbar-thumb {
+            background-color: #999; /* Color of the thumb */
+            border-radius: 5px; /* Rounded corners for the thumb */
+        }
+
+            /* Define the scrollbar thumb on hover */
+            .autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+                background-color: #666; /* Color of the thumb on hover */
+            }
+
+        /* Define the scrollbar track on hover */
+        .autocomplete-suggestions::-webkit-scrollbar-track {
+            background-color: #FFF; /* Color of the track */
+        }
+
+        /* Define the scrollbar corner (optional) */
+        .autocomplete-suggestions::-webkit-scrollbar-corner {
+            background-color: #FFF; /* Color of the scrollbar corner */
+        }
+
+    #Notes::-webkit-scrollbar {
+        width: 10px; /* Set the width of the scrollbar */
+    }
+
+    /* Define the scrollbar thumb */
+    #Notes::-webkit-scrollbar-thumb {
+        background-color: #999; /* Color of the thumb */
+        cursor: pointer;
+        border-radius: 5px; /* Rounded corners for the thumb */
+    }
+
+    /* Define the scrollbar thumb on hover */
+    #Notess:-webkit-scrollbar-thumb:hover {
+        background-color: #666; /* Color of the thumb on hover */
+    }
+
+    /* Define the scrollbar track on hover */
+    #Notes::-webkit-scrollbar-track {
+        background-color: #FFF; /* Color of the track */
+    }
+
+    /* Define the scrollbar corner (optional) */
+    #Notes::-webkit-scrollbar-corner {
+        background-color: #FFF; /* Color of the scrollbar corner */
+    }
+
+    .autocomplete-suggestion {
+        padding: 2px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .autocomplete-no-suggestion {
+        padding: 2px 5px;
+    }
+
+    .autocomplete-selected {
+        background: #F0F0F0;
+    }
+
+    .autocomplete-suggestions strong {
+        font-weight: bold;
+        color: #000;
+    }
+
+    .autocomplete-group {
+        padding: 2px 5px;
+        font-size: 16px;
+        color: #000;
+        display: block;
+        border-bottom: 1px solid #000;
+    }
+
+
+    .day-button {
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+    }
+
+        .day-button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .day-button.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+    .circular-box {
+        width: 30px;
+        height: 30px;
+        background-color: lightskyblue;
+        border-radius: 50%; /* Use 50% for a perfect circle */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .close-button {
+        background-color: transparent;
+        color: black;
+        border: none;
+        border-radius: 20px;
+    }
+
+        .close-button:hover {
+            background-color: darkred;
+            color: white;
+            border: none;
+            border-radius: 20px;
+        }
+</style>
+<div class="modal-content">
+    <div class="modal-body">
+        <div style="width: 100%;">
+
+            <input type="hidden" id="SelectedOption" />
+            <div class="nav-center">
+                <ul class="nav nav-pills nav-pills-primary nav-pills-icons" role="tablist">
+
+                    <li class="active">
+                        <a href="#schedule-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">event</i>
+                            Appointment
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#description-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">warning</i>
+                            Absense
+                        </a>
+                    </li>
+
+
+                </ul>
+            </div>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="schedule-1">
+                    <form id="ActionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div style="margin:0px;" class="card">
+                                    <div class="card-content">
+
+                                        <h4 class="card-title">
+                                            Create Appointment
+                                        </h4>
+
+                                        <input type="hidden" name="Service" id="ConcatenatedServices" />
+                                        <input type="hidden" autocomplete="off" name="ServiceDuration" id="ServiceDuration" />
+                                        <input type="hidden" name="ServiceDiscount" id="ServiceDiscount" />
+
+                                        <input type="hidden" name="Days" id="Days" />
+                                        <input type="hidden" name="ID" id="ID" />
+
+                                        <div id="MainContainer">
+
+                                            <div class="row" id="ServiceRow_0">
+                                                <div class="col-md-6">
+
+                                                    <div class="form-group">
+                                                        <label>Select Services</label>
+                                                        <input class="form-control serviceid-input" id="ServiceID" type="hidden" name="ServiceID" />
+                                                        <input class="form-control serviceprice-input" id="ServicePrice" type="hidden" name="ServicePrice" />
+                                                        <input class="form-control autocomplete" type="text" name="ServiceNames" id="Service" />
+                                                    </div>
+
+                                                </div>
+                                                <button class="btn btn-danger btn-sm" type="button" onclick="removeService(0)">X</button>
+                                                <div class="col-md-2">
+
+
+                                                    <div class="form-group">
+                                                        <label>Duration</label>
+                                                        <input type="text" id="Duration" autocomplete="off" name="ServiceDurationInput" class="form-control duration-input">
+                                                    </div>
+
+                                                </div>
+                                                <div id="DiscountPanel" class="col-md-2">
+
+
+                                                    <div class="form-group">
+                                                        <label style="white-space:nowrap">Discount %</label>
+                                                        <input type="text" id="Duration" name="ServiceDiscountInput" value="0" class="form-control discount-input">
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <button id="AddMoreBtn" class="btn btn-primary btn-sm" type="button">Add More</button>
+
+
+                                        <div class="row">
+                                            <div id="DepositPanel" class="col-md-12">
+                                                <div class="form-group col-md-6">
+                                                    <label>Deposit Amount</label>
+                                                    <input disabled class="form-control" type="number" name="Deposit" id="Deposit" />
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label>Deposit Method</label>
+                                                    <select disabled name="DepositMethod" id="DepositMethod" class="form-control">
+                                                        <option value="Pin">Pin</option>
+                                                        <option value="Cash">Cash</option>
+                                                        <option value="Card">Card</option>
+                                                        <option value="Online">Online</option>
+                                                        <option value="GiftCard">GiftCard</option>
+
+
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+
+                                                <div class="form-group col-md-6">
+                                                    <label>
+                                                        Select Date
+                                                    </label>
+
+                                                    <input type="date" id="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
+
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label>
+                                                        Select Time
+                                                    </label>
+
+                                                    <input type="text" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
+
+
+                                                </div>
+
+
+
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Select Employee</label>
+                                                <select onchange="CheckIfEmployeeProvideTheService()" class="form-control" name="EmployeeID" id="EmployeeID">
+                                                    <option value="0">---Select----</option>
+                                                    @foreach (var item in Model.EmployeesForAction)
+                                                    {
+                                                        if (item.ID == Model.EmployeeID)
+                                                        {
+                                                            <option selected value="@item.ID">@item.Name</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.ID">@item.Name</option>
+
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                           
+                                            <div class="col-md-6">
+                                                <div class="checkbox form-horizontal-checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="IsWaitingListCB" id="IsWaitingListCB">
+                                                        Waiting List?
+                                                    </label>
+                                                    <input type="hidden" name="IsWaitingList" id="IsWaitingList" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    
+                                    <div class="col-md-12">
+                                        <label>Note</label>
+                                        <textarea rows="3" class="form-control" id="Notes" name="Notes"></textarea>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Select Color</label>
+
+                                            <input class="form-control" type="color" name="Color" value="#D28D00" id="Color" />
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-5">
+                                <div style="margin:0px;" class="card">
+                                    <div class="card-content">
+
+                                        <button id="createCustomerBtn" class="btn btn-primary" type="button" style="display: none;">Create New Customer</button>
+                                        <div style="display:none;" id="CreateCustomerPanel">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>
+                                                            First Name
+                                                        </label>
+                                                        <input type="text" placeholder="Enter First Name." class="form-control" id="FirstName" name="FirstName" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>
+                                                            Last Name
+                                                        </label>
+                                                        <input type="text" placeholder="Enter Last Name." class="form-control" id="LastName" name="LastName" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>
+                                                            Email Address
+                                                        </label>
+                                                        <input id="Email" type="text" placeholder="Enter Email." class="form-control" name="Email" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="col-md-12">
+                                                            Mobile Number
+                                                        </label>
+                                                        <input maxlength="14" type="text" placeholder="Enter Mobile Number." id="MobileNumber" class="form-control col-md-12" name="MobileNumber" />
+                                                        <span id="phoneNumberError" class="text-danger"></span>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <hr />
+                                        <div id="CustomerPanel">
+                                            <h4 class="card-title">Search Customer</h4>
+                                            <input class="form-control autocompleteCustomers" type="text" name="Customer" id="Customer" />
+                                            <div id="MainCustomerSelectedContainer" class="">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <hr />
+                                    <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
+                                        <div class="card-content">
+                                            <h4 class="card-title">Appointment Summary</h4>
+                                            <hr />
+                                            <div class="col-md-6">
+                                                <label>Date and Time</label>
+                                                <h4>
+                                                    <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
+                                                </h4>
+                                            </div>
+
+                                            <div id="TotalCostPanel" class="col-md-6">
+                                                <label>Total Cost</label>
+                                                <h4 id="TotalCost" name="TotalCost">
+                                                    @Model.Company.Currency 0.00
+                                                </h4>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <button type="button" id="actionButton" class="btn btn-primary btn-block btn-rounded">Create Appointment</button>
+                                    <span id="validationText" class="text-danger"></span><br />
+                                    <span id="validationTextForEmployeeService" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </form>
+                </div>
+
+
+
+                @*/////////////////////*@
+                <div class="tab-pane" id="description-1">
+                    <form id="AbsenceForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div style="margin:0px;" class="card">
+                                    <div class="card-content">
+
+                                        <h4 class="card-title">
+                                            Create Event
+                                        </h4>
+                                        <div id="MainAbsenseContainer">
+
+                                            <div class="row" id="AbsenseServiceRow_0">
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Select Event</label>
+                                                        <select class="form-control" name="Service" id="ServiceAB">
+                                                            @foreach (var item in Model.AbsenseServices)
+                                                            {
+                                                                <option data-duration="@item.Duration" value="@item.ID">@item.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>
+                                                            Select Date
+                                                        </label>
+                                                        <input type="date" id="DateAB" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row">
+
+
+                                            <div class="form-group col-md-6">
+                                                <label>
+                                                    From Time
+                                                </label>
+
+                                                <input type="text" id="TimeABFrom" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")">
+
+
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label>
+                                                    To Time
+                                                </label>
+
+                                                <input type="text" id="TimeABTo" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="">
+
+
+                                            </div>
+
+                                            @*<input type="hidden" name=""*@
+
+
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Select Employee</label>
+                                                <select onchange="CheckIfEmployeeProvideTheService()" class="form-control" name="EmployeeID" id="EmployeeIDAB">
+                                                    <option value="0">---Select----</option>
+                                                    @foreach (var item in Model.EmployeesForAction)
+                                                    {
+                                                        if (item.ID == Model.EmployeeID)
+                                                        {
+                                                            <option selected value="@item.ID">@item.Name</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.ID">@item.Name</option>
+
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="checkbox form-horizontal-checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="IsRepeatCB" id="IsRepeatCB">
+                                                        Repeat
+                                                    </label>
+                                                    <input type="hidden" name="IsRepeat" id="IsRepeat" />
+                                                </div>
+                                            </div>
+                                            <div id="AllEmployeePanel" class="col-md-6">
+                                                <div class="checkbox form-horizontal-checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="AllEmployeesCB" id="AllEmployeesCB">
+                                                        All Employees
+                                                    </label>
+                                                    <input type="hidden" name="AllEmployees" id="AllEmployees" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="RepeatRow">
+                                            <div style="display:inline;">
+                                                <div class="form-group col-md-6">
+                                                    <label>Frequency</label>
+
+                                                    <select class="form-control" id="Frequency" name="Frequency">
+                                                        <option value="Every Week">Every Week</option>
+                                                        <option value="Every Day">Every Day</option>
+                                                        <option value="Every Month">Every Month</option>
+                                                    </select>
+
+
+                                                </div>
+
+                                                <div id="WeekRow">
+                                                    <div class="form-group col-md-6">
+                                                        <label>Every</label>
+                                                        <select class="form-control" id="Every" name="EveryWeek">
+                                                            @for (int i = 1; i <= 48; i++)
+                                                            {
+                                                                if (i == 1)
+                                                                {
+                                                                    <option selected value="@i Week">@i Week </option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option  value="@i Weeks"> @i Weeks </option>
+                                                                }
+                                                            }
+
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group col-md-12">
+                                                        <label>On</label><br />
+                                                        @foreach (var day in new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" })
+                                                        {
+                                                            <button type="button" class="day-button" data-day="@day">@day.Substring(0, 3)</button>
+                                                        }
+
+
+                                                    </div>
+
+                                                    @*<div class="form-group col-md-12">
+                                                        <label>Ends</label><br />
+                                                        <select name="EndsWeek" id="EndWeek" class="form-control">
+                                                            <option value="Never">Never</option>
+                                                            <option value="Specific Date">On a Specific Date</option>
+                                                            <option selected value="NumberOfTimes">After a Number of Times</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div id="OnADateRowWeek" class="form-group col-md-12">
+                                                        <label>Ends Date</label><br />
+
+                                                        <input type="date" name="EndsDateWeek" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="EndDate">
+                                                    </div>
+
+
+                                                    <div id="OnTimeRowWeek" class="form-group col-md-12">
+                                                        <label>Times</label><br />
+                                                        <input type="number" name="EndsNumberOfTimesWeek" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="NumberOfTimes">
+                                                    </div>*@
+
+                                                </div>
+                                                <div id="DayRow">
+                                                    <div class="form-group col-md-6">
+                                                        <label>Every</label>
+                                                        <select class="form-control" id="Every" name="EveryDay">
+                                                            @for (int i = 1; i <= 30; i++)
+                                                            {
+                                                                if (i == 1)
+                                                                {
+                                                                    <option value="@i Day">@i Day </option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@i Days">@i Days </option>
+                                                                }
+                                                            }
+
+                                                        </select>
+                                                    </div>
+
+                                                    @*<div class="form-group col-md-12">
+                                                        <label>Ends</label><br />
+                                                        <select name="EndsDay" id="EndDay" class="form-control">
+
+                                                            <option value="Never">Never</option>
+                                                            <option value="Specific Date">On a Specific Date</option>
+                                                            <option selected value="NumberOfTimes">After a Number of Times</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div id="OnADateRowDay" class="form-group col-md-12">
+                                                        <label>Ends Date</label><br />
+                                                        <input type="date" name="EndsDateDay" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="EndDate">
+                                                    </div>
+
+
+                                                    <div id="OnTimeRowDay" class="form-group col-md-12">
+                                                        <label>Times</label><br />
+                                                        <input type="number" name="EndsNumberOfTimesDay" class="form-control" id="NumberOfTimes">
+                                                    </div>*@
+
+
+                                                </div>
+                                                <div id="MonthRow">
+                                                    <div class="form-group col-md-6">
+                                                        <label>Every</label>
+                                                        <select class="form-control" id="Every" name="EveryMonth">
+                                                            @for (int i = 1; i <= 12; i++)
+                                                            {
+                                                                if (i == 1)
+                                                                {
+                                                                    <option selected value="@i Month">@i Month </option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@i Months"> @i Months </option>
+                                                                }
+                                                            }
+
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group col-md-12">
+                                                        <label>On The</label><br />
+                                                        <select class="form-control" id="OnThe" name="On">
+
+                                                            <option value="23rd">23rd</option>
+                                                            <option value="4th Saturday">4th Saturday</option>
+                                                        </select>
+
+                                                    </div>
+
+                                                    @*<div class="form-group col-md-12">
+                                                        <label>Ends</label><br />
+
+                                                        <select name="EndsMonth" id="EndMonth" class="form-control">
+                                                            <option value="Never">Never</option>
+                                                            <option value="Specific Date">On a Specific Date</option>
+                                                            <option selected value="NumberOfTimes">After a Number of Times</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div id="OnADateRowMonth" class="form-group col-md-12">
+                                                        <label>Ends Date</label><br />
+                                                        <input type="date" name="EndsDateMonth" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="EndDate">
+                                                    </div>
+
+
+                                                    <div id="OnTimeRowMonth" class="form-group col-md-12">
+                                                        <label>Times</label><br />
+                                                        <input type="number" name="EndsNumberOfTimesMonth" class="form-control" id="NumberOfTimes">
+                                                    </div>*@
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-12">
+                                        <label>Note</label>
+                                        <textarea rows="3" class="form-control" id="NotesAB" name="Notes"></textarea>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Select Color</label>
+
+                                            <input class="form-control" type="color" name="Color" value="#D28D00" id="ColorAB" />
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-5">
+                                <div style="margin:0px;" class="card">
+                                    <hr />
+                                    <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
+                                        <div class="card-content">
+                                            <h4 class="card-title">Event Summary</h4>
+                                            <hr />
+                                            <div class="col-md-6">
+                                                <label>Date and Time</label>
+                                                <h4>
+                                                    <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
+                                                </h4>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+
+                                    <button type="button" id="ABactionButton" class="btn btn-primary btn-block btn-rounded">Create Event</button>
+                                    <span id="validationTextAB" class="text-danger"></span><br />
+                                    <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+
+            <!-- Set content width to 100% -->
+            <!-- Your content goes here -->
+
+        </div>
+
+    </div>
+</div>
+
+
+<script src="~/Content/build/js/intlTelInput.js"></script>
+
+<script>
+
+
+
+    $(document).ready(function () {
+
+        let serviceCount = 1;
+        const buttons = $('.day-button');
+        const today = new Date().toLocaleString('en-us', { weekday: 'long' });
+        let selectedDays = []; // Create an array to store selected days
+        buttons.each(function () {
+            const button = $(this);
+            const day = button.data('day');
+
+            if (day === today) {
+                //button.addClass('disabled');
+                //button.prop('disabled', true);
+                button.addClass('active');
+                selectedDays.push(day);
+
+
+            }
+
+            button.click(function () {
+                if (button.hasClass('active')) {
+                    button.removeClass('active');
+                    // Remove the day from the selectedDays array
+                    selectedDays = selectedDays.filter(selectedDay => selectedDay !== day);
+                } else {
+                    button.addClass('active');
+                    // Add the day to the selectedDays array if not already present
+                    if (!selectedDays.includes(day)) {
+                        selectedDays.push(day);
+                    }
+                }
+
+                // Update the #Days input value with the selected days separated by commas
+                $('#Days').val(selectedDays.join(', '));
+            });
+        });
+        var input = document.querySelector("#MobileNumber");
+        window.intlTelInput(input, {
+            // allowDropdown: false,
+            autoInsertDialCode: true,
+            // autoPlaceholder: "off",
+            preferredCountries: ['nl'],
+            dropdownContainer: document.body,
+            separateDialCode: true
+        });
+        $(".iti.iti--allow-dropdown.iti--separate-dial-code.iti--show-flags").addClass("col-md-12");
+        function addService() {
+
+            const newRow = document.createElement('div');
+            newRow.className = 'row';
+            newRow.id = `ServiceRow_${serviceCount}`;
+            var serviceId = 'Service_' + serviceCount;
+            var durationId = 'Duration_' + serviceCount;
+            var discountId = 'Discount_' + serviceCount;
+
+            var serviceidElemtn = 'ServiceID_' + serviceCount;
+            var servicePrice = 'ServicePrice_' + serviceCount;
+
+            newRow.innerHTML = `
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Select Services</label>
+                         <input class="form-control serviceprice-input" type="hidden" name="ServicePrice" id="${servicePrice}"/>
+                        <input class="form-control serviceid-input" type="hidden" name="ServiceID" id="${serviceidElemtn}"/>
+                        <input class="form-control autocomplete" type="text" name="ServiceNames" id="${serviceId}"   />
+                    </div>
+                </div>
+                <button class="btn btn-danger btn-sm" type="button" onclick="removeService(${serviceCount})">X</button>
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" id="${durationId}" name='ServiceDurationInput'  class="form-control duration-input">
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label style="white-space:nowrap">Discount %</label>
+                        <input type="text" id="${discountId}" value='0' name='ServiceDiscountInput'  class="form-control discount-input">
+                    </div>
+                </div>
+
+            `;
+
+            document.querySelector('#MainContainer').appendChild(newRow);
+            serviceCount++;
+            initializeAutocomplete();
+            updateDeleteButtonVisibility();
+
+        }
+        $("#AddMoreBtn").click(function () {
+            addService(); // Call the function
+        });
+        $(".duration-input").on("input", function () {
+            // Get the input value in lowercase
+            var inputValue = $(this).val().toLowerCase();
+
+            // Check if "mins" is already present in the input value
+            if (inputValue.includes("mins")) {
+                // If "mins" is already present, remove the last occurrence
+                var lastIndex = inputValue.lastIndexOf("mins");
+                var newValue = inputValue.substring(0, lastIndex) + inputValue.substring(lastIndex + 4);
+
+                // Update the input value with the corrected value
+                $(this).val(newValue);
+            }
+        });
+        CheckABDurationInput();
+        CheckIsAllEmployee();
+
+
+        $('.timepicker').datetimepicker({
+            //          format: 'H:mm',    // use this format if you want the 24hours timepicker
+            format: 'H:mm',    // use this format if you want the 12hours timepicker with AM/PM toggle
+            icons: {
+                time: "fa fa-clock-o",
+                date: "fa fa-calendar",
+                up: "fa fa-chevron-up",
+                down: "fa fa-chevron-down",
+                previous: 'fa fa-chevron-left',
+                next: 'fa fa-chevron-right',
+                today: 'fa fa-screenshot',
+                clear: 'fa fa-trash',
+                close: 'fa fa-remove'
+            }
+        }).on('dp.change', function (e) {
+            // This function will be called whenever the time is changed
+            var selectedTime = $(".timepicker").val();
+            var timeWithAMPM = formatTimeWithAMPM(selectedTime);
+            $("#TimeToBeSet").text(timeWithAMPM);
+            CheckAvailability();
+
+            // You can add any additional logic you need here
+        });
+
+
+
+        $('#FirstName').on('input', function () {
+            // Get the input value
+            var inputValue = $(this).val();
+
+            // Check if the input contains an apostrophe
+            if (inputValue.includes("'")) {
+                // If an apostrophe is found, remove it from the input value
+                $(this).val(inputValue.replace("'", ''));
+            }
+        });
+        $('#LastName').on('input', function () {
+            // Get the input value
+            var inputValue = $(this).val();
+
+            // Check if the input contains an apostrophe
+            if (inputValue.includes("'")) {
+                // If an apostrophe is found, remove it from the input value
+                $(this).val(inputValue.replace("'", ''));
+            }
+        });
+    });
+    $("#ServiceAB").on("change", function () {
+    var selectedOption = $(this).find(':selected');
+    $("#ServiceDurationAB").val(selectedOption.data("duration"));
+    var StartTime = $("#TimeABFrom").val();
+        var Duration = selectedOption.data("duration");
+        $.ajax({
+            url: '@Url.Action("GetEndTime", "Appointment")',
+            type: 'GET',
+            data: { StartTime: StartTime, Duration: Duration },
+            success: function (data) {
+                $("#TimeABTo").val(data.EndTime);
+            },
+            error: function (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+
+    })
+
+    function CheckABDurationInput() {
+        var selectedOption = $("#ServiceAB").find(':selected');
+        var duration = selectedOption.data('duration');
+        if ($("#ID").val() == "0") {
+            $("#ServiceDurationAB").val(duration);
+        }
+
+        var StartTime = $("#TimeABFrom").val();
+        var Duration = duration;
+        $.ajax({
+            url: '@Url.Action("GetEndTime", "Appointment")',
+            type: 'GET',
+            data: { StartTime: StartTime, Duration: Duration },
+            success: function (data) {
+                $("#TimeABTo").val(data.EndTime);
+            },
+            error: function (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+
+    $('.duration-input').on('blur', function () {
+        // Append 'mins' if input isn't empty
+        if (!$(this).val().endsWith(' mins')) {
+
+            if ($(this).val().trim() !== '') {
+                $(this).val($(this).val() + ' mins');
+            }
+        }
+
+    });
+    $('.duration-input').on('input', function () {
+        // Replace non-numeric characters with an empty string
+        $(this).val($(this).val().replace(/[^0-9]/g, ''));
+
+        // Remove 'mins' if present
+        if ($(this).val().endsWith('mins')) {
+            $(this).val($(this).val().slice(0, -4));
+        }
+
+
+    });
+    $('.duration-input').on('focus', function () {
+        // Remove 'mins' if present
+        if ($(this).val().endsWith(' mins')){
+            $(this).val($(this).val().slice(0, -5));
+        }
+        if ($(this).val().endsWith(' min')) {
+            $(this).val($(this).val().slice(0, -4));
+
+        }
+
+
+    });
+    $('#MainContainer').on('blur', '.duration-input', function () {
+        // Append 'mins' if input isn't empty
+        if (!$(this).val().endsWith(' mins')) {
+
+            if ($(this).val().trim() !== '') {
+                $(this).val($(this).val() + ' mins');
+            }
+        }
+
+
+    });
+    $('#MainContainer').on('input', '.duration-input', function () {
+        // Replace non-numeric characters with an empty string
+        $(this).val($(this).val().replace(/[^0-9]/g, ''));
+
+        // Remove 'mins' if present
+        if ($(this).val().endsWith('mins')) {
+            $(this).val($(this).val().slice(0, -4));
+        }
+
+
+    });
+    $('#MainContainer').on('focus', '.duration-input', function () {
+        // Remove 'mins' if present
+        if ($(this).val().endsWith(' mins')) {
+            $(this).val($(this).val().slice(0, -5));
+        }
+        if ($(this).val().endsWith(' min')) {
+            $(this).val($(this).val().slice(0, -4));
+        }
+
+    });
+
+    $("#Deposit").on("change", function () {
+        updateTotal();
+    })
+    $("#MainContainer").on('change', 'input[name="ServiceDiscountInput"]', function () {
+        updateTotal();
+    });
+    $("input[name='ServiceDiscountInput']").on("change", function () {
+        updateTotal();
+    });
+    $('.nav-pills a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var activeTab = $(e.target).attr('href');
+        $("#SelectedOption").val(activeTab);
+    //    AdjustTheControls();
+    });
+
+    function updateServiceInputAbsenceAdd(serviceID,serviceName,duration,discount) {
+        var serviceValues = [];
+        var serviceDurationValues = [];
+        var serviceDiscountValues = [];
+
+        $("input[name='ServiceID'").val(serviceID);
+        $("#Service").val(serviceName);
+        $("input[name='ServiceDurationInput'").val(duration);
+        $("input[name='ServiceDiscountInput'").val(discount);
+
+        $('#MainContainer .row').each(function () {
+            var serviceInput = $(this).find('input[name="ServiceID"]');
+            var serviceDurationInput = $(this).find('input[name="ServiceDurationInput"]');
+            var serviceDicountInput = $(this).find('input[name="ServiceDiscountInput"]');
+
+            var serviceValue = serviceInput.val().trim();
+            var serviceDurationValue = serviceDurationInput.val();
+            var serviceDiscountValue = serviceDicountInput.val();
+            if (serviceValue !== '') {
+                serviceValues.push(serviceValue);
+            }
+            if (serviceDiscountValue !== '') {
+                serviceDiscountValues.push(serviceDiscountValue);
+            }
+
+
+            if (serviceDurationValue !== '') {
+                serviceDurationValues.push(serviceDurationValue);
+            }
+        });
+
+
+
+        // Join the service values with commas
+        var concatenatedServiceValues = serviceValues.join(', ');
+        var concatenatedServiceDurationValues = serviceDurationValues.join(', ');
+        var concatentatedServiceDiscountValues = serviceDiscountValues.join(', ');
+
+        // Update the input field with the concatenated values
+        $('#ConcatenatedServices').val(concatenatedServiceValues);
+        $("#ServiceDuration").val(concatenatedServiceDurationValues);
+        $("#ServiceDiscount").val(concatentatedServiceDiscountValues);
+
+    }
+    function updateServiceInput() {
+        var serviceValues = [];
+        var serviceDurationValues = [];
+        var serviceDiscountValues = [];
+
+        $('#MainContainer .row').each(function () {
+            var serviceInput = $(this).find('input[name="ServiceID"]');
+            var serviceDurationInput = $(this).find('input[name="ServiceDurationInput"]');
+            var serviceDicountInput = $(this).find('input[name="ServiceDiscountInput"]');
+
+            var serviceValue = serviceInput.val().trim();
+            var serviceDurationValue = serviceDurationInput.val();
+            var serviceDiscountValue = serviceDicountInput.val();
+            if (serviceValue !== '') {
+                serviceValues.push(serviceValue);
+            }
+            if (serviceDiscountValue !== '') {
+                serviceDiscountValues.push(serviceDiscountValue);
+            }
+
+
+            if (serviceDurationValue !== '') {
+                serviceDurationValues.push(serviceDurationValue);
+            }
+        });
+
+
+
+
+        // Join the service values with commas
+        var concatenatedServiceValues = serviceValues.join(', ');
+        var concatenatedServiceDurationValues = serviceDurationValues.join(', ');
+        var concatentatedServiceDiscountValues = serviceDiscountValues.join(', ');
+
+        // Update the input field with the concatenated values
+        $('#ConcatenatedServices').val(concatenatedServiceValues);
+        $("#ServiceDuration").val(concatenatedServiceDurationValues);
+        $("#ServiceDiscount").val(concatentatedServiceDiscountValues);
+
+
+    }
+    function CheckIfEmployeeProvideTheService() {
+        var serviceValues = [];
+        $('#MainContainer .row').each(function () {
+            var serviceInput = $(this).find('input[name="ServiceID"]');
+            var serviceValue = serviceInput.val().trim();
+            if (serviceValue !== '') {
+                serviceValues.push(serviceValue);
+            }
+
+        });
+
+        // Join the service values with commas
+        var concatenatedServiceValues = serviceValues.join(', ');
+        var Services = concatenatedServiceValues;
+        var EmployeeID = $("#EmployeeID").val();
+       
+        if (EmployeeID != "" && $("#SelectedOption").val() != "#description-1") {
+            $.ajax({
+                url: '@Url.Action("CheckEmployeeService", "Appointment")',
+                type: 'GET',
+                dataType: 'json',
+                data: { Services: Services, EmployeeID: EmployeeID },
+                success: function (data) {
+                    if (data.success == false) {
+                        $("#validationTextForEmployeeService").text(data.Message);
+                        $("#validationTextForEmployeeServiceAB").text(data.Message);
+
+                    }
+                    else {
+                        $("#validationTextForEmployeeService").text("");
+                        $("#validationTextForEmployeeServiceAB").text("");
+
+
+                    }
+                },
+                error: function (error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        }
+
+    }
+
+    $('#MainContainer').on('change', 'input[name="ServiceNames"]', function () {
+        updateServiceInput();
+
+    });
+    function CheckIsRepeatRow() {
+        var isChecked = $("#IsRepeatCB").is(':checked');
+        if (isChecked) {
+            $("#RepeatRow").show();
+            $("#IsRepeat").val("True");
+        } else {
+            $("#RepeatRow").hide();
+            $("#IsRepeat").val("False");
+
+        }
+    }
+    function CheckIsWaitingList() {
+        var isChecked = $("#IsWaitingListCB").is(':checked');
+        if (isChecked) {
+            $("#IsWaitingList").val("True");
+        } else {
+            $("#IsWaitingList").val("False");
+
+        }
+    }
+
+    function CheckIsAllEmployee() {
+        var isChecked = $("#AllEmployeesCB").is(':checked');
+        if (isChecked) {
+            $("#AllEmployees").val("True");
+            $("#EmployeeIDAB").hide();
+
+        } else {
+            $("#AllEmployees").val("False");
+            $("#EmployeeIDAB").show();
+        }
+    }
+    $('#AllEmployeesCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#AllEmployees").val("True");
+            $("#EmployeeIDAB").hide();
+
+        } else {
+            $("#AllEmployees").val("False");
+            $("#EmployeeIDAB").show();
+        }
+    });
+    $('#IsRepeatCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#RepeatRow").show();
+            $("#IsRepeat").val("True");
+        } else {
+            $("#RepeatRow").hide();
+            $("#IsRepeat").val("False");
+
+        }
+    });
+    $('#IsWaitingListCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#IsWaitingList").val("True");
+        } else {
+            $("#IsWaitingList").val("False");
+
+        }
+    });
+    function CheckFreqAndEnd() {
+        var Frequency = $("#Frequency").val();
+        //var EndWeek = $("#EndWeek").val();
+        //var EndDay = $("#EndDay").val();
+        //var EndMonth = $("#EndMonth").val();
+
+        if (Frequency == "Every Week" /*&& EndWeek == "Never"*/) {
+            $("#OnADateRowWeek").hide();
+            $("#OnTimeRowWeek").hide();
+        }
+        else if (Frequency == "Every Week" /*&& EndWeek == "Specific Date"*/) {
+            $("#OnADateRowWeek").show();
+            $("#OnTimeRowWeek").hide();
+        }
+        else if (Frequency == "Every Week" /*&& EndWeek == "NumberOfTimes"*/) {
+            $("#OnADateRowWeek").hide();
+            $("#OnTimeRowWeek").show();
+        }
+
+        else if (Frequency == "Every Day" /*&& EndDay == "Never"*/) {
+            $("#OnADateRowDay").hide();
+            $("#OnTimeRowDay").hide();
+        }
+        else if (Frequency == "Every Day" /*&& EndDay == "Specific Date"*/) {
+            $("#OnADateRowDay").show();
+            $("#OnTimeRowDay").hide();
+        }
+        else if (Frequency == "Every Day" /*&& EndDay == "NumberOfTimes"*/) {
+            $("#OnADateRowDay").hide();
+            $("#OnTimeRowDay").show();
+        }
+
+        else if (Frequency == "Every Month" /*&& EndMonth == "Never"*/) {
+            $("#OnADateRowMonth").hide();
+            $("#OnTimeRowMonth").hide();
+        }
+        else if (Frequency == "Every Month" /*&& EndMonth == "Specific Date"*/) {
+            $("#OnADateRowMonth").show();
+            $("#OnTimeRowMonth").hide();
+        }
+        else if (Frequency == "Every Month" /*&& EndMonth == "NumberOfTimes"*/) {
+            $("#OnADateRowMonth").hide();
+            $("#OnTimeRowMonth").show();
+        }
+
+        else {
+            $("#OnADateRowWeek").hide();
+            $("#OnTimeRowWeek").hide();
+            $("#OnADateRowDay").hide();
+            $("#OnTimeRowDay").hide();
+            $("#OnADateRowMonth").hide();
+            $("#OnTimeRowMonth").hide();
+
+        }
+    }
+    //$("#EndMonth").on("change", function () {
+    //    CheckFreqAndEnd();
+    //})
+    //$("#EndWeek").on("change", function () {
+    //    CheckFreqAndEnd();
+    //})
+    //$("#EndDay").on("change", function () {
+    //    CheckFreqAndEnd();
+    //})
+    $("#Frequency").on("change", function () {
+        CheckFrequency();
+    })
+    function CheckFrequency() {
+        var Frequency = $("#Frequency").val();
+        if (Frequency == "Every Week") {
+            $("#WeekRow").show();
+            $("#DayRow").hide();
+            $("#MonthRow").hide();
+        } else if (Frequency == "Every Day") {
+            $("#WeekRow").hide();
+            $("#DayRow").show();
+            $("#MonthRow").hide();
+        } else if (Frequency == "Every Month") {
+            $("#WeekRow").hide();
+            $("#DayRow").hide();
+            $("#MonthRow").show();
+        }
+    }
+    function updateDeleteButtonVisibility() {
+        var rowElements = $('#MainContainer .row');
+        if (rowElements.length === 1) {
+            // If there's only one row, hide the delete button
+            rowElements.find('.btn-danger').hide();
+        } else {
+            // If there are more than one rows, show the delete buttons
+            rowElements.find('.btn-danger').show();
+        }
+    }
+    function removeService(id) {
+        const rowToRemove = document.getElementById(`ServiceRow_${id}`);
+        if (rowToRemove) {
+            rowToRemove.remove();
+            updateDeleteButtonVisibility();
+            updateServiceInput();
+            updateTotal();
+            CheckIfEmployeeProvideTheService();
+            CheckAvailability();
+
+        }
+    }
+    function removeServicePresent(id) {
+        const rowToRemove = document.getElementById(`ServiceRowNew_${id}`);
+        if (rowToRemove) {
+            rowToRemove.remove();
+            updateDeleteButtonVisibility();
+            updateServiceInput();
+            updateTotal();
+            CheckIfEmployeeProvideTheService();
+            CheckAvailability();
+
+
+
+        }
+    }
+    function updateTotal() {
+        var total = 0;
+
+        $('#MainContainer .row').each(function () {
+            var priceinput = parseFloat($(this).find('input[name="ServicePrice"]').val());
+            var discountPercentageInput = parseFloat($(this).find('input[name="ServiceDiscountInput"]').val());
+
+            // Check if discountPercentageInput is not empty and greater than 0
+            if (!isNaN(discountPercentageInput) && discountPercentageInput > 0) {
+                total += priceinput - (priceinput * (discountPercentageInput / 100));
+            } else {
+                total += priceinput;
+            }
+        });
+
+        var deposit = parseFloat($("#Deposit").val()); // Get the deposit value
+        if (!isNaN(deposit)) {
+            total -= deposit; // Subtract the deposit from the total
+        }
+
+        $("#TotalCost").text("@Model.Company.Currency" + total.toFixed(2)); // Optionally, round the total to two decimal places.
+        EnableTheDepositOptions();
+        CheckIfEmployeeProvideTheService();
+        CheckAvailability();
+
+    }
+    function EnableTheDepositOptions() {
+        var ConcatenatedServices = $("#ConcatenatedServices");
+        console.log(ConcatenatedServices.val());
+        var Deposit = $("#Deposit");
+        var DepositMethod = $("#DepositMethod");
+        console.log("THIS" + ConcatenatedServices.length);
+        if (ConcatenatedServices.length >= 1) {
+            // Remove the "disabled" attribute from Deposit and DepositMethod
+            Deposit.removeAttr("disabled");
+            DepositMethod.removeAttr("disabled");
+        } else {
+            Deposit.attr("disabled", "disabled");
+            DepositMethod.attr("disabled", "disabled");
+        }
+    }
+    function initializeAutocomplete() {
+
+        var $inputField = $(".autocomplete");
+
+        const keyDownEvent = $.Event('keydown', { keyCode: 65 });
+
+        // Trigger the keydown event on the input field
+        $inputField.trigger(keyDownEvent);
+        //$inputField.val(''); // Clear the value of the input field
+        showLoadingSpinner();
+        url = '@Url.Action("GetServices", "Appointment")';
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var lookup = [];
+                if (Option == "#Absence") {
+                    // Iterate through the ServiceModel items
+                    data.forEach(function (serviceModel) {
+                        serviceModel.Services.forEach(function (service) {
+                            lookup.push({
+                                value: service.Name,
+                                data: {
+                                    category: serviceModel.ServiceCategory.Name,
+                                    id: service.ID // Add the service.ID to data
+                                }
+                            });
+                        });
+                    });
+                } else {
+                     data.forEach(function (serviceModel) {
+                        serviceModel.Services.forEach(function (service) {
+                            lookup.push({
+                                value: service.Name + " @Model.Company.Currency" + service.Price,
+                                data: {
+                                    category: serviceModel.ServiceCategory.Name,
+                                    id: service.ID // Add the service.ID to data
+                                }
+                            });
+                        });
+                    });
+                }
+                hideLoadingSpinner();
+
+                $('.autocomplete').devbridgeAutocomplete({
+                    lookup: lookup,
+                    minChars: 0,
+                    onSelect: function (suggestion) {
+                        var selectedServiceId = suggestion.data.id;
+                        var $inputElement = $(this);
+                        showLoadingSpinner();
+                        $.ajax({
+                            url: '@Url.Action("GetServiceDetails", "Appointment")', // Replace with your controller action URL
+                            type: 'GET',
+                            dataType: 'json',
+                            data: { ID: selectedServiceId }, // Pass the selectedServiceId as a parameter
+                            success: function (service) {
+                                // Handle the service object returned from the controller
+                                // Use $(this) to target the specific input element that triggered the event
+                                var serviceId = $inputElement.attr('id'); // Get the ID of the Service input
+                                var durationId = serviceId.replace('Service', 'Duration');
+                                var service_Id = serviceId.replace('Service', 'ServiceID');
+                                var service_Price = serviceId.replace('Service', 'ServicePrice');
+
+                                $("#" + durationId).val("");
+                                $("#" + service_Price).val("");
+                                if ($("#" + durationId).val() != '') {
+                                    if ($("#" + durationId).val() == service.Duration) {
+                                        $("#" + durationId).val(service.Duration);
+                                    }
+                                } else {
+                                    $("#" + durationId).val(service.Duration);
+                                }
+                                $("#" + service_Id).val(service.ID);
+                                $("#" + service_Price).val(service.Price);// Set the Duration value
+                                updateTotal();
+                                hideLoadingSpinner();
+                            },
+                            error: function (error) {
+                                console.error('Error fetching service details:', error);
+                                hideLoadingSpinner();
+                            }
+                        });
+                        // Now you can access the selected service ID (selectedServiceId)
+                        // and use it as needed.
+                    },
+                    showNoSuggestionNotice: true,
+                    noSuggestionNotice: 'Sorry, no matching results',
+                    groupBy: 'category'
+                });
+            },
+            error: function (error) {
+                console.error('Error fetching data:', error);
+                hideLoadingSpinner();
+            }
+        });
+
+
+    }
+    var DataOfCountry = $(".iti__selected-dial-code").text();
+    $("#MobileNumber").val(DataOfCountry);
+    $("#MobileNumber").on("keydown", function (event) {
+        // Check if the pressed key is the space key (key code 32)
+        if (event.keyCode === 32) {
+            event.preventDefault(); // Prevent the space from being entered
+        }
+    });
+    $("#MobileNumber").on("change", function () {
+        var phoneNumber = $("#MobileNumber").val();
+
+        // Check if the phone number starts with a valid country code (e.g., +1 for the US)
+        if (/^\+\d+/.test(phoneNumber)) {
+            $("#ActionBtn").removeAttr("disabled");
+            $("#phoneNumberError").text("");
+
+            $("#MobileNumber").css("border", "none");
+
+
+            // You can proceed with form submission or other actions here
+        } else {
+            $("#phoneNumberError").text("Phone number must start with a valid country code (e.g., +1 for the US).");
+            $("#MobileNumber").css("border", "0.5px solid red");
+            $("#ActionBtn").attr("disabled", "disabled");
+            // Prevent form submission or take appropriate action
+        }
+    });
+    function CheckAvailability() {
+        showLoadingSpinner();
+        updateServiceInput();
+
+        var date = $("#Date").val();
+        var time = $("#Time").val();
+        var serviceDuration = $("#ServiceDuration").val();
+        var ID = $("#ID").val();
+        var EmployeeID = $("#EmployeeID").val();
+        $.ajax({
+            url: '@Url.Action("CheckSlotAvailability","Appointment")',
+            type: 'POST',
+            data: {
+                date: date,
+                time: time,
+                serviceDuration: serviceDuration,
+                EmployeeID: EmployeeID,
+                ID:ID
+            },
+            success: function (data) {
+
+                if (data.isSlotAvailable) {
+
+                    $("#actionButton").removeAttr("disabled");
+                    // Slot is available, you can proceed with saving the appointment
+                    // or display a success message.
+                    $("#validationText").text("");
+                    hideLoadingSpinner();
+
+                } else {
+                    $("#validationText").text("Slot is already booked, please try different slot");
+                    hideLoadingSpinner();
+                }
+            },
+            error: function () {
+                //    alert("An error occurred while checking slot availability.");
+                hideLoadingSpinner();
+
+            }
+        });
+    }
+
+    function CheckTime() {
+        var Time = $("#Time").val();
+        var minimumTime = "09:00";
+
+        // Convert enteredTime and minimumTime to Date objects for easier comparison
+        var enteredDate = new Date("2000-01-01 " + Time);
+        var minimumDate = new Date("2000-01-01 " + minimumTime);
+
+
+        if (enteredDate < minimumDate) {
+            // Display an error or take appropriate action
+            hideLoadingSpinner();
+            return false;
+        } else {
+            // Continue with the rest of your logic
+            // ...
+            return true;
+
+        }
+    }
+    function initializeAutocompleteForCustomers() {
+        showLoadingSpinner();
+        var $createCustomerBtn = $("#createCustomerBtn");
+
+        $.ajax({
+            url: '@Url.Action("GetCustomers", "Appointment")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var lookup = [];
+
+                // Iterate through the ServiceModel items
+                data.forEach(function (customer) {
+
+                    if (customer.LastName == null) {
+                        lookup.push({
+                            value: customer.FirstName,
+                            CustomerInitials: customer.FirstName.charAt(0),
+                            CustomerName: customer.FirstName,
+                            CustomerEmail: customer.Email,
+                            CustomerMobileNumber: customer.MobileNumber,
+                            IsBlocked: customer.IsBlocked,
+                            data: {
+                                id: customer.ID // Add the service.ID to data
+                            }
+                        });
+                    }
+                    else if (customer.FirstName == null) {
+                        lookup.push({
+                            value: customer.LastName,
+                            CustomerInitials: customer.LastName.charAt(0),
+                            CustomerName: customer.LastName,
+                            CustomerEmail: customer.Email,
+                            CustomerMobileNumber: customer.MobileNumber,
+                            IsBlocked: customer.IsBlocked,
+                            data: {
+                                id: customer.ID // Add the service.ID to data
+                            }
+                        });
+                    } else {
+                        lookup.push({
+                            value: customer.FirstName + " " + customer.LastName,
+                            CustomerInitials: customer.FirstName.charAt(0) + customer.LastName.charAt(0),
+                            CustomerName: customer.FirstName + " " + customer.LastName,
+                            CustomerEmail: customer.Email,
+                            CustomerMobileNumber: customer.MobileNumber,
+                            IsBlocked: customer.IsBlocked,
+                            data: {
+                                id: customer.ID // Add the service.ID to data
+                            }
+                        });
+                    }
+                });
+                hideLoadingSpinner();
+                $('.autocompleteCustomers').devbridgeAutocomplete({
+                    lookup: lookup,
+                    minChars: 0,
+                    formatResult: function (suggestion, currentValue) {
+                        // Customize the rendering of each suggestion
+
+                        if (suggestion.IsBlocked) {
+                            return '<table class="table table-hovered">' +
+                                '<tbody>' +
+                                '<tr>' +
+                                '<td style="width:70px;" class="suggestion-initial">' +
+                                '<div class="circular-box">' + suggestion.CustomerInitials + '</div>' +
+                                '</td>' +
+                                '<td class="suggestion-details">' +
+                                '<div class="customer-name">' + suggestion.CustomerName + '</div>' +
+                                '<div class="customer-email">' + suggestion.CustomerEmail + '</div>' +
+                                '<div class="customer-mobile">' + suggestion.CustomerMobileNumber + '</div>' +
+                                '<span class="customer-blockStatus text-danger">Customer Blocked</span>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>';
+                        } else {
+                            return '<table class="table table-hovered">' +
+                                '<tbody>' +
+                                '<tr>' +
+                                '<td style="width:70px;" class="suggestion-initial">' +
+                                '<div class="circular-box">' + suggestion.CustomerInitials + '</div>' +
+                                '</td>' +
+                                '<td class="suggestion-details">' +
+                                '<div class="customer-name">' + suggestion.CustomerName + '</div>' +
+                                '<div class="customer-email">' + suggestion.CustomerEmail + '</div>' +
+                                '<div class="customer-mobile">' + suggestion.CustomerMobileNumber + '</div>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>';
+                        }
+                    },
+                    onSelect: function (suggestion) {
+                        var selectedCustomerID = suggestion.data.id;
+                        console.log(selectedCustomerID);
+                        var $inputElement = $(this);
+                        showLoadingSpinner();
+                        $.ajax({
+                            url: '@Url.Action("GetCustomerDetails", "Appointment")', // Replace with your controller action URL
+                            type: 'GET',
+                            dataType: 'json',
+                            data: { ID: selectedCustomerID }, // Pass the selectedServiceId as a parameter
+                            success: function (customer) {
+                                console.log("customer Details" + customer);
+                                $("#MainCustomerSelectedContainer").empty();
+                                if (customer.IsBlocked) {
+                                    var DivToBeAdded = '<div class="suggestion-container">' +
+                                        '<button  style="float:right;" onclick="ClearTheCustomer()" type="button" class="close-button" aria-label="Close">' +
+                                        '<span aria-hidden="true">&times;</span>' +
+                                        '</button>' +
+                                        '<table class="table table-hovered">' +
+                                        '<tbody>' +
+                                        '<tr>' +
+                                        '<td style="width:70px;" class="suggestion-initial">' +
+                                        '<div class="circular-box">' + customer.FirstName.charAt(0) + customer.LastName.charAt(0) + '</div>' +
+                                        '</td>' +
+                                        '<td class="suggestion-details">' +
+                                        '<input type="hidden" name="CustomerID" id="CustomerID" value=' + customer.ID + ' class="customer-id">' +
+                                        '<div class="customer-name">' + customer.FirstName + " " + customer.LastName + '</div>' +
+                                        '<div class="customer-email">' + customer.Email + '</div>' +
+                                        '<div class="customer-mobile">' + customer.MobileNumber + '</div>' +
+                                        '<span class="customer-blockStatus text-danger">Customer Blocked</span>' +
+                                        '</td>' +
+                                        '</tr>' +
+                                        '</tbody>' +
+                                        '</table>' +
+                                        '</div>';
+
+                                } else {
+                                    var DivToBeAdded = '<div class="suggestion-container">' +
+                                        '<button  style="float:right;" onclick="ClearTheCustomer()" type="button" class="close-button" aria-label="Close">' +
+                                        '<span aria-hidden="true">&times;</span>' +
+                                        '</button>' +
+                                        '<table class="table table-hovered">' +
+                                        '<tbody>' +
+                                        '<tr>' +
+                                        '<td style="width:70px;" class="suggestion-initial">' +
+                                        '<div class="circular-box">' + customer.FirstName.charAt(0) + customer.LastName.charAt(0) + '</div>' +
+                                        '</td>' +
+                                        '<td class="suggestion-details">' +
+                                        '<input type="hidden" name="CustomerID" id="CustomerID" value=' + customer.ID + ' class="customer-id">' +
+                                        '<div class="customer-name">' + customer.FirstName + " " + customer.LastName + '</div>' +
+                                        '<div class="customer-email">' + customer.Email + '</div>' +
+                                        '<div class="customer-mobile">' + customer.MobileNumber + '</div>' +
+
+                                        '</td>' +
+                                        '</tr>' +
+                                        '</tbody>' +
+                                        '</table>' +
+                                        '</div>';
+
+                                }
+
+                                $("#MainCustomerSelectedContainer").append(DivToBeAdded);
+                                if (customer.IsBlocked) {
+                                    $("#actionButton").attr("disabled", "disabled");
+
+                                } else {
+                                    $("#actionButton").removeAttr("disabled");
+                                }
+                                hideLoadingSpinner();
+                            },
+                            error: function (error) {
+                                console.error('Error fetching service details:', error);
+                                hideLoadingSpinner();
+
+                            }
+                        });
+                        // Now you can access the selected service ID (selectedServiceId)
+                        // and use it as needed.
+                    },
+                    showNoSuggestionNotice: true,
+                    onSearchComplete: function (query, suggestions) {
+                        // Show or hide the "Create Customer" button based on search results
+                        $createCustomerBtn.toggle(suggestions.length === 0);
+                        //if (suggestions.length > 0) {
+                        //    $("#CreateCustomerPanel").hide();
+                        //} else {
+                        //    $("#CreateCustomerPanel").show();
+
+                        //}
+
+                    },
+
+                    noSuggestionNotice: 'Sorry, no matching results'
+                });
+            },
+            error: function (error) {
+                console.error('Error fetching data:', error);
+                hideLoadingSpinner();
+
+            }
+        });
+    }
+    function ClearTheCustomer() {
+        $("#MainCustomerSelectedContainer").empty();
+        $("#Customer").val("");
+
+    }
+    $("#Date").change(function () {
+        var selectedDate = $(this).val();
+        var formattedDate = new Date(selectedDate).toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric"
+        });
+        $("#DateToBeSet").text(formattedDate);
+        CheckAvailability();
+
+    });
+
+
+    $("#Time").on("change", function () {
+
+        var selectedTime = $(this).val();
+        var timeWithAMPM = formatTimeWithAMPM(selectedTime);
+        $("#TimeToBeSet").text(timeWithAMPM);
+        CheckAvailability();
+    });
+    $("#createCustomerBtn").click(function () {
+        $("#CreateCustomerPanel").toggle();
+    });
+    function formatTimeWithAMPM(time) {
+
+        var hours = parseInt(time.split(":")[0]);
+        var minutes = time.split(":")[1];
+        var ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Handle midnight (12:00 AM)
+
+        return hours + ":" + minutes + " " + ampm;
+    }
+    $(document).ready(function () {
+        initializeAutocompleteForCustomers();
+        updateDeleteButtonVisibility();
+        CheckIsRepeatRow();
+        CheckFrequency();
+        CheckIsWaitingList();
+        CheckFreqAndEnd();
+        var activeTab = $(".nav-pills li.active");
+        // Get the href attribute of the active tab
+        var activeTabHref = activeTab.find("a").attr("href");
+        $("#SelectedOption").val(activeTabHref);
+        initializeAutocomplete();
+    });
+    $("#actionButton").click(function () {
+        $("#actionButton").attr("disabled", "disabled");
+        var ValidTime = CheckTime();
+        if (ValidTime == false) {
+            alert("Entered time should not be before 9:00");
+            return;
+        }
+        CheckIfEmployeeProvideTheService();
+        showLoadingSpinner();
+        updateServiceInput();
+
+        if ($("#EmployeeID").val() == "0") {
+            alert("Please Select Employee");
+            hideLoadingSpinner();
+            return;
+        }
+        if ($("#ConcatenatedServices").val() == "") {
+            alert("Please Select Any Services");
+            hideLoadingSpinner();
+            return;
+        }
+        var msg = $("#validationText").text();
+        var firstName = $("#FirstName").val();
+        var lastName = $("#LastName").val();
+        var email = $("#Email").val();
+        var mobileNumber = $("#MobileNumber").val();
+
+        // Check if the phone number starts with a valid country code (e.g., +1 for the US)
+        var CustomerID = $("#CustomerID").val();
+        if ($('#CreateCustomerPanel').is(':visible')) {
+            if (firstName == "" || lastName == "" || email == "" || !/^\+\d+/.test(mobileNumber)) {
+                alert("Please Fill Customer Details");
+                hideLoadingSpinner();
+                return;
+            }
+            else {
+                $.ajax({
+                    url: '@Url.Action("SaveNewCustomer", "Appointment")',
+                    type: "post",
+                    data: { FirstName: firstName, LastName: lastName, Email: email, MobileNumber: mobileNumber }
+                })
+                    .done(function (response) {
+                        if (response.success)
+                        {
+
+                            $("#MainCustomerSelectedContainer").empty();
+                            var DivToBeAdded = '<div class="suggestion-container">' +
+                                '<button  style="float:right;" onclick="ClearTheCustomer()" type="button" class="close-button" aria-label="Close">' +
+                                '<span aria-hidden="true">&times;</span>' +
+                                '</button>' +
+                                '<table class="table table-hovered">' +
+                                '<tbody>' +
+                                '<tr>' +
+                                '<td style="width:70px;" class="suggestion-initial">' +
+                                '<div class="circular-box">' + response.customer.FirstName.charAt(0) + response.customer.LastName.charAt(0) + '</div>' +
+                                '</td>' +
+                                '<td class="suggestion-details">' +
+                                '<input type="hidden" name="CustomerID" id="CustomerID" value=' + response.customer.ID + ' class="customer-id">' +
+                                '<div class="customer-name">' + response.customer.FirstName + " " + response.customer.LastName + '</div>' +
+                                '<div class="customer-email">' + response.customer.Email + '</div>' +
+                                '<div class="customer-mobile">' + response.customer.MobileNumber + '</div>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>' +
+                                '</div>';
+
+                            $("#MainCustomerSelectedContainer").append(DivToBeAdded);
+                            if (msg == "Slot is already booked, please try different slot") {
+                                hideLoadingSpinner();
+
+                                // Show a SweetAlert confirmation dialog
+
+                                swal({
+                                    title: "Confirm",
+                                    text: "Slot is already booked. Do you want to proceed?",
+                                    type: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonClass: 'btn btn-success',
+                                    cancelButtonClass: 'btn btn-danger',
+                                    confirmButtonText: 'Yes',
+                                    cancelButtonText: 'No',
+                                    buttonsStyling: false
+                                })
+                                    .then((willProceed) => {
+                                        if (willProceed) {
+                                            showLoadingSpinner();
+                                            // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
+                                            $.ajax({
+                                                url: '@Url.Action("Action", "Appointment")',
+                                                type: "post",
+                                                data: $("#ActionForm").serialize()
+                                            })
+                                                .done(function (response) {
+                                                    if (response.success) {
+                                                        var Date = $("#Date").val();
+                                                        let encodedDate = encodeURIComponent(Date);
+                                                        window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
+                                                        hideLoadingSpinner();
+
+                                                    }
+                                                    else {
+                                                        hideLoadingSpinner();
+                                                        window.location.href = response.URL;
+
+                                                        $(".errorDiv").html(response.Message);
+                                                    }
+                                                });
+                                        } else {
+                                            // User clicked "Cancel" in the confirmation dialog, do nothing
+                                        }
+                                    });
+                            }
+                            else {
+                                var Date = $("#Date").val();
+                                showLoadingSpinner();
+                                // If not the specific validation message, proceed with the AJAX request directly
+                                $.ajax({
+                                    url: '@Url.Action("Action", "Appointment")',
+                                    type: "post",
+                                    data: $("#ActionForm").serialize()
+                                })
+                                    .done(function (response) {
+                                        if (response.success) {
+                                            let encodedDate = encodeURIComponent(Date);
+                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
+                                            hideLoadingSpinner();
+                                        }
+                                        else {
+                                            hideLoadingSpinner();
+                                            window.location.href = response.URL;
+
+                                            $(".errorDiv").html(response.Message);
+                                        }
+                                    });
+                            }
+                        }
+                        else {
+                            $(".errorDiv").html(response.Message);
+                            hideLoadingSpinner();
+
+                        }
+                    });
+            }
+        }
+        else {
+            if ($("#IsWaitingList").val() == "True" && CustomerID == "undefined") {
+                alert("Please Select any Customer");
+                hideLoadingSpinner();
+                return;
+            }
+            else {
+                if (msg == "Slot is already booked, please try different slot") {
+                    hideLoadingSpinner();
+
+                    // Show a SweetAlert confirmation dialog
+
+                    swal({
+                        title: "Confirm",
+                        text: "Slot is already booked. Do you want to proceed?",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonClass: 'btn btn-success',
+                        cancelButtonClass: 'btn btn-danger',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        buttonsStyling: false
+                    })
+                        .then((willProceed) => {
+                            if (willProceed) {
+                                showLoadingSpinner();
+                                // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
+                                $.ajax({
+                                    url: '@Url.Action("Action", "Appointment")',
+                                    type: "post",
+                                    data: $("#ActionForm").serialize()
+                                })
+                                    .done(function (response) {
+                                        if (response.success) {
+                                            var Date = $("#Date").val();
+                                            let encodedDate = encodeURIComponent(Date);
+                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
+                                            hideLoadingSpinner();
+
+                                        }
+                                        else {
+                                            hideLoadingSpinner();
+                                            window.location.href = response.URL;
+
+                                            $(".errorDiv").html(response.Message);
+                                        }
+                                    });
+                            } else {
+                                // User clicked "Cancel" in the confirmation dialog, do nothing
+                                $("#actionButton").removeAttr("disabled");
+
+                            }
+                        });
+                }
+                else {
+                    var Date = $("#Date").val();
+                    showLoadingSpinner();
+                    // If not the specific validation message, proceed with the AJAX request directly
+                    $.ajax({
+                        url: '@Url.Action("Action", "Appointment")',
+                        type: "post",
+                        data: $("#ActionForm").serialize()
+                    })
+                        .done(function (response) {
+                            if (response.success) {
+                                let encodedDate = encodeURIComponent(Date);
+                                window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
+                                hideLoadingSpinner();
+                            }
+                            else {
+                                hideLoadingSpinner();
+                                window.location.href = response.URL;
+
+                                $(".errorDiv").html(response.Message);
+                            }
+                        });
+                }
+            }
+
+        }
+
+
+    });
+    $("#ABactionButton").click(function () {
+        CheckTime();
+        $("#ABactionButton").attr("disabled", "disabled");
+        showLoadingSpinner();
+        if ($("#EmployeeIDAB").val() == "0" && $("#AllEmployees").val() == "False") {
+            alert("Please Select Employee");
+            hideLoadingSpinner();
+            return;
+        }
+        var Date = $("#DateAB").val();
+        var Time = $("#TimeABFrom").val() + "_" + $("#TimeABTo").val();
+        var Service = $("#ServiceAB").val();
+        var EmployeeID = $("#EmployeeIDAB").val();
+        var AllEmployees = $("#AllEmployees").val()
+        var Notes = $("#NotesAB").val();
+        var Color = $("#ColorAB").val();
+
+
+        var IsRepeat = $("#IsRepeat").val();
+        var Frequency = $("#Frequency").val();
+        var Every = $("#Every").val();
+        
+        //if End on Number of Times
+        var NumberOfTimes = $("#NumberOfTimes").val();
+
+        //if end is specific Date
+        var EndDate = $("#EndDate").val();
+
+        //Weekly Repeat
+        var EndWeek = $("#EndWeek").val();
+        var On = [];
+        $('.day-button.active').each(function () {
+            On.push($(this).data('day'));
+        });
+
+
+        //Daily Repeat
+        var EndDay = $("#EndDay").val();
+
+
+
+        //Monthly Repeat
+        var EndMonth = $("#EndMonth").val();
+        var OnThe = $("#OnThe").val();
+
+
+        showLoadingSpinner();
+
+
+        // If not the specific validation message, proceed with the AJAX request directly
+        $.ajax({
+            url: '@Url.Action("ActionEvent", "Appointment")',
+            type: "post",
+            data: {
+                Date: Date, Time: Time, Service: Service, EmployeeID: EmployeeID,
+                AllEmployees: AllEmployees, Notes: Notes, Color: Color,
+                IsRepeat: IsRepeat, Frequency: Frequency, Every: Every,
+                NumberOfTimes: NumberOfTimes, EndWeek: EndWeek, On: On, EndDate: EndDate,
+                EndDay: EndDay, EndMonth: EndMonth, OnThe: OnThe
+            }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    let encodedDate = encodeURIComponent(Date);
+                    var isChecked = $("#IsRepeatCB").is(':checked');
+                    if (isChecked) {
+                        alert("Recurring Events will be created on background.");
+                    }
+                    window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
+                    hideLoadingSpinner();
+                }
+                else {
+                    hideLoadingSpinner();
+                    $("#ABactionButton").removeAttr("disabled");
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+
+
+
+
+    });
+
+
+
+
+
+</script>

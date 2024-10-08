@@ -1,0 +1,163 @@
+﻿@model TheBookingPlatform.ViewModels.LoyaltyCardPromotionViewModel
+@{
+    ViewBag.Title = "UpdatePromotion";
+    string FinalServiceInclude = "";
+}
+
+<div class="row">
+    <div class="card col-md-12">
+        <div class="card-content">
+            <h4 class="card-title">
+                Update Promotion : @Model.LoyaltyCardPromotion.Percentage
+            </h4>
+
+            <div class="form-group">
+                <label>Percentage</label>
+                <input type="text" class="form-control" id="Percentage" value="@Model.LoyaltyCardPromotion.Percentage" name="Percentage" />
+            </div>
+            <input type="hidden" id="ID" value="@Model.ID" name="ID" />
+
+
+            <div id="CheckBoxList" class="col-md-12">
+                <input type="text" id="serviceSearch" placeholder="Search services" class="form-control">
+                <div class="form-group col-md-6">
+                    <label>Add Service</label><br />
+                    <div class="checkbox form-horizontal-checkbox" id="parentCheckbox">
+                        <label>
+                            <input class="serviceCB" type="checkbox" />
+                            Select All
+                        </label>
+                    </div>
+                    <hr />
+
+                    @foreach (var item in Model.Services)
+                    {
+                        if (Model.ID != 0)
+                        {
+                            if (!Model.AlreadyHaveServices.Contains(item.ID))
+                            {
+                                <div class="checkbox form-horizontal-checkbox service-item">
+                                    <label>
+                                        <input class="serviceCB" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
+                                        @item.Name
+                                    </label>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="checkbox form-horizontal-checkbox service-item">
+                                    <label>
+                                        <input checked class="serviceCB" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
+                                        @item.Name
+                                    </label>
+                                </div>
+                                if (FinalServiceInclude != "")
+                                {
+                                    FinalServiceInclude = String.Join(",", FinalServiceInclude, item.ID);
+                                }
+                                else
+                                {
+                                    FinalServiceInclude = String.Join(",", item.ID);
+
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <div class="checkbox form-horizontal-checkbox service-item">
+                                <label>
+                                    <input class="serviceCB" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
+                                    @item.Name
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <input name="ServiceListAlready" id="ServiceListAlready" class="ServiceListAlready form-control" readonly value="@FinalServiceInclude" type="hidden" />
+
+            </div>
+
+            <button class="btn btn-info" type="button" id="actionButton">UPDATE PROMOTION</button>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function uncheckAllCheckboxes() {
+        $(".serviceCB:visible").prop("checked", false);
+        $("#Percentage").val('');
+    }
+    $(document).ready(function () {
+        $('#serviceSearch').on('keyup', function () {
+            var searchText = $(this).val().toLowerCase();
+
+            $('.service-item').each(function () {
+                var itemName = $(this).find('label').text().toLowerCase();
+                if (itemName.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+            $("#parentCheckbox input").click(function () {
+                // Check or uncheck all child checkboxes based on the state of the parent checkbox
+                $(".serviceCB:visible").prop('checked', $(this).prop('checked'));
+            });
+
+            // When any child checkbox is clicked
+            $(".serviceCB").click(function () {
+                // If any child checkbox is unchecked, uncheck the parent checkbox
+                if (!$(this).prop('checked')) {
+                    $("#parentCheckbox input").prop('checked', false);
+                }
+            });
+        });
+
+      
+
+        $(document).on('change', '.serviceCB', function () {
+            var dataId = $(this).data('id');
+            var currentValue = $('#ServiceListAlready').val();
+
+            // Check if the checkbox is checked
+            if ($(this).prop('checked')) {
+                // Add the new data ID to the existing values
+                var updatedValue = currentValue + (currentValue.length > 0 ? ',' : '') + dataId;
+                $('#ServiceListAlready').val(updatedValue);
+            } else {
+                // Remove the data ID from the existing values
+                var updatedValue = currentValue.split(',').filter(function (id) {
+                    return parseInt(id, 10) !== parseInt(dataId, 10);
+                }).join(',');
+                $('#ServiceListAlready').val(updatedValue);
+            }
+        });
+
+        $("#actionButton").click(function () {
+            showLoadingSpinner();
+            var ID = $("#ID").val();
+            var Services = $("#ServiceListAlready").val();
+            var Percentage = $("#Percentage").val();
+            $.ajax({
+                url: '@Url.Action("UpdatePromotion", "LoyaltyCard")',
+                type: "post",
+                data: { ID: ID, ServiceListAllReady: Services, Percentage: Percentage }
+            })
+                .done(function (response) {
+                    if (response.success) {
+                        window.location.href = '@Url.Action("Index", "LoyaltyCard")';
+                    }
+                    else {
+                        $(".errorDiv").html(response.Message);
+                        hideLoadingSpinner();
+                    }
+                });
+        });
+
+    });
+
+
+</script>

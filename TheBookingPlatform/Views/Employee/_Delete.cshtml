@@ -1,0 +1,139 @@
+﻿@model TheBookingPlatform.ViewModels.EmployeeActionViewModel
+
+<style>
+    /* Add this to your CSS file or a <style> tag in your HTML */
+    .alert-box {
+        padding: 20px;
+        background-color: #f44336; /* Red background */
+        color: white; /* White text */
+        margin-bottom: 15px;
+        border-radius: 5px;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+        .alert-box.success {
+            background-color: #4CAF50; /* Green background for success */
+        }
+
+        .alert-box.warning {
+            background-color: #ff9800; /* Orange background for warning */
+        }
+
+        .alert-box.info {
+            background-color: #2196F3; /* Blue background for info */
+        }
+
+        .alert-box .close-btn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 20px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .alert-box .close-btn:hover {
+                color: black;
+            }
+</style>
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            @if (Model.IsActive)
+            {
+
+
+                <span>Deactivate Employee </span>
+            }
+            else
+            {
+                <span>Activate Employee </span>
+
+            }
+
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <input type="hidden" name="ID" id="ID" value="@Model.ID" />
+            </form>
+            @if (Model.IsActive)
+            {
+
+
+                <div class="alert alert-danger" role="alert">
+                    Are you sure you want to deactivate this Employee ?
+
+                </div>
+            }
+            else
+            {
+
+                <div class="alert alert-info" role="alert">
+                    Are you sure you want to activate this Employee ?
+
+                </div>
+            }
+        </div>
+        <div class="modal-footer">
+            @if (Model.IsActive)
+            {
+
+
+                <button id="actionButton" type="button" class="btn btn-danger"><i class="fas fa-trash-alt mr-1"></i> Deactivate</button>
+            }
+            else
+            {
+                <button id="actionButton" type="button" class="btn btn-info"><i class="fas fa-trash-alt mr-1"></i> Activate</button>
+
+            }            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+        </div>
+    </div>
+}
+<div id="custom-alert" class="alert-box" style="display: none;">
+    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <span id="alert-message"></span>
+</div>
+
+
+<script>
+    function showAlert(message, type = 'info') {
+        // Set the message
+        $('#alert-message').html(message);
+
+        // Set the alert type
+        $('#custom-alert').attr('class', 'alert-box ' + type);
+        $('#custom-alert').fadeIn();
+
+        // Auto-hide the alert after a specified time (e.g., 5 seconds)
+        setTimeout(function () {
+            $('#custom-alert').fadeOut();
+        }, 5000);
+    }
+
+
+    $("#actionButton").click(function () {
+
+
+        $.ajax({
+            url: '@Url.Action("Delete", "Employee")',
+            type: "post",
+            data: $("#actionForm").serialize()
+        })
+            .done(function (response) {
+                if (response.success) {
+                    alert(response.Message);
+                    location.reload();
+                } else {
+                      showAlert(response.Message+"<br>" + response.AppointmentsList.join("<br>"), 'warning');
+                }
+            });
+
+    });
+</script>

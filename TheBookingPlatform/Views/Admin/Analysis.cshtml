@@ -1,0 +1,843 @@
+﻿@model TheBookingPlatform.ViewModels.AnalysisViewModel
+@{
+    ViewBag.Title = "Analysis";
+}
+<script src="~/Content/MainTemplate/assets/js/bootstrap-datetimepicker.js"></script>
+<script src="~/Content/MainTemplate/assets/js/chartist.min.js"></script>
+
+<style>
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+        padding: 0px 2px;
+        vertical-align: middle;
+    }
+
+    .card {
+        margin-bottom: 10px;
+        margin-top: 0px;
+    }
+</style>
+<div class="row">
+    <div class="card col-md-12">
+        <div class="card-header">
+            <h4 class="card-title">
+                Analysis
+            </h4>
+            <span id="errorText" class="text-danger">
+
+            </span>
+        </div>
+        <div class="card-content">
+            <form method="post">
+                <div style="align-items:end;" class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @*<label style="margin-bottom:15px;"  class="label-control">Start Date</label>*@
+
+                            <input style="margin-top:15px;" type="text" name="StartDate" id="StartDate" class="form-control datepicker" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @*<label style="margin-bottom:15px;" class="label-control">End Date</label>*@
+                            <input style="margin-top:15px;" type="text" name="EndDate" id="EndDate" class="form-control datepicker" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @*<label class="label-control">Choose Employees</label>*@
+                            <select class="selectpicker" data-style="select-with-transition" id="SelectedEmployeeIds" name="SelectedEmployeeIds" multiple title="Choose Employees" data-size="7">
+                                <option disabled>Choose Employees </option>
+                                @foreach (var item in Model.Employees)
+                                {
+                                    if (Model.SelectedEmployeeIDs != null)
+                                    {
+                                        if (Model.SelectedEmployeeIDs.Split(',').ToList().Contains(item.ID.ToString()))
+                                        {
+                                            <option selected value="@item.ID">@item.Name </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.ID">@item.Name </option>
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option selected value="@item.ID">@item.Name </option>
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @*<label class="label-control">Choose Status</label>*@
+                            <select style="margin-top:0px;" class="selectpicker" data-style="select-with-transition" name="SelectedStatuses" id="SelectedStatuses" multiple title="Choose Status" data-size="7">
+                                <option disabled> Choose Status</option>
+                                @foreach (var item in Model.Statuses)
+                                {
+                                    if (Model.Status != null)
+                                    {
+                                        if (Model.Status.Split(',').ToList().Contains(item))
+                                        {
+                                            <option selected value="@item">@item </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item">@item </option>
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option selected value="@item">@item </option>
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            @*<label class="label-control">Is Cancelled?</label>*@
+                            <select style="margin-top:0px;" class="selectpicker" data-style="select-with-transition" name="IsCancelled" id="IsCancelled" title="Is Cancelled" data-size="2">
+                                @if (Model.IsCancelled)
+                                {
+                                    <option value="False">False </option>
+                                    <option selected value="True">True </option>
+                                }
+                                else
+                                {
+                                    <option selected value="False">False </option>
+                                    <option value="True">True </option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button style="margin-top:20px;" class="btn btn-sm btn-primary" type="submit" id="SubmitBtn">SUBMIT</button>
+                        <button style="margin-top:20px;" class="btn btn-sm btn-primary" type="button" id="ClearFilters">
+                            <i style=" width: 0px; display: flex; justify-content: center;" class="material-icons">clear_all</i>
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="card col-md-12">
+        <div class="card-header">
+            <h4 class="card-title">
+                Deposit Information
+            </h4>
+        </div>
+        <div class="card-content">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+
+                            </th>
+                            <th class="text-center">
+                                Cash
+                            </th>
+                            <th class="text-center">
+                                Online
+                            </th>
+                            <th class="text-center">
+                                Pin
+                            </th>
+                            <th class="text-center">
+                                Grand Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">
+                                Sum of Deposit Amount
+                            </td>
+                            <td class="text-center">
+                                @Model.SumOfCashDeposit
+                            </td>
+                            <td class="text-center">
+                                @Model.SumOfOnlineDeposit
+                            </td>
+                            <td class="text-center">
+                                @Model.SumOfPinDeposit
+                            </td>
+                            <td class="text-center">
+                                @(Model.SumOfOnlineDeposit+Model.SumOfPinDeposit+Model.SumOfCashDeposit)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card col-md-12">
+        <div class="card-header">
+            <h4 class="card-title">
+                Service Cost Information
+            </h4>
+        </div>
+        <div class="card-content">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                Service Cost
+                            </th>
+                            <th class="text-center">
+                                Offline Discount(s)
+                            </th>
+                            <th class="text-center">
+                                Price After Discount
+                            </th>
+                            <th class="text-center">
+                                Online Discount(Price Change)
+                            </th>
+                            <th class="text-center">
+                                Employee Price Change
+                            </th>
+                            <th class="text-center">
+                                Total After Price Change(s)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">
+                                @Model.TotalServicePrices
+                            </td>
+                            <td class="text-center">
+                                @Model.TotalOfflineDiscount
+                            </td>
+                            <td class="text-center">
+                                @Model.TotalPriceAfterOfflineDiscount
+                            </td>
+                            <td class="text-center">
+                                @Model.TotalOnlinePriceChange
+                            </td>
+                            <td class="text-center">
+                                @Model.TotalEmployeePriceChange
+                            </td>
+                            <td class="text-center">
+                                @Model.TotalAfterPriceChange
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="card col-md-12">
+        <div class="card-header">
+            <h4 class="card-title">
+                Earnings
+            </h4>
+        </div>
+        <div class="card-content">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                Total Earned
+                            </th>
+
+                            <th class="text-center">
+                                Earned from Services
+                            </th>
+                            <th class="text-center">
+                                Earned from Products
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                            <td class="text-center">
+                                @Model.TotalAfterPriceChange
+                            </td>
+                            <td class="text-center">
+                                @Model.TotalAfterPriceChange
+                            </td>
+                            <td class="text-center">
+                                COMING SOON
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+</div>
+<div class="row " style=" padding-left: 0px; padding-right: 0px; ">
+    <div class="col-md-6">
+        <div class="card ">
+            <div class="card-header">
+                <h4 class="card-title">
+                    Earning Over Time Period
+                </h4>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Day
+                                </th>
+
+                                <th class="text-center">
+                                    Earnings
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.DayWiseSales != null)
+                            {
+                                foreach (var item in Model.DayWiseSales)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            @item.Date.ToString("yyyy-MM-dd")
+                                        </td>
+                                        <td class="text-center">
+                                            @item.DaySale
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card card-chart">
+            <div style=" margin-top: 0px; margin-right: 0px; margin-left: 0px; " class="card-header" data-background-color="blue">
+                <div id="simpleBarChart" class="ct-chart"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="row" style=" padding-left: 0px; padding-right: 0px; ">
+    <div class="col-md-6">
+        <div class="card ">
+            <div class="card-header">
+                <h4 class="card-title">
+                    Client Visitations
+                </h4>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Date
+                                </th>
+
+                                <th class="text-center">
+                                    Clients Visisted
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.NumberOfClientsOnEachDays != null)
+                            {
+                                foreach (var item in Model.NumberOfClientsOnEachDays)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            @item.Date.ToString("yyyy-MM-dd")
+                                        </td>
+                                        <td class="text-center">
+                                            @item.NoOfClients
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row col-md-6"></div>
+</div>
+
+<div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
+    <div class="card ">
+        <div class="card-header">
+            <h4 class="card-title">
+                Client Visitations
+            </h4>
+        </div>
+        <div class="card-content">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                Total No Of Appointments
+                            </th>
+
+                            <th class="text-center">
+                                Checked Out Appointments
+                            </th>
+                            <th class="text-center">
+                                Pending Appointments
+                            </th>
+                            <th class="text-center">
+                                Cancelled Appointments
+                            </th>
+                            <th class="text-center">
+                                No Show Appointments
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">
+                                @Model.TotalNoOfAppointments
+                            </td>
+                            <td class="text-center">
+                                @Model.CheckoutAppointmentsCount
+                            </td>
+                            <td class="text-center">
+                                @Model.PendingAppointmentsCount
+                            </td>
+                            <td class="text-center">
+                                @Model.CancelledAppointmentCount
+                            </td>
+                            <td class="text-center">
+                                @Model.NoShowAppointmentsCount
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
+    <div class="card ">
+        <div class="card-header">
+            <h4 class="card-title">
+                Clients Acquired And Return(s) Statistics
+            </h4>
+        </div>
+        <div class="card-content">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                New Clients
+                            </th>
+
+                            <th class="text-center">
+                                Returned Visit
+                            </th>
+                            <th class="text-center">
+                                Lost Clients
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">
+                                @Model.NewClients
+                            </td>
+                            <td class="text-center">
+                                @Model.ReturnedClients
+                            </td>
+                            <td class="text-center">
+                                @Model.LostClients
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card col-md-12">
+    <div class="card-header">
+        <h4 class="card-title">
+            Payment Methods
+        </h4>
+    </div>
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            Cash
+                        </th>
+                        <th class="text-center">
+                            Card
+                        </th>
+                        <th class="text-center">
+                            Pin
+                        </th>
+                        <th class="text-center">
+                            Loyalty Card
+                        </th>
+                        <th class="text-center">
+                            Gift Card
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center">
+                            @Model.CheckedOutCashCount
+                        </td>
+                        <td class="text-center">
+                            @Model.CheckedOutCardCount
+                        </td>
+                        <td class="text-center">
+                            @Model.CheckedOutPinCount
+                        </td>
+                        <td class="text-center">
+                            @Model.CheckedOutLoyaltyCardCount
+                        </td>
+                        <td class="text-center">
+                            @Model.CheckedOutGiftCardCount
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div class="card col-md-12">
+    <div class="card-header">
+        <h4 class="card-title">
+            Popular Services
+        </h4>
+    </div>
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            Service Name
+                        </th>
+                        <th class="text-center">
+                            Count
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.serviceBookingCounts != null)
+                    {
+                        foreach (var item in Model.serviceBookingCounts)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @item.Key
+                                </td>
+                                <td class="text-center">
+                                    @item.Value
+                                </td>
+                            </tr>
+
+                        }
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card ">
+            <div class="card-header">
+                <h4 class="card-title">
+                    Popular Services Category
+                </h4>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Category Name
+                                </th>
+                                <th class="text-center">
+                                    Count
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.serviceCategoryBookingCount != null)
+                            {
+                                foreach (var item in Model.serviceCategoryBookingCount)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            @item.Key
+                                        </td>
+                                        <td class="text-center">
+                                            @item.Value
+                                        </td>
+                                    </tr>
+
+                                }
+
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header card-header-icon" data-background-color="red">
+                <i class="material-icons">pie_chart</i>
+            </div>
+            <div class="card-content">
+                <h4 class="card-title">Pie Chart</h4>
+            </div>
+            <div id="chartPreferences" class="ct-chart"></div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card col-md-12">
+    <div class="card-header">
+        <h4 class="card-title">
+            Rebook Reminders
+        </h4>
+    </div>
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            Rebook Email Sent
+                        </th>
+                        <th class="text-center">
+                            Rebook Email Opened
+                        </th>
+                        <th class="text-center">
+                            Click On Rebook
+                        </th>
+                        <th class="text-center">
+                            Appointment by Rebook
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center">
+                            @Model.NoOfRebookReminderSent
+                        </td>
+                        <td class="text-center">
+                            @Model.NoOfRebookReminderOpened
+                        </td>
+                        <td class="text-center">
+                            @Model.NoOfRebookReminderClicked
+                        </td>
+                        <td class="text-center">
+                            @Model.AppointmentsByRebook
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var labels = [];
+    var series = [];
+    @foreach (var item in Model.DayWiseSales)
+    {
+        <text>
+            labels.push('@item.Date.ToString("yy-MM-dd")');
+            series.push(@item.DaySale);
+        </text>
+    }
+
+    // Creating the bar chart using Chartist.js
+    new Chartist.Bar('#simpleBarChart', {
+        labels: labels,
+        series: [series]
+    }, {
+        axisX: {
+            labelInterpolationFnc: function (value) {
+                return value;
+            }
+        },
+        height: '250px'
+
+    });
+   @{
+    // Initialize arrays for labels and series
+    var labels = new List<string>();
+    var series = new List<int>();
+
+    // Populate arrays using Razor syntax
+    foreach (var item in Model.serviceCategoryBookingCount)
+    {
+        labels.Add(item.Key);
+        series.Add(item.Value);
+    }
+
+    // Convert arrays to JavaScript arrays
+    var jsLabels = Json.Encode(labels);
+    var jsSeries = Json.Encode(series);
+}
+
+    var dataPreferences = {
+        labels: @Html.Raw(jsLabels),
+        series: @Html.Raw(jsSeries)
+    };
+
+    var optionsPreferences = {
+        height: '230px'
+    };
+
+    new Chartist.Pie('#chartPreferences', dataPreferences, optionsPreferences);
+    $('.datepicker').datetimepicker({
+        format: 'YYYY/MM/DD',
+        icons: {
+            time: "fa fa-clock-o",
+            date: "fa fa-calendar",
+            up: "fa fa-chevron-up",
+            down: "fa fa-chevron-down",
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-screenshot',
+            clear: 'fa fa-trash',
+            close: 'fa fa-remove'
+        }
+    });
+
+    $(document).ready(function () {
+        updateSubmitButtonState();
+
+        $("#SelectedStatuses, #SelectedEmployeeIds").change(function () {
+            updateSubmitButtonState();
+        });
+
+        function updateSubmitButtonState() {
+            var employeeIdsSelected = $("#SelectedEmployeeIds option:selected").length > 0;
+            var statusesSelected = $("#SelectedStatuses option:selected").length > 0;
+
+            if (employeeIdsSelected && statusesSelected) {
+                // At least one option is selected for both fields
+                $("#SubmitBtn").removeAttr("disabled");
+                $("#errorText").val('');
+            } else {
+                // No option is selected for either field
+                $("#SubmitBtn").attr("disabled", "disabled");
+                if (!employeeIdsSelected) {
+                    $("#errorText").val('Kindly select at least one employee');
+                } else {
+                    $("#errorText").val('Kindly select at least one status');
+                }
+            }
+        }
+    });
+
+
+    $("#SelectedStatuses").change(function () {
+        if ($("#SelectedStatuses option:selected").length > 0) {
+            // At least one option is selected
+            $("#SubmitBtn").removeAttr("disabled");
+            $("#errorText").val('');
+
+        } else {
+            // No option is selected
+            $("#SubmitBtn").attr("disabled", "disabled")
+            $("#errorText").val('Kindly Select atleast one status');
+
+        }
+    });
+
+    $("#SelectedEmployeeIds").change(function () {
+        if ($("#SelectedEmployeeIds option:selected").length > 0) {
+            // At least one option is selected
+            $("#SubmitBtn").removeAttr("disabled")
+            $("#errorText").val('');
+
+        } else {
+            // No option is selected
+            $("#SubmitBtn").attr("disabled", "disabled")
+            $("#errorText").val('Kindly Select atleast one employee');
+
+        }
+    });
+    $("#ClearFilters").click(function () {
+
+        $('#StartDate').val('@DateTime.Now.ToString("yyyy-MM-dd")');
+        $('#EndDate').val('@DateTime.Now.ToString("yyyy-MM-dd")');
+
+        // Clear Selected Employees dropdown
+        $('.selectpicker').selectpicker('val', []);
+
+        // Set IsCancelled dropdown to its default value
+
+    });
+
+</script>

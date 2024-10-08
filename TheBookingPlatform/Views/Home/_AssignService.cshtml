@@ -1,0 +1,203 @@
+﻿@model TheBookingPlatform.ViewModels.SettingsViewModel
+<style>
+    .services {
+        display: none;
+        padding-left: 20px;
+    }
+
+    .toggle-btn::before {
+        content: '\25B6';
+        display: inline-block;
+        margin-right: 5px;
+        transform: rotate(0deg);
+        transition: transform 0.3s ease;
+    }
+
+    .rotate::before {
+        transform: rotate(90deg); /* Add your desired rotation angle */
+        transition: transform 0.3s ease-in-out; /* Add transition effect for smooth rotation */
+    }
+
+
+    .service-container {
+        display: flex;
+        justify-content: space-between;
+        max-height: 300px; /* Adjust the height as per your requirements */
+        overflow-y: auto;
+    }
+</style>
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+
+                <span>Assign Service for Employee: @Model.EmployeeFull.Name </span>
+
+            </h5>
+
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="service-container">
+                            <input hidden type="text" value="@Model.EmployeeID" name="EmployeeID" id="EmployeeID" />
+                            
+                            <input hidden type="text" name="ServiceData" id="ServiceJson" />
+
+                            <ul class="main-topics list-group col-md-12">
+                                @foreach (var item in Model.Services)
+                                {
+                                    <li class="list-group-item">
+                                        <label>
+                                            <span class="toggle-btn"></span>
+                                            <input onchange="FillData()" class="main-service-checkbox" name="ServiceCheckBox" type="checkbox" />
+                                            @item.ServiceCategory.Name
+                                        </label>
+                                        <ul class="services list-group">
+                                            @foreach (var servic in item.Services)
+                                            {
+                                                <li  class="list-group-item" data-service-id="@servic.ID" data-service-name="@servic.Name">
+                                                    <label>
+                                                        @if (Model.ServiceData != null)
+                                                        {
+                                                            if(Model.ServiceData.Split('_').ToList().Contains(servic.ID.ToString()))
+                                                            {
+                                                            <input checked onchange="FillData()" class="service-checkbox" type="checkbox" />
+                                                            }
+                                                            else
+                                                            {
+                                                            <input onchange="FillData()" class="service-checkbox" type="checkbox" />
+
+                                                            }
+                                                        }
+                                                        @servic.Name
+                                                    </label>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <button id="ActionBtn" type="button" class="btn btn-primary">SAVE</button>
+                </div>
+            </form>
+            <div class="errorDiv">
+
+            </div>
+        </div>
+
+    </div>
+}
+
+<script>
+
+
+    function FillData() {
+        var selectedServices = [];
+        $(".services .service-checkbox:checked").each(function () {
+            var serviceName = $(this).closest("li").data("service-id");
+            selectedServices.push(serviceName);
+        });
+        
+
+        var selectedServiceNames = selectedServices.join("_");
+        $("#ServiceJson").val(selectedServiceNames);
+    }
+      
+
+    $(document).ready(function () {
+
+        $(".toggle-btn").click(function (e) {
+            e.preventDefault();
+            $(this).toggleClass("rotate");
+            $(this).parent().siblings(".services").slideToggle();
+        });
+
+        $(".main-service-checkbox").each(function () {
+            var $mainCheckbox = $(this);
+            var $childCheckboxes = $mainCheckbox.closest(".list-group-item").find(".service-checkbox");
+
+            if ($childCheckboxes.length > 0) {
+                var allChildCheckboxesChecked = $childCheckboxes.length === $childCheckboxes.filter(":checked").length;
+                $mainCheckbox.prop("checked", allChildCheckboxesChecked);
+            }
+        });
+
+
+        $(".main-service-checkbox").click(function () {
+            var isChecked = $(this).prop("checked");
+            $(this).closest("li").find(".service-checkbox").prop("checked", isChecked);
+            FillData();
+        });
+
+        $(".service-checkbox").click(function () {
+            FillData();
+        });
+
+
+    });
+
+        $("#PhotoUpload").change(function () {
+
+        showLoadingSpinner();
+        var element = this;
+        var formData = new FormData();
+        var totalFiles = element.files.length;
+
+        for (var i = 0; i < totalFiles; i++) {
+            var file = element.files[i];
+            formData.append("Logo", file);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("UploadImage", "Shared")',
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false
+        })
+            .done(function (response) {
+
+                if (response.Success)
+                {
+                    // For now, we'll just delay the fade out for demonstration
+                    hideLoadingSpinner();
+                    $("#Photo").val(response.DocURL);
+                    $("#MainThumb").attr("src", response.DocURL);
+                }
+
+            })
+            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("FAIL");
+            })
+    });
+
+
+
+    $("#ActionBtn").click(function () {
+        $("#ActionBtn").text("Loading...");
+
+        $("#ActionBtn").attr("disabled", "disabled");
+		$.ajax({
+			url: '@Url.Action("AssignService", "Home")',
+			type: "post",
+			data: $("#actionForm").serialize()
+		})
+		.done(function (response) {
+			if(response.success)
+			{
+				location.reload();
+			}
+			else {
+				$(".errorDiv").html(response.Message);
+			}
+		});
+	});
+</script>

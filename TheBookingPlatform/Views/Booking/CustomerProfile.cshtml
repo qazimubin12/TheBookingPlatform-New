@@ -1,0 +1,107 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "CustomerProfile";
+}
+
+<div class="my-auto overflow-auto body-fix-osahan-footer">
+    <div class="p-3">
+        <div class="bg-white rounded-4 px-3 pt-3 overflow-hidden edit-profile-back shadow mb-3">
+            <h6 class="pb-2">Personal Info</h6>
+            <div class="d-flex">
+                <div class="col">
+                    <p><span class="text-muted small">First Name</span><br>@Model.Customer.FirstName</p>
+                </div>
+                <div class="col">
+                    <p><span class="text-muted small">Last Name</span><br>@Model.Customer.LastName</p>
+                </div>
+            </div>
+            <div class="d-flex">
+                <div class="col">
+                    <p><span class="text-muted small">Mobile Number</span><br>@Model.Customer.MobileNumber</p>
+                </div>
+                <div class="col">
+                    <p><span class="text-muted small">Email</span><br>@Model.Customer.Email</p>
+                </div>
+            </div>
+           
+            <a href="@Url.Action("CustomerSettings", "Booking", new {CustomerID= Model.Customer.ID,businessName  = Model.Company.Business})" class="link-dark">
+                <div class="edit-profile-icon bg-primary text-white">
+                    <span class="mdi mdi-square-edit-outline h2 m-0 pt-3 pe-2"></span>
+                </div>
+            </a>
+        </div>
+        <div class="rounded-4 shadow overflow-hidden">
+            <a href="@Url.Action("CustomerAppointments", "Booking", new {CustomerID = Model.Customer.ID,businessName  = Model.Company.Business})" class="link-dark">
+                <div class="bg-white d-flex align-items-center justify-content-between p-3 border-bottom">
+                    <h6 class="m-0">My Appointment</h6>
+                    <span class="mdi mdi-chevron-right mdi-24px icon shadow rounded-pill"></span>
+                </div>
+            </a>
+            <a href="@Url.Action("CustomerLoyaltyCardAssignments","Booking",new {CustomerID = Model.Customer.ID,businessName  = Model.Company.Business})" class="link-dark">
+                <div class="bg-white d-flex align-items-center justify-content-between p-3 border-bottom">
+                    <h6 class="m-0">Loyalty Card</h6>
+                    <span class="mdi mdi-chevron-right mdi-24px icon shadow rounded-pill"></span>
+                </div>
+            </a>
+
+            <a href="@Url.Action("Referrals","Booking",new {CustomerID = Model.Customer.ID,businessName  = Model.Company.Business})" class="link-dark">
+                <div class="bg-white d-flex align-items-center justify-content-between p-3 border-bottom">
+                    <h6 class="m-0">Referrals</h6>
+                    <span class="mdi mdi-chevron-right mdi-24px icon shadow rounded-pill"></span>
+                </div>
+            </a>
+
+            <a href="@Url.Action("CustomerGiftCardAssignment","Booking",new {CustomerID = Model.Customer.ID,businessName  = Model.Company.Business})" class="link-dark">
+                <div class="bg-white d-flex align-items-center justify-content-between p-3 border-bottom">
+                    <h6 class="m-0">Gift Card</h6>
+                    <span class="mdi mdi-chevron-right mdi-24px icon shadow rounded-pill"></span>
+                </div>
+            </a>
+            <a href="@Url.Action("CustomerHistory","Booking",new {CustomerID = Model.Customer.ID, businessName = Model.Company.Business})" class="link-dark">
+                <div class="bg-white d-flex align-items-center justify-content-between p-3 border-bottom">
+                    <h6 class="m-0">History</h6>
+                    <span class="mdi mdi-chevron-right mdi-24px icon shadow rounded-pill"></span>
+                </div>
+            </a>
+            <a style="cursor:pointer;" onclick="Logout()" class="link-dark">
+                <div class="bg-white d-flex align-items-center justify-content-between p-3">
+                    <h6 class="m-0">Logout</h6>
+                    <span class="mdi mdi-chevron-right mdi-24px icon shadow rounded-pill"></span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#ShowCartBtn").hide();
+        if ('@Model.Customer.ID' != 0) {
+            var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.Customer.ID, businessName = Model.Company.Business })";
+            $("#ProfileNAVTab").attr("href", href);
+        }
+
+        if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("Index", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+            $("#HomeNAVTAB").attr("href", href);
+        }
+          if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("AboutCompany", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+              $("#CompanyNAVTab").attr("href", href);
+        }
+    });
+
+
+    function clearCredentials() {
+        localStorage.removeItem('email');
+        localStorage.removeItem('password');
+        localStorage.removeItem('CustomerName');
+    }
+
+    function Logout() {
+        clearCredentials();
+        window.location.href = '@Url.Action("Login", "Booking", new {businessName = Model.Company.Business})';
+    }
+</script>

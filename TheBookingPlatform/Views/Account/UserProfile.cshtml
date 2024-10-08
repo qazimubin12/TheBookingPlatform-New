@@ -1,0 +1,81 @@
+﻿@model TheBookingPlatform.ViewModels.AdminViewModel
+
+@{
+    ViewBag.Title = "UserProfile";
+}
+
+
+    <div class="row">
+       
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Profile Settings</h4>
+                </div>
+                @using (Html.BeginForm("UserProfile", "Account", FormMethod.Post))
+                {
+                    <input type="hidden" name="ID" value="@Model.ID" />
+                    if (User.IsInRole("Admin"))
+                    {
+                    <div class="form-group">
+                        <label>Business Name</label>
+                        <input class="form-control" id="Business" name="Business" placeholder="Enter Full Name." value="@Model.Company.Business">
+                    </div>
+                    }
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input class="form-control common-field" id="Name" name="Name" placeholder="Enter Full Name." value="@Model.Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input class="form-control common-field" id="Email" name="Email" placeholder="Enter Email." value="@Model.Email">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Interval Calendar</label>
+                        <select name="IntervalCalendar" id="IntervalCalendar" class="form-control">
+                            @if (Model.IntervalCalendar == 15)
+                            {
+                                <option selected value="15">15 Mins</option>
+                                <option value="30">30 Mins</option>
+                                <option value="60">60 Mins</option>
+                            }
+                            else if (Model.IntervalCalendar == 30)
+                            {
+                                <option value="15">15 Mins</option>
+                                <option selected value="30">30 Mins</option>
+                                <option value="60">60 Mins</option>
+                            }
+                            else if (Model.IntervalCalendar == 60)
+                            {
+                                <option value="15">15 Mins</option>
+                                <option value="30">30 Mins</option>
+                                <option selected value="60">60 Mins</option>
+                            }
+                            else
+                            {
+                                <option value="15">15 Mins</option>
+                                <option value="30">30 Mins</option>
+                                <option value="60">60 Mins</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact</label>
+                        <input class="form-control common-field" id="Contact" name="Contact" placeholder="Enter Contact." value="@Model.Contact">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input class="form-control common-field" id="Password" name="Password" type="password" placeholder="Enter Password." value="@Model.Password">
+                    </div>
+
+                    <button class="btn btn-primary" type="submit" id="SubmitBtn">UPDATE PROFILE</button>
+                }
+
+            </div>
+        </div>
+        
+    </div>

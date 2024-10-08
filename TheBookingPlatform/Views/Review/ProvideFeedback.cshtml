@@ -1,0 +1,109 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "ProvideFeedback";
+}
+<style>
+    .rating-star{font-size:40px;cursor:pointer;}
+</style>
+
+
+<input type="hidden" id="ReviewID" value="@Model.ReviewID" />
+<input type="hidden" id="businessName" value="@Model.Employee.Business" />
+<input type="hidden" id="Rating" />
+<div style="margin-bottom:0px !important;" class="text-center mb-5">
+    <img src="@Model.Employee.Photo" alt="" class="img-fluid rounded-circle call-img mb-4 mt-4">
+    <div>
+        <h6 class="mb-2">How was your experience with</h6>
+        <h5 class="mb-3 text-primary fw-bold">@Model.Employee.Name</h5>
+        <div class="d-flex align-items-center justify-content-center gap-2 fs-5 text-warning" id="ratingContainer">
+            <i class="bi bi-star rating-star"></i>
+            <i class="bi bi-star rating-star"></i>
+            <i class="bi bi-star rating-star"></i>
+            <i class="bi bi-star rating-star"></i>
+            <i class="bi bi-star rating-star"></i>
+        </div>
+
+    </div>
+</div>
+<!-- comment -->
+<div style="padding:20px;">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="m-0 fs-14">Write a comment</h6>
+        <p class="m-0 text-info">Max 250 word</p>
+    </div>
+    <form>
+        <textarea class="form-control text-muted p-3 fs-14" name="Feedback" id="Feedback" cols="30" rows="5"></textarea>
+        <button  id="SubmitReview" type="button" class="btn btn-info btn-lg w-100 rounded-4">Submit Review</button>
+
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#FooterNAV").hide();
+        // Initialize rating
+        $(".rating-star").removeClass("bi-star-fill");
+
+        // Handle click event on stars
+        $(".rating-star").click(function () {
+            var ratingValue = 0;
+            // Reset all stars to empty
+            $(".rating-star").removeClass("bi-star-fill bi-star");
+
+            // Get the index of the clicked star
+            var clickedIndex = $(".rating-star").index(this);
+
+            // Fill stars up to the clicked index
+            for (var i = 0; i <= clickedIndex; i++) {
+                $(".rating-star:eq(" + i + ")").addClass("bi-star-fill");
+            }
+
+            // Add bi-star class to the remaining stars
+            for (var i = clickedIndex + 1; i < 5; i++) {
+                $(".rating-star:eq(" + i + ")").addClass("bi-star");
+            }
+
+            ratingValue = clickedIndex + 1;
+            $("#Rating").val(ratingValue);
+
+        });
+
+
+        $('#SubmitReview').click(function () {
+            // Get values from the UI
+            $("#SubmitReview")
+                .prop("disabled", true)
+                .text("Loading...");
+            var reviewID = $("#ReviewID").val();
+            var feedback = $('#Feedback').val();
+            var rating = $('#Rating').val();
+            var businessName = $("#businessName").val();
+            // Create data objevact to be sent in the AJAX request
+
+
+            // Send AJAX request to the controller method
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SubmitReview","Review")', // Replace with your actual controller and action method
+                data: {
+                    ReviewID: reviewID, Feedback: feedback, Rating: rating
+                },
+                success: function (response) {
+                    // Handle success response
+                    var url = '@Url.Action("Welcome", "Booking", new { businessName = "__businessName__" })';
+
+                    // Replace the placeholder with the actual businessName value
+                    url = url.replace('__businessName__', encodeURIComponent(businessName));
+
+                    // Navigate to the Welcome action with the businessName parameter
+                    window.location.href = url;
+                },
+                error: function (error) {
+                    // Handle error response
+                    console.log(error);
+                }
+            });
+        });
+    });
+    
+</script>

@@ -1,0 +1,69 @@
+﻿@model TheBookingPlatform.ViewModels.ProductImportViewModel
+@{
+    ViewBag.Title = "_ProductImport";
+    string path = Server.MapPath("/Content/TBPContent/ProductsImportDemo.xlsx");
+}
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <span>Import Products </span>
+
+            </h5>
+        </div>
+        <div class="modal-body">
+            <a style="float:right;" href="@Url.Action("DownloadFile", "Product", new {Path= path})" class="btn btn-info btn-sm btn-round">DEMO File</a>
+
+            @using (Html.BeginForm("Import", "Product", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "return onSubmitForm();" }))
+            {
+                <p>For VATs Kindly use any of these</p>
+                foreach (var item in Model.Vats)
+                {
+                    <p>@item.Name (@item.Percentage)</p>
+                }
+                @Html.Raw(ViewBag.Error)
+                <span>
+                    Upload Excel File
+                </span>
+                <input type="file" name="excelfile" />
+                <br />
+                <br />
+                <input class="btn btn-block btn-success" type="submit" value="Import" />
+
+            }
+
+
+            @if (ViewBag.Products != null)
+            {
+                <table class="table table-responsive" cellpadding="2" cellspacing="2" border="1">
+                    <tr>
+                        <th>
+                            Product
+                        </th>
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+                    @foreach (var item in ViewBag.Products)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>IMPORTED</td>
+
+
+                        </tr>
+                    }
+                </table>
+            }
+
+
+        </div>
+        <div class="modal-footer">
+            <a class="btn btn-block btn-danger" href="@Url.Action("Index", "Product", new {Selected="Product" })">Back to Products</a>
+        </div>
+    </div>
+}
+
+

@@ -1,0 +1,898 @@
+﻿@model TheBookingPlatform.ViewModels.EmployeeRequestListingViewModel
+@using System.Security.Claims
+
+@{
+    var package = "";
+    var inTrial = "";
+
+    var packageList = new List<string>();
+    string activeTab = null;
+
+}
+@if (User.Identity.IsAuthenticated)
+{
+    var claimsPrincipal = User as ClaimsPrincipal;
+
+    // Use traditional null checks
+    if (claimsPrincipal != null)
+    {
+        var claim = claimsPrincipal.FindAll("Package").Where(x => x.Value != "").FirstOrDefault();
+        if (claim != null)
+        {
+            package = claim.Value;
+        }
+    }
+    var InTrial = claimsPrincipal.FindAll("InTrial").Where(x => x.Value != "").FirstOrDefault();
+    if (InTrial != null)
+    {
+        inTrial = InTrial.Value;
+    }
+    packageList = package.Split(',').Select(p => p.Trim()).ToList();
+
+
+    // Determine which tab should be active
+
+    if (packageList.Contains("Employee Requests"))
+    {
+        activeTab = "Employee Requests";
+    }
+    else if (packageList.Contains("Franchise Requests"))
+    {
+        activeTab = "Franchise Requests";
+    }
+    else if (packageList.Contains("Google Calendar Integration"))
+    {
+        activeTab = "Google Calendar Integration";
+    }
+}
+
+
+<script async defer src="https://apis.google.com/js/api.js"></script>
+<script async defer src="https://accounts.google.com/gsi/client"></script>
+<style>
+    .card {
+        margin: 0px;
+    }
+
+    .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+        padding: 10px 8px;
+        vertical-align: middle;
+    }
+
+    /* The switch - the box around the slider */
+    .switch {
+        --circle-dim: 1.4em;
+        font-size: 17px;
+        position: relative;
+        display: inline-block;
+        width: 3.5em;
+        height: 2em;
+    }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #f5aeae;
+        transition: .4s;
+        border-radius: 30px;
+    }
+
+    .slider-card {
+        position: absolute;
+        content: "";
+        height: var(--circle-dim);
+        width: var(--circle-dim);
+        border-radius: 20px;
+        left: 0.3em;
+        bottom: 0.3em;
+        transition: .4s;
+        pointer-events: none;
+    }
+
+    .slider-card-face {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        perspective: 1000px;
+        border-radius: 50%;
+        transition: .4s transform;
+    }
+
+    .slider-card-front {
+        background-color: #DC3535;
+    }
+
+    .slider-card-back {
+        background-color: #379237;
+        transform: rotateY(180deg);
+    }
+
+    input:checked ~ .slider-card .slider-card-back {
+        transform: rotateY(0);
+    }
+
+    input:checked ~ .slider-card .slider-card-front {
+        transform: rotateY(-180deg);
+    }
+
+    input:checked ~ .slider-card {
+        transform: translateX(1.5em);
+    }
+
+    input:checked ~ .slider {
+        background-color: #9ed99c;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Integrations</h4>
+    </div>
+    <div class="card-content">
+        <div class="row">
+            <div class="col-md-3">
+                @if (inTrial == "No")
+                {
+                    <ul class="nav nav-pills nav-pills-rose nav-stacked">
+                        @if (packageList.Contains("Employee Requests"))
+                        {
+                            <li class="@(activeTab == "Employee Requests" ? "active" : "")">
+                                <a href="#tab1" data-toggle="tab">Employee Request</a>
+                            </li>
+                        }
+                        @if (packageList.Contains("Franchise Requests"))
+                        {
+                            <li class="@(activeTab == "Franchise Requests" ? "active" : "")">
+                                <a href="#tab2" data-toggle="tab">Franchise</a>
+                            </li>
+                        }
+                        @if (packageList.Contains("Google Calendar Integration"))
+                        {
+                            <li class="@(activeTab == "Google Calendar Integration" ? "active" : "")">
+                                <a href="#tab3" data-toggle="tab">Third Party</a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <ul class="nav nav-pills nav-pills-rose nav-stacked">
+
+                        <li class="active">
+                            <a href="#tab1" data-toggle="tab">Employee Request</a>
+                        </li>
+
+                        <li>
+                            <a href="#tab2" data-toggle="tab">Franchise</a>
+                        </li>
+
+                        <li>
+                            <a href="#tab3" data-toggle="tab">Third Party</a>
+                        </li>
+
+                    </ul>
+                }
+
+            </div>
+            @if (inTrial == "No")
+            {
+                <div class="col-md-9">
+                    <div class="tab-content">
+                        <div class="tab-pane @(activeTab == "Employee Requests" ? "active" : "")" id="tab1">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Employee Requests </h4>
+                                        <a class="btn btn-primary" href="@Url.Action("Action","EmployeeRequest")">REQUEST EMPLOYEE</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-lg-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+
+
+                                                        <th class="text-center">
+                                                            Employee
+                                                        </th>
+                                                        <th class="text-center">
+                                                            From Company
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Status
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Accepted
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Action
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model.EmployeeRequests)
+                                                    {
+
+                                                        <tr>
+
+                                                            @if (item.CompanyFrom == Model.LoggedInCompany)
+                                                            {
+                                                                <td class="text-center">@item.Employee</td>
+                                                                <td class="text-center">@item.CompanyFor</td>
+
+                                                                <td class="text-center">
+                                                                    @switch (@item.EmployeeRequest.Status)
+                                                                    {
+                                                                        case "Requested":
+                                                                            <label class="label label-warning">@item.EmployeeRequest.Status</label>
+                                                                            break;
+                                                                        case "Accepted":
+                                                                            <span class="label label-success">@item.EmployeeRequest.Status</span>
+                                                                            break;
+                                                                        case "Declined":
+                                                                            <span class="label label-danger">@item.EmployeeRequest.Status</span>
+                                                                            break;
+                                                                        default:
+                                                                            <span>@item.EmployeeRequest.Status</span>
+                                                                            break;
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">@item.EmployeeRequest.Accepted</td>
+                                                                <td class="text-center">
+                                                                    @if (item.EmployeeRequest.Status == "Requested")
+                                                                    {
+                                                                        <a href="@Url.Action("AcceptRequest", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" class="btn btn-sm btn-rounded btn-success btn-icon-text"><i class="material-icons">done</i></a>
+                                                                        <a href="@Url.Action("DeclineRequest", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" class="btn btn-sm btn-rounded btn-danger btn-icon-text"><i class="material-icons">close</i></a>
+
+                                                                    }
+
+                                                                </td>
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <td class="text-center">@item.Employee</td>
+                                                                <td class="text-center">@item.CompanyFrom</td>
+                                                                <td class="text-center">@item.EmployeeRequest.Status</td>
+                                                                <td class="text-center">@item.EmployeeRequest.Accepted</td>
+                                                                <td style="display:flex;" class="text-center">
+                                                                    <a title="Edit" href="@Url.Action("Action", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
+                                                                    <button title="Activate" data-href="@Url.Action("Delete", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+
+                                                                </td>
+                                                            }
+
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane @(activeTab == "Franchise Requests" ? "active" : "")" id="tab2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Franchise Requests </h4>
+                                        <a class="btn btn-primary" href="@Url.Action("Action","FranchiseRequest")">REQUEST USER</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-lg-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+
+
+                                                        <th class="text-center">
+                                                            User
+                                                        </th>
+                                                        <th class="text-center">
+                                                            From Company
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Status
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Accepted
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Action
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model.FranchiseRequests)
+                                                    {
+
+                                                        <tr>
+
+                                                            @if (item.CompanyFrom == Model.LoggedInCompany)
+                                                            {
+                                                                <td style="display:none;" class="text-center">@item.FranchiseRequest.ID</td>
+                                                                <td class="text-center">@item.User</td>
+                                                                <td class="text-center">@item.CompanyFor</td>
+
+                                                                <td class="text-center">
+                                                                    @switch (@item.FranchiseRequest.Status)
+                                                                    {
+                                                                        case "Requested":
+                                                                            <label class="label label-warning">@item.FranchiseRequest.Status</label>
+                                                                            break;
+                                                                        case "Accepted":
+                                                                            <span class="label label-success">@item.FranchiseRequest.Status</span>
+                                                                            break;
+                                                                        case "Declined":
+                                                                            <span class="label label-danger">@item.FranchiseRequest.Status</span>
+                                                                            break;
+                                                                        default:
+                                                                            <span>@item.FranchiseRequest.Status</span>
+                                                                            break;
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">@item.FranchiseRequest.Accepted</td>
+                                                                <td class="text-center">
+                                                                    @if (item.FranchiseRequest.Status == "Requested")
+                                                                    {
+                                                                        <a href="@Url.Action("AcceptRequest", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" class="btn btn-sm btn-rounded btn-success btn-icon-text"><i class="material-icons">done</i></a>
+                                                                        <a href="@Url.Action("DeclineRequest", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" class="btn btn-sm btn-rounded btn-danger btn-icon-text"><i class="material-icons">close</i></a>
+
+                                                                    }
+
+                                                                </td>
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="display:none;" class="text-center">@item.FranchiseRequest.ID</td>
+                                                                <td class="text-center">@item.User</td>
+                                                                <td class="text-center">@item.CompanyFrom</td>
+                                                                <td class="text-center">@item.FranchiseRequest.Status</td>
+                                                                <td class="text-center">@item.FranchiseRequest.Accepted</td>
+                                                                <td style="display:flex;" class="text-center">
+                                                                    <a title="Edit" href="@Url.Action("Action", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
+                                                                    <button title="Activate" data-href="@Url.Action("Delete", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+
+                                                                </td>
+                                                            }
+
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane @(activeTab == "Google Calendar Integration" ? "active" : "")" id="tab3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header">
+                                                <div class="row" style="display:flex;">
+                                                    <img style="height:50px;width:auto" src="~/Content/TBPContent/google-calendar.svg" />
+                                                    <h4>Google Calendar</h4>
+
+                                                </div>
+                                                <div class="row" style="padding:1rem;">
+                                                    <p>
+                                                        Connect your Google account to send YBP appointments to Google Calendar.
+                                                    </p>
+                                                    @if (Model.GoogleCalendarIntegration == null)
+                                                    {
+
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <button type="button" id="authorizeBtn" class="btn btn-sm btn-primary">
+                                                                    Connect
+                                                                </button>
+                                                            </div>
+                                                            <div style="display:none;" class="col-md-6">
+                                                                <label class="switch">
+                                                                    <input id="GCalendarCB" type="checkbox">
+                                                                    <div class="slider"></div>
+                                                                    <div class="slider-card">
+                                                                        <div class="slider-card-face slider-card-front"></div>
+                                                                        <div class="slider-card-face slider-card-back"></div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                @if (Model.GoogleCalendarIntegration.Disabled)
+                                                                {
+
+                                                                    <button id="GCalendarSettingsBtn" disabled="disabled" onclick="window.location.href='@Url.Action("AuthRedirect", "EmployeeRequest")'" class="btn btn-sm btn-primary">
+                                                                        Settings
+                                                                    </button>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (Model.GoogleCalendarIntegration.RefreshToken == null)
+                                                                    {
+                                                                        <button type="button" id="authorizeBtn" class="btn btn-sm btn-primary">
+                                                                            Re Connect
+                                                                        </button>
+                                                                    }
+                                                                    <button id="GCalendarSettingsBtn" onclick="window.location.href='@Url.Action("IntegrationSettings", "EmployeeRequest")'" class="btn btn-sm btn-primary">
+                                                                        Settings
+                                                                    </button>
+                                                                    <button id="ResetBTN" onclick="window.location.href='@Url.Action("ResetGoogleCalendarIntegration", "EmployeeRequest")'" class="btn btn-sm btn-danger">
+                                                                        RESET
+                                                                    </button>
+                                                                    if (Model.GoogleCalendarIntegration.InitialSetup == false)
+                                                                    {
+                                                                    <button id="InitialSetupBtn" type="button"  class="btn btn-sm btn-secondary">
+                                                                        Load Current and Future Appointments
+                                                                    </button>
+                                                                    }
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="switch">
+                                                                    @if (Model.GoogleCalendarIntegration.Disabled)
+                                                                    {
+
+
+                                                                        <input id="GCalendarCB" type="checkbox">
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input checked id="GCalendarCB" type="checkbox">
+
+                                                                    }
+                                                                    <div class="slider"></div>
+                                                                    <div class="slider-card">
+                                                                        <div class="slider-card-face slider-card-front"></div>
+                                                                        <div class="slider-card-face slider-card-back"></div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-9">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab1">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Employee Requests </h4>
+                                        <a class="btn btn-primary" href="@Url.Action("Action","EmployeeRequest")">REQUEST EMPLOYEE</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-lg-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+
+
+                                                        <th class="text-center">
+                                                            Employee
+                                                        </th>
+                                                        <th class="text-center">
+                                                            From Company
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Status
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Accepted
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Action
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model.EmployeeRequests)
+                                                    {
+
+                                                        <tr>
+
+                                                            @if (item.CompanyFrom == Model.LoggedInCompany)
+                                                            {
+                                                                <td class="text-center">@item.Employee</td>
+                                                                <td class="text-center">@item.CompanyFor</td>
+
+                                                                <td class="text-center">
+                                                                    @switch (@item.EmployeeRequest.Status)
+                                                                    {
+                                                                        case "Requested":
+                                                                            <label class="label label-warning">@item.EmployeeRequest.Status</label>
+                                                                            break;
+                                                                        case "Accepted":
+                                                                            <span class="label label-success">@item.EmployeeRequest.Status</span>
+                                                                            break;
+                                                                        case "Declined":
+                                                                            <span class="label label-danger">@item.EmployeeRequest.Status</span>
+                                                                            break;
+                                                                        default:
+                                                                            <span>@item.EmployeeRequest.Status</span>
+                                                                            break;
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">@item.EmployeeRequest.Accepted</td>
+                                                                <td class="text-center">
+                                                                    @if (item.EmployeeRequest.Status == "Requested")
+                                                                    {
+                                                                        <a href="@Url.Action("AcceptRequest", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" class="btn btn-sm btn-rounded btn-success btn-icon-text"><i class="material-icons">done</i></a>
+                                                                        <a href="@Url.Action("DeclineRequest", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" class="btn btn-sm btn-rounded btn-danger btn-icon-text"><i class="material-icons">close</i></a>
+
+                                                                    }
+
+                                                                </td>
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <td class="text-center">@item.Employee</td>
+                                                                <td class="text-center">@item.CompanyFrom</td>
+                                                                <td class="text-center">@item.EmployeeRequest.Status</td>
+                                                                <td class="text-center">@item.EmployeeRequest.Accepted</td>
+                                                                <td style="display:flex;" class="text-center">
+                                                                    <a title="Edit" href="@Url.Action("Action", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
+                                                                    <button title="Activate" data-href="@Url.Action("Delete", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+
+                                                                </td>
+                                                            }
+
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Franchise Requests </h4>
+                                        <a class="btn btn-primary" href="@Url.Action("Action","FranchiseRequest")">REQUEST USER</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-lg-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+
+
+                                                        <th class="text-center">
+                                                            User
+                                                        </th>
+                                                        <th class="text-center">
+                                                            From Company
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Status
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Accepted
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Action
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model.FranchiseRequests)
+                                                    {
+
+                                                        <tr>
+
+                                                            @if (item.CompanyFrom == Model.LoggedInCompany)
+                                                            {
+                                                                <td style="display:none;" class="text-center">@item.FranchiseRequest.ID</td>
+                                                                <td class="text-center">@item.User</td>
+                                                                <td class="text-center">@item.CompanyFor</td>
+
+                                                                <td class="text-center">
+                                                                    @switch (@item.FranchiseRequest.Status)
+                                                                    {
+                                                                        case "Requested":
+                                                                            <label class="label label-warning">@item.FranchiseRequest.Status</label>
+                                                                            break;
+                                                                        case "Accepted":
+                                                                            <span class="label label-success">@item.FranchiseRequest.Status</span>
+                                                                            break;
+                                                                        case "Declined":
+                                                                            <span class="label label-danger">@item.FranchiseRequest.Status</span>
+                                                                            break;
+                                                                        default:
+                                                                            <span>@item.FranchiseRequest.Status</span>
+                                                                            break;
+                                                                    }
+                                                                </td>
+                                                                <td class="text-center">@item.FranchiseRequest.Accepted</td>
+                                                                <td class="text-center">
+                                                                    @if (item.FranchiseRequest.Status == "Requested")
+                                                                    {
+                                                                        <a href="@Url.Action("AcceptRequest", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" class="btn btn-sm btn-rounded btn-success btn-icon-text"><i class="material-icons">done</i></a>
+                                                                        <a href="@Url.Action("DeclineRequest", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" class="btn btn-sm btn-rounded btn-danger btn-icon-text"><i class="material-icons">close</i></a>
+
+                                                                    }
+
+                                                                </td>
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <td style="display:none;" class="text-center">@item.FranchiseRequest.ID</td>
+                                                                <td class="text-center">@item.User</td>
+                                                                <td class="text-center">@item.CompanyFrom</td>
+                                                                <td class="text-center">@item.FranchiseRequest.Status</td>
+                                                                <td class="text-center">@item.FranchiseRequest.Accepted</td>
+                                                                <td style="display:flex;" class="text-center">
+                                                                    <a title="Edit" href="@Url.Action("Action", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
+                                                                    <button title="Activate" data-href="@Url.Action("Delete", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+
+                                                                </td>
+                                                            }
+
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header">
+                                                <div class="row" style="display:flex;">
+                                                    <img style="height:50px;width:auto" src="~/Content/TBPContent/google-calendar.svg" />
+                                                    <h4>Google Calendar</h4>
+
+                                                </div>
+                                                <div class="row" style="padding:1rem;">
+                                                    <p>
+                                                        Connect your Google account to send YBP appointments to Google Calendar.
+                                                    </p>
+                                                    @if (Model.GoogleCalendarIntegration == null)
+                                                    {
+
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <button type="button" id="authorizeBtn" class="btn btn-sm btn-primary">
+                                                                    Connect
+                                                                </button>
+                                                            </div>
+                                                            <div style="display:none;" class="col-md-6">
+                                                                <label class="switch">
+                                                                    <input id="GCalendarCB" type="checkbox">
+                                                                    <div class="slider"></div>
+                                                                    <div class="slider-card">
+                                                                        <div class="slider-card-face slider-card-front"></div>
+                                                                        <div class="slider-card-face slider-card-back"></div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+
+                                                                @if (Model.GoogleCalendarIntegration.Disabled)
+                                                                {
+
+                                                                    <button id="GCalendarSettingsBtn" disabled="disabled" onclick="window.location.href='@Url.Action("IntegrationSettings", "EmployeeRequest")'" class="btn btn-sm btn-primary">
+                                                                        Settings
+                                                                    </button>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (Model.GoogleCalendarIntegration.RefreshToken == null)
+                                                                    {
+                                                                        <button type="button" id="authorizeBtn" class="btn btn-sm btn-primary">
+                                                                            Re Connect
+                                                                        </button>
+                                                                    }
+                                                                    <a href='@Url.Action("IntegrationSettings", "EmployeeRequest")' class="btn btn-sm btn-primary">
+                                                                        Settings
+                                                                    </a>
+                                                                    <button id="ResetBTN" onclick="window.location.href='@Url.Action("ResetGoogleCalendarIntegration", "EmployeeRequest")'" class="btn btn-sm btn-danger">
+                                                                        RESET
+                                                                    </button>
+                                                                    if (Model.GoogleCalendarIntegration.InitialSetup == false)
+                                                                    {
+                                                                        <button id="InitialSetupBtn" type="button" class="btn btn-sm btn-secondary">
+                                                                            Load Current and Future Appointments
+                                                                        </button>
+                                                                    }
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="switch">
+                                                                    @if (Model.GoogleCalendarIntegration.Disabled)
+                                                                    {
+
+
+                                                                        <input id="GCalendarCB" type="checkbox">
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input checked id="GCalendarCB" type="checkbox">
+
+                                                                    }
+                                                                    <div class="slider"></div>
+                                                                    <div class="slider-card">
+                                                                        <div class="slider-card-face slider-card-front"></div>
+                                                                        <div class="slider-card-face slider-card-back"></div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+<div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+<script>
+
+
+    $("#ResetBTN").click(function () {
+        showLoadingSpinner();
+    })
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+    $("#authorizeBtn").click(function () {
+
+        window.location.href = '@Url.Action("AuthRedirect","EmployeeRequest")';
+    });
+
+
+
+
+    function CheckGoogleCalendarCB() {
+        var isChecked = $("#GCalendarCB").is(':checked');
+        if (isChecked) {
+            $("#GCalendarSettingsBtn").removeAttr("disabled");
+        } else {
+            $("#GCalendarSettingsBtn").attr("disabled","disabled");
+
+        }
+
+    }
+
+    $(document).ready(function () {
+        $('#GCalendarCB').change(function () {
+            var isChecked = $(this).is(':checked');
+            showLoadingSpinner();
+
+            $.ajax({
+                url: '@Url.Action("ToggleGoogleCalendarIntegration","EmployeeRequest")',  // Update with your controller endpoint
+                type: 'POST',
+                success: function (response) {
+                    if (response.success) {
+                        console.log('Status sent successfully:', response);
+                        hideLoadingSpinner();
+                        CheckGoogleCalendarCB();
+                    } else {
+                        hideLoadingSpinner();
+                        CheckGoogleCalendarCB();
+                    }
+                },
+                error: function (error) {
+                    console.error('Error sending status:', error);
+                    hideLoadingSpinner();
+                }
+            });
+        });
+
+
+        $("#InitialSetupBtn").click(function () {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("SendAppointments","EmployeeRequest")',  // Update with your controller endpoint
+                type: 'POST',
+                success: function (response) {
+                    if (response.success) {
+                        alert("Appointments are being rendered in background you can use the system");
+                        hideLoadingSpinner();
+                        $("#InitialSetupBtn").hide();
+                    } else {
+                        hideLoadingSpinner();
+                        $("#InitialSetupBtn").hide();
+                    }
+                },
+                error: function (error) {
+                    console.error('Error sending status:', error);
+                    hideLoadingSpinner();
+                }
+            });
+        })
+    });
+
+
+
+
+
+
+
+</script>

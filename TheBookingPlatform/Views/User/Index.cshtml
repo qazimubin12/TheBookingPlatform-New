@@ -1,0 +1,99 @@
+﻿@model TheBookingPlatform.ViewModels.UsersListingViewModel
+
+<style>
+    .card{
+    margin:0px;
+    }
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Users</h4>
+        </div>
+
+        <div class="card-content">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <select class="form-control" id="SelectedOption">
+                            <option value="All Users">All Users</option>
+                            <option selected value="Active Users">Active Users</option>
+                            <option value="Non Acitve Users">Non Active Users</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <form>
+
+                        <div class="form-group">
+
+                            <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                            @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                            <button class="btn btn-outline-primary btn-sm btn-rounded" type="submit"><i class="fas fa-search mr-1"></i> Search</button>
+                            <a class="btn btn-outline-secondary btn-sm btn-rounded" href="@Url.Action("Index", "User")"><i class="fas fa-redo-alt mr-1"></i> Reset</a>
+                            <button data-href="@Url.Action("Register", "User")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-toggle="modal" data-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
+                            <a class="btn btn-info btn-sm btn-round" href="@Url.Action("Index", "CalendarManage")">CALENDAR MANAGE ACCESS</a>
+
+                            @*<div class="input-group-append">
+
+        </div>*@
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+
+            <div class="row">
+                <div class="col col-lg-12">
+                    @{
+                        Html.RenderPartial("_Listing", Model);
+                    }
+                </div>
+            </div>
+
+        </div>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+    $(document).ready(function () {
+        var Selectedo = $("#SelectedOption").val();
+        if (Selectedo == "All Users") {
+            $(".NONACTIVE").show();
+            $(".ACTIVE").show();
+        }
+        else if (Selectedo == "Active Users") {
+            $(".NONACTIVE").hide();
+            $(".ACTIVE").show();
+        } else {
+            $(".NONACTIVE").show();
+            $(".ACTIVE").hide();
+        }
+    });
+
+    $("#SelectedOption").on("change", function () {
+        var Selectedo = $("#SelectedOption").val();
+        if (Selectedo == "All Users") {
+            $(".NONACTIVE").show();
+            $(".ACTIVE").show();
+        }
+        else if (Selectedo == "Active Users") {
+            $(".NONACTIVE").hide();
+            $(".ACTIVE").show();
+        } else {
+            $(".NONACTIVE").show();
+            $(".ACTIVE").hide();
+        }
+    });
+</script>

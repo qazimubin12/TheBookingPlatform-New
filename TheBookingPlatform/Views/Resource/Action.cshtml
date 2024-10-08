@@ -1,0 +1,131 @@
+﻿@model TheBookingPlatform.ViewModels.ResourceActionViewModel
+
+@if (Model != null)
+{
+    <div style="padding:10px;" class="card">
+        <div class="card-body">
+            @if (Model.ID != 0)
+            {
+                <h2 style="padding:10px;" class="card-title">
+                    Edit Resource
+                </h2>
+
+            }
+            else
+            {
+                <h4 style="padding:10px;" class="card-title">
+                    Create Resource
+                </h4>
+            }      
+            <div style="padding:10px;">
+                <form id="actionForm">
+                    <input type="hidden" name="ID" value="@Model.ID" />
+                    <div class="form-group">
+                        <label>Resource Name</label>
+                        <input class="form-control" name="Name" placeholder="Enter Name." value="@Model.Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select class="form-control" name="Type" id="Type">
+                            @if (Model.Type == "Room")
+                            {
+                                <option value="Room" selected>Room</option>
+                                <option value="Tool">Tool</option>
+                            }
+                            else
+                            {
+                                <option value="Room">Room</option>
+                                <option selected value="Tool">Tool</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Availability</label>
+                        <select class="form-control" name="Availability" id="Availability">
+                            @if (Model.Availability == "Occupied")
+                            {
+                                <option value="Available">Available</option>
+                                <option selected value="Occupied">Occupied</option>
+                            }
+                            else
+                            {
+                                <option value="Available" selected>Available</option>
+                                <option value="Occupied">Occupied</option>
+
+                            }
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <select class="selectpicker" data-style="select-with-transition" id="ServicesINTS" name="ServicesINTS" multiple title="Choose Services" data-size="10">
+                            <option disabled>Choose Services </option>
+                            @foreach (var item in Model.ServicesList)
+                            {
+                                if (Model.ServicesINTS != null)
+                                {
+                                    if (Model.ServicesINTS.Contains(item.ID))
+                                    {
+                                        <option selected value="@item.ID">@item.Name </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.ID">@item.Name </option>
+
+                                    }
+                                }
+                                else
+                                {
+                                    <option  value="@item.ID">@item.Name </option>
+
+                                }
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="errorDiv">
+
+            </div>
+            @if (Model.ID != 0)
+            {
+                <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Update</button>
+            }
+            else
+            {
+                <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
+            }
+            <a class="btn btn-secondary" href="@Url.Action("Index","Resource")"><i class="fas fa-times mr-1"></i> Close</a>
+        </div>
+    </div>
+}
+
+<script>
+    $("#actionButton").click(function () {
+        showLoadingSpinner();
+		$.ajax({
+			url: '@Url.Action("Action", "Resource")',
+			type: "post",
+			data: $("#actionForm").serialize()
+		})
+		.done(function (response) {
+			if(response.success)
+            {
+                window.location.href = "@Url.Action("Index","Resource")";
+                hideLoadingSpinner();
+            }
+			else {
+                $(".errorDiv").html(response.Message);
+                hideLoadingSpinner();
+
+			}
+		});
+    });
+
+    
+
+
+
+</script>

@@ -1,0 +1,35 @@
+﻿@model TheBookingPlatform.ViewModels.HomeViewModel
+@{
+    ViewBag.Title = "NotAllowed";
+    Layout = null;
+}
+
+<link href="~/Content/MainTemplate/assets/css/bootstrap.min.css" rel="stylesheet" />
+
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Not Allowed</h4>
+    </div>
+    <div class="card-content">
+        <h2>You can't cancel your appointment as the cancelation period has passed. For more information please contact our administration.</h2>
+        <h4>
+            @Model.Company.Business
+        </h4>
+        <h4>
+            @Model.Company.Address
+        </h4>
+        <h4>
+            @Model.Company.PhoneNumber
+        </h4>
+        <h4>@Model.Company.NotificationEmail</h4>
+
+    </div>
+</div>
+
+
+<script>
+
+</script>
+
+

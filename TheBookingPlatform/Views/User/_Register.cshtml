@@ -1,0 +1,159 @@
+﻿@model TheBookingPlatform.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+<style>
+    label {
+        color: black;
+    }
+
+    #modalregister {
+        background-color: #F4F5FA;
+    }
+</style>
+
+<div id="modalregister" class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <span>Create New User</span>
+        </h5>
+
+    </div>
+
+    <div class="modal-body">
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Full Name</label>
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control common-field", @id = "Name" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Email</label>
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control common-field", @id = "Email" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Role</label>
+                        <div class="col-sm-9">
+                            <select name="RoleID" class="form-control">
+                                @foreach (var item in Model.Roles)
+                                {
+                                    if (!User.Identity.IsAuthenticated)
+                                    {
+
+                                        <option value="@item.Id">@item.Name</option>
+
+                                    }
+                                    else
+                                    {
+                                        if (item.Name != "Super Admin")
+                                        {
+                                            <option value="@item.Id"> @item.Name </option>
+                                        }
+                                    }
+                                }
+
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Password</label>
+                        <div class="col-sm-9">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control common-field", @id = "Password" })
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label style="padding-top: 0px;" class="col-sm-3 col-form-label">Confirm Password</label>
+                        <div class="col-sm-9">
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control common-field", @id = "ConfirmPassword" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Contact</label>
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.Contact, new { @class = "form-control common-field", @id = "Contact" })
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            if (Model.NoOfUserAllowed != 0)
+            {
+                if (Model.NoOfUserAllowed > Model.NoOfUsers)
+                {
+
+
+                    <input type="submit" id="RegisterBtn" style="color:white;" class="btn btn-rounded btn-block btn-inverse-dark btn-fw" value="Register" />
+                }
+                else
+                {
+                    <span class="text-danger">Please Upgrade your Package for more user registering.</span>
+                }
+            }
+            else
+            {
+                <input type="submit" id="RegisterBtn" style="color:white;" class="btn btn-rounded btn-block btn-inverse-dark btn-fw" value="Register" />
+
+            }
+
+        }
+
+
+    </div>
+</div>
+
+
+
+
+
+<script>
+  
+    $(document).ready(function () {
+        $(".common-field").on("input", function () {
+            var name = $("#Name").val().trim();
+            var email = $("#Email").val().trim();
+            var contact = $("#Contact").val().trim();
+            var password = $("#Password").val().trim();
+            var confirmPassword = $("#ConfirmPassword").val().trim();
+
+            if (name === '' || email === '' || contact === '' || password === '' || confirmPassword === '' || password !== confirmPassword) {
+                $("#RegisterBtn").attr("disabled", "disabled");
+
+                $("#Name").css("border", name === '' ? "0.5px solid red" : "none");
+                $("#Email").css("border", email === '' ? "0.5px solid red" : "none");
+                $("#Contact").css("border", contact === '' ? "0.5px solid red" : "none");
+                $("#Password").css("border", password === '' || password.length < 8 ? "0.5px solid red" : "none");
+                $("#ConfirmPassword").css("border", confirmPassword === '' || password !== confirmPassword ? "0.5px solid red" : "none");
+            } else {
+                $("#RegisterBtn").removeAttr("disabled");
+                $(".common-field").css("border", "none"); // Remove border from all fields
+            }
+        });
+    });
+
+</script>

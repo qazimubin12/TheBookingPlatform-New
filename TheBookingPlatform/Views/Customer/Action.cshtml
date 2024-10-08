@@ -1,0 +1,539 @@
+﻿@model TheBookingPlatform.ViewModels.CustomerActionViewModel
+@{
+    ViewBag.Title = "Action";
+}
+
+<link rel="stylesheet" href="~/Content/build/css/intlTelInput.css" />
+<link rel="stylesheet" href="~/Content/build/css/demo.css" />
+<style>
+
+    .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: black;
+        font-weight: 400;
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: black;
+    }
+</style>
+<form id="actionForm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit Customer
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create Customer
+                    </h4>
+                }
+            </div>
+
+
+            <div class="card-content">
+                <h4>Personal Info</h4>
+                <div class="row">
+                    <input type="hidden" id="ID" name="ID" value="@Model.ID" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                First Name
+                            </label>
+                            <input type="text" value="@Model.FirstName" placeholder="Enter First Name." class="form-control" id="FirstName" name="FirstName" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Last Name
+                            </label>
+                            <input type="text" value="@Model.LastName" placeholder="Enter Last Name." class="form-control" id="LastName" name="LastName" />
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+                <div class="row">
+
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Gender
+                            </label>
+                            <div class="row" style=" display: flex; align-items: end; ">
+
+                                @if (Model.Gender == "Male")
+                                {
+                                    <div class="radio">
+                                        <label>
+                                            <input checked value="Male" type="radio" name="Gender">
+                                            Male
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Female" type="radio" name="Gender">
+                                            Female
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Non Binary" type="radio" name="Gender">
+                                            Non Binary
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Unknown" type="radio" name="Gender">
+                                            Unknown
+                                        </label>
+                                    </div>
+                                }
+                                else if (Model.Gender == "Female")
+                                {
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Male" type="radio" name="Gender">
+                                            Male
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input checked value="Female" type="radio" name="Gender">
+                                            Female
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Non Binary" type="radio" name="Gender">
+                                            Non Binary
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Unknown" type="radio" name="Gender">
+                                            Unknown
+                                        </label>
+                                    </div>
+                                }
+                                else if (Model.Gender == "Non Binary")
+                                {
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Male" type="radio" name="Gender">
+                                            Male
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Female" type="radio" name="Gender">
+                                            Female
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input checked value="Non Binary" type="radio" name="Gender">
+                                            Non Binary
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Unknown" type="radio" name="Gender">
+                                            Unknown
+                                        </label>
+                                    </div>
+                                }
+                                else if (Model.Gender == "Unknown")
+                                {
+
+
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Male" type="radio" name="Gender">
+                                            Male
+                                        </label>
+                                    </div>
+
+
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Female" type="radio" name="Gender">
+                                            Female
+                                        </label>
+                                    </div>
+
+
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Non Binary" type="radio" name="Gender">
+                                            Non Binary
+                                        </label>
+                                    </div>
+
+
+                                    <div class="radio">
+                                        <label>
+                                            <input checked value="Unknown" type="radio" name="Gender">
+                                            Unknown
+                                        </label>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Male" type="radio" name="Gender">
+                                            Male
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Female" type="radio" name="Gender">
+                                            Female
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Non Binary" type="radio" name="Gender">
+                                            Non Binary
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input value="Unknown" type="radio" name="Gender">
+                                            Unknown
+                                        </label>
+                                    </div>
+                                }
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div style="margin-top:2px;" class="form-group">
+                            <label>
+                                Date of Brith
+                            </label>
+                            @if (Model.ID == 0)
+                            {
+                                @Html.TextBox("DateOfBirth", "{0:yyyy-MM-dd}", new { @style = "width:100%", @id = "DateOfBirth", @class = "form-control", type = "date" })
+                            }
+                            else
+                            {
+                                @Html.TextBox("DateOfBirth", Model.DateOfBirth, "{0:yyyy-MM-dd}", new { @style = "width:100%", @id = "DateOfBirth", @class = "form-control", type = "date" })
+
+                            }
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+
+                            <label>
+                               Have News Letter
+                            </label>
+                            <select class="form-control" name="HaveNewsLetter" id="HaveNewsLetter">
+                                @if (Model.HaveNewsLetter)
+                                {
+                                    <option value="true" selected>Yes</option>
+                                    <option value="false">No</option>
+                                }
+                                else
+                                {
+                                    
+                                    <option value="true" >Yes</option>
+                                    <option selected value="false">No</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+
+                <hr />
+                <h4>Contact Information</h4>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>
+                                Email Address
+                            </label>
+                            <input id="Email" type="text" value="@Model.Email" placeholder="Enter Email." class="form-control" name="Email" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>
+                                Mobile Number
+                            </label>
+                            <input maxlength="13" type="text" value="@Model.MobileNumber" placeholder="Enter Mobile Number." id="MobileNumber" class="form-control" name="MobileNumber" />
+                            <span id="phoneNumberError" class="text-danger"></span>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Address
+                            </label>
+                            <input type="text" value="@Model.Address" placeholder="Enter Address." class="form-control" name="Address" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>
+                                Postal Code
+                            </label>
+                            <input type="text" value="@Model.PostalCode" placeholder="Enter  Postal Code." class="form-control" name="PostalCode" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                City
+                            </label>
+                            <input type="text" value="@Model.City" placeholder="Enter City." class="form-control" name="City" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr />
+                <h4>Other Information</h4>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>
+                                Addtional Customer Information
+                            </label>
+                            <input type="text" value="@Model.AdditionalInformation" placeholder="Enter Addtional Customer Information." class="form-control" name="AdditionalInformation" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>
+                                Additional Invoice Information
+                            </label>
+                            <input type="text" value="@Model.AdditionalInvoiceInformation" placeholder="Enter Additional Invoice Information." class="form-control" name="AdditionalInvoiceInformation" />
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>
+                                Warning When Saving Appointments
+                            </label>
+                            <input type="text" value="@Model.WarningInformation" placeholder="Enter  Warning When Saving Appointments" class="form-control" name="WarningInformation" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+
+                    <div style="margin:20px;" class="form-group">
+                        <div class="col-md-12">
+                            Profile Picture
+                        </div>
+                        <label>Choose Image (Click on Image to Change)</label>
+                        <br />
+                        @if (Model.ProfilePicture == "" || Model.ProfilePicture == null)
+                        {
+                            <img id="MainThumb" style="width:150px;cursor:pointer;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                        }
+                        else
+                        {
+                            <img id="MainThumb" style="width:150px;cursor:pointer;" src="@Model.ProfilePicture" alt="...">
+
+                        }
+
+                        <input value="@Model.ProfilePicture" type="hidden" name="ProfilePicture" id="ProfilePicture" />
+                        <input style=" width: 150px; " type="file" id="PhotoUpload" accept="image/*" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-12">
+                @if (Model.ID == 0)
+                {
+
+
+                    <button id="ActionBtn" type="button" class="btn btn-primary btn-rounded">SAVE</button>
+                }
+                else
+                {
+                    <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+
+                }
+                <button type="button" onclick="window.location.href='@Url.Action("Index","Customer")'"  class="btn btn-secondary  btn-rounded">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+<script src="~/Content/build/js/intlTelInput.js"></script>
+
+<script>
+
+   
+
+    $(document).ready(function () {
+        $("html").removeClass("perfect-scrollbar-on");
+        var ID = $("#ID").val();
+        if (ID == 0) {
+            $("#DateOfBirth").val("");
+        }
+
+        var DataOfCountry = $(".iti__selected-dial-code").text();
+        $("#MobileNumber").val(DataOfCountry);
+        $("#MobileNumber").on("keydown", function (event) {
+            // Check if the pressed key is the space key (key code 32)
+            if (event.keyCode === 32) {
+                event.preventDefault(); // Prevent the space from being entered
+            }
+        });
+        $("#MobileNumber").on("change", function () {
+            var phoneNumber = $("#MobileNumber").val();
+
+            // Check if the phone number starts with a valid country code (e.g., +1 for the US)
+            if (/^\+\d+/.test(phoneNumber)) {
+                $("#ActionBtn").removeAttr("disabled");
+                $("#phoneNumberError").text("");
+
+                $("#MobileNumber").css("border", "none");
+
+
+                // You can proceed with form submission or other actions here
+            } else {
+                $("#phoneNumberError").text("Phone number must start with a valid country code (e.g., +1 for the US).");
+                $("#MobileNumber").css("border","0.5px solid red");
+                $("#ActionBtn").attr("disabled", "disabled");
+                // Prevent form submission or take appropriate action
+            }
+        });
+
+        var input = document.querySelector("#MobileNumber");
+        window.intlTelInput(input, {
+            // allowDropdown: false,
+            autoInsertDialCode: true,
+            // autoPlaceholder: "off",
+            preferredCountries: ['nl'],
+            dropdownContainer: document.body,
+            separateDialCode: true
+        });
+
+        $("#MobileNumber").val('@Model.MobileNumber');
+
+
+        $('.form-control').on('input', function () {
+            // Get the input value
+            var inputValue = $(this).val();
+
+            // Check if the input contains an apostrophe
+            if (inputValue.includes("'")) {
+                // If an apostrophe is found, remove it from the input value
+                $(this).val(inputValue.replace("'", ''));
+            }
+        });
+    })
+
+    $("#PhotoUpload").change(function () {
+
+        showLoadingSpinner();
+        var element = this;
+        var formData = new FormData();
+        var totalFiles = element.files.length;
+
+        for (var i = 0; i < totalFiles; i++) {
+            var file = element.files[i];
+            formData.append("Logo", file);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("UploadImage", "Shared")',
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false
+        })
+            .done(function (response) {
+
+                if (response.Success) {
+                    // For now, we'll just delay the fade out for demonstration
+                    hideLoadingSpinner();
+                    $("#ProfilePicture").val(response.DocURL);
+                    $("#MainThumb").attr("src", response.DocURL);
+                }
+
+            })
+            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("FAIL");
+                hideLoadingSpinner();
+
+            })
+    });
+
+    $("#ActionBtn").click(function () {
+
+        if ($("#Email").val() == "" || $("#FirstName").val() == "" || $("#LastName").val() == "") {
+            alert("Kindly Fill Basic Details like First Name Last Name and Email");
+            return;
+        } else {
+
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("Action", "Customer")',
+                type: "post",
+                data: $("#actionForm").serialize()
+            })
+                .done(function (response) {
+
+                    if (response.success) {
+                        hideLoadingSpinner();
+                        window.location.href = '@Url.Action("Index", "Customer")';
+                    }
+                    else {
+                        hideLoadingSpinner();
+                        alert(response.Message);
+                    }
+                });
+        }
+    });
+</script>

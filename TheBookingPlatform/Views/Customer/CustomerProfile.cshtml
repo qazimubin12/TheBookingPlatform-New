@@ -1,0 +1,576 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentDetailsViewModel
+
+@{
+    ViewBag.Title = "CustomerProfile";
+}
+
+<div class="row">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Customer Details</h4>
+        </div>
+        <div class="card-content">
+            <ul class="nav nav-pills nav-pills-success">
+                <li class="active"><a href="#pill1" data-toggle="tab">Customer</a></li>
+                <li><a href="#pill2" data-toggle="tab">Appointments</a></li>
+                <li><a href="#pill3" data-toggle="tab">History</a></li>
+                <li><a href="#pill4" data-toggle="tab">Statistics</a></li>
+                <li><a href="#pill5" data-toggle="tab">Sent Messages</a></li>
+                <li><a href="#pill6" data-toggle="tab">Loyalty</a></li>
+                <li><a href="#pill7" data-toggle="tab">Files</a></li>
+
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="pill1">
+
+                    <div class="card-content">
+                        <h4>Personal Info</h4>
+                        <div class="row">
+                            <input type="hidden" id="ID" name="ID" value="@Model.Customer.ID" />
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        First Name
+                                    </label>
+                                    <input type="text" value="@Model.Customer.FirstName" placeholder="Enter First Name." class="form-control" name="FirstName" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        Last Name
+                                    </label>
+                                    <input type="text" value="@Model.Customer.LastName" placeholder="Enter Last Name." class="form-control" name="LastName" />
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                        <div class="row">
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        Gender
+                                    </label>
+                                    <div class="row" style=" display: flex; align-items: end; ">
+
+                                        @if (Model.Customer.Gender == "Male")
+                                        {
+                                            <div class="radio">
+                                                <label>
+                                                    <input checked value="Male" type="radio" name="Gender">
+                                                    Male
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Female" type="radio" name="Gender">
+                                                    Female
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Non Binary" type="radio" name="Gender">
+                                                    Non Binary
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Unknown" type="radio" name="Gender">
+                                                    Unknown
+                                                </label>
+                                            </div>
+                                        }
+                                        else if (Model.Customer.Gender == "Female")
+                                        {
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Male" type="radio" name="Gender">
+                                                    Male
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input checked value="Female" type="radio" name="Gender">
+                                                    Female
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Non Binary" type="radio" name="Gender">
+                                                    Non Binary
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Unknown" type="radio" name="Gender">
+                                                    Unknown
+                                                </label>
+                                            </div>
+                                        }
+                                        else if (Model.Customer.Gender == "Non Binary")
+                                        {
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Male" type="radio" name="Gender">
+                                                    Male
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Female" type="radio" name="Gender">
+                                                    Female
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input checked value="Non Binary" type="radio" name="Gender">
+                                                    Non Binary
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Unknown" type="radio" name="Gender">
+                                                    Unknown
+                                                </label>
+                                            </div>
+                                        }
+                                        else if (Model.Customer.Gender == "Unknown")
+                                        {
+
+
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Male" type="radio" name="Gender">
+                                                    Male
+                                                </label>
+                                            </div>
+
+
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Female" type="radio" name="Gender">
+                                                    Female
+                                                </label>
+                                            </div>
+
+
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Non Binary" type="radio" name="Gender">
+                                                    Non Binary
+                                                </label>
+                                            </div>
+
+
+                                            <div class="radio">
+                                                <label>
+                                                    <input checked value="Unknown" type="radio" name="Gender">
+                                                    Unknown
+                                                </label>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Male" type="radio" name="Gender">
+                                                    Male
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Female" type="radio" name="Gender">
+                                                    Female
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Non Binary" type="radio" name="Gender">
+                                                    Non Binary
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input value="Unknown" type="radio" name="Gender">
+                                                    Unknown
+                                                </label>
+                                            </div>
+                                        }
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div style="margin-top:2px;" class="form-group">
+                                    <label>
+                                        Date of Brith
+                                    </label>
+                                    @if (Model.Customer.ID == 0)
+                                    {
+                                        @Html.TextBox("DateOfBirth", "{0:yyyy-MM-dd}", new { @style = "width:100%", @id = "DateOfBirth", @class = "form-control", type = "date" })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBox("DateOfBirth", Model.Customer.DateOfBirth, "{0:yyyy-MM-dd}", new { @style = "width:100%", @id = "DateOfBirth", @class = "form-control", type = "date" })
+
+                                    }
+
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+
+                        <hr />
+                        <h4>Contact Information</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>
+                                        Email Address
+                                    </label>
+                                    <input type="text" value="@Model.Customer.Email" placeholder="Enter Email." class="form-control" name="Email" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        Mobile Number
+                                    </label>
+                                    <input maxlength="13" type="text" value="@Model.Customer.MobileNumber" placeholder="Enter Mobile Number." id="MobileNumber" class="form-control" name="MobileNumber" />
+                                    <span id="phoneNumberError" class="text-danger"></span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        Address
+                                    </label>
+                                    <input type="text" value="@Model.Customer.Address" placeholder="Enter Address." class="form-control" name="Address" />
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>
+                                        Postal Code
+                                    </label>
+                                    <input type="text" value="@Model.Customer.PostalCode" placeholder="Enter  Postal Code." class="form-control" name="PostalCode" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>
+                                        City
+                                    </label>
+                                    <input type="text" value="@Model.Customer.City" placeholder="Enter City." class="form-control" name="City" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <hr />
+                        <h4>Other Information</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>
+                                        Addtional Customer Information
+                                    </label>
+                                    <input type="text" value="@Model.Customer.AdditionalInformation" placeholder="Enter Addtional Customer Information." class="form-control" name="AdditionalInformation" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>
+                                        Additional Invoice Information
+                                    </label>
+                                    <input type="text" value="@Model.Customer.AdditionalInvoiceInformation" placeholder="Enter Additional Invoice Information." class="form-control" name="AdditionalInvoiceInformation" />
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>
+                                        Warning When Saving Appointments
+                                    </label>
+                                    <input type="text" value="@Model.Customer.WarningInformation" placeholder="Enter  Warning When Saving Appointments" class="form-control" name="WarningInformation" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+
+                            <div style="margin:20px;" class="form-group">
+                                <div class="col-md-12">
+                                    Profile Picture
+                                </div>
+                                <label>Choose Image (Click on Image to Change)</label>
+                                <br />
+                                @if (Model.Customer.ProfilePicture == "" || Model.Customer.ProfilePicture == null)
+                                {
+                                    <img id="MainThumb" style="width:150px;cursor:pointer;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                                }
+                                else
+                                {
+                                    <img id="MainThumb" style="width:150px;cursor:pointer;" src="@Model.Customer.ProfilePicture" alt="...">
+
+                                }
+
+                                <input value="@Model.Customer.ProfilePicture" type="hidden" name="Photo" id="Photo" />
+                                <input style=" width: 150px; " type="file" id="PhotoUpload" accept="image/*" />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+                <div class="tab-pane" id="pill2">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Employee
+                                </th>
+                                <th class="text-center">
+                                    Service
+                                </th>
+                                <th class="text-center">
+                                    Date
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.TotalAppointmentsCustomer.Where(x=>x.IsCancelled == false))
+                            {
+                                <tr>
+                                    <td class="text-center">@item.EmployeeName</td>
+                                    <td class="text-center">
+                                        <table style="border: none; background-color: transparent;  " class="table table-borderless">
+                                            @foreach (var listofservice in item.Services)
+                                            {
+                                                <tr>
+                                                    @if (listofservice.Discount == 0)
+                                                    {
+                                                        <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price  </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price (Discount: @listofservice.Discount %) </td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </table>
+
+                                    </td>
+                                    <td class="text-center">@item.Date.ToString("yyyy-MM-dd") @item.Time.ToString("HH:mm") - @item.AppointmentEndTime.ToString("HH:m")</td>
+                                    <td>
+                                        @if (item.Status == "Paid")
+                                        {
+                                            <button class="btn btn-primary btn-round btn-sm" type="button">VIEW INVOICE</button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-primary btn-round btn-sm" onclick="window.location.href='@Url.Action("Action", "Appointment", new {ID=item.ID})'" type="button">EDIT APPOINTMENT</button>
+
+                                        }
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane" id="pill3">
+                    <table class="table table-striped">
+                        @foreach (var item in Model.Histories)
+                        {
+                            <tr>
+                                <td>◉ @item.Note  - @item.Date</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <div class="tab-pane" id="pill4">
+                    <h4>Coming Soon</h4>
+
+                </div>
+                <div class="tab-pane" id="pill5">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Subject
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                                <th>
+                                    Channel
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model.Messages)
+                            {
+                                <tr>
+                                    <td>@item.Date</td>
+                                    <td>@item.Type</td>
+                                    <td>@item.Subject</td>
+                                    <td>@item.Status</td>
+                                    <td>@item.Channel</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="tab-pane" id="pill6">
+                    <h4>Loyalty Card Assigned</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Card Name
+                                </th>
+                                <th class="text-center">
+                                    Customer Name
+                                </th>
+                                <th class="text-center">
+                                    Mobule Number
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.LoyaltyCardAssignments != null)
+                            {
+                                foreach (var item in Model.LoyaltyCardAssignments)
+                                {
+                                <tr>
+                                    <td class="text-center">@item.LoyaltyCardName</td>
+                                    <td class="text-center">@item.Customer.FirstName @item.Customer.LastName</td>
+                                    <td class="text-center">@item.Customer.MobileNumber</td>
+
+                                </tr>
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+
+
+                    <hr />
+                    <h4>Loyalty Card Usage</h4>
+
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Name
+                                </th>
+                                <th class="text-center">
+                                    Cash Back
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.LoyaltyCardHistories)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.Note  - @item.Date.ToString("yyyy-MM-dd")</td>
+                                 
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane" id="pill7">
+                    <div class="row">
+                        @if (Model.Customer != null)
+                        {
+                            <button data-href="@Url.Action("UploadFile", "Appointment", new { CustomerID = Model.Customer.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal">UPLOAD NEW</button>
+                        }
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    File
+                                </th>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Size
+                                </th>
+                                <th>
+                                    Uploaded By
+                                </th>
+                                <th>
+                                    Date and Time
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Files)
+                            {
+                                <tr>
+                                    <td><a class="btn btn-primary btn-sm btn-round" target="_blank" href="@item.URL">OPEN</a></td>
+                                    <td>@item.Name</td>
+                                    <td>@item.Size</td>
+                                    <td>@item.UploadedBy</td>
+                                    <td>@item.DateTime</td>
+                                    <td>
+                                        <button data-href="@Url.Action("UploadFile", "Appointment", new {CustomerID= item.CustomerID, ID = item.ID })" type="button" class="data-btn  btn btn-sm btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
+                                        <button data-href="@Url.Action("DeleteFile", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-danger btn-sm btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

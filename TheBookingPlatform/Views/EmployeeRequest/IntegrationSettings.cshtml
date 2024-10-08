@@ -1,0 +1,183 @@
+﻿@model TheBookingPlatform.ViewModels.OAuthViewModel
+
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">
+            <span>Set Calendar Integration Setting</span>
+        </h5>
+        <div class="card-content">
+            <form id="actionForm">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Sync Mode</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="syncMode" id="AllInOne" value="AllInOne" checked>
+                                <label class="form-check-label" for="AllInOne">
+                                    All appointments in one Google Calendar
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="syncMode" id="EachIndividual" value="EachIndividual">
+                                <label class="form-check-label" for="EachIndividual">
+                                    Separate Calendars for each employees
+                                </label>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="row" id="AllInOneBox">
+                        <div class="col-md-6">
+                            <h6>
+                                All company appointments
+                            </h6>
+                        </div>
+                        <div class="col-md-6">
+                            <select class="form-control" id="CalendarSelection" name="CalendarSelection">
+                                <option value="YBP - @Model.GoogleCalendarIntegration.Business">Create New for: YBP - @Model.GoogleCalendarIntegration.Business</option>
+                                @foreach (var item in Model.Calendars)
+                                {
+                                    <option value="@item.id">@item.summary</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" id="EachIndividualBOX" style="display:none;">
+                        <h6>
+                            Map Employees to Calendars
+                        </h6>
+                        <table id="EmpTableforgoogle" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Employee
+                                    </th>
+                                    <th>
+                                        Calendar
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Employees)
+                                {
+                                    <tr class="employeeRow">
+                                        <td class="@item.ID">
+                                            @item.Name
+                                        </td>
+                                        <td>
+                                            <select class="form-control calendar-selection" data-employee-id="@item.ID">
+                                                <option value="YBP - @item.Name">Create New for: YBP - @item.Name</option>
+                                                @foreach (var caelndar in Model.Calendars)
+                                                {
+                                                    <option value="@caelndar.id">@caelndar.summary</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td><i class="fa fa-close removeRow" style="cursor:pointer;"></i></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="card-footer">
+            <button id="actionButton" type="button" class="btn btn-primary"> SAVE</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="card"><i class="fas fa-times mr-1"></i> Close</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('input[name="syncMode"]').change(function () {
+            if ($('#EachIndividual').is(':checked')) {
+                $('#EachIndividualBOX').show();
+                $('#AllInOneBox').hide();
+            } else if ($('#AllInOne').is(':checked')) {
+                $('#AllInOneBox').show();
+                $('#EachIndividualBOX').hide();
+            }
+        });
+
+
+        $(document).on('click', '.removeRow', function () {
+            // Find the closest 'tr' (row) and remove it
+            $(this).closest('tr').remove();
+        });
+
+
+        $("#actionButton").click(function () {
+            if ($('#EachIndividual').is(':checked'))
+            {
+                var multiCalendarList = [];
+
+                $("#EmpTableforgoogle tbody tr").each(function () {
+                    var employeeID = $(this).find("td").first().attr('class');
+                    var calendarSelection = $(this).find(".calendar-selection").val();
+
+                    var multiCalendarModel = {
+                        employeeID: parseInt(employeeID),
+                        summary: calendarSelection,
+                        description: "New Calendar Added from YBP"
+                    };
+                    multiCalendarList.push(multiCalendarModel);
+                });
+                showLoadingSpinner();
+                $("#LoaderText").text("Google Calendars are being created, Kindly Wait.");
+
+                 $.ajax({
+                    url: '@Url.Action("CreateCalendarBulk", "EmployeeRequest")',
+                    type: 'POST',
+                     data: { listOfCalendar: multiCalendarList }
+                })
+                     .done(function (response) {
+                         if (response.success) {
+                             hideLoadingSpinner();
+                             window.location.href = '@Url.Action("Index", "EmployeeRequest")';
+                         } else {
+                             hideLoadingSpinner();
+                             console.log(response.Message);
+                         }
+                    });
+
+
+
+            }
+            else if ($('#AllInOne').is(':checked')) {
+                var CalendarSelection = $("#CalendarSelection").val();
+                showLoadingSpinner();
+                $("#LoaderText").text("Google Calendars are being created, Kindly Wait.");
+                $.ajax({
+                    url: '@Url.Action("CreateCalendar","EmployeeRequest")',
+                    type: 'POST',
+                    data: { summary: CalendarSelection, description: "New Calendar Added from YBP" }
+                })
+                    .done(function (response) {
+                        hideLoadingSpinner();
+                        window.location.href = '@Url.Action("Index", "EmployeeRequest")';
+                    });
+            }
+
+        });
+
+
+
+
+    });
+
+
+
+
+
+
+</script>

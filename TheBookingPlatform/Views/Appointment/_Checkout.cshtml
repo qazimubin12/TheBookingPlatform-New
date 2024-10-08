@@ -1,0 +1,1179 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentDetailsViewModel
+@{
+    ViewBag.Title = "Checkout";
+    float TotalOfServicesMinusDiscount = Model.Services.Sum(x => x.Price * (1 - x.Discount / 100)) - Model.Appointment.Deposit;
+    float BeforePrice = 0;
+    float AfterPrice = 0;
+    if (Model.PriceChange != null)
+    {
+        if (Model.PriceChange.TypeOfChange == "Discount")
+        {
+            TotalOfServicesMinusDiscount -= TotalOfServicesMinusDiscount * (Model.PriceChange.Percentage / 100);
+        }
+        else
+        {
+            TotalOfServicesMinusDiscount += TotalOfServicesMinusDiscount * (Model.PriceChange.Percentage / 100);
+
+        }
+    }
+    if (Model.EmployeePriceChange != null)
+    {
+        if (Model.EmployeePriceChange.TypeOfChange == "Discount")
+        {
+            TotalOfServicesMinusDiscount -= TotalOfServicesMinusDiscount * (Model.EmployeePriceChange.Percentage / 100);
+        }
+        else
+        {
+            TotalOfServicesMinusDiscount += TotalOfServicesMinusDiscount * (Model.EmployeePriceChange.Percentage / 100);
+
+        }
+    }
+    BeforePrice = TotalOfServicesMinusDiscount;
+    if (Model.Coupon != null)
+    {
+        TotalOfServicesMinusDiscount = TotalOfServicesMinusDiscount - (TotalOfServicesMinusDiscount * Model.Coupon.Discount / 100);
+    }
+    AfterPrice = TotalOfServicesMinusDiscount;
+}
+
+<style>
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+        padding: 5px 8px;
+        vertical-align: middle;
+    }
+
+    .list-group-item {
+        position: relative;
+        display: block;
+        padding: 0px;
+        margin-bottom: -5px;
+        border: none;
+    }
+</style>
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">
+            Checkout
+        </h4>
+    </div>
+    <div class="card-content">
+        <div class="row">
+            <input type="hidden" id="ServicesData" value="@String.Join(",",Model.Services.Select(x=>x.ID).ToList())" />
+            @if (Model.Appointment.Status != "Paid")
+            {
+                <div id="MainSideBar" class="col-md-2" style="border-right:solid 0.5px gray;">
+                    <h4>Payment Method</h4>
+                    <ul id="ListOfThings" class="list-group">
+                        <li class="list-group-item">
+                            <button id="Pin" class="btn btn-block btn-primary" type="button">
+                                <i class="material-icons">password</i>  Pin
+                            </button>
+                        </li>
+                        <li class="list-group-item">
+                            <button id="Cash" class="btn btn-block btn-primary" type="button">
+                                <i class="material-icons">payments</i>  Cash
+                            </button>
+                        </li>
+                        <li class="list-group-item">
+                            <button id="Card" class="btn btn-block btn-primary" type="button">
+                                <i class="material-icons">credit_card</i>  Card
+                            </button>
+                        </li>
+
+
+                        <li class="list-group-item">
+                            <button id="Gift Card" class="btn btn-block btn-primary" type="button">
+                                <i class="material-icons">redeem</i>  Gift Card
+                            </button>
+                        </li>
+                        <li class="list-group-item">
+                            <button id="Referral" class="btn btn-block btn-primary" type="button">
+                                <i class="material-icons">card_membership</i>  Rererral
+                            </button>
+                        </li>
+                        <li class="list-group-item">
+                            <button id="Loyalty Card" class="btn btn-block btn-primary" type="button">
+                                <i class="material-icons">redeem</i>  Loyalty
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            }
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    @if (Model.Appointment.Status == "Paid")
+                    {
+                        <input style=" background-color: blueviolet; color:white; " class="form-control" value="@Model.Appointment.Status" name="PaymentMethod" id="PaymentMethod" readonly />
+
+                    }
+                    else
+                    {
+                        <input class="form-control" name="PaymentMethod" id="PaymentMethod" readonly />
+                    }
+                </div>
+                <input type="hidden" id="CHECKCARDS" />
+                <div style="display:none;" id="GiftCardRow" class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Gift Card Code</label>
+                            <input type="text" class="form-control" name="GiftCardCode" id="GiftCardCode" placeholder="Enter Gift Card Code" />
+                        </div>
+                        <button class="btn btn-primary" type="button" id="CheckGiftCardBtn">CHECK GIFT CARD</button>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Balance
+                                    </th>
+                                    <th>
+                                        Deduction
+                                    </th>
+                                    <th id="CheckTheDD">
+                                        To Be Paid
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="text-center" id="BalanceGiftCard"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="DeductionGiftCard"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="AfterDeductionGiftCard"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div style="display:none;" id="ReferralCardRow" class="row">
+                    <div class="col-md-6">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Balance
+                                    </th>
+                                    <th>
+                                        Deduction
+                                    </th>
+                                    <th id="CheckTheDDReferral">
+                                        To Be Paid
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="text-center" id="ReferralBalance"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="DeductionReferral"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="AfterDeductionReferral"></span>
+                                        <span style="display:none;" class="text-center" id="AfterDeductionReferralToSend"></span>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <div style="display:none;" id="LoyaltyCardRow" class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Loyalty Card Number</label>
+                            <input type="text" class="form-control" name="LoyaltyCardCode" id="LoyaltyCardCode" placeholder="Enter Loyalty Card Number" />
+                        </div>
+                        <button class="btn btn-primary" type="button" id="CheckLoyaltyCardBtn">CHECK LOYALTY CARD</button>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Balance
+                                    </th>
+                                    <th>
+                                        Deduction
+                                    </th>
+                                    <th id="CheckTheDL">
+                                        To Be Paid
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+
+                                    <td>
+                                        <span class="text-center" id="BalanceLoyaltyCard"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="DeductionLoyaltyCard"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="AfterDeductionLoyaltyCard"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Customer</label>
+                    @if (Model.Customer != null)
+                    {
+                        <input hidden id="CustomerID" value="@Model.Customer.ID" />
+                        <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
+                        <input hidden id="EmployeeID" value="@Model.Employee.ID" />
+                        <input class="form-control" name="Customer" id="Customer" value="@Model.Customer.FirstName @Model.Customer.LastName" readonly />
+                    }
+                    else
+                    {
+                        <input hidden id="CustomerID" value="0" />
+                        <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
+                        <input hidden id="EmployeeID" value="@Model.Employee.ID" />
+                        <input class="form-control" name="Customer" id="Customer" value="Walk In" readonly />
+                    }
+                    <input type="hidden" id="Notes" />
+                </div>
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>
+                                Item
+                            </th>
+                            <th>
+                                Price
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Services)
+                        {
+                            <tr>
+                                @if (item.Discount != 0)
+                                {
+                                    <td>@item.Service - @item.Duration - ( Discount @item.Discount %)</td>
+                                }
+                                else
+                                {
+                                    <td>@item.Service - @item.Duration</td>
+
+                                }
+                                <td class="price-data">@item.Price @Model.Company.Currency</td>
+                                @*<td>
+
+
+                                        <button class="btndelete btn btn-danger btn-sm btn-round">
+                                            <i class="material-icons">delete</i> Delete
+                                        </button>
+                                    </td>*@
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <h4 class="card-title">Deposit: @Model.Company.Currency<span id="deposit">@Model.Appointment.Deposit</span></h4><br />
+                @if (Model.PriceChange != null)
+                {
+                    if (Model.PriceChange.TypeOfChange == "Discount")
+                    {
+                        <h4 class="card-title">Price Change: <span id="">- @Model.PriceChange.Percentage %</span></h4><br />
+
+                    }
+                    else
+                    {
+                        <h4 class="card-title">Price Change: <span id="">+ @Model.PriceChange.Percentage %</span></h4><br />
+
+                    }
+                }
+                @if (Model.EmployeePriceChange != null)
+                {
+                    if (Model.EmployeePriceChange.TypeOfChange == "Discount")
+                    {
+                        <h4 class="card-title">Employee Price Change: <span id="">- @Model.EmployeePriceChange.Percentage %</span></h4><br />
+
+                    }
+                    else
+                    {
+                        <h4 class="card-title">Employee Price Change: <span id="">+ @Model.EmployeePriceChange.Percentage %</span></h4><br />
+
+                    }
+                }
+
+            <div style="display: flex; align-items: center; justify-content: center;" class="row">
+                @if (Model.Coupon != null)
+                {
+                    <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@BeforePrice</span> <span id="Total"> @TotalOfServicesMinusDiscount</span></h4>
+
+                }
+                else
+                {
+                    <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@TotalOfServicesMinusDiscount</span></h4>
+
+                }
+                <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@TotalOfServicesMinusDiscount</span></h4>
+
+                @if (Model.Appointment.Status == "Paid")
+                {
+
+
+                    <a style=" margin: 30px;" id="InvoiceView" href='@Url.Action("Invoice", "Appointment", new {ID=Model.Appointment.ID})' target="_blank" class="btn btn-success  btn-round">VIEW INVOICE</a>
+                    <button style=" margin: 30px;" type="button" id="SendInvoiceBtn" class="btn btn-info  btn-round">SEND INVOICE TO CUSTOMER</button>
+                    <button style=" margin: 30px;" id="Rebook" onclick="window.location.href='@Url.Action("Calendar", "Appointment")'" class="btn btn-primary  btn-round">REBOOK</button>
+                }
+                else
+                {
+                    <button style=" margin: 30px; " id="PayButton" class="btn btn-success  btn-round">PAY</button>
+                    <span class="text-danger" id="Error"></span>
+
+                }
+            </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    //function GetTotal() {
+    //    let totalSum = 0;
+
+    //    // Loop through each element with the class "price-data"
+    //    //$('.price-data').each(function () {
+    //    //    // Extract the text content and remove the '$' sign
+    //    //    const priceText = $(this).text().trim().replace('€', '');
+
+    //    //    // Parse the text as a float and add it to the totalSum
+    //    //    const priceFloat = parseFloat(priceText);
+    //    //    totalSum += priceFloat;
+    //    //});
+    //    //$("#Total").text(totalSum);
+    //};
+    $("#SendInvoiceBtn").click(function () {
+        showLoadingSpinner();
+        var AppointmentID = '@Model.Appointment.ID';
+        $.ajax({
+            url: '@Url.Action("SendInvoiceToCustomer","Invoice")', // Replace with the actual URL of your controller action
+            type: 'POST', // Use POST or GET based on your requirements
+            data: { ID: AppointmentID },
+
+            success: function (response) {
+                if (response.success) {
+                    alert("Invoice Sent Successfully");
+                    hideLoadingSpinner();
+                } else {
+                    alert(response.Message);
+                    hideLoadingSpinner();
+
+                    return;
+                }
+            },
+            error: function (error) {
+                // Handle any errors that occur during the AJAX request
+                console.error(error);
+                hideLoadingSpinner();
+
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        // Add a click event handler to all buttons within the list
+        $('.list-group-item button').click(function () {
+            // Reset all button styles to primary
+            $('.list-group-item button').removeClass('btn-secondary').addClass('btn-primary');
+
+            // Set the clicked button style to secondary
+            $(this).removeClass('btn-primary').addClass('btn-secondary');
+
+            // Get the ID of the clicked button and set it as the input field value
+            const buttonId = $(this).attr('id');
+            $('#PaymentMethod').val(buttonId);
+
+            if ($("#PaymentMethod").val() == "Gift Card") {
+                $("#GiftCardRow").show();
+                $("#LoyaltyCardRow").hide();
+                $("#CHECKCARDS").val("NO");
+                $("#ReferralCardRow").hide();
+
+
+
+
+            }
+            else if ($("#PaymentMethod").val() == "Loyalty Card") {
+                $("#GiftCardRow").hide();
+                $("#LoyaltyCardRow").show();
+                $("#CHECKCARDS").val("NO");
+                $("#ReferralCardRow").hide();
+
+
+            }
+
+            else if ($("#PaymentMethod").val() == "Referral") {
+                $("#ReferralCardRow").show();
+                $("#GiftCardRow").hide();
+                $("#LoyaltyCardRow").hide();
+                $("#CHECKCARDS").val("NO");
+
+                CheckReferralBalance();
+            }
+            else {
+                $("#GiftCardRow").hide();
+                $("#LoyaltyCardRow").hide();
+                $("#CHECKCARDS").val("YES");
+
+
+
+            }
+            CheckDataOfPaymentMethod();
+        });
+        CheckDataOfPaymentMethod();
+
+
+        $("#CheckGiftCardBtn").click(function () {
+            $("#CHECKCARDS").val("YES");
+            showLoadingSpinner();
+            var giftCardCode = $("#GiftCardCode").val();
+            var CustomerID = $("#CustomerID").val();
+
+             $.ajax({
+                url: '@Url.Action("CheckGiftCardData","GiftCard")', // Replace with the actual URL of your controller action
+                type: 'POST', // Use POST or GET based on your requirements
+                data: {
+                    CustomerID: CustomerID,
+                    GiftCardCode: giftCardCode
+
+                },
+                 success: function (response) {
+
+                     hideLoadingSpinner();
+                     if (response.GiftCardAssignment != null) {
+                         if (response.GiftCardAssignment.Days >= 0) {
+                             var Balance = response.GiftCardAssignment.Balance;
+                             var Deduction = parseFloat($("#FinalGrandTotal").text());
+                             var AfterDeduction = 0;
+                             if (Balance > Deduction) {
+                                 AfterDeduction = Balance - Deduction;
+                                 $("#Total").text("0");
+                                 $("#CheckTheDD").text("Balance");
+
+
+                             } else {
+                                 AfterDeduction = Math.abs(Deduction - Balance);
+                                 $("#Total").text(AfterDeduction);
+                                 $("#CheckTheDD").text("To Be Paid");
+
+                             }
+
+                             $("#BalanceGiftCard").text(Balance + " @Model.Company.Currency");
+                             $("#AfterDeductionGiftCard").text(AfterDeduction + " @Model.Company.Currency");
+                             $("#DeductionGiftCard").text(Deduction + " @Model.Company.Currency");
+                             if (Balance == 0) {
+                                 $("#PayButton").attr("disabled", "disabled");
+                                 $("#Error").text("Balance Insufficient, Please Select other payment method");
+                                 $("#BalanceGiftCard").text("");
+                                 $("#AfterDeductionGiftCard").text("");
+                                 $("#DeductionGiftCard").text("");
+                                 $("#GiftCardCode").val("");
+                                 $("#LoyaltyCardCode").val("");
+                                 $("#BalanceLoyaltyCard").text("");
+                                 $("#AfterDeductionLoyaltyCard").text("");
+                                 $("#DeductionLoyaltyCard").text("");
+
+                             } else {
+                                 $("#PayButton").removeAttr("disabled");
+                                 $("#Error").text("");
+                             }
+                         }
+                         else {
+                             alert("Gift Card is Expired");
+                         }
+                     }
+                     else {
+                         $("#PayButton").attr("disabled", "disabled");
+                         $("#Error").text("Invalid Gift Card Number ");
+                         $("#BalanceGiftCard").text("");
+                         $("#AfterDeductionGiftCard").text("");
+                         $("#DeductionGiftCard").text("");
+                         $("#GiftCardCode").val("");
+                         $("#LoyaltyCardCode").val("");
+                         $("#BalanceLoyaltyCard").text("");
+                         $("#AfterDeductionLoyaltyCard").text("");
+                         $("#DeductionLoyaltyCard").text("");
+                     }
+
+                },
+                error: function (error) {
+                    // Handle any errors that occur during the AJAX request
+                    console.error(error);
+                    hideLoadingSpinner();
+                }
+            });
+        });
+
+
+        function CheckReferralBalance() {
+
+            showLoadingSpinner();
+            var CustomerID = $("#CustomerID").val();
+
+            $.ajax({
+                url: '@Url.Action("GetReferralBalance","Customer")', // Replace with the actual URL of your controller action
+                type: 'POST', // Use POST or GET based on your requirements
+                data: {
+                    CustomerID: CustomerID
+                },
+                success: function (response) {
+                    if (response.success) {
+                        hideLoadingSpinner();
+                        var Balance = response.ReferralBalance;
+                        $("#ReferralBalance").text(Balance);
+                        var Deduction = parseFloat($("#FinalGrandTotal").text());
+                        var AfterDeduction = 0;
+                        if (Balance > Deduction) {
+                            AfterDeduction = Balance - Deduction;
+                            $("#Total").text("0");
+
+
+                            $("#CheckTheDDReferral").text("Balance");
+                            $("#DeductionReferral").text(Deduction);
+                            $("#AfterDeductionReferral").text(AfterDeduction);
+                            $("#AfterDeductionReferralToSend").text(AfterDeduction);
+
+
+
+
+                        }
+                        else {
+                            AfterDeduction = Math.abs(Deduction - Balance);
+                            $("#Total").text(AfterDeduction);
+                            $("#CheckTheDDReferral").text("To Be Paid");
+                            $("#DeductionReferral").text(Balance);
+                            $("#AfterDeductionReferral").text(AfterDeduction);
+                            $("#AfterDeductionReferralToSend").text("0");
+                        }
+
+                    } else {
+                        hideLoadingSpinner();
+
+                    }
+
+
+                    @*if (response.GiftCardAssignment != null) {
+                        if (response.GiftCardAssignment.Days >= 0) {
+                            var Balance = response.GiftCardAssignment.Balance;
+                            var Deduction = parseFloat($("#FinalGrandTotal").text());
+                            var AfterDeduction = 0;
+                            if (Balance > Deduction) {
+                                AfterDeduction = Balance - Deduction;
+                                $("#Total").text("0");
+                                $("#CheckTheDD").text("Balance");
+
+
+                            } else {
+                                AfterDeduction = Math.abs(Deduction - Balance);
+                                $("#Total").text(AfterDeduction);
+                                $("#CheckTheDD").text("To Be Paid");
+
+                            }
+
+                            $("#BalanceGiftCard").text(Balance + " @Model.Company.Currency");
+                            $("#AfterDeductionGiftCard").text(AfterDeduction + " @Model.Company.Currency");
+                            $("#DeductionGiftCard").text(Deduction + " @Model.Company.Currency");
+                            if (Balance == 0) {
+                                $("#PayButton").attr("disabled", "disabled");
+                                $("#Error").text("Balance Insufficient, Please Select other payment method");
+                                $("#BalanceGiftCard").text("");
+                                $("#AfterDeductionGiftCard").text("");
+                                $("#DeductionGiftCard").text("");
+                                $("#GiftCardCode").val("");
+                                $("#LoyaltyCardCode").val("");
+                                $("#BalanceLoyaltyCard").text("");
+                                $("#AfterDeductionLoyaltyCard").text("");
+                                $("#DeductionLoyaltyCard").text("");
+
+                            } else {
+                                $("#PayButton").removeAttr("disabled");
+                                $("#Error").text("");
+                            }
+                        }
+                        else {
+                            alert("Gift Card is Expired");
+                        }
+                    }
+                    else {
+                        $("#PayButton").attr("disabled", "disabled");
+                        $("#Error").text("Invalid Gift Card Number ");
+                        $("#BalanceGiftCard").text("");
+                        $("#AfterDeductionGiftCard").text("");
+                        $("#DeductionGiftCard").text("");
+                        $("#GiftCardCode").val("");
+                        $("#LoyaltyCardCode").val("");
+                        $("#BalanceLoyaltyCard").text("");
+                        $("#AfterDeductionLoyaltyCard").text("");
+                        $("#DeductionLoyaltyCard").text("");
+                    }*@
+
+                },
+                error: function (error) {
+                    // Handle any errors that occur during the AJAX request
+                    console.error(error);
+                    hideLoadingSpinner();
+                }
+            });
+        }
+
+
+
+        $("#CheckLoyaltyCardBtn").click(function () {
+            $("#CHECKCARDS").val("YES");
+            showLoadingSpinner();
+            var loyaltyCardNumber = $("#LoyaltyCardCode").val();
+            var CustomerID = $("#CustomerID").val();
+            var servicesData = $("#ServicesData").val();
+
+             $.ajax({
+                url: '@Url.Action("CheckLoyaltyCardData","LoyaltyCard")', // Replace with the actual URL of your controller action
+                type: 'POST', // Use POST or GET based on your requirements
+                data: {
+                    CustomerID: CustomerID,
+                    LoyaltyCardNumber: loyaltyCardNumber,
+                    ServicesData: servicesData
+
+                },
+                 success: function (response) {
+
+                     hideLoadingSpinner();
+                     if (response.LoyaltyCardAssignment != null) {
+                         if (response.LoyaltyCardAssignment.Days >= 0)
+                         {
+                             var Balance = response.LoyaltyCardAssignment.CashBack;
+                             var Deduction = parseFloat($("#FinalGrandTotal").text());
+
+                             var AfterDeduction = 0;
+                             if (Balance > Deduction) {
+                                 AfterDeduction = Balance - Deduction;
+                                 $("#Total").text("0");
+                                 $("#CheckTheDL").text("Balance");
+
+
+                             } else {
+                                 AfterDeduction = Math.abs(Deduction - Balance);
+                                 $("#Total").text(AfterDeduction);
+                                 $("#CheckTheDL").text("To Be Paid");
+
+                             }
+
+                             var AfterDeduction = Balance - Deduction;
+                             if (AfterDeduction < 0) {
+                                 AfterDeduction = Math.abs(AfterDeduction); // Use Math.abs to ensure a positive value
+                             }
+                             $("#BalanceLoyaltyCard").text(Balance + " @Model.Company.Currency");
+                             $("#AfterDeductionLoyaltyCard").text(AfterDeduction + " @Model.Company.Currency");
+                             $("#DeductionLoyaltyCard").text(Deduction + " @Model.Company.Currency");
+                             //$("#Total").text(AfterDeduction);
+
+                             if (Balance == 0) {
+                                 $("#PayButton").attr("disabled", "disabled");
+                                 $("#Error").text("Balance Insufficient, Please Select other payment method");
+                                 $("#BalanceGiftCard").text("");
+                                 $("#AfterDeductionGiftCard").text("");
+                                 $("#DeductionGiftCard").text("");
+                                 $("#GiftCardCode").val("");
+                                 $("#LoyaltyCardCode").val("");
+                                 $("#BalanceLoyaltyCard").text("");
+                                 $("#AfterDeductionLoyaltyCard").text("");
+                                 $("#DeductionLoyaltyCard").text("");
+                             } else {
+                                 $("#PayButton").removeAttr("disabled");
+                                 $("#Error").text("");
+                             }
+                         }
+                         else {
+                             alert("Loyalty Card is Expired")
+                         }
+
+                     }
+                     else {
+                         $("#PayButton").attr("disabled", "disabled");
+                         $("#Error").text("Invalid Loyalty Card Number");
+                         $("#BalanceGiftCard").text("");
+                         $("#AfterDeductionGiftCard").text("");
+                         $("#DeductionGiftCard").text("");
+                         $("#GiftCardCode").val("");
+                         $("#LoyaltyCardCode").val("");
+                         $("#BalanceLoyaltyCard").text("");
+                         $("#AfterDeductionLoyaltyCard").text("");
+                         $("#DeductionLoyaltyCard").text("");
+                     }
+
+
+                },
+                 error: function (error) {
+
+                    // Handle any errors that occur during the AJAX request
+                    console.error(error);
+                    hideLoadingSpinner();
+                }
+            });
+        });
+    });
+    //$('.btndelete').click(function () {
+    //    // Remove the parent row when the "Delete" button is clicked
+    //    $(this).closest('tr').remove();
+
+    //    // Call the updateTotal function to update the total sum
+    //    GetTotal();
+    //});
+    function CheckDataOfPaymentMethod() {
+        var PaymentMethod = $("#PaymentMethod").val();
+        var GiftCardCode = $("#GiftCardCode").val();
+        var LoyaltyCardCode = $("#LoyaltyCardCode").val();
+        if (PaymentMethod == '') {
+            $("#PayButton").attr("disabled", "disabled");
+            $("#Error").text("Please Select Payment Method");
+
+        } else {
+            if (PaymentMethod == "Gift Card" && GiftCardCode.trim() == '') {
+                if ($("#CHECKCARDS").val() == "YES") {
+                    $("#PayButton").removeAttr("disabled");
+                    $("#Error").text("");
+                } else {
+                    $("#PayButton").attr("disabled", "disabled");
+                    $("#Error").text("Please Enter Gift Card Code");
+                }
+            }
+            else if (PaymentMethod == "Loyalty Card" && LoyaltyCardCode.trim() == '') {
+                if ($("#CHECKCARDS").val() == "YES") {
+                    $("#PayButton").removeAttr("disabled");
+                    $("#Error").text("");
+                }
+                else{
+                    $("#PayButton").attr("disabled", "disabled");
+                    $("#Error").text("Please Enter Loyalty Card Number");
+                }
+            }
+            else {
+                $("#PayButton").removeAttr("disabled");
+                $("#Error").text("");
+
+            }
+        }
+    }
+
+    $("#GiftCardCode").change(function () {
+        CheckDataOfPaymentMethod();
+    });
+
+    function UpdateTotalWithGiftCardAmount(Amount) {
+        var notes = $("#Notes");
+        notes.val("Gift Card Applied with the amount of:" + Amount);
+        var finalGrandTotal = 0;
+        var GrandTotal = parseFloat($("#Total").text());
+        finalGrandTotal = GrandTotal - parseFloat(Amount);
+        if (finalGrandTotal < 0) {
+            $("#Total").text(0);
+        } else {
+            $("#Total").text(finalGrandTotal);
+
+        }
+    }
+
+    function UpdateTotalWithLoyaltyCardCashBack(Amount) {
+        var notes = $("#Notes");
+        notes.val("Loyalty Card was used with the amount of:" + Amount);
+        var finalGrandTotal = 0;
+        var GrandTotal = parseFloat($("#Total").text());
+        finalGrandTotal = GrandTotal - parseFloat(Amount);
+        $("#Total").text(finalGrandTotal);
+    }
+
+
+    $("#PayButton").click(function () {
+
+        showLoadingSpinner();
+        var PaymentMethod = $("#PaymentMethod").val();
+        var CustomerID = $("#CustomerID").val();
+        var EmployeeID = $("#EmployeeID").val();
+        var AppointmentID = $("#AppointmentID").val();
+        var LoyaltyCardNumber = $("#LoyaltyCardCode").val();
+        var GiftCardCode = $("#GiftCardCode").val();
+        var FinalGrandTotal = $("#FinalGrandTotal").text();
+        if (PaymentMethod == "Gift Card") {
+            $.ajax({
+                url: '@Url.Action("CheckGiftCard","Invoice")', // Replace with the actual URL of your controller action
+                type: 'GET', // Use POST or GET based on your requirements
+                data: {
+                    CustomerID: CustomerID,
+                    GiftCardCode: GiftCardCode
+
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("Gift Card Applied");
+
+                        var GrandTotal = $("#Total").text();
+                        var Notes = $("#Notes").val();
+                        showLoadingSpinner();
+                        if (PaymentMethod == "Gift Card") {
+                            $.ajax({
+                                url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                                type: 'POST', // Use POST or GET based on your requirements
+                                data: {
+                                    CustomerID: CustomerID,
+                                    EmployeeID: EmployeeID,
+                                    AppointmentID: AppointmentID,
+                                    PaymentMethod: PaymentMethod,
+                                    GrandTotal: GrandTotal,
+                                    FinalGrandTotal: FinalGrandTotal,
+                                    Notes: Notes,
+                                    Code: GiftCardCode
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        hideLoadingSpinner();
+                                        alert("Invoice Saved");
+                                        location.reload();
+                                        //location.reload();
+                                        //alert("Invoice Saved");
+                                        //var encodedAppointmentID = encodeURIComponent(AppointmentID);
+                                        //var url = '/Appointment/Invoice?ID=' + encodedAppointmentID;
+                                        //window.open(url, '_blank');
+                                    }
+                                },
+                                error: function (error) {
+                                    // Handle any errors that occur during the AJAX request
+                                    console.error(error);
+                                }
+                            });
+                        }
+                        else if (PaymentMethod == "Loyalty Card") {
+                            $.ajax({
+                                url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                                type: 'POST', // Use POST or GET based on your requirements
+                                data: {
+                                    CustomerID: CustomerID,
+                                    EmployeeID: EmployeeID,
+                                    AppointmentID: AppointmentID,
+                                    PaymentMethod: PaymentMethod,
+                                    GrandTotal: GrandTotal,
+                                    FinalGrandTotal: FinalGrandTotal,
+                                    Notes: Notes,
+                                    Code: LoyaltyCardNumber
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        hideLoadingSpinner();
+                                        alert("Invoice Saved");
+                                        location.reload();
+                                        //location.reload();
+                                        //alert("Invoice Saved");
+                                        //var encodedAppointmentID = encodeURIComponent(AppointmentID);
+                                        //var url = '/Appointment/Invoice?ID=' + encodedAppointmentID;
+                                        //window.open(url, '_blank');
+                                    }
+                                },
+                                error: function (error) {
+                                    // Handle any errors that occur during the AJAX request
+                                    console.error(error);
+                                }
+                            });
+                        }
+                        else {
+                            $.ajax({
+                                url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                                type: 'POST', // Use POST or GET based on your requirements
+                                data: {
+                                    CustomerID: CustomerID,
+                                    EmployeeID: EmployeeID,
+                                    AppointmentID: AppointmentID,
+                                    PaymentMethod: PaymentMethod,
+                                    GrandTotal: GrandTotal,
+                                    FinalGrandTotal: FinalGrandTotal,
+                                    Notes: Notes,
+                                    Code: GiftCardCode
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        hideLoadingSpinner();
+                                        alert("Invoice Saved");
+                                        location.reload();
+                                        //location.reload();
+                                        //alert("Invoice Saved");
+                                        //var encodedAppointmentID = encodeURIComponent(AppointmentID);
+                                        //var url = '/Appointment/Invoice?ID=' + encodedAppointmentID;
+                                        //window.open(url, '_blank');
+                                    }
+                                },
+                                error: function (error) {
+                                    // Handle any errors that occur during the AJAX request
+                                    console.error(error);
+                                }
+                            });
+                        }
+                        //    UpdateTotalWithGiftCardAmount(response.Amount);
+                    }
+                    else {
+
+                        alert(response.Message);
+                        hideLoadingSpinner();
+                        return;
+                    }
+                },
+                error: function (error) {
+                    // Handle any errors that occur during the AJAX request
+                    console.error(error);
+                    hideLoadingSpinner();
+                }
+            });
+        }
+        else if (PaymentMethod == "Loyalty Card") {
+            $.ajax({
+                url: '@Url.Action("CheckLoyaltyCard","Invoice")', // Replace with the actual URL of your controller action
+                type: 'GET', // Use POST or GET based on your requirements
+                data: {
+                    CustomerID: CustomerID,
+                    LoyaltyCardCode: LoyaltyCardNumber
+
+                },
+                success: function (response) {
+                    if (response.success) {
+                        hideLoadingSpinner();
+                        alert("Loyalty Card Used");
+
+                        var GrandTotal = $("#Total").text();
+                        var Notes = $("#Notes").val();
+                        showLoadingSpinner();
+                        if (PaymentMethod == "Gift Card") {
+                            $.ajax({
+                                url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                                type: 'POST', // Use POST or GET based on your requirements
+                                data: {
+                                    CustomerID: CustomerID,
+                                    EmployeeID: EmployeeID,
+                                    AppointmentID: AppointmentID,
+                                    PaymentMethod: PaymentMethod,
+                                    GrandTotal: GrandTotal,
+                                    FinalGrandTotal: FinalGrandTotal,
+                                    Notes: Notes,
+                                    Code: GiftCardCode
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        hideLoadingSpinner();
+                                        alert("Invoice Saved");
+                                        location.reload();
+                                        //location.reload();
+                                        //alert("Invoice Saved");
+                                        //var encodedAppointmentID = encodeURIComponent(AppointmentID);
+                                        //var url = '/Appointment/Invoice?ID=' + encodedAppointmentID;
+                                        //window.open(url, '_blank');
+                                    }
+                                },
+                                error: function (error) {
+                                    // Handle any errors that occur during the AJAX request
+                                    console.error(error);
+                                }
+                            });
+                        }
+                        else if (PaymentMethod == "Loyalty Card") {
+                            $.ajax({
+                                url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                                type: 'POST', // Use POST or GET based on your requirements
+                                data: {
+                                    CustomerID: CustomerID,
+                                    EmployeeID: EmployeeID,
+                                    AppointmentID: AppointmentID,
+                                    PaymentMethod: PaymentMethod,
+                                    GrandTotal: GrandTotal,
+                                    FinalGrandTotal: FinalGrandTotal,
+                                    Notes: Notes,
+                                    Code: LoyaltyCardNumber
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        hideLoadingSpinner();
+                                        alert("Invoice Saved");
+                                        location.reload();
+                                        //location.reload();
+                                        //alert("Invoice Saved");
+                                        //var encodedAppointmentID = encodeURIComponent(AppointmentID);
+                                        //var url = '/Appointment/Invoice?ID=' + encodedAppointmentID;
+                                        //window.open(url, '_blank');
+                                    }
+                                },
+                                error: function (error) {
+                                    // Handle any errors that occur during the AJAX request
+                                    console.error(error);
+                                }
+                            });
+                        }
+                        else {
+                            $.ajax({
+                                url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                                type: 'POST', // Use POST or GET based on your requirements
+                                data: {
+                                    CustomerID: CustomerID,
+                                    EmployeeID: EmployeeID,
+                                    AppointmentID: AppointmentID,
+                                    PaymentMethod: PaymentMethod,
+                                    GrandTotal: GrandTotal,
+                                    FinalGrandTotal: FinalGrandTotal,
+                                    Notes: Notes,
+                                    Code: GiftCardCode
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        hideLoadingSpinner();
+                                        alert("Invoice Saved");
+                                        location.reload();
+
+                                        //location.reload();
+                                        //alert("Invoice Saved");
+                                        //var encodedAppointmentID = encodeURIComponent(AppointmentID);
+                                        //var url = '/Appointment/Invoice?ID=' + encodedAppointmentID;
+                                        //window.open(url, '_blank');
+                                    }
+                                },
+                                error: function (error) {
+                                    // Handle any errors that occur during the AJAX request
+                                    console.error(error);
+                                }
+                            });
+                        }
+                        //    UpdateTotalWithLoyaltyCardCashBack(response.Amount);
+                    } else {
+                        alert(response.Message);
+                        hideLoadingSpinner();
+                        return;
+                    }
+                },
+                error: function (error) {
+                    // Handle any errors that occur during the AJAX request
+                    console.error(error);
+                    hideLoadingSpinner();
+                }
+            });
+        }
+        else {
+
+            var GrandTotal = $("#Total").text();
+            var Notes = $("#Notes").val();
+            showLoadingSpinner();
+            if (PaymentMethod == "Gift Card") {
+                $.ajax({
+                    url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                    type: 'POST', // Use POST or GET based on your requirements
+                    data: {
+                        CustomerID: CustomerID,
+                        EmployeeID: EmployeeID,
+                        AppointmentID: AppointmentID,
+                        PaymentMethod: PaymentMethod,
+                        GrandTotal: GrandTotal,
+                        FinalGrandTotal: FinalGrandTotal,
+                        Notes: Notes,
+                        Code: GiftCardCode
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            hideLoadingSpinner();
+                            alert("Invoice Saved");
+                            location.reload();
+
+                            //location.reload();
+                            //alert("Invoice Saved");
+                            //var encodedAppointmentID = encodeURIComponent(AppointmentID);
+                            //var url = '/Appointment/Invoice?ID=' + encodedAppointmentID;
+                            //window.open(url, '_blank');
+                        }
+                    },
+                    error: function (error) {
+                        // Handle any errors that occur during the AJAX request
+                        console.error(error);
+                    }
+                });
+            }
+            else if (PaymentMethod == "Loyalty Card") {
+                $.ajax({
+                    url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                    type: 'POST', // Use POST or GET based on your requirements
+                    data: {
+                        CustomerID: CustomerID,
+                        EmployeeID: EmployeeID,
+                        AppointmentID: AppointmentID,
+                        PaymentMethod: PaymentMethod,
+                        GrandTotal: GrandTotal,
+                        FinalGrandTotal: FinalGrandTotal,
+                        Notes: Notes,
+                        Code: LoyaltyCardNumber
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            hideLoadingSpinner();
+                            alert("Invoice Saved");
+                            location.reload();
+
+                        }
+                    },
+                    error: function (error) {
+                        // Handle any errors that occur during the AJAX request
+                        console.error(error);
+                    }
+                });
+            }
+            else {
+                var Referral = $("#AfterDeductionReferralToSend").text();
+                $.ajax({
+                    url: '@Url.Action("SaveInvoice","Invoice")', // Replace with the actual URL of your controller action
+                    type: 'POST', // Use POST or GET based on your requirements
+                    data: {
+                        CustomerID: CustomerID,
+                        EmployeeID: EmployeeID,
+                        AppointmentID: AppointmentID,
+                        PaymentMethod: PaymentMethod,
+                        GrandTotal: GrandTotal,
+                        FinalGrandTotal: FinalGrandTotal,
+                        Notes: Notes,
+                        Referral: Referral,
+                        Code: GiftCardCode
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            hideLoadingSpinner();
+                            alert("Invoice Saved");
+                            location.reload();
+
+                            //var encodedAppointmentID = encodeURIComponent(AppointmentID);
+                            //var url = '/Appointment/Invoice?ID=' + encodedAppointmentID;
+                            //window.open(url, '_blank');
+                        }
+                    },
+                    error: function (error) {
+                        // Handle any errors that occur during the AJAX request
+                        console.error(error);
+                    }
+                });
+            }
+        }
+
+
+    });
+</script>

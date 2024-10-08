@@ -1,0 +1,60 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "CustomerLoyaltyCardAssignments";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">LOYALTY CARDS ASSIGNED</h4>
+        @if (Model.LoyaltyCardAssignments != null)
+        {
+            foreach (var item in Model.LoyaltyCardAssignments)
+            {
+                <div class="bg-white rounded-4 p-3 mb-3 shadow-sm">
+                    <h6 class="mb-3">
+                        @item.LoyaltyCardName
+                    </h6>
+               
+                    <p class="text-muted mb-2">
+                        Card Number <br>
+                        <span class="text-dark">@item.LoyaltyCardAssignment.CardNumber</span>
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        Cash Back <br>
+                        <span class="text-dark">@Model.Company.Currency @Math.Round(item.LoyaltyCardAssignment.CashBack,2)</span>
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        Assigned Date <br>
+                        <span class="text-dark">@item.LoyaltyCardAssignment.Date.ToString("yyyy-MM-dd") @item.LoyaltyCardAssignment.Date.ToString("HH:mm")</span>
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        Expiry In <br>
+                        <span class="text-dark">@((item.LoyaltyCardAssignment.Date.AddDays(item.LoyaltyCardDays) - DateTime.Now).Days) Days</span>
+                    </p>
+                  
+
+                </div>
+            }
+
+        }
+    </div>
+</div>
+
+
+<script>
+  $(document).ready(function () {
+        if ('@Model.Customer.ID' != 0) {
+            var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.Customer.ID, businessName = Model.Company.Business })";
+            $("#ProfileNAVTab").attr("href", href);
+        }
+
+        if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("Index", "Booking", new { CustomerID = Model.Customer.ID, businessName = Model.Company.Business })";
+            $("#HomeNAVTAB").attr("href", href);
+        }
+    });
+
+</script>

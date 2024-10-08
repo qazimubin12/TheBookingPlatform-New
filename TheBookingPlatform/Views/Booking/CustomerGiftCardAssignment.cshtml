@@ -1,0 +1,73 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "CustomerLoyaltyCardAssignments";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">GIFT CARDS ASSIGNED</h4>
+        @if (Model.GiftCardAssignments != null)
+        {
+            foreach (var item in Model.GiftCardAssignments)
+            {
+                <div class="bg-white rounded-4 p-3 mb-3 shadow-sm">
+                    <h6 class="mb-3">
+                        @item.GiftCardName
+                    </h6>
+
+                    <p class="text-muted mb-2">
+                        Card Number <br>
+                        <span class="text-dark">@item.GiftCardAssignment.AssignedCode</span>
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        Assigned <br>
+                        <span class="text-dark">@Model.Company.Currency @Math.Round(item.GiftCardAssignment.AssignedAmount, 2)</span>
+                    </p>
+
+
+                    <p class="text-muted mb-2">
+                        Balance <br>
+                        <span class="text-dark">@Model.Company.Currency @Math.Round(item.GiftCardAssignment.Balance, 2)</span>
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        Assigned Date <br>
+                        <span class="text-dark">@item.GiftCardAssignment.AssignedDate.ToString("yyyy-MM-dd") @item.GiftCardAssignment.AssignedDate.ToString("HH:mm")</span>
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        Expiry In <br>
+                        @if (((item.GiftCardAssignment.AssignedDate.AddDays(item.GiftCardAssignment.Days) - DateTime.Now).Days) <= 0)
+                        {
+                            <span class="text-dark">EXPIRED</span>
+                        }
+                        else
+                        {
+                            <span class="text-dark">@((item.GiftCardAssignment.AssignedDate.AddDays(item.GiftCardAssignment.Days) - DateTime.Now).Days) Days</span>
+                        }
+                    </p>
+
+
+                </div>
+            }
+
+        }
+    </div>
+</div>
+
+
+<script>
+   $(document).ready(function () {
+        if ('@Model.Customer.ID' != 0) {
+            var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.Customer.ID, businessName = Model.Company.Business })";
+            $("#ProfileNAVTab").attr("href", href);
+        }
+
+        if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("Index", "Booking", new { CustomerID = Model.Customer.ID, businessName = Model.Company.Business })";
+            $("#HomeNAVTAB").attr("href", href);
+        }
+    });
+
+</script>

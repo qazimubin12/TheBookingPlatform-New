@@ -1,0 +1,166 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "NotAllowed";
+    bool RescheduleBlock = false;
+    DateTime combinedDateTime = new DateTime(Model.Appointment.Date.Year, Model.Appointment.Date.Month, Model.Appointment.Date.Day, Model.Appointment.Time.Hour, Model.Appointment.Time.Minute, Model.Appointment.Time.Second);
+    TimeSpan difference = combinedDateTime - DateTime.Now;
+    if (!Model.Appointment.IsCancelled && Model.Appointment.Status != "No Show")
+    {
+        if (Model.Company.CancellationTime == "1 Hour")
+        {
+            if (difference.TotalHours <= 1)
+            {
+                RescheduleBlock = true;
+            }
+
+        }
+        if (Model.Company.CancellationTime == "3 Hours")
+        {
+            if (difference.TotalHours <= 3)
+            {
+                RescheduleBlock = true;
+            }
+
+        }
+        if (Model.Company.CancellationTime == "5 Hours")
+        {
+            if (difference.TotalHours <= 5)
+            {
+                RescheduleBlock = true;
+            }
+
+        }
+        if (Model.Company.CancellationTime == "24 Hours")
+        {
+            if (difference.TotalHours <= 24)
+            {
+                RescheduleBlock = true;
+            }
+
+        }
+        if (Model.Company.CancellationTime == "48 Hours")
+        {
+            if (difference.TotalHours <= 48)
+            {
+                RescheduleBlock = true;
+            }
+
+        }
+
+    }
+}
+
+
+<div class="card container">
+    <div class="card-body">
+        <h4 class="card-title">Appointment Details</h4>
+        <div class="p-3 mb-2">
+            <div class="row row-cols-3 g-2">
+                <div class="col">
+                    <div class="bg-white text-center rounded-4 p-2 shadow-sm">
+                        <button id="yesCancelBtn" type="button" class="link-dark btn">
+                            <img src="~/Content/TBPContent/icons/multiply.png" alt="" class="img-fluid px-2">
+                            <p class="text-truncate small pt-2 m-0">CANCEL</p>
+                        </button>
+                    </div>
+                </div>
+                <input type="hidden" id="AppointmentID" name="AppointmentID" value="@Model.Appointment.ID" />
+
+                @if (!RescheduleBlock)
+                {
+                <div class="col">
+                    <div class="bg-white text-center rounded-4 p-2 shadow-sm">
+                        <button onclick='window.location.href="@Url.Action("Form", "Booking", new { businessName = Model.Appointment.Business, ids = Model.Appointment.Service, CustomerID = Model.Appointment.CustomerID, SentBy = "Cancellation", AppointmentID = Model.Appointment.ID })"' class="link-dark btn">
+                            <img src="~/Content/TBPContent/icons/schedule.png" alt="" class="img-fluid px-2">
+                            <p class="text-truncate small pt-2 m-0">RESCHEDULE</p>
+                        </button>
+                    </div>
+                </div>
+                }
+
+                <div class="col">
+                    <div class="bg-white text-center rounded-4 p-2 shadow-sm">
+                        <button onclick='window.location.href="@Url.Action("Welcome", "Booking", new {businessName=Model.Appointment.Business})"' class="link-dark btn">
+                            <img src="~/Content/TBPContent/icons/house.png" alt="" class="img-fluid px-2">
+                            <p class="text-truncate small pt-2 m-0">HOME</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class=" col-md-4">
+                <img style="max-width:30%;float:left;" class="img-fluid px-2" src="@Model.Employee.Photo" />
+                <h5>@Model.Employee.Name</h5>
+                <span class="text-muted">@Model.Employee.Specialization</span>
+            </div>
+        </div>
+        
+      
+        <hr />
+
+        <h4>Services</h4>
+        <table class="table table-striped">
+            @foreach (var item in Model.ServicesForCancellation)
+            {
+                <tr>
+                    <td>
+                        @item.Service
+                    </td>
+                    <td>
+                        @Model.Company.Currency @item.Price
+                    </td>
+                </tr>
+            }
+            <tfoot>
+                <tr>
+                    <td>Total</td>
+                    <td> @Model.Company.Currency @Model.Appointment.TotalCost</td>
+                </tr>
+            </tfoot>
+        </table>
+       
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#FooterNAV").hide();
+        //$("#ProfileNAVTab").hide();
+        //$("#ShowCartBtn").hide();
+        //$("#HomeNAVTAB").hide();
+    });
+    $("#yesCancelBtn").click(function () {
+        var isConfirmed = confirm("Are you sure you want to cancel the appointment?");
+
+        if (isConfirmed) {
+            showLoadingSpinner();
+            var AppointmentID = $("#AppointmentID").val();
+            $.ajax({
+                url: '@Url.Action("CancelByEmailPOST", "Appointment")',
+                type: "post",
+                data: { AppointmentID: AppointmentID }
+            })
+                .done(function (response) {
+                    if (response.success) {
+                        alert("Appointment Cancelled Successfully");
+                        
+                        window.location.href = '@Url.Action("AppointmentCancelled", "Appointment", new {ID = Model.Appointment.ID})';
+                        hideLoadingSpinner();
+                    }
+                    else {
+                        window.location.href = '@Url.Action("CannotCancelled", "Appointment", new {ID = Model.Appointment.ID})';
+                        hideLoadingSpinner();
+
+                    }
+                });
+        } else {
+            alert("Appointment Didn't Cancelled");
+        }
+
+    });
+</script>
+

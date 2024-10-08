@@ -1,0 +1,127 @@
+﻿@model TheBookingPlatform.ViewModels.SupplierListingViewModel
+
+<style>
+ 
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Suppliers </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+
+                <div class="form-group">
+
+                    <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                    <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+                    <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                    <button data-href="@Url.Action("Action", "Supplier")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-toggle="modal" data-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="row">
+
+                <div class="col-lg-12 grid-margin stretch-card">
+                    @if (Model.Suppliers != null)
+                    {
+                        <div class="card">
+
+                            <div class="table-responsive">
+                                <table id="SupplierTable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+
+                                            <th class="text-center">
+                                                Name
+                                            </th>
+                                            <th class="text-center">
+                                                Email
+                                            </th>
+                                            <th class="text-center">
+                                                Address
+                                            </th>
+                                            <th class="text-center">
+                                                Postal Code
+                                            </th>
+
+                                            <th class="text-center">
+                                                Total Inventory
+                                            </th>
+
+                                            <th class="text-center">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Suppliers)
+                                        {
+                                            <tr>
+                                                <td class="text-center">@item.Supplier.Name</td>
+                                                <td class="text-center">@item.Supplier.Email</td>
+                                                <td class="text-center">@item.Supplier.Address</td>
+                                                <td class="text-center">@item.Supplier.PostalCode</td>
+                                                <td class="text-center">
+                                                    @item.TotalInventory
+                                                </td>
+                                                <td class="text-center">
+
+                                                    <button data-href="@Url.Action("Action", "Supplier", new { ID = item.Supplier.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
+                                                    <button data-href="@Url.Action("Delete", "Supplier", new { ID = item.Supplier.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="alert alert-warning col-md-12" role="alert">
+                            Sorry! No records exist.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+
+    $("#SearchBtn").click(function () {
+        var SearchTerm = $("#Search").val();
+        RepopulateSuppliers(SearchTerm);
+    })
+
+    $("#ResetBtn").click(function () {
+        RepopulateSuppliers();
+        $("#Search").val('');
+
+    })
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+</script>

@@ -1,0 +1,176 @@
+﻿@model TheBookingPlatform.ViewModels.SettingsViewModel
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+</style>
+
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Email Templates </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+                <div class="row">
+
+                    <input type="text" name="searchterm" class="form-control col-md-8" placeholder="Search." value="@Model.SearchTerm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                </div>
+                <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+                <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                @if (User.IsInRole("Super Admin"))
+                {
+                    <a href="@Url.Action("Action", "EmailTemplate")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+                }
+
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="col-lg-12 grid-margin stretch-card">
+                @if (Model.EmailTemplates != null)
+                {
+                    <div class="card">
+
+                        <div class="table-responsive">
+                            <table id="EmailTemplatesTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+
+                                        <th class="text-center">
+                                            Name
+                                        </th>
+                                        @if (User.IsInRole("Super Admin"))
+                                        {
+                                            <th class="text-center">
+                                                Business
+                                            </th>
+                                        }
+                                        <th class="">
+                                            Is Active
+                                        </th>
+
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.EmailTemplates)
+                                    {
+                                        <tr>
+                                            <td class="text-center">@item.Name</td>
+                                            @if (User.IsInRole("Super Admin"))
+                                            {
+                                                <th class="text-center">
+                                                    @item.Business
+                                                </th>
+                                            }
+                                            <td>
+                                                @if (item.Name != "Rebook Reminder (Newsletter)")
+                                                {
+                                                    if (item.IsActive == true)
+                                                    {
+                                                        <div class="checkbox form-horizontal-checkbox text-center">
+                                                            <label>
+                                                                <input checked type="checkbox" data-id="@item.ID" name="IsActiveCB" class="isActiveCheckbox" />
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="checkbox form-horizontal-checkbox text-center">
+                                                            <label>
+                                                                <input type="checkbox" data-id="@item.ID" name="IsActiveCB" class="isActiveCheckbox" />
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="text-center">
+
+                                                <a href="@Url.Action("Action", "EmailTemplate", new { ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+
+                                                @if (User.IsInRole("Super Admin"))
+                                                {
+                                                    <button data-href="@Url.Action("Delete", "EmailTemplate", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="alert alert-warning col-md-12" role="alert">
+                        Sorry! No records exist.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+
+    $("#SearchBtn").click(function () {
+        var SearchTerm = $("#Search").val();
+        RepopulateEmailTemplates(SearchTerm);
+    })
+
+    $("#ResetBtn").click(function () {
+        RepopulateEmailTemplates();
+        $("#Search").val('');
+
+    })
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+     $('.isActiveCheckbox').change(function () {
+            var isChecked = $(this).prop('checked');
+            var itemId = $(this).data('id');
+
+            // Make AJAX call
+            $.ajax({
+                url: '@Url.Action("UpdateEmailTemplate", "EmailTemplate")',
+                type: 'POST',
+                data: { ID: itemId, IsActive: isChecked },
+                success: function (data) {
+                    // Handle success
+                    if (data.success) {
+                        alert("Email Template Updated");
+                    } else {
+                        alert("Fail");
+
+                    }
+                },
+                error: function (error) {
+                    // Handle error
+                    console.error('Error in Ajax call:', error);
+                }
+            });
+        });
+
+
+</script>
+
+
+

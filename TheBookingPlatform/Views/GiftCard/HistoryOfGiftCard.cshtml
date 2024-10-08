@@ -1,0 +1,60 @@
+﻿@model TheBookingPlatform.ViewModels.GiftCardHistoryViewModel
+@{
+    ViewBag.Title = "HistoryOfGiftCard";
+}
+<a href="@Url.Action("CardAssignmentIndex","GiftCard")" class="btn btn-secondary btn-sm">VIEW GIFT CARDS</a>
+
+<div style="padding-left:0px;padding-right:0px;" class="col-md-12">
+    @if (Model.Histories != null)
+    {
+        <div class="card">
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+
+                            <th class="text-center">
+                                Description
+                            </th>
+
+                            <th class="text-center">
+                                Customer
+                            </th>
+                            <th class="text-center">
+                                Employee
+                            </th>
+
+                            <th class="text-center">
+                                Date
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Histories)
+                        {
+                            <tr>
+
+                                <td class="text-center">@item.Note</td>
+                                <td class="text-center">@item.CustomerName</td>
+                                <td class="text-center">@item.EmployeeName</td>
+                                <td class="text-center">
+                                    @item.Date.ToString("yyyy-MM-dd")
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+
+        <div class="alert alert-warning col-md-12" role="alert">
+            Sorry! No records exist.
+        </div>
+    }
+</div>

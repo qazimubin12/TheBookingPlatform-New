@@ -1,0 +1,366 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "Payment";
+    DateTime endDate = Model.Appointment.BookingDate.AddMinutes(5);
+    TimeSpan timeToWait = endDate - DateTime.Now;
+
+}
+
+
+<!-- Include Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+    /* Variables */
+    * {
+        box-sizing: border-box;
+    }
+
+    .hidden-important {
+        display: none !important;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 16px;
+        -webkit-font-smoothing: antialiased;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    #MainPanel {
+        padding-bottom: 0px !important;
+    }
+
+    #timer {
+        font-size: 1em;
+        color: #333;
+        text-align: center;
+    }
+
+    form {
+        width: 30vw;
+        min-width: 500px;
+        align-self: center;
+        box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1), 0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+        border-radius: 7px;
+        padding: 40px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #payment-message {
+        color: rgb(105, 115, 134);
+        font-size: 16px;
+        line-height: 20px;
+        padding-top: 12px;
+        text-align: center;
+    }
+
+    #payment-element {
+        margin-bottom: 24px;
+    }
+
+    /* Buttons and links */
+
+
+    /* spinner2/processing state, errors */
+    .spinner2,
+    .spinner2:before,
+    .spinner2:after {
+        border-radius: 50%;
+    }
+
+    .spinner2 {
+        color: #ffffff;
+        font-size: 22px;
+        text-indent: -99999px;
+        margin: 0px auto;
+        position: relative;
+        width: 20px;
+        height: 20px;
+        box-shadow: inset 0 0 0 2px;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+
+        .spinner2:before,
+        .spinner2:after {
+            position: absolute;
+            content: "";
+        }
+
+        .spinner2:before {
+            width: 10.4px;
+            height: 20.4px;
+            background: #5469d4;
+            border-radius: 20.4px 0 0 20.4px;
+            top: -0.2px;
+            left: -0.2px;
+            -webkit-transform-origin: 10.4px 10.2px;
+            transform-origin: 10.4px 10.2px;
+            -webkit-animation: loading 2s infinite ease 1.5s;
+            animation: loading 2s infinite ease 1.5s;
+        }
+
+        .spinner2:after {
+            width: 10.4px;
+            height: 10.2px;
+            background: #5469d4;
+            border-radius: 0 10.2px 10.2px 0;
+            top: -0.1px;
+            left: 10.2px;
+            -webkit-transform-origin: 0px 10.2px;
+            transform-origin: 0px 10.2px;
+            -webkit-animation: loading 2s infinite ease;
+            animation: loading 2s infinite ease;
+        }
+
+    @@-webkit-keyframes loading {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes loading {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+
+    @@media only screen and (max-width: 600px) {
+        form {
+            width: 80vw;
+            min-width: initial;
+        }
+    }
+</style>
+<br />
+<div class="container">
+    <div class="payment-form">
+        <h2 class="text-center">Complete your Payment</h2>
+        <div id="timer"></div>
+
+        <form id="payment-form">
+            <div class="form-group mb-2">
+                <label for="email">Email</label>
+                <input style="border-radius:5px !important;" type="email" id="email" placeholder="Enter your Email" class="form-control" required />
+            </div>
+            <div id="payment-element">
+                <!--Stripe.js injects the Payment Element-->
+            </div>
+            <button id="submit" class="btn btn-primary w-100 mb-2">
+                <div class="spinner22 hidden" id="spinner22"></div>
+                <span id="button-text">Pay Now</span>
+            </button>
+            <button onclick="window.location.href='@Model.CancelURL'" class="btn btn-danger w-100 mb-2" id="CancelBtn" type="button">
+                Cancel
+            </button>
+            <div id="payment-message" class="hidden"></div>
+        </form>
+    </div>
+</div>
+<!-- Payment form -->
+<!--<form id="payment-form">
+    <div id="card-element">-->
+<!-- A Stripe Element will be inserted here. -->
+<!--</div>
+    <button type="submit" id="submit">Pay Now</button>
+</form>-->
+<!-- Show error messages -->
+<div id="card-errors" role="alert"></div>
+
+<script>
+    window.onpopstate = function (event) {
+        if (event.state) {
+            // User navigated back to the payment page
+            // Make an AJAX call to notify the server or take appropriate action
+            handleBackNavigation();
+        }
+    };
+    $(document).ready(function () {
+        $("#FooterNAV").hide();
+        $('.osahan-header').addClass('hidden-important');
+        function disableBackButton() {
+            window.history.pushState(null, null, window.location.href);
+        }
+
+        // Push a state to the history when the page loads
+        disableBackButton();
+
+        // Bind to the popstate event
+        $(window).on('popstate', function () {
+            disableBackButton();
+        });
+
+        // Continuously check for back button usage
+        //setInterval(function () {
+        //    disableBackButton();
+        //}, 100);
+        CheckEmail();
+        function CheckEmail() {
+            var emailVa = $("#email").val();
+            if (emailVa == "") {
+
+                $("#submit").attr("disabled", "disabled");
+                return;
+            } else {
+                $("#submit").removeAttr("disabled");
+                return;
+            }
+        }
+        $("#email").on("input", function () {
+            var emailVa = $("#email").val();
+            if (emailVa == "") {
+
+                $("#submit").attr("disabled", "disabled");
+            } else {
+                $("#submit").removeAttr("disabled");
+            }
+        });
+
+    });
+
+    $("#CancelBtn").click(function () {
+        $("#CancelBtn").attr("disabled", "disabled");
+    });
+
+    function handleBackNavigation() {
+        alert("Back Button");
+    }
+
+    let duration = @timeToWait.TotalSeconds; // in seconds
+
+    // Reference to the timer display element
+    const timerDisplay = document.getElementById('timer');
+
+    // Function to start the countdown
+    function startCountdown() {
+        let timer = duration, minutes, seconds;
+        const countdown = setInterval(() => {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            timerDisplay.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(countdown);
+                alert("Link Expired");
+                expiredFunction();
+            }
+        }, 1000);
+    }
+
+    // Function to be called when the countdown ends
+    function expiredFunction() {
+        window.location.href = '@Url.Action("Index", "Booking", new {businessName=Model.Company.Business})';
+        // Add any additional logic you want to execute after the countdown ends
+    }
+
+    // Start the countdown when the page loads
+    window.onload = startCountdown;
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const stripe = Stripe('@Model.Company.PUBLISHEDKEY');
+    const clientSecret = '@Model.PaymentSecret';
+
+    const appearance = {
+        theme: 'stripe',
+    };
+    elements = stripe.elements({ appearance, clientSecret });
+
+    const paymentElementOptions = {
+        layout: "tabs",
+    };
+
+    const paymentElement = elements.create("payment", paymentElementOptions);
+    paymentElement.mount("#payment-element");
+
+    function showMessage(messageText) {
+        const messageContainer = document.querySelector("#payment-message");
+
+        messageContainer.classList.remove("hidden");
+        messageContainer.textContent = messageText;
+
+        setTimeout(function () {
+            messageContainer.classList.add("hidden");
+            messageContainer.textContent = "";
+        }, 4000);
+    }
+    function setLoading(isLoading) {
+        if (isLoading) {
+            // Disable the button and show a spinner
+            document.querySelector("#submit").disabled = true;
+            document.querySelector("#spinner22").classList.remove("hidden");
+            document.querySelector("#button-text").classList.add("hidden");
+        } else {
+            document.querySelector("#submit").disabled = false;
+            document.querySelector("#spinner22").classList.add("hidden");
+            document.querySelector("#button-text").classList.remove("hidden");
+        }
+    }
+
+    const form = document.getElementById('payment-form');
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        showLoadingSpinner();
+        setLoading(true);
+        $('.spinner').css({
+        'left': '0',
+        'right': '0',
+        'top': '50%'
+    });
+
+        $("#LoaderText").text("Please Wait...");
+        const email = document.getElementById('email').value;
+        const { error } = await stripe.confirmPayment({
+            elements,
+             confirmParams: {
+                return_url: "@Html.Raw(Model.SuccessURL)",
+                payment_method_data: {
+                    billing_details: {
+                        email: email,
+                    },
+                },
+            },
+        });
+
+        if (error) {
+            // Show error to your customer (e.g., insufficient funds)
+            document.getElementById('card-errors').textContent = error.message;
+            hideLoadingSpinner();
+        } else if (paymentIntent.status === 'succeeded') {
+            // The payment has been processed!
+            window.location.href = '@Html.Raw(Model.SuccessURL)';
+            hideLoadingSpinner();
+
+        } else {
+            // Handle other statuses
+            window.location.href = '@Html.Raw(Model.CancelURL)';
+            hideLoadingSpinner();
+
+        }
+    });
+});
+</script>

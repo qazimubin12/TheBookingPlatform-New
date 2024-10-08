@@ -1,0 +1,320 @@
+﻿@model TheBookingPlatform.ViewModels.NInvoiceActionViewModel
+@{
+    ViewBag.Title = "View";
+    Layout = null;
+    float TotalAmount = 0;
+    float TotalAmountwithVAT = 0;
+    float VAT = 0;
+    foreach (var item in Model.Items)
+    {
+        if (item.Amount == "0.00" || item.Amount == "0")
+        {
+            var amoubt = (float.Parse(item.Duration) * float.Parse(item.Price));
+            TotalAmount += amoubt;
+        }
+        else
+        {
+            TotalAmount += float.Parse(item.Amount);
+        }
+    }
+    VAT = (TotalAmount * Model.VATFULL.Percentage / 100);
+
+
+    if (Model.VATFULL != null)
+    {
+        TotalAmountwithVAT = TotalAmount + (TotalAmount * Model.VATFULL.Percentage / 100);
+    }
+
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+
+    <title>Invoice - Bootdey.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Include html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style type="text/css">
+        body {
+            background: #eee;
+            margin-top: 20px;
+        }
+
+        .text-danger strong {
+            color: #9f181c;
+        }
+
+        .receipt-main {
+            background: #ffffff none repeat scroll 0 0;
+            border-bottom: 12px solid #333333;
+            border-top: 12px solid #9f181c;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            padding: 40px 30px !important;
+            position: relative;
+            box-shadow: 0 1px 21px #acacac;
+            color: #333333;
+            font-family: open sans;
+        }
+
+            .receipt-main p {
+                color: #333333;
+                font-family: open sans;
+                line-height: 1.42857;
+            }
+
+        .receipt-footer h1 {
+            font-size: 15px;
+            font-weight: 400 !important;
+            margin: 0 !important;
+        }
+
+        .receipt-main::after {
+            background: #414143 none repeat scroll 0 0;
+            content: "";
+            height: 5px;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: -13px;
+        }
+
+        .receipt-main thead {
+            background: #414143 none repeat scroll 0 0;
+        }
+
+            .receipt-main thead th {
+                color: #fff;
+            }
+
+        .receipt-right h5 {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 0 7px 0;
+        }
+
+        .receipt-right p {
+            font-size: 12px;
+            margin: 0px;
+        }
+
+            .receipt-right p i {
+                text-align: center;
+                width: 18px;
+            }
+
+        .receipt-main td {
+            padding: 9px 20px !important;
+        }
+
+        .receipt-main th {
+            padding: 13px 20px !important;
+        }
+
+        .receipt-main td {
+            font-size: 13px;
+            font-weight: initial !important;
+        }
+
+            .receipt-main td p:last-child {
+                margin: 0;
+                padding: 0;
+            }
+
+            .receipt-main td h2 {
+                font-size: 20px;
+                font-weight: 900;
+                margin: 0;
+                text-transform: uppercase;
+            }
+
+        .receipt-header-mid .receipt-left h1 {
+            font-weight: 100;
+            margin: 34px 0 0;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
+        .receipt-header-mid {
+            margin: 24px 0;
+            overflow: hidden;
+        }
+
+        #container {
+            background-color: #dcdcdc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="text-right" style="margin-bottom: 20px;">
+        <button id="printBtn" onclick="printInvoice()" class="btn btn-primary">Print Invoice</button>
+        <button id="downloadbtn" onclick="downloadPDF()" class="btn btn-success">Download PDF</button>
+    </div>
+    <div id="mainTalb" class="col-md-12">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="receipt-main col-md-8">
+                <div class="row">
+                    <div class="receipt-header">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="receipt-left">
+                                <img class="img-responsive" alt="iamgurdeeposahan" src="@Model.CompanyLogo" style="width: 100px;border-radius: 43px;">
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                            <div class="receipt-right">
+                                <h5>@Model.CompanyName</h5>
+                                <p>@Model.CompanyEmail<i class="fa fa-phone"></i></p>
+                                <p><a href="mailto:@Model.CompanyEmail" class="__cf_email__">@Model.CompanyEmail</a> <i class="fa fa-envelope-o"></i></p>
+                                <p>@Model.CompanyAddress <i class="fa fa-location-arrow"></i></p>
+                                <p>Payment Method: @Model.PaymentMethod</p>
+                                <p>Issue Date: @Model.IssueDate.ToString("yyyy-MM-dd")</p>
+                                <p>Due Date: @Model.DueDate.ToString("yyyy-MM-dd")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="receipt-header receipt-header-mid">
+                        <div class="col-xs-8 col-sm-8 col-md-8 text-left">
+                            <div class="receipt-right">
+                                <h5>@Model.CustomerName </h5>
+                                <p><b>Mobile :</b>@Model.CustomerPhone</p>
+                                <p><b>Email :</b> <a href="/cdn-cgi/l/email-protection" class="__cf_email__">@Model.CustomerEmail</a></p>
+                                <p><b>Address :</b> @Model.CustomerAddress</p>
+                            </div>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4">
+                            <div class="receipt-left">
+                                <h5>INVOICE # @Model.InvoiceNo</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Unit Price (€)</th>
+                                <th>Amount (€)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>@item.Service</td>
+                                    <td>@item.Duration</td>
+                                    <td>€ @item.Price</td>
+                                    @if (item.Amount == "0.00" || item.Amount == "0")
+                                    {
+                                        <td>€ @(float.Parse(item.Duration) * float.Parse(item.Price)) </td>
+
+                                    }
+                                    else
+                                    {
+                                        <td>€ @item.Amount </td>
+                                    }
+
+                                </tr>
+                            }
+
+
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td class="text-right">
+                                    <p>
+                                        <strong>Amount: </strong>
+                                    </p>
+                                    <p>
+                                        <strong>VAT: </strong>
+                                    </p>
+
+                                </td>
+                                <td>
+                                    <p>
+                                        <strong> € @TotalAmount </strong>
+                                    </p>
+                                    <p>
+                                        <strong> € @VAT</strong>
+                                    </p>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="text-right"><h2><strong>Total: </strong></h2></td>
+                                <td class="text-left"><h2><strong>€ @TotalAmountwithVAT</strong></h2></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="receipt-header receipt-header-mid receipt-footer">
+                        <div class="col-xs-8 col-sm-8 col-md-8 text-left">
+                            <div class="receipt-right">
+                                <p><b>Date :</b>@DateTime.Now.ToString("yyyy-MM-dd")</p>
+                                <h5 style="color: rgb(140, 140, 140);">Remarks: @Model.Remarks</h5>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+       <div class="col-md-1"></div>
+        </div>
+    </div>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        function printInvoice() {
+            $("#downloadbtn").hide();
+            $("#printBtn").hide();
+            window.print();
+            location.reload();
+        }
+
+        function downloadPDF() {
+            var content = document.getElementById('mainTalb');
+
+            html2canvas(content).then((canvas) => {
+                var imgData = canvas.toDataURL('image/png');
+                var doc = new jspdf.jsPDF('p', 'mm', 'a4');
+                var imgWidth = 210;
+                var pageHeight = 297;
+                var imgHeight = canvas.height * imgWidth / canvas.width;
+                var heightLeft = imgHeight;
+
+                var position = 0;
+
+                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                doc.save('invoice.pdf');
+            });
+        }
+
+    </script>
+</body>
+</html>

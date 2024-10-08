@@ -1,0 +1,537 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "Index";
+    Random rand = new Random();
+
+
+}
+
+<script src="~/Content/MainTemplate/assets/js/jquery.min.js" type="text/javascript"></script>
+
+
+<style>
+
+    .table > :not(caption) > * > * {
+        padding: 0rem 0rem;
+        background-color: var(--bs-table-bg);
+        border-bottom-width: var(--bs-border-width);
+        box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
+    }
+
+    .CategoryBtn {
+        width: max-content;
+    }
+    /*#ServicesList {
+        height: 400px;*/ /* or any height */
+    /*overflow: auto;
+    }*/
+
+    .body-fix-osahan-footer {
+        padding-bottom: 40px;
+    }
+
+    .loading-spinner-overlay {
+        display: none; /* Initially hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 9999; /* Ensure it appears above all other content */
+        background-color: rgba(0,0,0,0.5); /* Transparent black */
+    }
+
+    .sticky-div {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white; /* Adjust this as needed */
+        z-index: 100;
+        transition: transform 0.3s;
+    }
+
+    hr {
+        margin: 0rem;
+        color: inherit;
+        border: 0;
+        border-top: var(--bs-border-width) solid;
+        opacity: .25;
+    }
+
+
+    .spinner {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+</style>
+
+<div class="my-auto overflow-auto body-fix-osahan-footer">
+    <div class="">
+        <input type="hidden" id="CustomerID" value="@Model.CustomerID" />
+        <div style="margin-top:10px;" id="ServiceCategoriesList" class="table-responsive sticky-div">
+            <table class="table table-borderless">
+                <tr>
+                    <td style="border:none;">
+                        <div class="mx-3 px-3">
+                            <button data-category="0" class="CategoryBtn btn btn-primary btn-rounded">
+                                VIEW ALL
+                            </button>
+                        </div>
+                    </td>
+
+                    @foreach (var item in Model.Services)
+                    {
+                        <td style="border:none;">
+                            <div class="mx-1 px-1">
+                                <button type="button" data-category="@item.ServiceCategory.ID" class="CategoryBtn btn btn-sm btn-secondary btn-rounded" id="@item.ServiceCategory.ID">
+                                    @item.ServiceCategory.Name
+                                </button>
+                            </div>
+                        </td>
+
+                    }
+                </tr>
+            </table>
+        </div>
+        <hr />
+        <div id="loadingSpinner" class="loading-spinner-overlay">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Specialist -->
+        <input type="hidden" id="Company" value="@Model.Company.ID" />
+        <input style="margin-top:10px;" id="search" class="form-control mb-2 pb-1 px-3 fw-bold" type="text" placeholder="Search for services">
+        <hr />
+        <div style="background-color:white;" id="ServicesList">
+
+            <!-- 1st -->
+            @foreach (var item in Model.Services)
+            {
+                if (item.Services.Count() > 0)
+                {
+                <h4 id="Category_@(item.ServiceCategory.ID)" class="p-2 mb-1 mx-2 fs-16">@item.ServiceCategory.Name</h4>
+                }
+                foreach (var servic in item.Services)
+                {
+
+                    if (servic.Service.CanBookOnline)
+                    {
+                    <div class="link-dark service-item" id="Service_@(item.ServiceCategory.ID)">
+                        <div style=" justify-content: space-between; " class="d-flex align-items-center gap-3 bg-white border-bottom shadow-sm p-3">
+                            <div style="width:75%;" class="small">
+                                <h6 class="mb-1 fs-14">@servic.Service.Name</h6>
+                                <small class="text-muted"><b>@servic.Service.Duration</b> | @servic.Service.Notes</small><br />
+                                @if (servic.BestSeller)
+                                {
+                                    <span class="badge text-bg-success rounded-pill">MOST BOOKED</span>
+                                }
+                            </div>
+                            <div class="small">
+                                <h6 style="white-space:nowrap;" class="mb-1 fs-14">@servic.Service.Price @Model.Company.Currency</h6>
+                            </div>
+                            <button class="btn btn-primary" data-id="@servic.Service.ID" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
+                                    onclick='showModalContent("@servic.Service.ID","@servic.Service.Name","@servic.Service.Duration","@servic.Service.Price")' aria-controls="offcanvasBottom">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                    }
+                }
+
+            }
+            <hr />
+            @*<button class="btn btn-primary col-12" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
+                    onclick="showModalOnly()" aria-controls="offcanvasBottom">
+                SHOW CART
+            </button>*@
+        </div>
+
+        <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel" style="height: 80vh;">
+            <div class="offcanvas-body text-center align-items-center justify-content-center">
+                <div>
+                    <h5 class="py-2" id="modalTitle">Thanks You!<br>Your Appointment Created</h5>
+                    <p class="text-muted fs-6" id="modalContent">You Booked an appointment with dr. Mahabuba Isalam on nov 21, at 10:00 am</p>
+                    <div id="modalDataTable">
+                        <!-- Data from the button will be added here -->
+                    </div>
+                </div>
+            </div>
+            <div class="offcanvas-footer">
+                <button type="button" id="NextToDetailsButton" class="btn btn-info btn-lg w-100 rounded-4">Next</button>
+            </div>
+        </div>
+    </div>
+    <!-- Available doctors -->
+
+</div>
+
+
+
+<script>
+    function showLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+    }
+
+    function hideLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+    let selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
+
+    function showModalContent(id, name, duration, price) {
+        // Get references to the modal elements
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        const modalDataTable = document.getElementById('modalDataTable');
+
+        // Update the content of the modal title and content
+        modalTitle.innerHTML = "Selected Services";
+        modalContent.innerHTML = "These are your selected services";
+
+        // Check if the service with the given ID is already in selectedServices
+        const existingService = selectedServices.find(service => service.id === id);
+
+        if (!existingService) {
+            // Add the service to the selectedServices array
+            selectedServices.push({ id, name, duration, price });
+
+            // Save the updated selectedServices array to localStorage
+            localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+        }
+
+        // Clear the modal table
+        modalDataTable.innerHTML = "";
+        const table = $('<table id="ServicesTable">').addClass('table');
+        const thead = $('<thead>').appendTo(table);
+        const tbody = $('<tbody>').appendTo(table);
+
+        // Create the table header (thead) with th elements
+        const headerRow = $('<tr>').appendTo(thead);
+        $('<th>').text('Service Name').appendTo(headerRow);
+        $('<th>').text('Duration').appendTo(headerRow);
+        $('<th>').text('Price').appendTo(headerRow);
+        $('<th>').text('').appendTo(headerRow);
+        selectedServices.forEach((service) => {
+            const row = $('<tr style="vertical-align:baseline">').appendTo(tbody);
+            $('<td style="display:none" class="ServiceID">').text(service.id + "_").appendTo(row);
+            $('<td style="width: 40vh;padding: 10px;">').text(service.name).appendTo(row);
+            $('<td style="padding:10px;">').text(service.duration).appendTo(row);
+            $('<td style="padding:10px;">').text(service.price + " @Model.Company.Currency").appendTo(row);
+            const deleteButton = $('<button style="padding: px 5px!important;">')
+                .addClass('btn btn-sm btn-outline-danger w-100 rounded-4')
+                .text('X')
+                .click(function (index) {
+                    // Remove the service from selectedServices and update the table
+                    const serviceIdToRemove = $(this).closest('tr').find('.ServiceID').text().replace('_', '');
+
+                    // Remove the service from selectedServices using the serviceId
+                    const serviceIndexToRemove = selectedServices.findIndex(service => service.id === serviceIdToRemove);
+                    selectedServices.splice(index, 1);
+                    if (serviceIndexToRemove !== -1) {
+                        selectedServices.splice(serviceIndexToRemove, 1);
+                        saveSelectedServicesToLocalStorage();
+                        showModalOnly(); // Refresh the modal content
+                        checkSelectedServicesCount();
+                    }
+
+                });
+            const deleteCell = $('<td style="padding: 10px;">').append(deleteButton);
+            deleteCell.appendTo(row);
+        });
+        // Append the table to the DOM or do other necessary actions with it
+        // For example, you can append it to a specific div element
+        table.appendTo('body');// Appends the table to the body element
+
+
+        // Create a delete button for each service
+
+
+        table.appendTo(modalDataTable);
+        checkSelectedServicesCount();
+
+
+
+        // Show the modal
+        const offcanvasBottom = new bootstrap.Offcanvas(document.getElementById('offcanvasBottom'));
+        offcanvasBottom.show();
+
+        offcanvasBottom._element.addEventListener('hidden.bs.offcanvas', function () {
+            var elemt = document.querySelector('.offcanvas-backdrop');
+            if (elemt.length > 0) {
+                document.querySelector('.offcanvas-backdrop').remove();
+            }
+        });
+        function saveSelectedServicesToLocalStorage() {
+            localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+        }
+    }
+
+    function showModalOnly() {
+        var button = $("#ShowCartBtn");
+
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        const modalDataTable = document.getElementById('modalDataTable');
+
+        // Update the content of the modal title and content
+        modalTitle.innerHTML = "Selected Services";
+        modalContent.innerHTML = "These are your selected services";
+
+        modalDataTable.innerHTML = "";
+
+        // Clear the modal table
+        const table = $('<table id="ServicesTable">').addClass('table');
+        const thead = $('<thead>').appendTo(table);
+        const tbody = $('<tbody>').appendTo(table);
+
+        // Create the table header (thead) with th elements
+        const headerRow = $('<tr>').appendTo(thead);
+        $('<th>').text('Service Name').appendTo(headerRow);
+        $('<th>').text('Duration').appendTo(headerRow);
+        $('<th>').text('Price').appendTo(headerRow);
+        $('<th>').text('').appendTo(headerRow);
+        selectedServices.forEach((service) => {
+            const row = $('<tr style="vertical-align:baseline">').appendTo(tbody);
+            $('<td style="display:none" class="ServiceID">').text(service.id + "_").appendTo(row);
+            $('<td style="width: 40vh;padding: 10px;">').text(service.name).appendTo(row);
+            $('<td style="padding:10px;">').text(service.duration).appendTo(row);
+            $('<td style="padding:10px;">').text(service.price + " @Model.Company.Currency").appendTo(row);
+            const deleteButton = $('<button style="padding: px 5px!important;">')
+                .addClass('btn btn-sm btn-outline-danger w-100 rounded-4')
+                .text('X')
+                .click(function (index) {
+                    // Remove the service from selectedServices and update the table
+
+                    selectedServices.splice(index, 1);
+                    saveSelectedServicesToLocalStorage();
+                    showModalOnly(); // Refresh the modal content
+                    document.querySelector('.offcanvas-backdrop').remove();
+                    checkSelectedServicesCount();
+                });
+            const deleteCell = $('<td style="padding: 10px;">').append(deleteButton);
+            deleteCell.appendTo(row);
+        });
+        // Append the table to the DOM or do other necessary actions with it
+        // For example, you can append it to a specific div element
+        table.appendTo('body');// Appends the table to the body element
+
+
+        // Create a delete button for each service
+
+        table.appendTo(modalDataTable);
+
+        // Show the modal
+        const offcanvasBottom = new bootstrap.Offcanvas(document.getElementById('offcanvasBottom'));
+        offcanvasBottom.show();
+
+        offcanvasBottom._element.addEventListener('hidden.bs.offcanvas', function () {
+            document.querySelector('.offcanvas-backdrop').remove();
+            button.removeClass("active");
+            //$('body').removeClass('offcanvas-open'); // Add this line to remove the offcanvas-open class from the body
+            $('body').css('overflow', 'auto'); // Add this line to enable scrolling
+
+        });
+        button.addClass("active");
+
+        function saveSelectedServicesToLocalStorage() {
+            localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+        }
+
+        checkSelectedServicesCount();
+    }
+
+    function checkSelectedServicesCount() {
+        var button = $("#NextToDetailsButton");
+
+        if (selectedServices.length === 0) {
+            // If there are no selected services, hide the button
+            button.hide();
+        } else {
+            // If there are selected services, show the button
+            button.show();
+        }
+    }
+
+
+    checkSelectedServicesCount();
+
+
+    $("#NextToDetailsButton").click(function () {
+        var CustomerID = $("#CustomerID").val();
+        var ids = [];
+
+        $(".ServiceID").each(function () {
+            ids.push($(this).text());
+        });
+        var ids = $(".ServiceID").text();
+
+        var url = '@Url.Action("Form", "Booking")';
+        var By = '@Model.By';
+        var businessName = '@Model.Company.Business';
+        url = url + '?businessName=' + businessName + '&IDs=' + ids + '&CustomerID=' + CustomerID+'&By=' + By;
+
+        // Redirect to the new page with data in the query string
+        window.location.href = url;
+    });
+
+
+    $(document).ready(function () {
+        var isLoggedIn = $("#CustomerID").val();
+        if (isLoggedIn != 0) {
+            $("#FooterNAV").show();
+            $("#ProfileNAVTab").show();
+        } else {
+            $("#FooterNAV").show();
+        //    $("#ProfileNAVTab").hide();
+        }
+        var serviceCategoriesList = $("#ServiceCategoriesList");
+        var lastScrollTop = 0;
+        var isStickyVisible = true;
+
+        $('#ServicesList').on('scroll', function () {
+
+            var st = $(this).scrollTop();
+
+            if (st > lastScrollTop) {
+                // Scrolling down
+                if (isStickyVisible) {
+                    isStickyVisible = false;
+                    serviceCategoriesList.slideDown();
+                }
+            } else {
+                // Scrolling up
+                if (!isStickyVisible) {
+                    isStickyVisible = true;
+                    serviceCategoriesList.slideUp();
+
+                }
+            }
+
+            lastScrollTop = st;
+        });
+
+
+        //$(".CategoryBtn").click(function () {
+        //    var categoryID = $(this).data("category");
+        //    scrollToCategory(categoryID);
+        //});
+
+        //function scrollToCategory(categoryID) {
+        //    var categoryDiv = $(`[data-category='${categoryID}']`).first();
+        //    if (categoryDiv.length > 0) {
+        //        var scrollPosition = categoryDiv.offset().top - $("#MainPanel").offset().top;
+        //        $("#MainPanel").animate({
+        //            scrollTop: scrollPosition
+        //        }, 500);
+        //    }
+        //}
+        var $searchInput = $('#search');
+        var $servicesList = $('#ServicesList');
+
+        // Listen for keyup events in the search input
+        $searchInput.on('keyup', function () {
+            showLoadingSpinner();
+            var searchText = $searchInput.val().toLowerCase();
+
+            // Filter and show only service items that match the search input
+            $servicesList.find('.service-item').each(function () {
+                var serviceItem = $(this);
+                var serviceName = serviceItem.find('.fs-14').text().toLowerCase();
+                var category = serviceItem.find('.text-muted').text().toLowerCase();
+
+                if (serviceName.includes(searchText) || category.includes(searchText)) {
+                    serviceItem.show();
+                } else {
+                    serviceItem.hide();
+                }
+            });
+            hideLoadingSpinner();
+        });
+
+        //$('.CategoryBtn').click(function () {
+        //    var categoryID = $(this).data('category');
+        //    if (categoryID != "0") {
+        //        // Find the first service item with the corresponding categoryID
+        //        var firstService = $('.service-item[data-category="' + categoryID + '"]:first');
+
+        //        if (firstService.length) {
+        //            // Scroll to the first service item
+        //            $('html, body').animate({
+        //                scrollTop: $('#MainPanel').offset().top
+        //            }, 500);
+        //        }
+        //    } else {
+        //        location.reload();
+        //    }
+        //});
+
+
+
+
+
+
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll(".CategoryBtn");
+        const content = document.querySelectorAll(".service-item");
+
+        buttons.forEach((button) => {
+            button.classList.remove("btn-primary");
+            button.classList.add("btn-secondary");
+
+            button.addEventListener("click", () => {
+                // Reset the class of all buttons to btn-secondary
+                buttons.forEach((btn) => {
+                    btn.classList.remove("btn-primary");
+                    btn.classList.add("btn-secondary");
+                });
+
+                button.classList.remove("btn-secondary");
+                button.classList.add("btn-primary");
+                content.forEach((c) => c.classList.remove("active"));
+
+                const categoryId = button.getAttribute("data-category");
+                const categoryContent = document.getElementById("Category_" + categoryId);
+                if (categoryContent != null) {
+                    const elementBounds = categoryContent.getBoundingClientRect();
+                    const offset = elementBounds.top - 100; /* Add your required offset here */
+                    window.scrollBy({ top: offset, behavior: 'smooth' });
+                //    categoryContent.scrollIntoView({ behavior: "smooth" });
+                }
+            });
+        });
+    });
+
+
+    $(document).ready(function () {
+        if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+            $("#ProfileNAVTab").attr("href", href);
+        }
+        if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("Index", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+            $("#HomeNAVTAB").attr("href", href);
+        }
+
+    });
+</script>

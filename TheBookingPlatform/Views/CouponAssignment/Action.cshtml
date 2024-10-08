@@ -1,0 +1,334 @@
+﻿@model TheBookingPlatform.ViewModels.CouponAssignmentActionViewModel
+@{
+    ViewBag.Title = "Action";
+}
+
+
+<head>
+    <link href="~/Content/TBPContent/autocomplete/content/styles.css" rel="stylesheet" />
+    <script type="text/javascript" src="~/Content/TBPContent/autocomplete/src/jquery.autocomplete.js"></script>
+</head>
+<style>
+    .autocomplete-suggestions {
+        box-sizing: border-box;
+        border-radius: 5px;
+        background: #FFF;
+        cursor: default;
+        overflow: auto;
+        -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        /* Customize the scrollbar */
+        scrollbar-width: thin; /* For Firefox */
+        scrollbar-color: #999 #FFF; /* For Firefox */
+    }
+
+        .autocomplete-suggestions::-webkit-scrollbar {
+            width: 10px; /* Set the width of the scrollbar */
+        }
+
+        /* Define the scrollbar thumb */
+        .autocomplete-suggestions::-webkit-scrollbar-thumb {
+            background-color: #999; /* Color of the thumb */
+            border-radius: 5px; /* Rounded corners for the thumb */
+        }
+
+            /* Define the scrollbar thumb on hover */
+            .autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+                background-color: #666; /* Color of the thumb on hover */
+            }
+
+        /* Define the scrollbar track on hover */
+        .autocomplete-suggestions::-webkit-scrollbar-track {
+            background-color: #FFF; /* Color of the track */
+        }
+
+        /* Define the scrollbar corner (optional) */
+        .autocomplete-suggestions::-webkit-scrollbar-corner {
+            background-color: #FFF; /* Color of the scrollbar corner */
+        }
+
+    .autocomplete-suggestion {
+        padding: 2px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .autocomplete-no-suggestion {
+        padding: 2px 5px;
+    }
+
+    .autocomplete-selected {
+        background: #F0F0F0;
+    }
+
+    .autocomplete-suggestions strong {
+        font-weight: bold;
+        color: #000;
+    }
+
+    .autocomplete-group {
+        padding: 2px 5px;
+        font-size: 16px;
+        color: #000;
+        display: block;
+        border-bottom: 1px solid #000;
+    }
+
+</style>
+<form id="actionForm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit Coupon Assignment
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create Coupon Assignment
+                    </h4>
+                }
+            </div>
+
+
+            <div class="card-content">
+                <div class="form-group col-md-6">
+                    <label>Select Coupon</label>
+                    <select class="form-control" name="CouponID" id="CouponID">
+                        @foreach (var item in Model.Coupons)
+                        {
+                            if (item.ID == Model.CouponID)
+                            {
+                                <option value="@item.ID" selected>@item.CouponName</option>
+                            }
+                            else
+                            {
+                                <option value="@item.ID">@item.CouponName</option>
+
+                            }
+                        }
+                    </select>
+                </div>
+
+               
+                    
+                <div class="form-group col-md-6">
+                    <label>Select Customer</label>
+                    <input type="hidden" class="form-control" name="CustomerID" id="CustomerID" />
+                    <input class="form-control autocompleteCustomers" type="text" />
+                    <div id="MainCustomerSelectedContainer" class="">
+                        @if (Model.CustomerID != 0)
+                        {
+                            <table class="table table-hovered">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:70px;" class="suggestion-initial">
+                                            <div class="circular-box">@Model.Customer.FirstName.ToString()[0] @Model.Customer.LastName.ToString()[0]</div>
+                                        </td>
+                                        <td class="suggestion-details">
+                                            <input type="hidden" name="CustomerID" id="CustomerID" value="@Model.Customer.ID" class="customer-id">
+                                            <div class="customer-name">@Model.Customer.FirstName @Model.Customer.LastName </div>
+                                            <div class="customer-email">  @Model.Customer.Email  </div>
+                                            <div class="customer-mobile"> @Model.Customer.MobileNumber </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+
+
+                <div class="form-group col-md-6">
+                    <label>Assigned Date</label>
+                    <input type="date" class="form-control" name="AssignedDate" value="@(Model.ID == 0 ? DateTime.Now.ToString("yyyy-MM-dd") : Model.AssignedDate.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Used</label>
+                    <input type="number" class="form-control" name="Used" id="Used" value="@Model.Used" />
+                </div>
+
+            </div>
+
+            <div class="col-md-12">
+                @if (Model.ID == 0)
+                {
+
+
+                    <button id="ActionBtn" type="button" class="btn btn-primary btn-rounded">SAVE</button>
+                }
+                else
+                {
+                    <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+
+                }
+                <button type="button" onclick="window.location.href='@Url.Action("Index","CouponAssignment")'" class="btn btn-secondary  btn-rounded">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+<script src="~/Content/build/js/intlTelInput.js"></script>
+
+<script>
+
+
+
+    $(document).ready(function () {
+       initializeAutocompleteForCustomers();
+        function initializeAutocompleteForCustomers() {
+            $.ajax({
+                url: '@Url.Action("GetCustomers", "Appointment")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var lookup = [];
+
+                    // Iterate through the ServiceModel items
+                    data.forEach(function (customer) {
+
+                        if (customer.LastName == null) {
+                            lookup.push({
+                                value: customer.FirstName,
+                                CustomerInitials: customer.FirstName.charAt(0),
+                                CustomerName: customer.FirstName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        }
+                        else if (customer.FirstName == null) {
+                            lookup.push({
+                                value: customer.LastName,
+                                CustomerInitials: customer.LastName.charAt(0),
+                                CustomerName: customer.LastName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        }
+                        else {
+                            lookup.push({
+                                value: customer.FirstName + " " + customer.LastName,
+                                CustomerInitials: customer.FirstName.charAt(0) + customer.LastName.charAt(0),
+                                CustomerName: customer.FirstName + " " + customer.LastName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        }
+                    });
+
+                    $('.autocompleteCustomers').devbridgeAutocomplete({
+                        lookup: lookup,
+                        minChars: 0,
+                        formatResult: function (suggestion, currentValue) {
+                            // Customize the rendering of each suggestion
+
+                            return '<table class="table table-hovered">' +
+                                '<tbody>' +
+                                '<tr>' +
+                                '<td style="width:70px;" class="suggestion-initial">' +
+                                '<div class="circular-box">' + suggestion.CustomerInitials + '</div>' +
+                                '</td>' +
+                                '<td class="suggestion-details">' +
+                                '<div class="customer-name">' + suggestion.CustomerName + '</div>' +
+                                '<div class="customer-email">' + suggestion.CustomerEmail + '</div>' +
+                                '<div class="customer-mobile">' + suggestion.CustomerMobileNumber + '</div>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>';
+                        },
+                        onSelect: function (suggestion) {
+                            var selectedCustomerID = suggestion.data.id;
+                            var $inputElement = $(this);
+                            $("#CustomerID").val(selectedCustomerID);
+                            $.ajax({
+                                url: '@Url.Action("GetCustomerDetails", "Appointment")', // Replace with your controller action URL
+                                type: 'GET',
+                                dataType: 'json',
+                                data: { ID: selectedCustomerID }, // Pass the selectedServiceId as a parameter
+                                success: function (customer) {
+                                    console.log("customer Details" + customer);
+                                    $("#MainCustomerSelectedContainer").empty();
+                                    var DivToBeAdded = '<div class="suggestion-container">' +
+                                        '<table class="table table-hovered">' +
+                                        '<tbody>' +
+                                        '<tr>' +
+                                        '<td style="width:70px;" class="suggestion-initial">' +
+                                        '<div class="circular-box">' + customer.FirstName.charAt(0) + customer.LastName.charAt(0) + '</div>' +
+                                        '</td>' +
+                                        '<td class="suggestion-details">' +
+                                        '<input type="hidden" name="CustomerID" id="CustomerID" value=' + customer.ID + ' class="customer-id">' +
+                                        '<div class="customer-name">' + customer.FirstName + " " + customer.LastName + '</div>' +
+                                        '<div class="customer-email">' + customer.Email + '</div>' +
+                                        '<div class="customer-mobile">' + customer.MobileNumber + '</div>' +
+                                        '</td>' +
+                                        '</tr>' +
+                                        '</tbody>' +
+                                        '</table>' +
+                                        '</div>';
+
+                                    $("#MainCustomerSelectedContainer").append(DivToBeAdded);
+
+
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching service details:', error);
+                                }
+                            });
+                            // Now you can access the selected service ID (selectedServiceId)
+                            // and use it as needed.
+                        },
+                        showNoSuggestionNotice: true,
+                        noSuggestionNotice: 'Sorry, no matching results'
+                    });
+                },
+                error: function (error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+
+
+        }
+        $("#ActionBtn").click(function () {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("Action", "CouponAssignment")',
+                type: "post",
+                data: $("#actionForm").serialize()
+            })
+                .done(function (response) {
+
+                    if (response.success) {
+                        hideLoadingSpinner();
+                        window.location.href = '@Url.Action("Index", "CouponAssignment")';
+                    }
+                    else {
+                        hideLoadingSpinner();
+                        alert(response.Message);
+                    }
+                });
+
+        });
+    });
+</script>

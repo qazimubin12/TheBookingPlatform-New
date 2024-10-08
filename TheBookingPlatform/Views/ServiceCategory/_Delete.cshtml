@@ -1,0 +1,48 @@
+﻿@model TheBookingPlatform.ViewModels.ServiceCategoriesActionViewModel
+
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <span>Delete Service Category</span>
+            </h5>
+           
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <input type="hidden" name="ID" value="@Model.ID" />
+                <input type="hidden" name="Name" value="@Model.Name" />
+
+            </form>
+            <div class="alert alert-danger" role="alert">
+                Are you sure you want to delete this Service Category?
+                Please Note: Deleting Service Category Will Delete All The Services Linked with it.
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="actionButton" type="button" class="btn btn-danger"><i class="fas fa-trash-alt mr-1"></i> Delete</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+        </div>
+    </div>
+}
+
+<script>
+	$("#actionButton").click(function () {
+        $.ajax({
+            url: '@Url.Action("Delete", "ServiceCategory")',
+            type: "post",
+            data: $("#actionForm").serialize()
+        })
+            .done(function (response) {
+                alert(response.Message);
+                if (response.Message == "Deleted Successfully") {
+                    window.location.href = "@Url.Action("Index", "ServiceCategory")";
+                }
+                else {
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+	});
+</script>

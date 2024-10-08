@@ -1,0 +1,466 @@
+﻿@model TheBookingPlatform.ViewModels.LoyaltyCardActionViewModel
+@{
+    ViewBag.Title = "Action";
+    string ServiceIdAlreadyIncluded = "";
+    string FinalServiceInclude = "";
+    string SubMainService = "";
+}
+
+
+<style>
+
+
+    .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: black;
+        font-weight: 400;
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: black;
+    }
+</style>
+<form id="actionForm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit LoyaltyCard
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create LoyaltyCard
+                    </h4>
+                }
+            </div>
+
+
+            <div class="card-content">
+                <div style="display:flex;align-items:end;" class="row">
+                    <div class="col-md-6">
+                        <input type="hidden" id="ID" value="@Model.ID" />
+                        <div class="form-group">
+                            <label>
+                                Card Name
+                            </label>
+                            <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                               Days in Expiry
+                            </label>
+                            @if (Model.ID == 0)
+                            {
+                                <input type="number" value="30" class="form-control" name="Days" />
+                            }
+                            else
+                            {
+                                <input type="number" value="@Model.Days" class="form-control" name="Days" />
+
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="checkbox form-horizontal-checkbox">
+                            <label>
+                                @if (Model.IsActive == true)
+                                {
+                                    <input type="checkbox" checked name="IsActiveCB" id="IsActiveCB">
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="IsActiveCB" id="IsActiveCB">
+
+                                }
+                                Is Active?
+                            </label>
+                            <input type="hidden" name="IsActive" id="IsActive" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="card">
+                        <div class="card-content">
+                            <h4 class="card-title">Add Promotion</h4>
+                            <div id="CheckBoxList" class="col-md-12">
+                                <input type="text" id="serviceSearch" placeholder="Search services" class="form-control">
+                                <div class="form-group col-md-6">
+                                    <label>Add Service</label><br />
+                                    <div class="checkbox form-horizontal-checkbox" id="parentCheckbox">
+                                        <label>
+                                            <input class="serviceCB" type="checkbox" />
+                                            Select All
+                                        </label>
+                                    </div>
+                                    <hr />
+                                    @foreach (var item in Model.Services)
+                                    {
+                                        if (Model.ID != 0)
+                                        {
+                                            if (!Model.AlreadyIncludedServices.Contains(item.ID))
+                                            {
+                                                <div class="checkbox form-horizontal-checkbox service-item">
+                                                    <label>
+                                                        <input class="serviceCB" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
+                                                        @item.Name
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="checkbox form-horizontal-checkbox service-item">
+                                                <label>
+                                                    <input class="serviceCB" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
+                                                    @item.Name
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Add Percentage</label>
+                                    <input type="text" class="form-control" id="Percentage" autocomplete="off" list="PercentageList" />
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-info" type="button" id="AddBtn">Add Promotion</button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row" id="PromotionsRow">
+                    @if (Model.ID != 0)
+                    {
+                        foreach (var item in Model.LoyaltyCardPromotions)
+                        {
+                            ServiceIdAlreadyIncluded = "";
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <h4 class="card-title">
+                                            @item.Percentage % (Promotions)
+                                        </h4>
+                                        <ol class="list-group">
+                                            @foreach (var ser in item.Services)
+                                            {
+                                                <li data-id="@ser.ID" class="list-group-item">
+                                                    @ser.Name
+                                                </li>
+                                                if (ServiceIdAlreadyIncluded == "")
+                                                {
+                                                    ServiceIdAlreadyIncluded = String.Join(",", ser.ID);
+                                                }
+                                                else
+                                                {
+                                                    ServiceIdAlreadyIncluded = String.Join(",", ServiceIdAlreadyIncluded, ser.ID);
+
+                                                }
+
+
+
+                                            }
+                                            @{SubMainService = String.Join("_", ServiceIdAlreadyIncluded, item.Percentage + " %");
+                                            }
+
+
+                                        </ol>
+                                        <a class="btn btn-sm btn-info" href="@Url.Action("UpdatePromotion", "LoyaltyCard", new {PromotionID = item.LoyaltyCardPromotionID})">EDIT</a>
+
+                                        <button class="btn btn-sm btn-danger" type="button" onclick="DeleteThisPromotion('@item.LoyaltyCardPromotionID')">DELETE</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                                                        if (FinalServiceInclude == "")
+                                                        {
+                                                            FinalServiceInclude = String.Join("|", SubMainService);
+                                                        }
+                                                        else
+                                                        {
+                                                            FinalServiceInclude = String.Join("|", FinalServiceInclude, SubMainService);
+
+                                                        }
+                                                    }
+
+                                                }
+                </div>
+                <input name="ServiceListAlready" id="ServiceListAlready" class="ServiceListAlready form-control" readonly value="@FinalServiceInclude" type="hidden" />
+
+
+
+
+
+            </div>
+
+
+            <div class="col-md-12">
+                @if (Model.ID == 0)
+                {
+
+
+                    <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SAVE</button>
+                }
+                else
+                {
+                    <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+
+                }
+                <a href="@Url.Action("Index","LoyaltyCard")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<datalist id="PercentageList">
+    @foreach (var item in Model.Percentages.Distinct().ToList())
+    {
+        <option value="@item">@item % </option>
+    }
+</datalist>
+
+
+<script>
+    function uncheckAllCheckboxes() {
+        $(".serviceCB:visible").prop("checked", false);
+        $("#Percentage").val('');
+    }
+
+
+
+    $('#IsActiveCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#IsActive").val("True");
+        } else {
+            $("#IsActive").val("False");
+
+        }
+    });
+
+    function CheckIsActiveCB() {
+        var isChecked = $("#IsActiveCB").is(':checked');
+        if (isChecked) {
+            $("#IsActive").val("True");
+        } else {
+            $("#IsActive").val("False");
+
+        }
+    }
+
+    function DeleteThisPromotion(LoyaltyPromotionID) {
+        showLoadingSpinner();
+        var ID = $("#ID").val();
+         $.ajax({
+            url: '@Url.Action("DeletePromotion", "LoyaltyCard")',
+             type: "post",
+             data: { LoyaltyPromotionID: LoyaltyPromotionID }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    window.location.href = '@Url.Action("Action", "LoyaltyCard")' + '?ID=' + ID; // Example usage
+                }
+                else {
+                    $(".errorDiv").html(response.Message);
+                    hideLoadingSpinner();
+                }
+            });
+    }
+
+    $(document).ready(function () {
+        CheckIsActiveCB();
+        $('#serviceSearch').on('keyup', function () {
+            var searchText = $(this).val().toLowerCase();
+
+            $('.service-item').each(function () {
+                var itemName = $(this).find('label').text().toLowerCase();
+                if (itemName.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+
+        $("#parentCheckbox input").click(function () {
+            // Check or uncheck all child checkboxes based on the state of the parent checkbox
+            $(".serviceCB:visible").prop('checked', $(this).prop('checked'));
+        });
+
+        // When any child checkbox is clicked
+        $(".serviceCB").click(function () {
+            // If any child checkbox is unchecked, uncheck the parent checkbox
+            if (!$(this).prop('checked')) {
+                $("#parentCheckbox input").prop('checked', false);
+            }
+        });
+
+
+
+
+
+        $("#AddBtn").click(function () {
+            // Get the selected percentage and services
+            var percentage = $("#Percentage").val();
+            var selectedServices = [];
+            $(".serviceCB:checked").each(function () {
+                selectedServices.push($(this).val());
+            });
+
+
+            // Check if a card with the same percentage exists
+            var cardExists = false;
+            var serviceInUse = false;
+
+            $("#PromotionsRow .card").each(function () {
+
+
+                var cardPercentage = $(this).find(".card-title").text().trim();
+                if (cardPercentage === percentage + " % (Promotions)") {
+                    cardExists = true;
+                    var cardServicesList = $(this).find(".list-group");
+                    selectedServices.forEach(function (serviceId) {
+                        if (cardServicesList.find("li[data-id='" + serviceId + "']").length) {
+                            serviceInUse = true;
+                            alert("Service is already in use");
+                            return false; // Exit the loop early, as we found a service in use
+                        } else {
+                            if (!cardServicesList.find("li[data-id='" + serviceId + "']").length) {
+                                cardServicesList.append("<li class='list-group-item' data-id='" + serviceId + "'>" + $("input[data-id='" + serviceId + "']").data("name") + "</li>");
+                                var existingServiceList = $("#ServiceListAlready").val();
+                                if (existingServiceList) {
+                                    // Split the existingServiceList by "_"
+                                    var parts = existingServiceList.split("_");
+                                    // Get the first part (existing services)
+                                    var existingServices = parts[0];
+                                    // Create an array to store the updated service IDs
+                                    var updatedServiceIds = existingServices.split(",");
+
+                                    // Add the current serviceId to the array
+                                    updatedServiceIds.push(serviceId);
+
+                                    // Join the updated serviceIds with ","
+                                    var updatedServiceList = updatedServiceIds.join(",");
+                                    // Join the updated service list with "_"
+                                    $("#ServiceListAlready").val(updatedServiceList + "_" + parts[1]);
+                                }
+                                else {
+                                    $("#ServiceListAlready").val(serviceId + "_" + percentage + " %");
+                                }
+                            }
+                        }
+                    });
+
+                    // Update the ServiceListAlready input field
+
+
+                }
+
+            });
+
+            // If no card with the same percentage exists, create a new card
+            if (!cardExists) {
+                var newCard = "<div class='col-md-4'><div class='card'><div class='card-content'><h4 class='card-title'>" + percentage + " % (Promotions)</h4><ol class='list-group'>";
+                var servicesToAdd = []; // To store services that are not already in use
+                selectedServices.forEach(function (serviceId) {
+                    var $existingServiceItem = $("#PromotionsRow .list-group-item[data-id='" + serviceId + "']");
+                    if ($existingServiceItem.length === 0) {
+                        // Service is not in use in any card, add it to the new card
+                        newCard += "<li class='list-group-item' data-id='" + serviceId + "'>" + $("input[data-id='" + serviceId + "']").data("name") + "</li>";
+                        servicesToAdd.push(serviceId);
+
+
+
+                    } else {
+                        alert("Service is used already");
+                        return;
+
+                    }
+                });
+                newCard += "</ol><button type='button' class='btn btn-sm btn-danger btn-rounded delete-card'>Delete</button></div></div></div>";
+                $("#PromotionsRow").append(newCard);
+                if (servicesToAdd.length > 0) {
+                    // Update the ServiceListAlready input field only with the services that were added
+                    var existingServiceList = $("#ServiceListAlready").val();
+
+                    if (existingServiceList) {
+
+                        // Split the existingServiceList by "_"
+                        var parts = existingServiceList.split("_");
+
+                        // Get the first part (existing services)
+                        var existingServices = parts[0];
+
+                        if (parts[1].trim().replace("%", "") == percentage) {
+                            // Join the existing services with ","
+                            var updatedServiceList = existingServices + "," + servicesToAdd.join(",");
+
+                            // Join the updated service list with "_"
+                            $("#ServiceListAlready").val(updatedServiceList + "_" + parts[1]);
+                        } else {
+
+                            $("#ServiceListAlready").val(existingServiceList + "|" + servicesToAdd + "_" + percentage + " %");
+                        }
+                    } else {
+                        $("#ServiceListAlready").val(servicesToAdd.join(",") + "_" + percentage + " %");
+                    }
+
+                }
+
+                $(".delete-card").click(function () {
+                    var card = $(this).closest('.card');
+                    var percentage = card.find('.card-title').text().split(' ')[0]; // Extract the percentage from the card title
+                    card.parent().remove();
+
+                    var currentServiceList = $("#ServiceListAlready").val();
+                    
+                    var updatedServiceList = currentServiceList.replace(percentage + " %", "").trim();
+                    $("#ServiceListAlready").val(updatedServiceList);
+
+                });
+            }
+
+            uncheckAllCheckboxes();
+        });
+    });
+
+
+
+    $("#ActionBtn").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("Action", "LoyaltyCard")',
+            type: "post",
+            data: $("#actionForm").serialize()
+        })
+            .done(function (response) {
+                if (response.success) {
+                    hideLoadingSpinner();
+                    window.location.href = '@Url.Action("Index", "LoyaltyCard")';
+                }
+                else {
+                    hideLoadingSpinner();
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+    });
+</script>

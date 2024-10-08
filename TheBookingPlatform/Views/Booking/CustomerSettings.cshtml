@@ -1,0 +1,168 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+
+<script src="~/Content/MainTemplate/assets/js/jquery.min.js" type="text/javascript"></script>
+
+<div class="my-auto overflow-auto p-3">
+    <form id="ActionForm">
+        <div class="mb-3">
+            <label for="exampleFormControlName" class="form-label mb-1">First Name</label>
+            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                <span class="input-group-text bg-transparent rounded-0 border-0" id="FirstName">
+                    <span class="mdi mdi-account-outline mdi-18px"></span>
+                </span>
+                <input type="text" class="form-control bg-transparent rounded-0 border-0 px-0"
+                       placeholder="Type your first name" name="FirstName" aria-label="Type your first name" aria-describedby="firstname"
+                       value="@Model.Customer.FirstName">
+            </div>
+            <input type="hidden" value="@Model.Customer.ID" id="ID" name="ID" />
+            <input type="hidden" value="@Model.Company.Business" id="Company" name="Company" />
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlName1" class="form-label mb-1">Last Name</label>
+            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName1">
+                <span class="input-group-text bg-transparent rounded-0 border-0" id="firstname">
+                    <span class="mdi mdi-account-outline mdi-18px"></span>
+                </span>
+                <input type="text" class="form-control bg-transparent rounded-0 border-0 px-0"
+                       placeholder="Type your last name" name="LastName" id="LastName" aria-label="Type your last name" aria-describedby="firstname"
+                       value="@Model.Customer.LastName">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlName1" class="form-label mb-1">Gender</label>
+            <div class="input-group border bg-white rounded-3 py-1">
+                <label class="input-group-text bg-transparent rounded-0 border-0" for="inputGroupSelect01">
+                    <span class="mdi mdi-account-group-outline mdi-18px"></span>
+                </label>
+                <select name="Gender" class="form-select bg-transparent rounded-0 border-0 px-0" id="Gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+        </div>
+        <div class="row g-2 mb-3">
+            <div class="col">
+                <div>
+                    <label class="form-label mb-1">Date of Birth</label>
+                    <div class="input-group border bg-white rounded-3 py-1">
+                        <label class="input-group-text bg-transparent rounded-0 border-0" for="inputGroupSelect01">
+                            <span class="mdi mdi-account-group-outline mdi-18px"></span>
+                        </label>
+                        <input type="date" value="@DateTime.Now" class="form-control bg-transparent rounded-0 border-0 px-0"
+                               placeholder="Type your last name" name="DateOfBirth" id="DateOfBirth" aria-label="" aria-describedby="firstname">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+      
+
+                <input type="hidden" name="Email" value="@Model.Customer.Email" id="Email" />
+        <div>
+            <label for="exampleFormControlNumber" class="form-label mb-1">Mobile Number</label>
+            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlNumber">
+                <span class="input-group-text bg-transparent rounded-0 border-0" id="number">
+                    <span class="mdi mdi-cellphone mdi-18px"></span>
+                </span>
+                <input type="text" class="form-control bg-transparent rounded-0 border-0 px-0"
+                       placeholder="Type your Mobile Number" aria-label="Type your Mobile Number" name="MobileNumber" aria-describedby="number"
+                       value="@Model.Customer.MobileNumber">
+            </div>
+        </div>
+
+        <div>
+            <label for="exampleFormControlNumber" class="form-label mb-1">Address</label>
+            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlNumber">
+                <span class="input-group-text bg-transparent rounded-0 border-0" id="number">
+                    <span class="mdi mdi-map-marker mdi-18px"></span>
+                </span>
+                <input type="text" class="form-control bg-transparent rounded-0 border-0 px-0"
+                       placeholder="Type your Address" aria-label="Type your Address" name="Address" aria-describedby="number"
+                       value="@Model.Customer.Address">
+            </div>
+        </div>
+
+        <div>
+            <label for="exampleFormControlNumber" class="form-label mb-1">Postal Code</label>
+            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlNumber">
+                <span class="input-group-text bg-transparent rounded-0 border-0" id="number">
+                    <span class="mdi mdi-map-marker mdi-18px"></span>
+                </span>
+                <input type="text" class="form-control bg-transparent rounded-0 border-0 px-0"
+                       placeholder="Type your PostalCode" aria-label="Type your PostalCode" name="PostalCode" aria-describedby="number"
+                       value="@Model.Customer.PostalCode">
+            </div>
+        </div>
+        <div>
+            <label for="exampleFormControlNumber" class="form-label mb-1">City</label>
+            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlNumber">
+                <span class="input-group-text bg-transparent rounded-0 border-0" id="number">
+                    <span class="mdi mdi-map-marker mdi-18px"></span>
+                </span>
+                <input type="text" class="form-control bg-transparent rounded-0 border-0 px-0"
+                       placeholder="Type your City" aria-label="Type your City" name="City" aria-describedby="number"
+                       value="@Model.Customer.City">
+            </div>
+        </div>
+
+        <div>
+            <label for="exampleFormControlNumber" class="form-label mb-1">Change your Password</label>
+            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlNumber">
+                <span class="input-group-text bg-transparent rounded-0 border-0" id="number">
+                    <span class="mdi mdi-lock-outline mdi-18px"></span>
+                </span>
+                <input type="password" class="form-control bg-transparent rounded-0 border-0 px-0"
+                       placeholder="Type your City" aria-label="Type your City" name="Password" aria-describedby="number"
+                       value="@Model.Customer.Password">
+            </div>
+        </div>
+    </form>
+</div>
+<!-- footer -->
+<div class="footer mt-auto p-3">
+    <button type="button" id="ActionBtn" class=" btn btn-info btn-lg w-100 rounded-4">Save Change</button>
+</div>
+
+
+<script>
+    function clearCredentials() {
+        localStorage.removeItem('email');
+        localStorage.removeItem('password');
+    }
+    $(document).ready(function () {
+        $("#FooterNAV").hide();
+    });
+    $("#ActionBtn").click(function () {
+		$.ajax({
+			url: '@Url.Action("CustomerProfile", "Booking")',
+			type: "post",
+            data: $("#ActionForm").serialize()
+		})
+		.done(function (response) {
+			if(response.success)
+            {
+                clearCredentials();
+                var company = $("#Company").val();
+                var url = '@Url.Action("Login", "Booking")' + '?businessName=' + encodeURIComponent(company);
+                window.location.href = url;
+            }
+			else {
+				$(".errorDiv").html(response.Message);
+			}
+		});
+    });
+
+
+     $(document).ready(function () {
+        if ('@Model.Customer.ID' != 0) {
+            var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.Customer.ID, businessName = Model.Company.Business })";
+            $("#ProfileNAVTab").attr("href", href);
+        }
+
+        if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("Index", "Booking", new { CustomerID = Model.Customer.ID, businessName = Model.Company.Business })";
+            $("#HomeNAVTAB").attr("href", href);
+        }
+    });
+
+</script>

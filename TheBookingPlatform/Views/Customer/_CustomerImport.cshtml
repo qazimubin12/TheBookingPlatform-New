@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "_CustomerImport";
+    string path = Server.MapPath("/Content/TBPContent/DemForImportingCustomer.xlsx");
+}
+
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <span>Import Customers </span>
+
+            </h5>
+        </div>
+        <div class="modal-body">
+            <a style="float:right;" href="@Url.Action("DownloadFile", "Customer", new {Path= path})" class="btn btn-info btn-sm btn-round">DEMO File</a>
+
+            @using (Html.BeginForm("Import", "Customer", FormMethod.Post, new { enctype = "multipart/form-data", onsubmit = "return onSubmitForm();" }))
+            {
+               
+                @Html.Raw(ViewBag.Error)
+                <span>
+                    Upload Excel File
+                </span>
+                <input type="file" name="excelfile" />
+                <br />
+                <br />
+                <input class="btn btn-block btn-success" type="submit" value="Import" />
+
+            }
+
+
+            @if (ViewBag.Customers != null)
+            {
+                <table class="table table-responsive" cellpadding="2" cellspacing="2" border="1">
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+                    @foreach (var item in ViewBag.Customers)
+                    {
+                        <tr>
+                            <td>@item.FirstName @item.LastName </td>
+                            <td>IMPORTED</td>
+
+
+                        </tr>
+                    }
+                </table>
+            }
+
+
+        </div>
+        <div class="modal-footer">
+            <a class="btn btn-block btn-danger" href="@Url.Action("Index", "Customer")">Back to Customers</a>
+        </div>
+    </div>
+
+
+

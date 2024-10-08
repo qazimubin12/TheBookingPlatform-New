@@ -1,0 +1,162 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "PriceList";
+}
+
+
+
+
+<style>
+
+    .table > :not(caption) > * > * {
+        padding: 0rem 0rem;
+        background-color: var(--bs-table-bg);
+        border-bottom-width: var(--bs-border-width);
+        box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
+    }
+
+    .CategoryBtn {
+        width: max-content;
+    }
+    /*#ServicesList {
+        height: 400px;*/ /* or any height */
+    /*overflow: auto;
+    }*/
+
+    .body-fix-osahan-footer {
+        padding-bottom: 40px;
+    }
+
+    .loading-spinner-overlay {
+        display: none; /* Initially hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 9999; /* Ensure it appears above all other content */
+        background-color: rgba(0,0,0,0.5); /* Transparent black */
+    }
+
+    .sticky-div {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white; /* Adjust this as needed */
+        z-index: 100;
+        transition: transform 0.3s;
+    }
+
+    hr {
+        margin: 0rem;
+        color: inherit;
+        border: 0;
+        border-top: var(--bs-border-width) solid;
+        opacity: .25;
+    }
+
+
+    .spinner {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+</style>
+
+<div style="background-color: white;" class="my-auto overflow-auto body-fix-osahan-footer">
+    <div style="background-color: white; padding: 0px 0px 0px 0px" id="ServicesList">
+        <input style="margin-top:10px;" id="search" class="form-control mb-2 pb-1 px-3 fw-bold" type="text" placeholder="Search for services">
+
+        <!-- 1st -->
+        @foreach (var item in Model.ServicesPriceList)
+        {
+            <h4 style="background-color: darkgray; width: max-content; color: white; border-radius: 10px; margin-top:10px;" id="Category_@(item.ServiceCategory.ID)" class="category-header p-2 mb-1 mx-2 fs-16">@item.ServiceCategory.Name</h4>
+            foreach (var servic in item.Services)
+            {
+                <div class="link-dark service-item" data-category-id="@(item.ServiceCategory.ID)" id="Service_@(item.ServiceCategory.ID)">
+                    <div style="justify-content: space-between;" class="d-flex align-items-center gap-3 bg-white border-bottom shadow-sm p-3">
+                        <div style="width:75%;" class="small">
+                            <h6 class="mb-1 fs-14">@servic.Name</h6>
+                            <p style="width:50%;" class="text-muted">@servic.Notes</p>
+                        </div>
+                        <div class="small">
+                            <h6 style="white-space:nowrap;" class="mb-1 fs-14">@servic.Duration</h6>
+                        </div>
+                        <div class="small">
+                            <h6 style="white-space:nowrap;" class="mb-1 fs-14">@servic.Price @item.Currency</h6>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        <hr />
+        @*<button class="btn btn-primary col-12" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
+                    onclick="showModalOnly()" aria-controls="offcanvasBottom">
+                SHOW CART
+            </button>*@
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#FooterNAV").hide();
+        $('.d-flex.align-items-center.justify-content-between.mb-auto.p-3.osahan-header').hide();
+
+        var $searchInput = $('#search');
+        var $servicesList = $('#ServicesList');
+
+        $searchInput.on('keyup', function () {
+            showLoadingSpinner();
+            var searchText = $searchInput.val().toLowerCase();
+
+            // Filter and show only service items that match the search input
+            $servicesList.find('.service-item').each(function () {
+                var serviceItem = $(this);
+                var serviceName = serviceItem.find('.fs-14').text().toLowerCase();
+                var category = serviceItem.find('.text-muted').text().toLowerCase();
+
+                if (serviceName.includes(searchText) || category.includes(searchText)) {
+                    serviceItem.show();
+                } else {
+                    serviceItem.hide();
+                }
+            });
+
+            // Hide category headers if all their services are hidden
+            $servicesList.find('.category-header').each(function () {
+                var categoryHeader = $(this);
+                var categoryId = categoryHeader.attr('id').split('_')[1];
+                var hasVisibleService = $servicesList.find('.service-item[data-category-id="' + categoryId + '"]:visible').length > 0;
+
+                if (hasVisibleService) {
+                    categoryHeader.show();
+                } else {
+                    categoryHeader.hide();
+                }
+            });
+
+            hideLoadingSpinner();
+        });
+
+    });
+</script>

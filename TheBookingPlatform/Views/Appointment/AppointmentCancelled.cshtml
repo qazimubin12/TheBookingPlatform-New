@@ -1,0 +1,40 @@
+﻿@model TheBookingPlatform.ViewModels.HomeViewModel
+@{
+    Layout = null;
+}
+
+<link href="~/Content/MainTemplate/assets/css/bootstrap.min.css" rel="stylesheet" />
+
+
+<div class="card">
+    <div class="card-header">
+        @if (Model.Error != "")
+        {
+            <h4 class="card-title">Appoinment was marked as No Show</h4>
+
+        }
+        else
+        {
+            <h4 class="card-title">Appoinment was cancelled</h4>
+        }
+    </div>
+    <div class="card-content">
+        <h2>In Case of any query or for more information please contact our administration.</h2>
+        <h4>
+            @Model.Company.Business
+        </h4>
+        <h4>
+            @Model.Company.Address
+        </h4>
+        <h4>
+            @Model.Company.PhoneNumber
+        </h4>
+        <h4>@Model.Company.NotificationEmail</h4>
+
+    </div>
+</div>
+
+
+<script></script>
+
+

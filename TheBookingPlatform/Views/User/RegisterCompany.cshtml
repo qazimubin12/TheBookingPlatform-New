@@ -1,0 +1,300 @@
+﻿@model TheBookingPlatform.ViewModels.CompanyActionViewModel
+@{
+    ViewBag.Title = "RegisterCompany";
+}
+<head>
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-P3CS2C74');</script>
+    <!-- End Google Tag Manager -->
+
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3CS2C74"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <form id="MainCompanyRegisterForm">
+        <input class="form-control" type="hidden" id="Email" name="Email" value="@Model.Email" />
+        <input class="form-control" type="hidden" id="PAKKIDA" name="PAKKIDA" value="@Model.PAKKIDA" />
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">
+                    Company Details
+                </h4>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    Business Name
+                                </label>
+                                <input class="form-control" placeholder="Enter Business Name..." id="Business" type="text" name="Business" required />
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>
+                                    Business Address
+                                </label>
+                                <input class="form-control" placeholder="Enter Business Address..." type="text" name="Address" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    Postal Code
+                                </label>
+                                <input class="form-control" placeholder="Enter Postal Code..." type="text" name="PostalCode" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    City
+                                </label>
+                                <input class="form-control" placeholder="Enter City..." type="text" name="City" />
+                            </div>
+
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    Phone Number
+                                </label>
+                                <input class="form-control" id="PhoneNumber" placeholder="Enter Phone Number..." type="text" name="PhoneNumber" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="display:none;">
+                        <div class="col-md-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Enter Newsletter Interval Weeks </label>
+                                    <input type="number" class="form-control" name="NewsLetterWeekInterval" value="0" id="NewsLetterWeekInterval" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <legend>Logo</legend>
+                                <img id="MainThumb" style="width:150px;" src="~/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+
+                                <input type="hidden" name="Logo" id="Logo" />
+                                <input type="file" id="LogoUpload" accept="image/*" />
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">
+                    Email Details
+                </h4>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    Notification Email
+                                </label>
+                                <input class="form-control" placeholder="Enter Notification Email..." type="email" name="NotificationEmail" required />
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    Contact Email
+                                </label>
+                                <input class="form-control" placeholder="Enter Contact Email..." type="email" name="ContactEmail" required />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    Billing Email
+                                </label>
+                                <input class="form-control" placeholder="Enter Billing Email..." type="email" name="BillingEmail" required />
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    <button id="ActionBtn" class="btn btn-primary btn-round">
+        <i class="material-icons">business</i>
+        Register your Comapny
+        <div class="ripple-container"></div>
+    </button>
+</body>
+
+<script>
+    function showSuccessAlert() {
+        swal({
+            icon: 'success',
+            title: 'Image Uploaded Successfully!',
+            showConfirmButton: true,
+            timer: 1500 // Automatically close after 1.5 seconds
+        });
+    }
+
+    function showFormSubmitted() {
+        swal({
+            icon: 'success',
+            title: 'Company Registered Successfully! ',
+            text: 'Redirecting you to the company page',
+            showConfirmButton: false,
+            timer: 1000 // Automatically close after 1.5 seconds
+        });
+    }
+    function showFieldsError(fieldNames) {
+        var message = 'These are the required fields:\n' + fieldNames.join(', ');
+
+        swal({
+            icon: 'error',
+            title: 'Required Fields Missing',
+            text: message,
+            showConfirmButton: true
+        });
+    }
+    $("#LogoUpload").change(function () {
+
+        $("#overlay").fadeIn();
+        $("#centeredElement").fadeIn();
+        var element = this;
+        var formData = new FormData();
+        var totalFiles = element.files.length;
+
+        for (var i = 0; i < totalFiles; i++) {
+            var file = element.files[i];
+            formData.append("Logo", file);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("UploadImage", "Shared")',
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false
+        })
+            .done(function (response) {
+
+                if (response.Success) {
+                    // For now, we'll just delay the fade out for demonstration
+
+                    $("#Logo").val(response.DocURL);
+                    $("#MainThumb").attr("src", response.DocURL);
+                    showSuccessAlert();
+                    setTimeout(function () {
+                        $("#overlay").fadeOut();
+                        $("#centeredElement").fadeOut();
+                    }, 2000);
+                }
+
+            })
+            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("FAIL");
+            })
+    });
+
+    $("#ActionBtn").click(function () {
+
+
+        var requiredFields = $('#MainCompanyRegisterForm :input[required]').filter(function () {
+            return !$(this).val();
+        });
+
+        var requiredFieldNames = requiredFields.map(function () {
+            return $(this).attr('name');
+        }).get();
+
+        if (requiredFieldNames.length > 0) {
+            showFieldsError(requiredFieldNames);
+        }
+        else {
+            var errorFields = $('.form-group.has-error input');
+            var errorFieldNames = [];
+            errorFields.each(function () {
+                var fieldName = $(this).attr('name');
+                errorFieldNames.push(fieldName);
+            });
+            if (errorFieldNames.length > 0) {
+                showFieldsError(errorFieldNames);
+
+            } else {
+                // Submit the form or perform other actions
+                if ($("#Business").val() == "") {
+                    showFieldsError("Name");
+                    return;
+                } else {
+                    $.ajax({
+                        url: '@Url.Action("RegisterCompany", "User")',
+                        type: "post",
+                        data: $("#MainCompanyRegisterForm").serialize(),
+                        beforeSend: function () {
+                            // Show the loading overlay before starting the AJAX request
+                            $("#overlay").fadeIn();
+                            $("#centeredElement").fadeIn();
+                        }
+                    })
+
+                        .done(function (response) {
+                            if (response.success) {
+                                showFormSubmitted();
+                                var Email = response.Email;
+                                var Password = response.Password;
+                                var url = '@Url.Action("AutoLogin", "Account", new { Email = "__Email__", PasswordKAK = "__Password__" })'
+                                    .replace("__Email__", encodeURIComponent(Email))
+                                    .replace("__Password__", encodeURIComponent(Password));
+                                window.location.href = url;
+                            }
+                            else {
+                                alert(response.Message);
+                            }
+                        });
+                }
+            }
+
+        }
+
+    });
+</script>
+
+

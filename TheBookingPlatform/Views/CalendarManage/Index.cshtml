@@ -1,0 +1,43 @@
+﻿@model TheBookingPlatform.ViewModels.CalendarManageListingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<style>
+    .card {
+        margin: 0px;
+    }
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Calendar Manages </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+
+                <div class="form-group">
+                   <button data-href="@Url.Action("Action", "Employee")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-toggle="modal" data-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            @{
+                Html.RenderPartial("_Listing", Model);
+            }
+        </div>
+    </div>
+
+</div>
+<div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+

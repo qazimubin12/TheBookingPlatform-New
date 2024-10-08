@@ -1,0 +1,846 @@
+﻿@model TheBookingPlatform.ViewModels.ServiceActionViewModel
+@{
+    ViewBag.Title = "Action";
+}
+
+<style>
+    .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+        padding: 10px 8px;
+        vertical-align: middle;
+    }
+
+    .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: black;
+        font-weight: 400;
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: black;
+    }
+</style>
+<form id="actionForm">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit Service
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create Service
+                    </h4>
+                }
+            </div>
+
+
+            <div class="card-content">
+                <div style="display:flex;align-items:end;" class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Service Name
+                            </label>
+                            <input type="hidden" name="ID" value="@Model.ID" id="ID" /> 
+                            <input oninput="ClearBorder()" type="text" id="Name" value="@Model.Name" class="form-control" name="Name" />
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div id="CategoryPicker" style="margin-top:2px;" class="form-group">
+                            <label>
+                                Category
+                            </label>
+                            <select onchange="ClearBorder()" id="Category" class="selectpicker" name="Category" data-style="select-with-transition" title="Choose Category" data-size="100">
+                                @foreach (var item in Model.ServiceCategories)
+                                {
+                                    if (item.Name == Model.Category)
+                                    {
+                                        <option data-id="@item.ID" selected value="@item.Name">@item.Name</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option data-id="@item.ID" value="@item.Name">@item.Name</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button data-href="@Url.Action("ActionCategory", "Service")" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal">ADD MORE +</button>
+                    </div>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Price
+                            </label>
+                            <input type="text" value="@Model.Price" class="form-control" name="Price" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div style="margin-top:2px;" class="form-group">
+                            <label>
+                                VAT
+                            </label>
+                            <select id="Vat" class="selectpicker" name="Vat" data-style="select-with-transition" title="Choose Vat" data-size="100">
+                                @foreach (var item in Model.Vats)
+                                {
+                                    if (item.Name.Trim().ToLower() == "no vat")
+                                    {
+                                        <option selected value="@item.Name">@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        if (item.Name == Model.VAT)
+                                        {
+                                            <option selected value="@item.Name">@item.Name (@item.Percentage %)</option>
+
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Name">@item.Name (@item.Percentage %)</option>
+
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Buffer Time
+                            </label>
+                            <input type="text" class="form-control time-input" value="@Model.BufferTime" id="BufferTime" name="BufferTime" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="checkbox form-horizontal-checkbox">
+                            <label>
+                                @if (Model.DoesRequiredProcessing == true)
+                                {
+                                    <input type="checkbox" checked name="DoesRequiredProcessingCB" id="DoesRequiredProcessingCB">
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="DoesRequiredProcessingCB" id="DoesRequiredProcessingCB">
+
+                                }
+                                This service requires processing time
+                            </label>
+                            <input type="hidden" name="DoesRequiredProcessing" id="DoesRequiredProcessing" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="NotRequiredProcessingRow">
+                    <div class="form-group">
+                        <label>
+                            Duration
+                        </label>
+                        <input type="text" class="form-control time-input" id="Duration" name="Duration" value="@Model.Duration" />
+                    </div>
+                </div>
+            </div>
+            <div style="display:none;" id="RequiredProcessingRow">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>
+                            Setup
+                        </label>
+                        <input type="text" value="@Model.Setup" id="Setup" class="form-control time-input" name="Setup" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>
+                            Processing
+                        </label>
+                        <input type="text" value="@Model.Processing" id="Processing" class="form-control time-input" name="Processing" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>
+                            Finish
+                        </label>
+                        <input type="text" class="form-control time-input" id="Finish" value="@Model.Finish" name="Finish" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Resources Details</h4>
+            </div>
+            <div class="card-content">
+
+                <h4 class="card-header-text">Employees</h4>
+                <button data-href="@Url.Action("ActionEmployee", "Service")" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal">ADD MORE +</button>
+                <table id="EmployeeTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width:0px;">
+                                <div class="checkbox form-horizontal-checkbox">
+                                    <label>
+                                        <input type="checkbox" id="selectAllEmployee">
+                                    </label>
+                                </div>
+                            </th>
+                            <th style=" display: flex; margin-top: 10px; ">
+                                <label for="selectAllEmployee">All Employees</label>
+                                <i style="cursor:pointer;" id="ArrowKeyEmployee" class="material-icons">keyboard_arrow_down</i>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody @if (Model.ServiceEmployee == "" || Model.ServiceEmployee == null) { <text> style="display:none;" </text> }>
+                        @foreach (var item in Model.Employees)
+                        {
+
+
+                            <tr>
+                                <td>
+                                    <div class="checkbox form-horizontal-checkbox">
+                                        <label>
+                                            @if (!string.IsNullOrWhiteSpace(Model.ServiceEmployee) && Model.ServiceEmployee.Split(',').Contains(item.ID.ToString()))
+                                            {
+                                                <input type="checkbox" data-id="@item.ID" checked value="@item.Name" class="employee-checkbox" id="Emp_@item.ID">
+                                            }
+
+                                            else
+                                            {
+                                                <input type="checkbox" data-id="@item.ID" value="@item.Name" class="employee-checkbox" id="Emp_@item.ID">
+
+                                            }
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <label style="margin-top:5px;" for="Emp_@item.ID">@item.Name</label>
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+               
+                    <input hidden type="text" id="employeeNames" name="Employee" placeholder="Selected employees...">
+               
+
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+    <div class="col-md-4">
+        <div style="display:flex;">
+
+            <h4 style="margin-right:10px;" class="card-title"><button style=" padding: 5px 30px;" type="button" class="btn btn-sm btn-block btn-round btn-primary" id="ShowTools">Needs Tools?</button></h4>
+            <h4 class="card-title"><button type="button" style=" padding: 5px 30px;" class="btn btn-sm btn-round btn-block btn-primary" id="ShowRooms">Needs Room?</button></h4>
+
+        </div>
+        <h4 class="card-title"><button type="button" style="margin-top:-20px;" class="btn btn-sm btn-block btn-round btn-primary" id="ShowDescription">Needs Description?</button></h4>
+
+
+
+
+
+        <div @if (Model.Tool == "" || Model.Tool == null) { <text> style="display:none;" </text> }id="ToolsCard" class="card">
+            <div class="card-content">
+
+                <h4 class="card-header-text">Tools</h4>
+                <i style="cursor:pointer;float:right" id="CloseToolsCard" onclick="ToggleToolsCard()" class="material-icons">close</i>
+                <button data-href="@Url.Action("ActionResource", "Service", new {Type = "Tool"})" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal">ADD MORE +</button>
+                <table id="ToolsTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width:0px;">
+                                <div class="checkbox form-horizontal-checkbox">
+                                    <label>
+                                        <input type="checkbox" id="selectAllTool">
+                                    </label>
+                                </div>
+                            </th>
+                            <th style=" display: flex; margin-top: 10px; ">
+                                <label for="selectAllTool   ">All Tools</label>
+                                <i style="cursor:pointer;" id="ArrowKeyTool" class="material-icons">keyboard_arrow_down</i>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody @if (Model.Tool == "" || Model.Tool == null) { <text> style="display:none;" </text> }>
+                        @foreach (var item in Model.Tools)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="checkbox form-horizontal-checkbox">
+                                        <label>
+                                            @if (!string.IsNullOrWhiteSpace(Model.Tool) && Model.Tools.Any(x => Model.Tool.Split(',').Any(e => e.ToLower().Trim() == x.Name.ToLower().Trim())))
+                                            {
+                                                <input checked type="checkbox" value="@item.Name" class="tool-checkbox" id="Tool_@item.ID">
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" value="@item.Name" class="tool-checkbox" id="Tool_@item.ID">
+
+                                            }
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <label style="margin-top:5px;" for="Tool_@item.ID">@item.Name</label>
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+                <input hidden type="text" id="toolNames" value="@Model.Tool" name="Tool" placeholder="Selected tools...">
+
+            </div>
+        </div>
+
+
+
+        <div @if (Model.Room == "" || Model.Room == null) { <text> style="display:none;" </text> } id="RoomsCard" class="card">
+            <div class="card-content">
+
+                <h4 class="card-header-text">Rooms</h4>
+                <i style="cursor:pointer;float:right" id="CloseRoomsCard" onclick="ToggleRoomsCard()" class="material-icons">close</i>
+                <button data-href="@Url.Action("ActionResource", "Service", new {Type = "Room"})" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal">ADD MORE +</button>
+                <table id="RoomsTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width:0px;">
+                                <div class="checkbox form-horizontal-checkbox">
+                                    <label>
+                                        <input type="checkbox" id="selectAllRoom">
+                                    </label>
+                                </div>
+                            </th>
+                            <th style=" display: flex; margin-top: 10px; ">
+                                <label for="selectAllRoom">All Rooms</label>
+                                <i style="cursor:pointer;" id="ArrowKeyRoom" class="material-icons">keyboard_arrow_down</i>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody @if (Model.Room == "" || Model.Room == null) { <text> style="display:none;" </text> }>
+                        @foreach (var item in Model.Rooms)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="checkbox form-horizontal-checkbox">
+                                        <label>
+                                            @if (!string.IsNullOrWhiteSpace(Model.Room) && Model.Rooms.Any(x => Model.Room.Split(',').Any(e => e.ToLower().Trim() == x.Name.ToLower().Trim())))
+                                            {
+                                                <input type="checkbox" checked value="@item.Name" class="room-checkbox" id="Room_@item.ID">
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" value="@item.Name" class="room-checkbox" id="Room_@item.ID">
+
+                                            }
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <label style="margin-top:5px;" for="Room_@item.ID">@item.Name</label>
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+                <input hidden type="text" id="roomNames" value="@Model.Room" name="Room" placeholder="Selected Rooms...">
+
+            </div>
+        </div>
+        <div @if (Model.Notes == "" || Model.Notes == null) { <text> style="display:none;" </text> }id="DescriptionCard" class="card">
+            <div class="card-content">
+                <i style="cursor:pointer;float:right" id="CloseNotes" onclick="ToggleDescriptionCard()" class="material-icons">close</i>
+                <h4 class="card-header-text">Notes</h4>
+                <input type="text" class="form-control" value="@Model.Notes" name="Notes" id="Notes" />
+            </div>
+
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div class="col-md-12">
+                    <div class="checkbox form-horizontal-checkbox">
+                        <label>
+                            @if (Model.CanBookOnline == true)
+                            {
+
+
+                                <input type="checkbox" checked onchange="SetCanBookOnlineValue()" name="CanBookOnlineCB" id="CanBookOnlineCB">
+                            }
+                            else
+                            {
+                                <input type="checkbox" onchange="SetCanBookOnlineValue()" name="CanBookOnlineCB" id="CanBookOnlineCB">
+
+                            }
+                            This service can be booked online
+                        </label>
+
+                        <input type="hidden" name="CanBookOnline" id="CanBookOnline" />
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="col-md-12">
+                    <button id="ActionBtn" type="button" class="btn btn-primary btn-rounded">SAVE</button>
+                    <button onclick="BackToServices()" type="button" class="btn btn-secondary  btn-rounded">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+<script>
+
+    $(".data-btnEmp").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModalEmp .modal-dialog").html(response);
+            });
+    });
+
+    $(document).ready(function () {
+
+        // Initial state
+        checkAllEmployeeCheckboxes();
+        SetCanBookOnlineValue();
+        SetDoesRequiredProcessing();
+        const selectAllEmployeeCheckbox = $('#selectAllEmployee');
+        var isEmpCollapsed = true;
+        const employeeNamesInput = $('#employeeNames');
+        selectAllEmployeeCheckbox.on('change', function () {
+            var employeeCheckboxes = $('.employee-checkbox');
+            employeeCheckboxes.prop('checked', selectAllEmployeeCheckbox.prop('checked'));
+            updateEmployeeNamesInput();
+        });
+        updateEmployeeNamesInput();
+
+        $(document).on('change', '.employee-checkbox', function () {
+
+            var employeeCheckboxes = $('.employee-checkbox');
+            updateEmployeeNamesInput();
+            selectAllEmployeeCheckbox.prop('checked', employeeCheckboxes.length === employeeCheckboxes.filter(':checked').length);
+
+        })
+        function updateEmployeeNamesInput() {
+            var employeeCheckboxes = $('.employee-checkbox');
+            const selectedEmployees = employeeCheckboxes.filter(':checked').map(function () {
+                return $(this).data('id'); // Get the data-id attribute value
+            }).get().join(', ');
+
+            employeeNamesInput.val(selectedEmployees);
+        }
+        $('#ArrowKeyEmployee').click(function () {
+            // Toggle the collapse state
+            isEmpCollapsed = !isEmpCollapsed;
+
+            // Toggle the collapse animation for the table body
+            $('#EmployeeTable tbody').slideToggle('fast');
+
+            // Change the icon based on the collapse state
+            if (isEmpCollapsed) {
+                $('#ArrowKeyEmployee').html('keyboard_arrow_down');
+            } else {
+                $('#ArrowKeyEmployee').html('keyboard_arrow_up');
+            }
+        });
+
+
+
+        var isToolCollapsed = true;
+        const selectToolAllCheckbox = $('#selectAllTool');
+        const toolNamesInput = $('#toolNames');
+
+
+        var isRoomCollapsed = true;
+        const selectAllRoomCheckbox = $('#selectAllRoom');
+        const roomNamesInput = $('#roomNames');
+
+        selectToolAllCheckbox.on('change', function () {
+            var toolCheckboxes = $('.tool-checkbox');
+            toolCheckboxes.prop('checked', selectToolAllCheckbox.prop('checked'));
+            updatetoolNamesInput();
+        });
+        $(document).on('change', '.tool-checkbox', function () {
+            var toolCheckboxes = $('.tool-checkbox');
+            updatetoolNamesInput();
+            selectToolAllCheckbox.prop('checked', toolCheckboxes.length === toolCheckboxes.filter(':checked').length);
+
+        })
+        function updatetoolNamesInput() {
+            var toolCheckboxes = $('.tool-checkbox');
+            const selectedtools = toolCheckboxes.filter(':checked').map(function () {
+                return $(this).val(); // Get the data-id attribute value
+            }).get().join(', ');
+
+
+            toolNamesInput.val(selectedtools);
+        }
+        $('#ArrowKeyTool').click(function () {
+            // Toggle the collapse state
+            isToolCollapsed = !isToolCollapsed;
+
+            // Toggle the collapse animation for the table body
+            $('#ToolsTable tbody').slideToggle('fast');
+
+            // Change the icon based on the collapse state
+            if (isToolCollapsed) {
+                $('#ArrowKeyTool').html('keyboard_arrow_down');
+            } else {
+                $('#ArrowKeyTool').html('keyboard_arrow_up');
+            }
+        });
+
+
+        selectAllRoomCheckbox.on('change', function () {
+            var roomCheckboxes = $('.room-checkbox');
+            roomCheckboxes.prop('checked', selectAllRoomCheckbox.prop('checked'));
+            updateroomNamesInput();
+        });
+        $(document).on('change', '.room-checkbox', function () {
+            var roomCheckboxes = $('.room-checkbox');
+
+            updateroomNamesInput();
+            selectAllRoomCheckbox.prop('checked', roomCheckboxes.length === roomCheckboxes.filter(':checked').length);
+
+        })
+        function updateroomNamesInput() {
+            var roomCheckboxes = $('.room-checkbox');
+            const selectedrooms = roomCheckboxes.filter(':checked').map(function () {
+                return $(this).val(); // Get the data-id attribute value
+            }).get().join(', ');
+
+
+            roomNamesInput.val(selectedrooms);
+        }
+        $('#ArrowKeyRoom').click(function () {
+            // Toggle the collapse state
+            isRoomCollapsed = !isRoomCollapsed;
+
+            // Toggle the collapse animation for the table body
+            $('#RoomsTable tbody').slideToggle('fast');
+
+            // Change the icon based on the collapse state
+            if (isRoomCollapsed) {
+                $('#ArrowKeyRoom').html('keyboard_arrow_down');
+            } else {
+                $('#ArrowKeyRoom').html('keyboard_arrow_up');
+            }
+        });
+
+
+
+
+        $('.time-input').on('input', function () {
+            // Replace non-numeric characters with an empty string
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+
+            // Remove 'mins' if present
+            if ($(this).val().endsWith('mins')) {
+                $(this).val($(this).val().slice(0, -4));
+            }
+        });
+        $('.time-input').on('blur', function () {
+            // Append 'mins' if input isn't empty
+            if ($(this).val().trim() !== '') {
+                $(this).val($(this).val() + ' mins');
+            }
+        });
+
+        $('.time-input').on('focus', function () {
+            // Remove 'mins' if present
+            if ($(this).val().endsWith(' mins')) {
+                $(this).val($(this).val().slice(0, -5));
+            }
+        });
+
+
+    });
+    function checkAllEmployeeCheckboxes() {
+        var allChecked = true;
+        $(".employee-checkbox").each(function () {
+            if (!$(this).prop("checked")) {
+                allChecked = false;
+                return false; // Break the loop if any checkbox is not checked
+            }
+        });
+        // Update the selectAllEmployee checkbox
+        $("#selectAllEmployee").prop("checked", allChecked);
+    }
+
+
+
+    $("#ShowTools").click(function () {
+        $("#ToolsCard").toggle();
+    });
+
+    $("#ShowDescription").click(function () {
+        $("#DescriptionCard").toggle();
+    });
+
+    function ToggleToolsCard() {
+        $("#ToolsCard").toggle();
+    }
+    function ToggleDescriptionCard() {
+        $("#DescriptionCard").toggle();
+    }
+
+
+    $("#ShowRooms").click(function () {
+        $("#RoomsCard").toggle();
+    });
+
+    function ToggleRoomsCard() {
+        $("#RoomsCard").toggle();
+    }
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+    $('#DoesRequiredProcessingCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#NotRequiredProcessingRow").hide();
+            $("#RequiredProcessingRow").show();
+            $("#DoesRequiredProcessing").val("True");
+        } else {
+            $("#NotRequiredProcessingRow").show();
+            $("#RequiredProcessingRow").hide();
+            $("#DoesRequiredProcessing").val("False");
+
+        }
+    });
+
+
+    function RepopulateCategories() {
+        $.ajax({
+            url: '@Url.Action("GetCategories","Service")', // Replace with the actual URL
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Clear existing options
+                $('#Category').empty();
+
+                // Repopulate options
+                $.each(data, function (index, categoryName) {
+
+                    $('#Category').append($('<option>', {
+                        value: categoryName.Name,
+                        text: categoryName.Name
+                    }));
+                });
+                $('#Category').selectpicker('refresh');
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+
+    function RepopulateResources(Type) {
+
+        $.ajax({
+            url: '@Url.Action("GetResources", "Service")', // Replace with the actual URL
+            method: 'GET',
+            dataType: 'json',
+            data: {type:Type},
+            success: function (data) {
+                // Clear existing options
+                if (Type == "Room") {
+                    $('#RoomsTable tbody').empty();
+
+                    // Repopulate with new data
+                    $.each(data, function (index, item) {
+                        var newRow = $('<tr>');
+                        newRow.append('<td><div class="checkbox form-horizontal-checkbox"><label><input type="checkbox" value="' + item.Name + '" class="room-checkbox" id="Room_' + item.ID + '"></label></div></td>');
+                        newRow.append('<td><label style="margin-top:5px;" for="Room_' + item.ID + '">' + item.Name + '</label></td>');
+
+                        $('#RoomsTable tbody').append(newRow);
+                    });
+
+                } else {
+                    $('#ToolsTable tbody').empty();
+
+                    // Repopulate with new data
+                    $.each(data, function (index, item) {
+                        var newRow = $('<tr>');
+                        newRow.append('<td><div class="checkbox form-horizontal-checkbox"><label><input type="checkbox" value="' + item.Name + '" class="tool-checkbox" id="Tool_' + item.ID + '"></label></div></td>');
+                        newRow.append('<td><label style="margin-top:5px;" for="Tool_' + item.ID + '">' + item.Name + '</label></td>');
+
+                        $('#ToolsTable tbody').append(newRow);
+
+                    });
+
+
+
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+     function RepopulateEmployees() {
+        $.ajax({
+            url: '@Url.Action("GetEmployees","Service")', // Replace with the actual URL
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Clear existing options
+                $('#EmployeeTable tbody').empty();
+
+                // Repopulate with new data
+                $.each(data, function (index, item) {
+                    var newRow = $('<tr>');
+                    newRow.append('<td><div class="checkbox form-horizontal-checkbox"><label><input type="checkbox" value="'+item.Name+'" class="employee-checkbox" id="Emp_' + item.ID + '"></label></div></td>');
+                    newRow.append('<td><label style="margin-top:5px;" for="Emp_' + item.ID + '">' + item.Name + '</label></td>');
+
+                    $('#EmployeeTable tbody').append(newRow);
+                });
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+    function SetCanBookOnlineValue() {
+        var isChecked = $('#CanBookOnlineCB').is(':checked');
+        if (isChecked) {
+            $("#CanBookOnline").val("True");
+        } else {
+            $("#CanBookOnline").val("False");
+        }
+    }
+
+
+    function SetDoesRequiredProcessing() {
+        var isChecked = $('#DoesRequiredProcessingCB').is(':checked');
+        if (isChecked) {
+            $("#NotRequiredProcessingRow").hide();
+            $("#RequiredProcessingRow").show();
+            $("#DoesRequiredProcessing").val("True");
+        } else {
+            $("#NotRequiredProcessingRow").show();
+            $("#RequiredProcessingRow").hide();
+            $("#DoesRequiredProcessing").val("False");
+
+        }
+    }
+
+    $('#CanBookOnlineCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#CanBookOnline").val("True");
+        } else {
+            $("#CanBookOnline").val("False");
+        }
+    });
+
+
+    function ClearBorder() {
+        $("#CategoryPicker").css("border", "");
+        $("#Name").css("border", "");
+    }
+
+    function BackToServices() {
+        var selectedOption = $("#Category").find("option:selected");
+        var CategoryID = selectedOption.data("id");
+        var url = '@Url.Action("Index", "Service")' + '?ServiceCategory=' + CategoryID;
+        window.location.href = url;
+    }
+
+    $("#ActionBtn").click(function () {
+        $("#ActionBtn").text("Loading...");
+
+        $("#ActionBtn").attr("disabled", "disabled");
+        var CategoryName = $("#Category").val();
+
+
+        var selectedOption = $("#Category").find("option:selected");
+        var CategoryID = selectedOption.data("id");
+
+        var Services = $("#Name").val();
+
+        if (CategoryName != '' && Services != '') {
+            $.ajax({
+                url: '@Url.Action("Action", "Service")',
+                type: "post",
+                data: $("#actionForm").serialize()
+            })
+                .done(function (response) {
+                    if (response.success) {
+
+                        var url = '@Url.Action("Index", "Service")' + '?ServiceCategory=' + CategoryID;
+                        window.location.href = url;
+                    }
+                    else {
+                        $(".errorDiv").html(response.Message);
+                    }
+                });
+        } else {
+            alert("Kindly fill out the necessary details, or check the red fields");
+            $("#CategoryPicker").css("border", "0.5px solid red");
+            $("#Name").css("border", "0.5px solid red");
+
+        }
+    });
+</script>

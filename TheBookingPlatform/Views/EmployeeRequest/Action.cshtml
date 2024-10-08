@@ -1,0 +1,172 @@
+﻿@model TheBookingPlatform.ViewModels.EmployeeRequestActionViewModel
+@{
+    ViewBag.Title = "Action";
+    
+}
+
+
+<style>
+
+
+    .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: black;
+        font-weight: 400;
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: black;
+    }
+</style>
+<form id="actionForm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit Employee Request
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create Employee Request
+                    </h4>
+                }
+            </div>
+
+
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Enter Company Code</label>
+                            <input type="text" class="form-control" name="CompanyCode" id="CompanyCode" />
+                            <input type="hidden" class="form-control" name="ID" id="ID" value="@Model.ID" />
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-danger" id="errorDiv"></span>
+                        <button class="btn btn-primary btn-sm" type="button" id="ValidateCompanyCodeBtn">
+                            Get Employees
+                        </button>
+                    </div>
+
+                </div>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Select Employee</label>
+                            <select class="form-control" name="EmployeeID" id="EmployeeID">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                    @if (Model.ID == 0)
+                    {
+
+
+                        <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SEND REQUEST</button>
+                    }
+                    else
+                    {
+                        <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+
+                    }
+                    <a href="@Url.Action("Index","EmployeeRequest")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+
+            </div>
+
+
+            
+        </div>
+    </div>
+</form>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#ValidateCompanyCodeBtn").click(function () {
+            showLoadingSpinner();
+            var companyCode = $("#CompanyCode").val();
+            $.ajax({
+                url: '@Url.Action("GetEmployees", "Company")',
+                type: "get",
+                data: { CompanyCode: companyCode }
+            })
+                .done(function (response) {
+                    if (response.success) {
+                        var employeeDropdown = $("#EmployeeID");
+
+                        // Clear existing options
+                        employeeDropdown.empty();
+
+                        // Iterate over response.Employees and populate dropdown
+                        response.Employees.forEach(function (employee) {
+                            // Append option element for each employee
+                            employeeDropdown.append($('<option>', {
+                                value: employee.ID,
+                                text: employee.Name // Assuming there's a property EmployeeName for displaying the employee's name
+                            }));
+                        });
+
+
+                    } else {
+                        $("#errorDiv").html("No Company was found with this code");
+
+                    }
+                })
+                .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("FAIL");
+                })
+                .always(function () {
+                    hideLoadingSpinner();
+                });
+        });
+    });
+
+    $("#ActionBtn").click(function () {
+        var ID = $("#ID").val();
+        var CompanyCode = $("#CompanyCode").val();
+        var EmployeeID = $("#EmployeeID").val();
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("Action", "EmployeeRequest")',
+            type: "post",
+            data: { CompanyCode: CompanyCode, EmployeeID: EmployeeID,ID:ID }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    window.location.href = '@Url.Action("Index", "EmployeeRequest")';
+                } else {
+                    $("#errorDiv").html(response.Message);
+                }
+            })
+            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                hideLoadingSpinner(); // Move hideLoadingSpinner inside .done() or .fail() to ensure it's executed at the right time
+                alert("FAIL");
+            })
+            .always(function () {
+                hideLoadingSpinner(); // Move hideLoadingSpinner inside .done() or .fail() to ensure it's executed at the right time
+            });
+    });
+
+
+
+
+
+</script>

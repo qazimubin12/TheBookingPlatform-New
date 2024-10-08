@@ -1,0 +1,130 @@
+﻿@model TheBookingPlatform.ViewModels.PriceChangeListingViewModel
+
+<style>
+ 
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Price Changes </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+
+                <div class="form-group">
+
+                    <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                    <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+                    <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                    <a href="@Url.Action("Action", "PriceChange")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="row">
+
+                <div class="col-lg-12 grid-margin stretch-card">
+                    @if (Model.PriceChanges != null)
+                    {
+                        <div class="card">
+
+                            <div class="table-responsive">
+                                <table id="PriceChangeTable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+
+                                            <th class="text-center">
+                                                Type
+                                            </th>
+                                            <th class="text-center">
+                                               Percentage
+                                            </th>
+                                            <th class="text-center">
+                                                Start Date
+                                            </th>
+                                            <th class="text-center">
+                                               End Date
+                                            </th>
+
+                                           
+                                            <th class="text-center">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.PriceChanges)
+                                        {
+                                            <tr>
+                                                <td class="text-center">@item.PriceChange.TypeOfChange</td>
+                                                <td class="text-center">@item.PriceChange.Percentage</td>
+                                                <td class="text-center">@item.PriceChange.StartDate</td>
+                                                <td class="text-center">@item.PriceChange.EndDate</td>
+                                             
+                                                <td class="text-center">
+
+                                                    <a href="@Url.Action("Action", "PriceChange", new { ID = item.PriceChange.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                    <button data-href="@Url.Action("Delete", "PriceChange", new { ID = item.PriceChange.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                    @if (item.PriceChangeSwitch != null)
+                                                    {
+                                                        <button onclick="SendEmailToClients('@item.PriceChange.ID')" data-id="@item.PriceChange.ID" type="button" disabled class="btn btn-sm btn-rounded btn-info btn-icon-text sendEmail">SEND EMAIL</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button onclick="SendEmailToClients('@item.PriceChange.ID')" data-id="@item.PriceChange.ID" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text sendEmail">SEND EMAIL</button>
+
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="alert alert-warning col-md-12" role="alert">
+                            Sorry! No records exist.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+
+    $("#SearchBtn").click(function () {
+        var SearchTerm = $("#Search").val();
+        RepopulatePriceChanges(SearchTerm);
+    })
+
+    $("#ResetBtn").click(function () {
+        RepopulatePriceChanges();
+        $("#Search").val('');
+
+    })
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+</script>

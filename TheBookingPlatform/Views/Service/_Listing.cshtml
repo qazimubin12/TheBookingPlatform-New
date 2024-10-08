@@ -1,0 +1,336 @@
+﻿@model TheBookingPlatform.ViewModels.ServiceListingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="col-lg-12 grid-margin stretch-card">
+    @if (Model.Services != null)
+    {
+        <div id="NonDeletedServices" class="card">
+
+            @foreach (var item in Model.Services)
+            {
+                <div class="panel-group sortable-categories" id="accordion" role="tablist" aria-multiselectable="true">
+
+
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+
+                            <input type="number" class="form-control" style="width:40px;margin-left:10px;float:left;" value="@item.ServiceCategory.DisplayOrder" onchange="ChangeOrder('@item.ServiceCategory.ID', this.value)" />
+
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_@item.ServiceCategory.ID" aria-expanded="true" aria-controls="Service_@item.ServiceCategory.ID">
+
+                                <h4 class="panel-title text-center">
+                                    @item.ServiceCategory.Name
+
+                                    <i class="material-icons">keyboard_arrow_down</i>
+                                </h4>
+                            </a>
+
+                        </div>
+                        @if (Model.ServiceCategory != item.ServiceCategory.ID.ToString())
+                        {
+                            <div id="Service_@item.ServiceCategory.ID" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">
+                                                        Order
+                                                    </th>
+                                                    <th class="text-center">
+                                                        Name
+                                                    </th>
+                                                    <th class="text-center">
+                                                        Duration
+                                                    </th>
+                                                    <th class="text-center">
+                                                        Price
+                                                    </th>
+
+
+                                                    <th class="text-center">
+                                                        Action
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var service in item.Services)
+                                                {
+                                                    string ClassName = "";
+                                                    if (service.IsActive == false)
+                                                    {
+                                                        ClassName = "NONACTIVE";
+                                                    }
+                                                    else
+                                                    {
+                                                        ClassName = "ACTIVE";
+                                                    }
+
+                                                    <tr class="@ClassName">
+                                                        <td style="width:40px;" class="text-center">
+                                                            <input type="number" class="form-control" value="@service.DisplayOrder" onchange="ChangeOrderService('@service.ID', this.value)" />
+                                                        </td>
+                                                        <td class="text-center">@service.Name</td>
+                                                        <td class="text-center">@service.Duration</td>
+                                                        <td class="text-center">@service.Price @item.Company.Currency</td>
+
+                                                        <td class="text-center">
+
+                                                            <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                            @if (service.IsActive)
+                                                            {
+                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                            }
+                                                            else
+                                                            {
+                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">done</i>RESTORE</button>
+
+                                                            }
+                                                            <a href="@Url.Action("Duplicate", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> DUPLICATE</a>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="Service_@item.ServiceCategory.ID" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">
+                                                        Order
+                                                    </th>
+                                                    <th class="text-center">
+                                                        Name
+                                                    </th>
+                                                    <th class="text-center">
+                                                        Duration
+                                                    </th>
+                                                    <th class="text-center">
+                                                        Price
+                                                    </th>
+
+
+                                                    <th class="text-center">
+                                                        Action
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var service in item.Services)
+                                                {
+                                                    string ClassName = "";
+                                                    if (service.IsActive == false)
+                                                    {
+                                                        ClassName = "NONACTIVE";
+                                                    }
+                                                    else
+                                                    {
+                                                        ClassName = "ACTIVE";
+                                                    }
+
+                                                    <tr class="@ClassName">
+                                                        <td style="width:40px;" class="text-center">
+                                                            <input type="number" class="form-control" value="@service.DisplayOrder" onchange="ChangeOrderService('@service.ID', this.value)" />
+                                                        </td>
+                                                        <td class="text-center">@service.Name</td>
+                                                        <td class="text-center">@service.Duration</td>
+                                                        <td class="text-center">@service.Price @item.Company.Currency</td>
+
+                                                        <td class="text-center">
+
+                                                            <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                            <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                            <a href="@Url.Action("Duplicate", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> DUPLICATE</a>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+
+                    </div>
+                </div>
+            }
+
+        </div>
+
+
+
+    }
+    else
+    {
+
+        <div class="alert alert-warning col-md-12" role="alert">
+            Sorry! No records exist.
+        </div>
+    }
+    @if (Model.DeletedServices != null && Model.DeletedServices.Services.Count() > 0)
+    {
+        <div id="DeletedServices" class="card">
+            <div class="panel-group sortable-categories" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+
+                        <input type="number" class="form-control" style="width:40px;margin-left:10px;float:left;" value="@(Model.DeletedServices.Services.Select(x=>x.DisplayOrder).Max()+1)" onchange="ChangeOrder('0', this.value)" />
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_0" aria-expanded="true" aria-controls="Service_0">
+                            <h4 class="panel-title text-center">
+                                DELETED
+
+                                <i class="material-icons">keyboard_arrow_down</i>
+                            </h4>
+                        </a>
+
+                    </div>
+
+
+                </div>
+            </div>
+            <div id="Service_0" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        Order
+                                    </th>
+                                    <th class="text-center">
+                                        Name
+                                    </th>
+                                    <th class="text-center">
+                                        Duration
+                                    </th>
+                                    <th class="text-center">
+                                        Price
+                                    </th>
+
+
+                                    <th class="text-center">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var service in Model.DeletedServices.Services)
+                                {
+
+                                    //string ClassName = "";
+                                    //if (service.IsActive == false)
+                                    //{
+                                    //    ClassName = "NONACTIVE";
+                                    //}
+                                    //else
+                                    //{
+                                    //    ClassName = "ACTIVE";
+                                    //}
+
+                                    <tr>
+                                        <td style="width:40px;" class="text-center">
+                                            <input type="number" class="form-control" value="@service.DisplayOrder" onchange="ChangeOrderService('@service.ID', this.value)" />
+                                        </td>
+                                        <td class="text-center">@service.Name</td>
+                                        <td class="text-center">@service.Duration</td>
+                                        <td class="text-center">@service.Price @Model.DeletedServices.Company.Currency</td>
+
+                                        <td class="text-center">
+
+                                            <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                            @if (service.IsActive)
+                                            {
+                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal">DEACTIVATE</button>
+                                            }
+                                            else
+                                            {
+                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal">RESTORE</button>
+
+                                            }
+                                            <a href="@Url.Action("Duplicate", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> DUPLICATE</a>
+                                        </td>
+                                    </tr>
+                                }
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    }
+</div>
+
+
+
+  
+<script>
+
+
+    function ChangeOrder(categoryId, newOrder) {
+
+        $.ajax({
+            url: '@Url.Action("UpdateDisplayOrder", "ServiceCategory")', // Update this with your controller and action names
+            type: 'POST',
+            data: { categoryId: categoryId, newOrder: newOrder },
+            success: function (result) {
+                //alert("Order Updated");
+                $(this).val(newOrder);
+            },
+            error: function (error) {
+                // Handle error response if needed
+            }
+        });
+    }
+
+    function ChangeOrderService(serviceID, newOrder) {
+
+        $.ajax({
+            url: '@Url.Action("UpdateDisplayOrder", "Service")', // Update this with your controller and action names
+            type: 'POST',
+            data: { serviceID: serviceID, newOrder: newOrder },
+            success: function (result) {
+                //alert("Order Updated");
+                $(this).val(newOrder);
+            },
+            error: function (error) {
+                // Handle error response if needed
+            }
+        });
+    }
+
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+</script>
+
+
+

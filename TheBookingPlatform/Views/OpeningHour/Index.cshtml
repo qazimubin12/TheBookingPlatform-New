@@ -1,0 +1,97 @@
+﻿@model TheBookingPlatform.ViewModels.OpeningHourListingViewModel
+
+<style>
+    .card {
+        margin: 0px;
+    }
+</style>
+<div class="card">
+   
+    <div class="row">
+        <div class="col col-lg-12">
+            @{
+                Html.RenderPartial("_Listing", Model);
+            }
+        </div>
+    </div>
+
+</div>
+<div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+
+    
+
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+        function RepopulateOpeningHours(SearchTerm) {
+            $.ajax({
+                url: '@Url.Action("GetOpeningHours", "OpeningHour")', // Replace with the actual URL
+                method: 'GET',
+                data: { SearchTerm: SearchTerm },
+                dataType: 'json',
+                success: function (data) {
+                    // Clear existing options
+
+                    $('#OpeningHoursTable tbody').empty();
+
+                    // Repopulate with new data
+                    $.each(data, function (index, item) {
+                        var newRow = $('<tr>');
+
+                        
+                        newRow.append($('<td>').addClass('text-center').text(item.FirstName + item.LastName));
+                        newRow.append($('<td>').addClass('text-center').text(item.Email));
+                        // Assuming item.DateOfBirth contains "/Date(1021834800000)/"
+                        var dateInMillis = parseInt(item.DateOfBirth.match(/\d+/)[0]);
+                        var formattedDate = new Date(dateInMillis);
+
+                        // You can format the date as per your requirements. For example, MM/DD/YYYY
+                        var formattedDateString = (formattedDate.getMonth() + 1) + '/' + formattedDate.getDate() + '/' + formattedDate.getFullYear();
+
+                        // Append the formatted date to the table cell
+                        newRow.append($('<td>').addClass('text-center').text(formattedDateString));
+                        newRow.append($('<td>').addClass('text-center').text(item.MobileNumber));
+                        newRow.append($('<td>').addClass('text-center').text(item.Address));
+
+                        var actionColumn = $('<td>').addClass('text-center');
+                        var editLink = $('<a>')
+                            .attr('href', '@Url.Action("Action", "OpeningHour")' + '?ID=' + item.ID)
+                            .addClass('btn btn-sm btn-rounded btn-info btn-icon-text')
+                            .html('<i class="mdi mdi-pencil"></i> EDIT');
+                        var deleteButton = $('<button>')
+                            .attr('data-href', '@Url.Action("Delete", "OpeningHour")' + '?ID=' + item.ID)
+                            .attr('type', 'button')
+                            .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
+                            .attr('data-toggle', 'modal')
+                            .attr('data-target', '#actionModal')
+                            .html('<i class="mdi mdi-delete"></i> DELETE');
+
+                        actionColumn.append(editLink);
+                        actionColumn.append(deleteButton);
+
+                        newRow.append(actionColumn);
+
+
+                        $('#OpeningHoursTable tbody').append(newRow);
+
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+    }
+
+</script>

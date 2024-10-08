@@ -1,0 +1,2223 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentListingViewModel
+@using System.Globalization
+
+@{
+    ViewBag.Title = "_CalendarPartial";
+
+    var enUsCulture = new CultureInfo("en-US");
+    DateTime goToDate = DateTime.Parse(Model.GoToDate, enUsCulture);
+    var nextDate = goToDate.AddDays(1).ToString("yyyy-MM-dd", enUsCulture);
+    var prevdate = goToDate.AddDays(-1).ToString("yyyy-MM-dd", enUsCulture);
+    //var customTitle = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("ddd, MMM dd, yyyy");
+
+    string customTitle = string.Empty;
+
+    if (DateTime.TryParse(Model.GoToDate, enUsCulture, DateTimeStyles.None, out goToDate))
+    {
+        customTitle = goToDate.ToString("ddd, MMM dd, yyyy", enUsCulture);
+    }
+    else
+    {
+        customTitle = "Invalid date";
+    }
+
+    var formattedDate = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("MM/dd/yyyy");
+
+
+
+
+}
+
+<script src='~/Content/fullcalendar-scheduler-6.1.8/dist/index.global.js'></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+
+
+<style>
+    .fc-direction-ltr .fc-timegrid-now-indicator-arrow {
+        left: 0;
+        border-width: 10px 33px 10px 11px;
+        border-radius: 0px 10px 10px 0px;
+        opacity: .7;
+    }
+
+    .employeePriceChange {
+        font-size: x-small;
+        display: flex;
+    }
+
+
+
+    .fc-timegrid-now-indicator-label {
+        position: absolute;
+        top: -1.5em; /* Adjust the positioning as needed */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #007bff; /* Background color */
+        color: #fff; /* Text color */
+        padding: 0.2em 0.5em; /* Adjust padding as needed */
+        border-radius: 3px; /* Rounded corners */
+    }
+
+    .fc-now-indicator {
+        content: "Now"; /* Label text */
+        position: absolute;
+        top: -1.5em; /* Adjust the positioning as needed */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #007bff; /* Background color */
+        color: #fff; /* Text color */
+        padding: 0.2em 0.5em; /* Adjust padding as needed */
+        border-radius: 3px; /* Rounded corners */
+    }
+
+    .fc .fc-timegrid-now-indicator-arrow {
+        position: absolute;
+        z-index: 4;
+        margin-top: -10px;
+        border-style: solid;
+        border-color: red;
+    }
+
+    .fc .fc-timegrid-now-indicator-line {
+        opacity: .7;
+        position: absolute;
+        z-index: 4;
+        left: 0;
+        right: 0;
+        margin-top: -2px;
+        border-style: solid;
+        border-color: #F2CB05;
+        border-color: var(--fc-now-indicator-color,#F2CB05);
+        border-width: 5px 0 0;
+    }
+
+    .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer:after {
+        content: "";
+    }
+
+
+    .fc-timegrid-slot {
+        height: 30px !important;
+    }
+
+    .fc-timegrid-event-harness {
+        width: 103%;
+    }
+
+    .unavailable-event .event-description {
+        font-size: 14px;
+        white-space: normal;
+        margin-top: 5px;
+        color: black;
+    }
+
+    .unavailable-event .fc-time {
+        display: none;
+    }
+
+    .container-fluid {
+        margin-right: auto;
+        margin-left: auto;
+        padding: 0px;
+    }
+
+
+    .employee-image {
+        width: 20px;
+        height: 20px;
+        margin-bottom: 0px;
+    }
+
+    .employee-specialization {
+        font-size: 0.6em;
+        color: grey;
+        float: left;
+        margin-top: -7px;
+        padding-left: 5px;
+        padding-top: 0px;
+        padding-right: 20px;
+    }
+
+    .custom-modal-dialog {
+        width: 90%; /* Adjust the width as needed */
+        margin: auto; /* Center the modal horizontally */
+    }
+
+    .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer {
+        left: 0;
+        display: none;
+        right: 0;
+        bottom: 0;
+        height: 8px;
+        overflow: hidden;
+        line-height: 8px;
+        font-size: 11px;
+        font-family: monospace;
+        text-align: center;
+        cursor: s-resize;
+    }
+
+    .fc-time-grid-event.fc-short .fc-time:before {
+        content: '';
+    }
+
+    .fc-time {
+        border-radius: 5px;
+        height: 20px;
+    }
+
+    .fc-time-gray {
+        background-color: gray;
+    }
+
+    .fc-time-green {
+        background-color: darkslategrey;
+    }
+
+    .fc-time-purple {
+        background-color: indigo;
+    }
+
+    .fc-time-red {
+        background-color: brown;
+    }
+
+    .fc-time-yellow {
+        background-color: chocolate;
+    }
+    .fc-time-Gcal {
+        background-color: #9aad9c;
+    }
+    .fc-resizer .fc-end-resizer {
+        display: none;
+    }
+
+    .fc-title {
+        font-size: 12px; /* Adjust the font size as needed */
+        white-space: nowrap; /* Prevent text from wrapping */
+    }
+    /* Style the event description div */
+    .event-description {
+        font-size: 12px; /* Adjust the font size as needed */
+        white-space: normal; /* Allow text to wrap within the description div */
+        margin-top: 5px; /* Add spacing between the time and description */
+    }
+
+    .fc-content > .fc-time {
+        background-color: #8A789C;
+    }
+
+    .fc-timegrid-event .fc-event-main {
+        padding: 1px 1px 0px;
+        overflow: auto;
+        scrollbar-width: thin; /* For Firefox */
+    }
+
+        /* For Webkit browsers like Chrome and Safari */
+        .fc-timegrid-event .fc-event-main::-webkit-scrollbar {
+            width: 6px; /* Width of the scrollbar */
+        }
+
+        .fc-timegrid-event .fc-event-main::-webkit-scrollbar-thumb {
+            background-color: #888; /* Color of the thumb */
+        }
+
+
+    .inactive-slot {
+        background-color: #ccc; /* Change the background color */
+        cursor: not-allowed; /* Change the cursor to indicate it's not clickable */
+        opacity: 0.5; /* Reduce opacity to visually indicate it's inactive */
+    }
+
+    .fc-time-grid-event.fc-short .fc-time, .fc-time-grid-event.fc-short .fc-title {
+        display: flex;
+        vertical-align: top;
+    }
+
+
+    .employee-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        float: left;
+        margin-left: 5px;
+        margin-top: 5px;
+        margin-right: 5px;
+        margin-bottom: 0px;
+    }
+
+
+    .fc .fc-col-header-cell-cushion {
+        display: inline-block;
+        /*        padding-right: 25px;
+*/ padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 5px;
+        font-size: smaller;
+        margin-bottom: 0px;
+        float: left;
+    }
+
+
+    body {
+        overflow: hidden;
+    }
+
+    .fc-col-header-cell {
+        cursor: pointer;
+    }
+
+    .main-panel > .content {
+        margin-top: 0px;
+        padding: 0px 0px;
+        min-height: calc(100vh - 200px);
+    }
+
+    .loading-spinner-overlay {
+        display: none; /* Initially hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 9999; /* Ensure it appears above all other content */
+        background-color: rgba(0,0,0,0.5); /* Transparent black */
+    }
+
+
+    .spinner {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+</style>
+
+<input type="hidden" id="IntervalFinal" />
+<div style="background-color:white; padding:10px;border-radius:10px;" id="fullCalendar"></div>
+
+<div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog custom-modal-dialog" role="document">
+    </div>
+</div>
+
+
+
+
+<!-- Loading Spinner Overlay -->
+<div id="loadingSpinner" class="loading-spinner-overlay">
+    <div class="spinner"></div>
+</div>
+
+
+<script type="text/javascript">
+
+
+
+
+
+    function CreateNewAppointment(date, time, employeeId) {
+
+        if (time != "24:00") {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("ActionPartial","Appointment")',
+                data: { date: date, time: time, employeeID: employeeId }
+            })
+                .done(function (response) {
+
+                    $("#actionModal .modal-dialog").html(response);
+                    hideLoadingSpinner();
+                    $("#actionModal").modal('show'); // Initialize and show the modal
+
+                });
+
+        } else {
+            return;
+        }
+    }
+
+
+
+
+    function showSuccessAlert() {
+        swal({
+            icon: 'success',
+            title: 'Updated Successfully! ',
+            showConfirmButton: false,
+            timer: 1000 // Automatically close after 1.5 seconds
+        });
+    }
+
+
+    function showTooltip(event) {
+        var tooltipText = event.target.getAttribute('data-tooltip');
+
+        // Create a tooltip element
+        //var tooltipElement = document.createElement('div');
+        //tooltipElement.className = 'tooltip';
+        //tooltipElement.textContent = tooltipText;
+
+        //// Append the tooltip to the body
+        //document.body.appendChild(tooltipElement);
+
+        //// Set the position of the tooltip
+        //var rect = event.target.getBoundingClientRect();
+        //tooltipElement.style.left = rect.left + 'px';
+        //tooltipElement.style.top = rect.top - tooltipElement.offsetHeight + 'px';
+        alert(tooltipText);
+    }
+
+    // Function to hide the tooltip
+    function hideTooltip() {
+        var tooltipElement = document.querySelector('.tooltip');
+        if (tooltipElement) {
+            tooltipElement.parentNode.removeChild(tooltipElement);
+        }
+    }
+
+    // Adding event listeners for hover
+
+
+    function ViewCalendar() {
+        showLoadingSpinner();
+        var calendarEl = document.getElementById('fullCalendar');
+        today = new Date();
+        y = today.getFullYear();
+        m = today.getMonth();
+        var slotDurationValue = $("#IntervalFinal").val();
+        var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+        var calendarHeight = windowHeight-50; // Adjust the height as needed for other elements on the page
+        d = today.getDate();
+        var calendarWidth = windowWidth - 10; // Adjust the width as needed
+        var parsedDate = new Date();
+        var selectedDate = $("#GoToDate").val();
+        var currentScrollPosition = "";
+        if (selectedDate != "") {
+            parsedDate = new Date(selectedDate);
+        }
+
+        var clientTimeZoneNameToBeUsed = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
+        var openingHours = parseOpeningHours($("#MainOpeningHours").val());
+
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+
+            now: new Date(),
+            editable: true,
+            
+            initialView: 'resourceTimeGridDay',
+            nowIndicator: 'true',
+            timeZone: clientTimeZoneNameToBeUsed, //NEED TO COMMENT THIS
+            scrollTime: '09:00',
+            dayMinWidth: 150,
+            stickyFooterScrollbar: true,
+            width: calendarWidth, // Set the calendar width dynamically
+            initialDate: parsedDate,
+            slotMinTime: '09:00:00', // set the start time for the slots
+            height: calendarHeight,
+            slotWidth: 50,  // Adjust the width as needed
+            slotEventOverlap: false,
+            slotDuration: slotDurationValue,
+            slotLabelInterval: slotDurationValue,
+            refetchResourcesOnNavigate: true,
+            resourceOrder: 'displayorder', // Order resources by their IDs
+            resourceAreaHeaderContent: 'Employees',
+            aspectRatio: 3, // Adjust the aspect ratio for a better view
+            schedulerLicenseKey: '0657704471-fcs-1695142202',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'resourceTimeGridDay,customWeek' // Add a custom Week View here
+            },
+            datesSet: function () {
+                // Function to set custom title whenever the dates are set/changed
+                setCustomTitle();
+            },
+            businessHours: {
+                dow: [1, 2, 3, 5, 6, 7],
+                start: openingHours.start,
+                end: openingHours.end
+            },
+            views: {
+                resourceTimeGridDay: {
+                    type: 'resourceTimeGrid',
+                    buttonText: 'Day'
+                },
+                customWeek: {
+                    type: 'timeGridWeek',
+                    buttonText: 'Week',
+                    columnHeaderContent: {
+                        default: 'title'
+                    }
+                }
+            },
+            resources: [
+
+                @if (Model.EmployeeID == 0)
+                {
+                    var orderedEmployees = Model.Employees.OrderBy(n=>n.DisplayOrder).ToList();
+                    foreach (var item in orderedEmployees)
+                    {
+
+                        bool ShiftAdded = false;
+
+                        <text>
+                        {
+                           id: '@item.Employee.ID',
+                           displayorder: @item.Employee.DisplayOrder,
+                           title: '@item.Employee.Name',
+                           image: '@item.Employee.Photo',
+                    Specialization: '@item.Employee.Specialization',
+                              pricechangePercentage: '@(item.PriceChange != null ? item.PriceChange.Percentage : '0')',
+   pricechangeType: '@(item.PriceChange != null ? item.PriceChange.TypeOfChange : "")',
+   pricechangeID: '@(item.PriceChange != null ? item.PriceChange.ID : 0)',
+                           businessHours:
+                            [
+                            @if (item.Shifts.Count() == 0 || Model.TodayOff)
+                            {
+                            <text>
+                            {
+                            startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            }
+                            </text>
+                                ShiftAdded = true;
+                            }
+
+
+                            else
+                            {
+                                var shiftsWithinRange = item.Shifts.Where(s => s.Shift.Date.DayOfWeek.ToString() == Model.SelectedDate.DayOfWeek.ToString());
+                                if (shiftsWithinRange.Count() > 0)
+                                {
+                                    foreach (var shift in shiftsWithinRange)
+                                    {
+                                        if (shift != null)
+                                        {
+                                            if (shift.RecurShift != null)
+                                            {
+                                                if (shift.ExceptionShift.Count() != 0)
+                                                {
+                                                    bool exceptionFound = false;
+                                                    foreach (var shiftExceptionShift in shift.ExceptionShift)
+                                                    {
+                                                        if (shiftExceptionShift.ShiftID == shift.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == Model.SelectedDate.ToString("yyyy-MM-dd") && shiftExceptionShift.IsNotWorking == true)
+                                                        {
+                                                                 <text>{
+                                                                 startTime: '00:00',
+                                                                 endTime: '23:59',
+                                                                 daysOfWeek: []
+                                                                 },
+                                                                 </text>
+                                                            ShiftAdded = true;
+                                                            exceptionFound = true;
+                                                            break; // Break if an exception is found
+                                                        }
+                                                        else if ((shiftExceptionShift.ShiftID == shift.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == Model.SelectedDate.ToString("yyyy-MM-dd") && shiftExceptionShift.IsNotWorking == false))
+                                                        {
+                                                             <text>{
+                                                startTime: '@shiftExceptionShift.StartTime.Trim()',
+                                                endTime: '@shiftExceptionShift.EndTime.Trim()',
+                                                @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
+                                                {
+                                                <text>daysOfWeek: [1]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Tuesday")
+                                                {
+                                                <text>daysOfWeek: [2]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Wednesday")
+                                                {
+                                                <text>daysOfWeek: [3]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Thursday")
+                                                {
+                                                <text>daysOfWeek: [4]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Friday")
+                                                {
+                                                <text>daysOfWeek: [5]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Saturday")
+                                                {
+                                                <text>daysOfWeek: [6]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Sunday")
+                                                {
+                                                <text>daysOfWeek: [0]</text>
+                                                }
+                                                else
+                                                {
+                                                <text>daysOfWeek: []</text>
+                                                }
+
+
+
+                                                },</text>
+                                                            exceptionFound = true;
+                                                            ShiftAdded = true;
+                                                            break; // Break if an exception is found
+                                                        }
+                                                    }
+
+                                                    if (!exceptionFound)
+                                                    {
+                                                        if (shift.RecurShift.RecurEnd == "Custom Date" && DateTime.Parse(shift.RecurShift.RecurEndDate).Date >= Model.SelectedDate.Date)
+                                                        {
+                                                                        <text>{
+startTime: '@shift.Shift.StartTime.Trim()',
+endTime: '@shift.Shift.EndTime.Trim()',
+@if (shift.Shift.Day == "Monday")
+{
+<text>daysOfWeek: [1]</text>
+}
+else if (shift.Shift.Day == "Tuesday")
+{
+<text>daysOfWeek: [2]</text>
+}
+else if (shift.Shift.Day == "Wednesday")
+{
+<text>daysOfWeek: [3]</text>
+}
+else if (shift.Shift.Day == "Thursday")
+{
+<text>daysOfWeek: [4]</text>
+}
+else if (shift.Shift.Day == "Friday")
+{
+<text>daysOfWeek: [5]</text>
+}
+else if (shift.Shift.Day == "Saturday")
+{
+<text>daysOfWeek: [6]</text>
+}
+else if (shift.Shift.Day == "Sunday")
+{
+<text>daysOfWeek: [0]</text>
+}
+else
+{
+<text>daysOfWeek: []</text>
+}
+
+
+
+},</text>
+                                                                        ShiftAdded = true;
+                                                        }
+                                                        else if (shift.RecurShift.RecurEnd == "Never")
+                                                        {
+                                                                    if (shift.Shift.IsRecurring)
+                                                                    {
+                                                                        <text>{
+startTime: '@shift.Shift.StartTime.Trim()',
+endTime: '@shift.Shift.EndTime.Trim()',
+@if (shift.Shift.Day == "Monday")
+{
+<text>daysOfWeek: [1]</text>
+}
+else if (shift.Shift.Day == "Tuesday")
+{
+<text>daysOfWeek: [2]</text>
+}
+else if (shift.Shift.Day == "Wednesday")
+{
+<text>daysOfWeek: [3]</text>
+}
+else if (shift.Shift.Day == "Thursday")
+{
+<text>daysOfWeek: [4]</text>
+}
+else if (shift.Shift.Day == "Friday")
+{
+<text>daysOfWeek: [5]</text>
+}
+else if (shift.Shift.Day == "Saturday")
+{
+<text>daysOfWeek: [6]</text>
+}
+else if (shift.Shift.Day == "Sunday")
+{
+<text>daysOfWeek: [0]</text>
+}
+else
+{
+<text>daysOfWeek: []</text>
+}
+
+
+
+},</text>
+                                                                        ShiftAdded = true;
+                                                                    }
+                                                                       else
+                                                                       {
+                                                                         <text>{
+    startTime: '00:00',
+    endTime: '23:59',
+    daysOfWeek: []
+    },
+                                                                            </text>
+                                                                           ShiftAdded = true;
+                                                                       }
+                            }
+                                                        else
+                                                {
+                                                                     <text>{
+startTime: '00:00',
+endTime: '23:59',
+daysOfWeek: []
+},
+                                                                        </text>
+                                                                       ShiftAdded = true;
+                                                }
+
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    if (shift.Shift.Day == Model.SelectedDate.DayOfWeek.ToString() && shift.Shift.Date.Date <= Model.SelectedDate.Date)
+                                                    {
+                                                        if (shift.RecurShift.RecurEnd == "Never")
+                                                        {
+                                                            <text>{
+                                                startTime: '@shift.Shift.StartTime.Trim()',
+                                                endTime: '@shift.Shift.EndTime.Trim()',
+                                                @if (shift.Shift.Day == "Monday")
+                                                {
+                                                <text>daysOfWeek: [1]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Tuesday")
+                                                {
+                                                <text>daysOfWeek: [2]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Wednesday")
+                                                {
+                                                <text>daysOfWeek: [3]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Thursday")
+                                                {
+                                                <text>daysOfWeek: [4]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Friday")
+                                                {
+                                                <text>daysOfWeek: [5]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Saturday")
+                                                {
+                                                <text>daysOfWeek: [6]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Sunday")
+                                                {
+                                                <text>daysOfWeek: [0]</text>
+                                                }
+                                                else
+                                                {
+                                                <text>daysOfWeek: []</text>
+                                                }
+
+
+
+                                                },</text>
+                                                            ShiftAdded = true;
+                                                        }
+                                                        else if (DateTime.Parse(shift.RecurShift.RecurEndDate) >= Model.SelectedDate)
+                                                        {
+                                                            <text>{
+                                                startTime: '@shift.Shift.StartTime.Trim()',
+                                                endTime: '@shift.Shift.EndTime.Trim()',
+                                                @if (shift.Shift.Day == "Monday")
+                                                {
+                                                <text>daysOfWeek: [1]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Tuesday")
+                                                {
+                                                <text>daysOfWeek: [2]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Wednesday")
+                                                {
+                                                <text>daysOfWeek: [3]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Thursday")
+                                                {
+                                                <text>daysOfWeek: [4]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Friday")
+                                                {
+                                                <text>daysOfWeek: [5]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Saturday")
+                                                {
+                                                <text>daysOfWeek: [6]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Sunday")
+                                                {
+                                                <text>daysOfWeek: [0]</text>
+                                                }
+                                                else
+                                                {
+                                                <text>daysOfWeek: []</text>
+                                                }
+
+
+
+                                                },</text>
+                                                            ShiftAdded = true;
+                                                        }
+                                                        else
+                                                        {
+                                                             <text>{
+                                                    startTime: '00:00',
+                                                    endTime: '23:59',
+                                                    daysOfWeek: []
+                                                    },
+                                                             </text>
+                                                            ShiftAdded = true;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                     <text>{
+                                                    startTime: '00:00',
+                                                    endTime: '23:59',
+                                                    daysOfWeek: []
+                                                    },
+                                                      </text>
+                                                        ShiftAdded = true;
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                if (shift.ExceptionShift != null)
+                                                {
+                                                    if (shift.ExceptionShift.Where(x => x.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd")).Any())
+                                                    {
+                                                        bool exceptionFound = false;
+                                                        foreach (var shiftExceptionShift in shift.ExceptionShift)
+                                                        {
+                                                            if (shiftExceptionShift.ShiftID == shift.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd"))
+                                                            {
+                                                                if (shiftExceptionShift.IsNotWorking)
+                                                                {
+                                                                 <text>{
+                            startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            },
+                                                                 </text>
+                                                                 ShiftAdded = true;
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <text>{
+                                                     startTime: '@shiftExceptionShift.StartTime.Trim()',
+                                                     endTime: '@shiftExceptionShift.EndTime.Trim()',
+                                                     @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
+                                                     {
+                                                     <text>daysOfWeek: [1]</text>
+                                                     }
+                                                     else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Tuesday")
+                                                     {
+                                                     <text>daysOfWeek: [2]</text>
+                                                     }
+                                                     else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Wednesday")
+                                                     {
+                                                     <text>daysOfWeek: [3]</text>
+                                                     }
+                                                     else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Thursday")
+                                                     {
+                                                     <text>daysOfWeek: [4]</text>
+                                                     }
+                                                     else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Friday")
+                                                     {
+                                                     <text>daysOfWeek: [5]</text>
+                                                     }
+                                                     else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Saturday")
+                                                     {
+                                                     <text>daysOfWeek: [6]</text>
+                                                     }
+                                                     else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Sunday")
+                                                     {
+                                                     <text>daysOfWeek: [0]</text>
+                                                         }
+                                                         else
+                                                         {
+                                                            <text> daysOfWeek: []</text>
+
+
+                                                         }
+                                                     },</text>
+                                                                    ShiftAdded = true;
+
+                                                                }
+                                                                exceptionFound = true;
+                                                                break; // Break if an exception is found
+                                                            }
+                                                            else
+                                                            {
+                                                                   <text>{
+                                        startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            },
+                                                                    </text>
+                                                                ShiftAdded = true;
+
+                                                            }
+
+                                                        }
+                                                        if (!exceptionFound)
+                                                        {
+                                                                     <text>{
+                                        startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            },
+                                                                    </text>
+                                                                ShiftAdded = true;
+
+
+                                                        }
+
+                                                    }
+
+
+                                                }
+                                                else
+                                                {
+                                                    if (shift.Shift.Date.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd"))
+                                                    {
+                                                        <text>{
+                                                startTime: '@shift.Shift.StartTime.Trim()',
+                                                        endTime: '@shift.Shift.EndTime.Trim()',
+                                                @if (shift.Shift.Day == "Monday")
+                                                    {
+                            <text>daysOfWeek: [1]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Tuesday")
+                                                {
+                            <text>daysOfWeek: [2]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Wednesday")
+                                                {
+                            <text>daysOfWeek: [3]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Thursday")
+                                                {
+                            <text>daysOfWeek: [4]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Friday")
+                                                {
+                            <text>daysOfWeek: [5]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Saturday")
+                                                {
+                            <text>daysOfWeek: [6]</text>
+                                                }
+                                                else if (shift.Shift.Day == "Sunday")
+                                                {
+                            <text>daysOfWeek: [0]</text>
+                                                }
+                                                else
+                                            {
+                                                <text>daysOfWeek: []</text>
+
+                                            }
+                                                },</text>
+                                                        ShiftAdded = true;
+
+                                                    }
+                                                    else
+                                                    {
+                                                          <text>{
+                                        startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            },
+                                                          </text>
+                                                        ShiftAdded = true;
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                          <text>{
+                                        startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            },
+                                          </text>
+                                            ShiftAdded = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                     <text>{
+                                        startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            },
+                                     </text>
+                                    ShiftAdded = true;
+                                }
+
+                                if(ShiftAdded == false)
+                                {
+                                   <text>{
+                                        startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            },
+                                    </text>
+                                   ShiftAdded = true;
+                                }
+                            }
+
+                            ]
+
+                        },
+                        </text>
+
+                    }
+
+
+
+                }
+                else
+                {
+                    foreach (var item in Model.Employees.Where(x => x.Employee.ID == Model.EmployeeID).OrderBy(n => n.DisplayOrder).ToList())
+                    {
+                         <text>
+                         {
+                            id: '@item.Employee.ID',
+                             title: '@item.Employee.Name',
+                    displayorder: @item.Employee.DisplayOrder,
+
+                            image: '@item.Employee.Photo',
+                             Specialization: '@item.Employee.Specialization',
+                               pricechangePercentage: '@(item.PriceChange != null ? item.PriceChange.Percentage : '0')',
+   pricechangeType: '@(item.PriceChange != null ? item.PriceChange.TypeOfChange : "")',
+   pricechangeID: '@(item.PriceChange != null ? item.PriceChange.ID : 0)',
+                            businessHours:
+                            [
+                                @if (item.Shifts.Count() == 0)
+                            {
+                            <text>
+                            {
+                            startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            }
+                            </text>
+                            }
+                                else
+                                {
+                                     foreach (var tt in item.Shifts)
+                                     {
+                                        if (tt.RecurShift != null)
+                                    {
+                                        if (tt.ExceptionShift.Count() != 0)
+                                            {
+                                                bool exceptionFound = false;
+                                                foreach (var ttExceptionShift in tt.ExceptionShift)
+                                                {
+                                                    if (ttExceptionShift.ShiftID == tt.Shift.ID && ttExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd") && ttExceptionShift.IsNotWorking == false)
+                                                    {
+                                                     <text>{
+                                                     startTime: '@ttExceptionShift.StartTime.Trim()',
+                                                     endTime: '@ttExceptionShift.EndTime.Trim()',
+                                                     @if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
+                                                        {
+                            <text>daysOfWeek: [1]</text>
+                                                     }
+                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Tuesday")
+                                                     {
+                            <text>daysOfWeek: [2]</text>
+                                                     }
+                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Wednesday")
+                                                     {
+                            <text>daysOfWeek: [3]</text>
+                                                     }
+                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Thursday")
+                                                     {
+                            <text>daysOfWeek: [4]</text>
+                                                     }
+                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Friday")
+                                                     {
+                            <text>daysOfWeek: [5]</text>
+                                                     }
+                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Saturday")
+                                                     {
+                            <text>daysOfWeek: [6]</text>
+                                                     }
+                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Sunday")
+                                                     {
+                            <text>daysOfWeek: [0]</text>
+                                                     }
+                                                     else
+                                            {
+                                                <text>daysOfWeek: []</text>
+
+                                            }
+                                                    },</text>
+                                                    exceptionFound = true;
+                                                    break; // Break if an exception is found
+
+
+                                                }
+                                                    else if (ttExceptionShift.ShiftID == tt.Shift.ID && ttExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd") && ttExceptionShift.IsNotWorking == true)
+                                                {
+                                                    <text>{
+                                                         startTime: '00:00',
+                                                         endTime: '23:59',
+                                                         daysOfWeek: []
+                                                     },
+                                                    </text>
+                                                    exceptionFound = true;
+                                                    break; // Break if an exception is found
+                                                }
+                                                }
+                                            if (!exceptionFound)
+                                            {
+                                                <text>{
+                                                startTime: '@tt.Shift.StartTime.Trim()',
+                                                        endTime: '@tt.Shift.EndTime.Trim()',
+                                                @if (tt.Shift.Day == "Monday")
+                                                    {
+                            <text>daysOfWeek: [1]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Tuesday")
+                                                {
+                            <text>daysOfWeek: [2]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Wednesday")
+                                                {
+                            <text>daysOfWeek: [3]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Thursday")
+                                                {
+                            <text>daysOfWeek: [4]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Friday")
+                                                {
+                            <text>daysOfWeek: [5]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Saturday")
+                                                {
+                            <text>daysOfWeek: [6]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Sunday")
+                                                {
+                            <text>daysOfWeek: [0]</text>
+                                                }
+                                                else
+                                            {
+                                                <text>daysOfWeek: []</text>
+
+                                            }
+                                                },</text>
+
+                                            }
+
+                                            }
+                                        else
+                                            {
+                                            if (tt.Shift.Day == DateTime.Parse(Model.GoToDate).DayOfWeek.ToString())
+                                            {
+                                                <text>{
+                                             startTime: '@tt.Shift.StartTime.Trim()',
+                                                        endTime: '@tt.Shift.EndTime.Trim()',
+                                             @if (tt.Shift.Day == "Monday")
+                                                    {
+                                             <text>daysOfWeek: [1]</text>
+                                             }
+                                             else if (tt.Shift.Day == "Tuesday")
+                                             {
+                            <text>daysOfWeek: [2]</text>
+                                             }
+                                             else if (tt.Shift.Day == "Wednesday")
+                                             {
+                            <text>daysOfWeek: [3]</text>
+                                             }
+                                             else if (tt.Shift.Day == "Thursday")
+                                             {
+                            <text>daysOfWeek: [4]</text>
+                                             }
+                                             else if (tt.Shift.Day == "Friday")
+                                             {
+                            <text>daysOfWeek: [5]</text>
+                                             }
+                                             else if (tt.Shift.Day == "Saturday")
+                                             {
+                            <text>daysOfWeek: [6]</text>
+                                             }
+                                             else if (tt.Shift.Day == "Sunday")
+                                             {
+                            <text>daysOfWeek: [0]</text>
+                                             }
+                                             else
+                                            {
+                                                <text>daysOfWeek: []</text>
+
+                                            }
+                                             },</text>
+                                            }
+
+                                        }
+                                    }
+                                        else
+                                    {
+                                        if (tt.Shift.IsRecurring && tt.RecurShift != null && DateTime.Parse(tt.RecurShift.RecurEndDate) >= DateTime.Parse(Model.GoToDate))
+                                        {
+                                                <text>{
+                                                startTime: '@tt.Shift.StartTime.Trim()',
+                                                endTime: '@tt.Shift.EndTime.Trim()',
+                                                @if (tt.Shift.Day == "Monday")
+                                                {
+                            <text>daysOfWeek: [1]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Tuesday")
+                                                {
+                            <text>daysOfWeek: [2]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Wednesday")
+                                                {
+                            <text>daysOfWeek: [3]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Thursday")
+                                                {
+                            <text>daysOfWeek: [4]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Friday")
+                                                {
+                            <text>daysOfWeek: [5]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Saturday")
+                                                {
+                            <text>daysOfWeek: [6]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Sunday")
+                                                {
+                            <text>daysOfWeek: [0]</text>
+                                                }
+
+
+                                                },</text>
+                                        }
+                                        else
+                                        {
+                                            if (tt.ExceptionShift != null)
+                                                {
+                                                    if (tt.ExceptionShift.Where(x => x.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd")).Any())
+                                                    {
+                                                        bool exceptionFound = false;
+                                                        foreach (var shiftExceptionShift in tt.ExceptionShift)
+                                                        {
+                                                            if (shiftExceptionShift.ShiftID == tt.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd"))
+                                                            {
+                                                                if (shiftExceptionShift.IsNotWorking)
+                                                                {
+                                                                       <text>
+                                                                       {
+                            startTime: '00:00',
+                            endTime: '23:59',
+                            daysOfWeek: []
+                            },
+                                                                       </text>
+                                                                }
+                                                                else
+                                                                {
+                                                                       <text>{
+                                                startTime: '@shiftExceptionShift.StartTime.Trim()',
+                                                endTime: '@shiftExceptionShift.EndTime.Trim()',
+                                                @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
+                                                {
+                                                    <text>daysOfWeek: [1]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Tuesday")
+                                                {
+                                                    <text>daysOfWeek: [2]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Wednesday")
+                                                {
+                                                    <text>daysOfWeek: [3]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Thursday")
+                                                {
+                                                    <text>daysOfWeek: [4]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Friday")
+                                                {
+                                                    <text>daysOfWeek: [5]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Saturday")
+                                                {
+                                                    <text>daysOfWeek: [6]</text>
+                                                }
+                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Sunday")
+                                                {
+                                                    <text>daysOfWeek: [0]</text>
+                                                }
+                                                else
+                                            {
+                                                <text>daysOfWeek: []</text>
+
+                                            }
+
+                                                },</text>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (tt.Shift.Date.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd"))
+                                                {
+                                                      <text>{
+                                                startTime: '@tt.Shift.StartTime.Trim()',
+                                                endTime: '@tt.Shift.EndTime.Trim()',
+                                                @if (tt.Shift.Day == "Monday")
+                                                {
+                            <text>daysOfWeek: [1]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Tuesday")
+                                                {
+                            <text>daysOfWeek: [2]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Wednesday")
+                                                {
+                            <text>daysOfWeek: [3]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Thursday")
+                                                {
+                            <text>daysOfWeek: [4]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Friday")
+                                                {
+                            <text>daysOfWeek: [5]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Saturday")
+                                                {
+                            <text>daysOfWeek: [6]</text>
+                                                }
+                                                else if (tt.Shift.Day == "Sunday")
+                                                {
+                            <text>daysOfWeek: [0]</text>
+                                                }
+                                                else
+                                            {
+                                                <text>daysOfWeek: []</text>
+
+                                            }
+
+                                                },</text>
+                                                }
+                                            }
+                                        }
+                                    }
+                                     }
+                                }
+                            ]
+                         },
+                         </text>
+
+                    }
+
+                }
+              
+            ],
+            editable: true,  // Allow general event editing globally
+
+            resourceOrder: 'displayorder', // Sorting resources by title
+
+            events: function (info, successCallback, failureCallback) {
+                var startDate = info.startStr;
+                var events = [];
+                $.ajax({
+                    url: '@Url.Action("GetTheDateEvents","Appointment")', // Replace with your actual API endpoint
+                    method: 'GET',
+                    data: { startDate: startDate },
+                    success: function (data) {
+                        data.Appointments.forEach(function (appointment) {
+                            var services = appointment.Services.map(s => "- " + s.Name);
+                            var serviceList = services.join(",");
+                            var title = appointment.CustomerFirstName + " " + appointment.CustomerLastName;
+                            var eventId = appointment.ID;
+                            var FromGCAL = appointment.FromGCAL;
+                            var customer = "";
+                            if (FromGCAL) {
+                                var customer = "Appointment from Google Calendar";
+
+                            } else {
+                                var customer = appointment.Services.some(x => x.Category === "ABSENSE") ? "Walk In" : title;
+                            }
+                            var customerPhone = "";
+                            var IsRepeat = appointment.IsRepeat;
+                            var reminderSent = appointment.ReminderSent;
+                            if (appointment.MobileNumber != null) {
+                                customerPhone = appointment.MobileNumber;
+                            }
+                            var notes = "";
+                            if (appointment.Notes != null) {
+                                notes = appointment.Notes.replace("\r\n", "").replace("\n", " ")
+                            }
+                            var startDate = parseDotNetDate(appointment.Date);
+                            var startTime = parseDotNetDate(appointment.Time);
+                            startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+                            
+                            var endDate = addMinutes(startDate, appointment.TotalDuration);
+                            events.push({
+                                id: eventId,
+                                title: title,
+                                content: serviceList,
+                                customer: customer,
+                                customerphone: customerPhone,
+                                start: startDate,
+                                reminderSent: reminderSent,
+                                end: endDate,
+                                editable: !FromGCAL, 
+                                description: serviceList,
+                                notes: notes,
+                                isPaid: appointment.IsPaid,
+                                allday: false,
+                                IsRepeat: IsRepeat,
+                                resourceId: appointment.EmployeeID,
+                                FromGCAL: FromGCAL,
+                                backgroundColor: appointment.Color,
+                                testingEnd: endDate,
+                                NewCustomer: appointment.NewCustomer,
+                                AnyEmployeeSelected: appointment.AnyEmployeeSelected
+                            });
+                        });
+                        data.WaitingLists.forEach(function (waitingList) {
+
+                            var startDate = parseDotNetDateForWaitingList(waitingList.Date);
+                            events.push({
+                                id: '000',
+                                start: startDate,
+                                description: "Waiting List (" + waitingList.Count + ")",
+                                allday: true,
+                                resourceId: waitingList.EmployeeID,
+                                employeeID: waitingList.EmployeeID,
+                                backgroundColor: 'cadetblue'
+                            });
+                        });
+
+                        successCallback(events);
+                        function addMinutes(date, minutes) {
+                            return new Date(date.getTime() + minutes * 60000);
+                        }
+                        function parseDotNetDateForWaitingList(dotNetDate) {
+                            var match = dotNetDate.match(/\d+/);  // Extract the numeric part
+                            if (match) {
+                                var milliseconds = parseInt(match[0], 10);
+                                var parsedDate = new Date(milliseconds);
+
+                                // Format the date as "yyyy-MM-dd"
+                                var formattedDate = parsedDate.getFullYear() + '-' +
+                                    ('0' + (parsedDate.getMonth() + 1)).slice(-2) + '-' +
+                                    ('0' + parsedDate.getDate()).slice(-2);
+
+                                return formattedDate;
+                            }
+                            return null; // Or handle invalid format as needed
+                        }
+                        function parseDotNetDate(dotNetDate) {
+                            var match = dotNetDate.match(/\d+/);  // Extract the numeric part
+                            if (match) {
+                                return new Date(parseInt(match[0], 10)); // Convert to Date object
+                            }
+                            return null; // Or handle invalid format as needed
+                        }
+
+                        
+                    },
+                    error: function (error) {
+                        console.error('Error fetching events: ', error);
+                        hideLoadingSpinner();
+                    },
+                    complete: function () {
+                        hideLoadingSpinner(); // Hide loading spinner after the AJAX request is complete
+                    }
+
+                });
+            },
+            dateClick: function (info) {
+
+                        var referenceId = '0';
+
+                        if (info.resource == null) {
+
+                        } else {
+                            referenceId = info.resource._resource.id;
+                        }
+                        var dateObject = new Date(info.date);
+                        // Extract the date and time components separately
+                        var date = dateObject.toString().split('T')[0]; // Get the date (YYYY-MM-DD)
+
+                        var clientDate = new Date();
+                        var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
+                        var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
+                                                                 // Create a DateTimeFormat object for the desired time zone
+                        var timeFormatter = new Intl.DateTimeFormat('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false, // Set hour12 to false for 24-hour format
+                    timeZone: targetTimeZone
+                });
+                    var startTime = timeFormatter.format(dateObject);
+
+                    //if (selectedDate == "") {
+                    CreateNewAppointment(dateObject, startTime, referenceId);
+                    //} else {
+                    //    CreateNewAppointment(date, startTime, referenceId);
+                    //}
+
+                },
+            resourceClick: function (info) {
+            // Handle the resource click event here
+            // You can access the resource ID using info.resource.id
+        },
+            slotLabelFormat: {
+        hour: 'numeric',
+                minute: '2-digit',
+                omitZeroMinute: false,
+                hour12: false
+            },
+            eventContent: function (arg) {
+
+            showLoadingSpinner();
+            var clientDate = new Date();
+            var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
+            var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
+
+            // Create a DateTimeFormat object for the desired time zone
+            var timeFormatter = new Intl.DateTimeFormat('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false, // Set hour12 to false for 24-hour format
+                    timeZone: targetTimeZone
+                });
+
+                const timeString = arg.event.extendedProps.testingEnd;
+
+        var eventContent = document.createElement('div');
+        eventContent.classList.add('fc-event-main');
+                if (arg.event.id == "000") {
+
+                    var description = arg.event.extendedProps.description;
+                    if (description) {
+                        var descriptionElement = document.createElement('div');
+                        descriptionElement.classList.add('event-description');
+                        descriptionElement.textContent = description;
+                        eventContent.appendChild(descriptionElement);
+                    }
+
+
+                }
+                else {
+
+                    const startTime = timeFormatter.format(arg.event.start);
+                    const endTime = timeFormatter.format(arg.event.end);
+
+                    var description = arg.event.extendedProps.description;
+                    var notes = arg.event.extendedProps.notes;
+                    // Create a custom HTML element for the event content
+                    // Add the FullCalendar event class
+                    var customername = arg.event.extendedProps.customer;
+                    var customerphone = arg.event.extendedProps.customerphone;
+
+
+                    var timeElement = document.createElement('div');
+                    timeElement.classList.add('fc-time'); // Add the FullCalendar time class
+
+                    if (arg.backgroundColor == "#5DAF4D") {
+                        timeElement.classList.add('fc-time-green'); // Add the FullCalendar time class
+                    }
+                    else if (arg.backgroundColor == "darkgray") {
+                        timeElement.classList.add('fc-time-gray'); // Add the FullCalendar time class
+                    }
+                    else if (arg.backgroundColor == "#952AB2") {
+                        timeElement.classList.add('fc-time-purple'); // Add the FullCalendar time class
+                    }
+                    else if (arg.backgroundColor == "#E94234") {
+                        timeElement.classList.add('fc-time-red'); // Add the FullCalendar time class
+                    }
+                    else if (arg.backgroundColor == "#F79700") {
+                        timeElement.classList.add('fc-time-yellow'); // Add the FullCalendar time class
+                    }
+                    else if (arg.backgroundColor == "#dff0e3") {
+                        timeElement.classList.add('fc-time-Gcal'); // Add the FullCalendar time class
+
+                    }
+                    const dateObject = new Date(timeString);
+
+                    // Get hours and minutes
+                    const hours = dateObject.getHours();
+                    const minutes = dateObject.getMinutes();
+
+                    // Format the time as HH:mm
+                    const formattedTime = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
+                    timeElement.textContent = startTime + ' - ' + formattedTime;
+                    var lock = '<i style="float:right;margin-right:5px;margin-top:4px;" class="fa fa-lock"></i>';
+                    var unlock = '<i style="float:right;margin-right:5px;margin-top:5px;" class="fa fa-unlock"></i>';
+                    var newClient = '<i style="float:right;margin-right:5px;margin-top:5px;" class="fa fa-user-plus"></i>';
+                    var reminder = '<i style="float:right;margin-right:5px;margin-top: 4px;" class="fa fa-envelope"></i>';
+                    var repeat = '<i style="float:right;margin-right:5px;margin-top: 4px;" class="fa fa-repeat"></i>';
+
+
+                    if (arg.backgroundColor != "darkgray") {
+                        if (arg.event.extendedProps.AnyEmployeeSelected) {
+                            timeElement.insertAdjacentHTML('beforeend', unlock);
+                        } else {
+                            timeElement.insertAdjacentHTML('beforeend', lock);
+                        }
+
+                        if (arg.event.extendedProps.NewCustomer) {
+
+                            timeElement.insertAdjacentHTML('beforeend', newClient);
+                        }
+
+                        timeElement.insertAdjacentHTML('beforeend', reminder);
+
+                    } else {
+                        if (arg.event.extendedProps.IsRepeat) {
+                            timeElement.insertAdjacentHTML('beforeend', repeat);
+
+                        }
+                    }
+                    //timeElement.insertAdjacentHTML('beforeend', noshowIcon);
+                    //timeElement.insertAdjacentHTML('beforeend', noofvisits);
+
+                    var icons = timeElement.querySelectorAll('.fa-close, .fa-check');
+
+                    icons.forEach(function (icon) {
+                        icon.addEventListener('mouseenter', showTooltip);
+                        icon.addEventListener('mouseleave', hideTooltip);
+                    });
+                    eventContent.appendChild(timeElement);
+
+
+
+
+                    // Create customer info block
+
+                    if (arg.backgroundColor != "darkgray") {
+                        var customerInfoElement = document.createElement('div');
+                        customerInfoElement.classList.add('customer-info');
+                        customerInfoElement.innerHTML = customername + '<br>' + customerphone; // Use innerHTML to interpret the <br> tag
+                        eventContent.appendChild(customerInfoElement);
+                    }
+
+                    // Add the event time
+                    // Add the event description
+                    if (description) {
+                        var descriptionElement = document.createElement('div');
+                        descriptionElement.classList.add('event-description');
+                        descriptionElement.textContent = description;
+                        eventContent.appendChild(descriptionElement);
+                    }
+
+                    if (notes) {
+                        // Add any additional notes
+                        var notesElement = document.createElement('div');
+                        notesElement.classList.add('event-notes');
+                        notesElement.textContent = notes;
+                        eventContent.appendChild(notesElement);
+                    }
+                }
+
+
+
+
+                hideLoadingSpinner();
+                return { domNodes: [eventContent] };
+
+        },
+
+            eventsSet: function (events) {
+            // This callback fires after events are initially rendered or when events are added/changed/removed
+            checkForEventOverlaps(events);
+        },
+
+            eventMouseover: function (event, jsEvent, view) {
+            // You can add custom hover behavior here if needed
+        },
+            eventClick: function (calEvent, jsEvent, view) {
+            showLoadingSpinner();
+
+                if (calEvent.event.id == '000') {
+                    var Date = calEvent.event.startStr;
+                    var EmployeeID = calEvent.event.extendedProps.employeeID;
+                    $.ajax({
+                        url: '@Url.Action("ShowWaitingLists","Appointment")', // Replace with your controller URL
+                        data: { Date: Date, EmployeeID: EmployeeID }, // Send the appointment ID to the controller
+                        type: 'GET',
+                        success: function (data) {
+                            // Populate the modal with appointment details
+
+                            $("#actionModal .modal-dialog").html(data);
+                            hideLoadingSpinner();
+                            $("#actionModal").modal('show'); // Initialize and show the modal
+                        },
+                        error: function (error) {
+                            // Handle error if the controller request fails
+                            console.error('Error fetching appointment details:', error);
+                            hideLoadingSpinner();
+
+                        }
+                    });
+                } else {
+                    // When an event is clicked, open the modal and fetch appointment details from the controller
+                    debugger
+                    var FromGCAL = calEvent.event.extendedProps.FromGCAL;
+
+                    $.ajax({
+                        url: '@Url.Action("GetAppointmentDetails","Appointment")', // Replace with your controller URL
+                        data: { appointmentId: calEvent.event.id }, // Send the appointment ID to the controller
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            // Populate the modal with appointment details
+                            var appointmentDetails = data;
+
+                            // Populate the modal inputs with appointment details
+                            $('#CustomerName').val(appointmentDetails.CustomerFirstName + " " + appointmentDetails.CustomerLastName);
+                            $("#CustomerEmail").val(appointmentDetails.CustomerEmail);
+                            $("#AppointmentNotes").val(appointmentDetails.Notes);
+                            $("#BusinessDEET").text("Appointment of: " + appointmentDetails.Business);
+                            var servicesDropdown = $('#Services');
+                            servicesDropdown.empty();
+
+                            $.each(appointmentDetails.ServicesNew, function (index, service) {
+
+                                servicesDropdown.append($('<option>', {
+                                    value: service.Service,
+                                    text: service.Service,
+                                    'data-category': service.Category // Add the data-category attribute
+                                }));
+                            });
+
+
+
+
+
+
+                            $('#DateAndTime').val(appointmentDetails.DateString + " " + appointmentDetails.StartTime + " - " + appointmentDetails.EndTime);
+                            $('#TotalDuration').val(appointmentDetails.TotalDuration + ' mins');
+                            $("#NoOfVisits").text(appointmentDetails.NoOfAppointments);
+                            $("#NoOfNoShows").text(appointmentDetails.NoOfNoShows);
+                            var paramValue = "your_parameter_value";
+                            var AppID = calEvent.event.id;
+                            // Generate the URL with the parameter using Url.Action
+                            var url = '@Url.Action("AppointmentDetails", "Appointment", new { AppointmentID = "paramValuePlaceholder" })';
+
+                            var newUrl = '@Url.Action("AppointmentDetailsCheckOutView", "Appointment", new { AppointmentID = "paramValuePlaceholder" })';
+
+                            var editUrl = '@Url.Action("Action", "Appointment", new { ID = "paramValuePlaceholder" })';
+                            var eventEditURl = '@Url.Action("ActionEvent", "Appointment", new {ID= "paramValuePlaceholder" })';
+                            // Replace the placeholder with the actual parameter value
+                            url = url.replace("paramValuePlaceholder", appointmentDetails.ID);
+                            newUrl = newUrl.replace("paramValuePlaceholder", appointmentDetails.ID);
+                            editUrl = editUrl.replace('paramValuePlaceholder', appointmentDetails.ID);
+                            eventEditURl = eventEditURl.replace('paramValuePlaceholder', appointmentDetails.ID);
+                            // Set the onclick attribute with the generated URL
+                            $("#moreButton").attr("onclick", "window.location.href='" + url + "'");
+
+
+
+                            var containabsense = false;
+
+                            servicesDropdown.find('option').each(function () {
+                                var optionCategory = $(this).data('category'); // Get the value of data-category
+                                if (optionCategory === "ABSENSE") {
+                                    containabsense = true;
+                                    return false; // exit the loop if "Break" is found
+                                }
+                            });
+
+
+                            if (containabsense) {
+                                $("#checkoutButn").hide();
+                                $("#DeleteAppointmentButton").show();
+                                $("#CustomerROW").hide();
+                                $("#moreButton").hide();
+                                $("#CustomerEmailROW").hide();
+                                $("#WhatsappCustomerButton").hide();
+                                $("#PopupTitle").text("Event Details");
+                                $("#Popupservice").text("Events:")
+                                $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + eventEditURl + "'");
+                                $("#CallCustomerButton").hide();
+                                $('#HalfSideDetails').removeClass('col-md-12').addClass('col-md-8');
+                                $('#HalfSideDetails2').show();
+                            }
+                            else if (FromGCAL) {
+                                $("#checkoutButn").hide();
+                                $("#DeleteAppointmentButton").show();
+                                $("#CustomerROW").hide();
+                                $("#moreButton").hide();
+                                $("#CustomerEmailROW").hide();
+                                $("#WhatsappCustomerButton").hide();
+                                $("#BusinessDEET").hide();
+                                $("#PopupTitle").text("Event Details");
+                                $("#Popupservice").text("Events:")
+                                $("#EditAppointmentBtn").hide();
+                                $("#SendReminderBtn").hide();
+                                $("#CallCustomerButton").hide();
+                                $('#HalfSideDetails').removeClass('col-md-8').addClass('col-md-12');
+                                $('#HalfSideDetails2').hide();
+
+                            }
+                            else
+                            {
+                                if (appointmentDetails.CustomerFirstName != "Walk In") {
+                                    var callLink = 'tel:' + appointmentDetails.MobileNumber;
+                                    $('#CallCustomerButton').attr('href', callLink);
+                                    var whatsappLink = 'https://wa.me/' + appointmentDetails.MobileNumber;
+                                    $('#WhatsappCustomerButton').attr('href', whatsappLink);
+                                    $("#WhatsappCustomerButton").show();
+                                    $("#CallCustomerButton").show();
+                                }
+                                $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + editUrl + "'");
+
+                                $("#Popupservice").text("Services:")
+                                $("#PopupTitle").text("Appointment Details")
+
+                                $("#checkoutButn").show();
+                                $("#DeleteAppointmentButton").hide();
+                                $("#CustomerROW").show();
+                                $("#moreButton").show();
+                                $("#CustomerEmailROW").show();
+                                $("#SendReminderBtn").show();
+                                $('#HalfSideDetails').removeClass('col-md-12').addClass('col-md-8');
+                                $('#HalfSideDetails2').show();
+
+                            }
+
+                            $("#checkoutButn").attr("onclick", "window.location.href='" + newUrl + "'");
+                            $("#DeleteAppointmentButton").attr("onclick", "DeleteAppointment('" + AppID + "','" + appointmentDetails.IsRepeat + "')");
+                            $("#SendReminderBtn").attr("onclick", "SendAppointmentReminder('" + AppID + "')");
+                            
+                            if (appointmentDetails.IsPaid == false) {
+                                if (appointmentDetails.IsCancelled == false) {
+                                    alert("Awaiting PrePayment");
+                                    hideLoadingSpinner();
+
+                                } else {
+                                    $('#appointmentModal').modal('show');
+                                    hideLoadingSpinner();
+                                }
+
+                            }
+                            else {
+                                $('#appointmentModal').modal('show');
+                                hideLoadingSpinner();
+                            }
+
+
+
+                        },
+                        error: function (error) {
+                            // Handle error if the controller request fails
+                            console.error('Error fetching appointment details:', error);
+                            hideLoadingSpinner();
+
+                        }
+                    });
+                    
+                   
+                }
+            },
+            eventDragStart: function (event, delta, revertFunc) {
+                
+                if (event.event.backgroundColor == "#5DAF4D") {
+                    alert("Cannot Move this Appointment");
+                    location.reload();
+                    revertFunc();
+                }
+                else if (event.event.backgroundColor == "#E94234" || event.event.backgroundColor == "#dff0e3") {
+                    alert("Cannot Move this Appointment");
+                    location.reload();
+                    revertFunc();
+                }
+            },
+            eventDrop: function (event, delta, revertFunc) {
+            // This function will be called when an event is dropped
+
+            // Prepare the data to be sent to the server for updating
+                var eventData = {
+                    id: event.event.id,
+                    start: event.event.start, // Format the start date and time
+                    end: event.event.end,
+                    EmployeeID: event.event._def.resourceIds[0]// Format the end date and time
+                };
+                if (event.event.backgroundColor == "#5DAF4D") {
+                    revertFunc();
+                    alert("Cannot Move this Appointment");
+                    location.reload();
+                }
+                else if (event.event.backgroundColor == "#E94234" || event.event.backgroundColor == "#dff0e3") {
+                    alert("Cannot Move this Appointment");
+                    location.reload();
+                    revertFunc();
+                } else {
+
+                    // Display a confirmation dialog
+                    var userConfirmed = confirm("Do you want to update this event?");
+
+                    if (userConfirmed) {
+                        // Send an Ajax request to update the event date and time
+                        $.ajax({
+                            url: '@Url.Action("UpdateAppointment", "Appointment")', // Replace with your controller and action
+                            data: eventData,
+                            type: 'POST', // Use POST or PUT depending on your API
+                            dataType: 'json',
+                            success: function (response) {
+                                if (response.success) {
+                                    // Event updated successfully
+                                    showSuccessAlert();
+                                } else {
+                                    // Handle error if the update fails
+                                    revertFunc(); // Revert the event to its original position
+                                }
+                            },
+                            error: function (error) {
+                                // Handle error if the Ajax request fails
+                                console.error('Error updating event:', error);
+                                revertFunc(); // Revert the event to its original position
+                            }
+                        });
+                    }
+                    else {
+                        // If the user cancels the update, revert the event to its original position
+                        revertFunc();
+                    }
+                }
+            },
+            resourceLabelDidMount: function (info) {
+
+            var resource = info.resource;
+            var resourceCellElement = info.el;
+
+            // Add a click event listener to the resource cell element
+            resourceCellElement.addEventListener('click', function () {
+                // Handle the click event here
+                updateCalendar(resource.id);
+            });
+                if (resource.extendedProps.pricechangeType != "") {
+
+                    var pricechangeelem = document.createElement('div');
+
+                    if (resource.extendedProps.pricechangeType == "Price Increase") {
+                        pricechangeelem.innerText = "(+" + resource.extendedProps.pricechangePercentage + "%)";
+                        pricechangeelem.className = 'employeePriceChange text-success';
+
+
+                    } else {
+                        pricechangeelem.innerText = "(-" + resource.extendedProps.pricechangePercentage + "%)";
+                        pricechangeelem.className = 'employeePriceChange text-danger';
+
+
+                    }
+                    pricechangeelem.id = resource.extendedProps.pricechangeID;
+
+                    info.el.appendChild(pricechangeelem); // Appending the specialization after the employee's name
+                }
+
+            if (resource.extendedProps.image) {
+                var imageElement = document.createElement('img');
+                imageElement.src = resource.extendedProps.image;
+                imageElement.alt = resource.title;
+                imageElement.className = 'employee-image';
+
+
+                // Appending the image before the resource's title (assuming it's the first child)
+                info.el.insertBefore(imageElement, info.el.firstChild);
+            }
+            if (resource.extendedProps.Specialization) {
+                var specializationElement = document.createElement('div');
+                specializationElement.innerText = resource.extendedProps.Specialization;
+                specializationElement.className = 'employee-specialization';
+
+                info.el.appendChild(specializationElement); // Appending the specialization after the employee's name
+            }
+
+
+        },
+            eventDidMount: function (info) {
+            let overlapCounts = checkForEventOverlaps(calendar.getEvents());
+            let eventId = info.event.id;
+
+            if (overlapCounts[eventId]) {
+                let widthPercentage = 100 / Math.max(1, overlapCounts[eventId].count);
+                //if (info.el.style.width != "50%") {
+                if (widthPercentage == 100) {
+                    info.el.style.width = 100 + '%';
+                } else {
+                    info.el.style.width = 50 + '%';
+
+                }
+                //   }
+            }
+        }
+        });
+
+        //setInterval(function () {
+        //    var scrollerElement = $('.fc-scroller.fc-scroller-liquid-absolute');
+        //    var scrolledPosition = scrollerElement.scrollTop();
+        //    calendar.refetchEvents();
+        //    if (scrolledPosition > 0) {
+        //        scrollerElement.scrollTop(scrolledPosition);
+        //    }
+
+        //}, 3600000);  // 1 hour interval
+
+        calendar.render();
+        function setCustomTitle() {
+            var customTitle = '@DateTime.Parse(Model.GoToDate).ToString("ddd, MMM dd, yyyy")';
+            $(".fc-toolbar-title").text(customTitle);
+        }
+
+      // Initial setting of the custom title
+        setCustomTitle();
+        var ted = $(".fc-next-button.fc-button.fc-button-primary");
+        var targetElements = $('.fc-prev-button.fc-button.fc-button-primary');
+        var today = $(".fc-today-button.fc-button.fc-button-primary");
+        var date = $(".fc-toolbar-title");
+        var day = $(".fc-resourceTimeGridDay-button.fc-button.fc-button-primary.fc-button-active")
+        var week = $(".fc-customWeek-button.fc-button.fc-button-primary")
+
+        day.css({
+            'font-size': 'x-small',
+            'background-color': 'white',
+            'border-radius': '10px',
+            'color': 'black'
+        });
+
+        week.css({
+            'font-size': 'x-small',
+            'background-color': 'white',
+            'border-radius': '10px',
+            'color': 'black'
+        });
+
+        today.css({
+            'font-size': 'x-small',
+            'background-color': 'white',
+            'border-radius': '10px',
+            'color': 'black'
+        });
+
+        date.css({
+            'font-size': '1.75rem',
+        });
+        ted.css({
+            'font-size': 'x-small',
+            'background-color': 'white',
+            'border-radius': '10px',
+            'color': 'black'
+        });
+
+        // Apply CSS properties to the selected elements
+        targetElements.css({
+            'font-size': 'x-small',
+            'background-color': 'white',
+            'border-radius': '10px',
+            'color': 'black'
+        });
+
+        hideLoadingSpinner();
+    }
+
+    //function checkForEventOverlaps(events) {
+    //    for (let i = 0; i < events.length; i++) {
+    //        for (let j = i + 1; j < events.length; j++) {
+    //            if (eventsOverlap(events[i], events[j])) {
+    //                console.log(`Overlap detected between event ${events[i].id} and event ${events[j].id}`);
+    //                // Handle the overlap as needed
+    //            }
+    //        }
+    //    }
+    //}
+
+    function checkForEventOverlaps(events) {
+        let overlapCounts = {};
+
+        // Initialize overlap counts
+        events.forEach(event => {
+            overlapCounts[event.id] = { count: 1, overlapsWith: [] };
+        });
+
+        // Detect overlaps
+        for (let i = 0; i < events.length; i++) {
+            for (let j = i + 1; j < events.length; j++) {
+                if (eventsOverlap(events[i], events[j])) {
+                    overlapCounts[events[i].id].count++;
+                    overlapCounts[events[j].id].count++;
+                    overlapCounts[events[i].id].overlapsWith.push(events[j].id);
+                    overlapCounts[events[j].id].overlapsWith.push(events[i].id);
+                }
+            }
+        }
+        return overlapCounts;
+    }
+
+
+    // ... existing eventsOverlap function ...
+
+
+    function eventsOverlap(eventA, eventB) {
+
+        if (eventA._def.resourceIds[0] == eventB._def.resourceIds[0])
+        {
+            return (eventA.start < eventB.end && eventB.start < eventA.end);
+        }
+    }
+    function CheckInterval() {
+        var interval = $("#Interval").val();
+
+        if (interval == "15") {
+            //setSlotDuration('00:05:00');
+            $("#IntervalFinal").val('00:15:00');
+            ViewCalendar();
+        }
+        else if (interval == "30")
+        {
+            $("#IntervalFinal").val('00:30:00');
+            ViewCalendar();
+
+
+
+        }
+        else if (interval == "60")
+        {
+
+            //setSlotDuration('00:30:00'); // 30 minutes
+            $("#IntervalFinal").val('01:00:00');
+            ViewCalendar();
+
+        }
+    }
+
+    // Add click event handlers for the buttons
+    $('#slot5min').click(function () {
+        UpdateIntervalOnUser('00:15:00'); // 5 minutes
+    });
+    $('#slot15min').click(function () {
+        UpdateIntervalOnUser('00:30:00'); // 15 minutes
+    });
+    $('#slot30min').click(function () {
+        UpdateIntervalOnUser('00:60:00'); // 30 minutes
+    });
+
+    function generateDarkColor(color) {
+        // Example: Darken the color by reducing the lightness
+        var hslColor = tinycolor(color).toHsl();
+        hslColor.l = Math.max(hslColor.l - 0.2, 0); // Adjust the darkness level as needed
+        return tinycolor(hslColor).toString();
+    }
+    $(document).ready(function () {
+        CheckInterval();
+        ViewCalendar();
+        //demo.initFullCalendar();
+        $(".navbar-transparent").hide();
+
+        $(".fc-next-button").click(function () {
+            showLoadingSpinner();
+            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = nextDate })';
+        });
+
+        $(".fc-prev-button").click(function () {
+            showLoadingSpinner();
+            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = prevdate })';
+        });
+
+        $(".fc-today-button").click(function () {
+            showLoadingSpinner();
+            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = DateTime.Now.ToString("yyyy-MM-dd") })';
+        });
+
+        var formattedDate = '@DateTime.Parse(Model.GoToDate).ToString("MM/dd/yyyy")';
+        $("#FINALDATEO").val(formattedDate);
+    });
+
+
+    function parseOpeningHours(openingHoursStr) {
+        var times = openingHoursStr.split(' - ');
+
+        return {
+            start: times[0],
+            end: times[1]
+        };
+    }
+
+    function UpdateIntervalOnUser(interval) {
+        $.ajax({
+            url: '@Url.Action("UpdateIntervalOnUser", "Appointment")', // Replace with your controller and action
+            data: { interval: interval },
+            type: 'POST', // Use POST or PUT depending on your API
+            success: function (response) {
+                if (response.success) {
+                    // Event updated successfully
+                    showSuccessAlert();
+                    location.reload();
+                } else {
+                    // Handle error if the update fails
+                    revertFunc(); // Revert the event to its original position
+                }
+            },
+            error: function (error) {
+                // Handle error if the Ajax request fails
+                console.error('Error updating event:', error);
+                revertFunc(); // Revert the event to its original position
+            }
+        });
+    }
+
+
+
+    function showLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+    }
+
+    function hideLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+
+
+
+
+
+</script>

@@ -1,0 +1,309 @@
+﻿@model TheBookingPlatform.ViewModels.ProductActionViewModel
+@{
+    ViewBag.Title = "Action";
+}
+
+
+<style>
+
+
+    .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: black;
+        font-weight: 400;
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: black;
+    }
+</style>
+<form id="actionForm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit Product
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create Product
+                    </h4>
+                }
+            </div>
+
+
+            <div class="card-content">
+                <div style="display:flex;align-items:end;" class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Product Name
+                            </label>
+                            <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Sales Price
+                            </label>
+                            <input type="text" value="@Model.SalesPrice" class="form-control" name="SalesPrice" />
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Cost Price
+                            </label>
+                            <input type="text" value="@Model.CostPrice" class="form-control" name="CostPrice" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                EAN Code
+                            </label>
+                            <input type="text" value="@Model.EANCode" class="form-control" name="EANCode" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div style="margin-top:2px;" class="form-group">
+                            <label>
+                                VAT
+                            </label>
+                            <select id="VAT" class="selectpicker" name="VAT" data-style="select-with-transition" title="Choose Vat" data-size="100">
+                                @foreach (var item in Model.Vats)
+                                {
+                                    if (item.Name.Trim().ToLower() == "no vat")
+                                    {
+                                        <option value="@item.Name">@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        if (item.Name == Model.VAT)
+                                        {
+                                            <option selected value="@item.Name">@item.Name (@item.Percentage %)</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Name">@item.Name (@item.Percentage %)</option>
+
+                                        }
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>
+                                Part Number
+                            </label>
+                            <input type="text" value="@Model.PartNumber" class="form-control" name="PartNumber" />
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div style="margin-top:2px;" class="form-group">
+                            <label>
+                                Category
+                            </label>
+                            <select id="CategoryID" class="selectpicker" name="CategoryID" data-style="select-with-transition" title="Choose Category" data-size="100">
+                                @foreach (var item in Model.Categories)
+                                {
+                                    if (item.ID == Model.CategoryID)
+                                    {
+                                        <option selected value="@item.ID">@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-6">
+                        <div style="margin-top:2px;" class="form-group">
+                            <label>
+                                Supplier
+                            </label>
+                            <select id="SupplierID" class="selectpicker" name="SupplierID" data-style="select-with-transition" title="Choose Supplier" data-size="100">
+                                @foreach (var item in Model.Suppliers)
+                                {
+                                    if (item.ID == Model.SupplierID)
+                                    {
+                                        <option selected value="@item.ID">@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="checkbox form-horizontal-checkbox">
+                            <label>
+                                @if (Model.ManageStockOrder == true)
+                                {
+                                    <input type="checkbox" checked name="ManageStockOrderCB" id="ManageStockOrderCB">
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="ManageStockOrderCB" id="ManageStockOrderCB">
+
+                                }
+                                Manage Stock Order
+                            </label>
+                            <input type="hidden" name="ManageStockOrder" id="ManageStockOrder" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="ManageStockRow" class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Min Stock
+                            </label>
+                            <input type="text" value="@Model.MinStock" class="form-control" name="MinStock" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Max Stock
+                            </label>
+                            <input type="text" value="@Model.MaxStock" class="form-control" name="MaxStock" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Current Stock
+                            </label>
+                            <input type="text" value="@Model.CurrentStock" class="form-control" name="CurrentStock" />
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+
+            </div>
+
+
+            <div class="col-md-12">
+                <button id="ActionBtn" type="button" class="btn btn-primary btn-rounded">SAVE</button>
+                <a href="@Url.Action("Index","Product")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+
+<script>
+
+    $(document).ready(function () {
+        SetManageStockIrderRow();
+    })
+
+
+    $('#ManageStockOrderCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#ManageStockRow").show();
+            $("#ManageStockOrder").val("True");
+        } else {
+            $("#ManageStockRow").hide();
+            $("#ManageStockOrderCB").val("False");
+
+        }
+    });
+
+    function SetManageStockIrderRow() {
+        var isChecked = $('#ManageStockOrderCB').is(':checked');
+        if (isChecked) {
+            $("#ManageStockRow").show();
+            $("#ManageStockOrder").val("True");
+        } else {
+            $("#ManageStockRow").hide();
+            $("#ManageStockOrderCB").val("False");
+
+        }
+    }
+
+
+
+    $("#ActionBtn").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("Action", "Product")',
+            type: "post",
+            data: $("#actionForm").serialize()
+        })
+            .done(function (response) {
+                if (response.success) {
+                    
+                    window.location.href = '@Url.Action("Index", "Product", new {Selected = "Product" })';
+                    hideLoadingSpinner();
+                }
+                else {
+                    $(".errorDiv").html(response.Message);
+                    hideLoadingSpinner();
+                }
+            });
+    });
+</script>

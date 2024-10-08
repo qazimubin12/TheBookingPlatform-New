@@ -1,0 +1,179 @@
+﻿@model TheBookingPlatform.ViewModels.GiftCardListingViewModel
+
+<style>
+ 
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Gift Cards </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+
+                <div class="form-group">
+
+                    <input type="text" name="searchterm" id="Search" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                    <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+                    <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                   
+                    <a href="@Url.Action("Action", "GiftCard")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+                    
+                    <a href="@Url.Action("AssignmentAction", "GiftCard")" class="btn btn-sm btn-rounded btn-success btn-icon-text"><i class="mdi mdi-delete"></i>CREATE ASSIGNMENT</a>
+                    <a href="@Url.Action("CardAssignmentIndex", "GiftCard")" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-delete"></i>VIEW ASSIGNMENTS</a>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="row">
+
+                <div class="col-lg-12 grid-margin stretch-card">
+                    @if (Model.GiftCards != null)
+                    {
+                        <div class="card">
+
+                            <div class="table-responsive">
+                                <table id="GiftCardTable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+
+                                            <th class="text-center">
+                                                Name
+                                            </th>
+                                            @*<th class="text-center">
+                                                Code
+                                            </th>*@
+                                            @*<th>
+                                               Have Expiry
+                                            </th>*@
+                                            <th class="text-center">
+                                                isActive
+                                            </th>
+                                            <th class="text-center">
+                                                Expires In
+                                            </th>
+                                         
+
+                                            <th class="text-center">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.GiftCards)
+                                        {
+                                            <tr>
+                                                <td class="text-center">@item.Name</td>
+                                                @*<td class="text-center">@item.Code</td>*@
+                                                @*<td class="text-center">@item.HaveExpiry</td>*@
+                                                <td class="text-center">@item.IsActive</td>
+                                                <td class="text-center">@item.Days Days</td>
+                                                <td class="text-center">
+
+                                                    <a href="@Url.Action("Action", "GiftCard", new { ID = item.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                    <button data-href="@Url.Action("Delete", "GiftCard", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="alert alert-warning col-md-12" role="alert">
+                            Sorry! No records exist.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+
+    $("#SearchBtn").click(function () {
+        var SearchTerm = $("#Search").val();
+        RepopulateGiftCards(SearchTerm);
+    })
+
+    $("#ResetBtn").click(function () {
+        RepopulateGiftCards();
+        $("#Search").val('');
+
+    })
+
+    function RepopulateGiftCards(SearchTerm) {
+        $.ajax({
+            url: '@Url.Action("GetGiftCards", "GiftCard")', // Replace with the actual URL
+            method: 'GET',
+            data: { SearchTerm: SearchTerm },
+            dataType: 'json',
+            success: function (data) {
+                // Clear existing options
+
+                $('#GiftCardTable tbody').empty();
+
+                // Repopulate with new data
+                $.each(data, function (index, item) {
+                    var newRow = $('<tr>');
+
+
+                    newRow.append($('<td>').addClass('text-center').text(item.GiftCard.Name));
+                    newRow.append($('<td>').addClass('text-center').text(item.GiftCard.CardNumber));
+                    newRow.append($('<td>').addClass('text-center').text(item.GiftCard.IsActive));
+
+                    var actionColumn = $('<td>').addClass('text-center');
+                    var editLink = $('<a>')
+                        .attr('href', '@Url.Action("Action", "GiftCard")' + '?ID=' + item.ID)
+                        .addClass('btn btn-sm btn-rounded btn-info btn-icon-text')
+                        .html('<i class="mdi mdi-pencil"></i> EDIT');
+                    var deleteButton = $('<button>')
+                        .attr('data-href', '@Url.Action("Delete", "GiftCard")' + '?ID=' + item.ID)
+                        .attr('type', 'button')
+                        .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
+                        .attr('data-toggle', 'modal')
+                        .attr('data-target', '#actionModal')
+                        .html('<i class="mdi mdi-delete"></i> DELETE');
+
+                    actionColumn.append(editLink);
+                    actionColumn.append(deleteButton);
+
+                    newRow.append(actionColumn);
+
+
+                    $('#GiftCardTable tbody').append(newRow);
+
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+</script>

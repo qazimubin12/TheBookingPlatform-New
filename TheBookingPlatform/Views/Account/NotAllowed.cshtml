@@ -1,0 +1,29 @@
+﻿@model TheBookingPlatform.ViewModels.HomeViewModel
+@{
+    ViewBag.Title = "NotAllowed";
+}
+
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Not Allowed</h4>
+    </div>
+    <div class="card-content">
+        <h2>You are not allowed to access this page.</h2>
+        @if (Model.SignedInUser.Role == "Admin")
+        {
+            <button onclick="window.location.href='@Url.Action("Dashboard","Admin")'" class="btn btn-primary" type="button">Click Here to go Back to your Dashboard</button>
+        }
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("body").mouseover(function () {
+            $("div[style='position: fixed; z-index: 999999; width: 100%; height: 55px; padding: 10px; background-color: rgba(17, 16, 16, 0.93); bottom: 0px; left: 0px; right: 0px; display: flex; align-items: center; justify-content: center; gap: 20px; color: white;']").hide();
+        });
+    });
+</script>
+
+

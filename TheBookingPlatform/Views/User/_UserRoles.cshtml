@@ -1,0 +1,137 @@
+﻿@model TheBookingPlatform.ViewModels.UserRoleModel
+
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <span>User Roles</span>
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            @if (Model.UserRoles != null && Model.UserRoles.Count() > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th colspan="2">
+                                    Current User Roles
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var role in Model.UserRoles)
+                            {
+                                
+                                <tr>
+                                    <td>
+                                        @role.Name
+                                    </td>
+                                    <td>
+                                        <button data-href="@Url.Action("UserRoleOperation", "User", new { userID = Model.UserID, roleID = role.Id, isDelete = true })" type="button" class="btnRoleOperation btn-sm btn-round btn btn-danger"><i class="fas fa-user-times mr-1"></i> Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning" role="alert">
+                    This user has no roles.
+                </div>
+            }
+            @if (Model.Roles != null && Model.Roles.Count() > 0)
+            {
+                <div class="table-responsive">
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th colspan="2">
+                                    Assign new Role
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (User.IsInRole("Super Admin"))
+                            {
+                                foreach (var role in Model.Roles)
+                                {
+
+                                    <tr>
+                                        <td>
+                                            @role.Name
+                                        </td>
+                                        <td>
+                                            <button data-href="@Url.Action("UserRoleOperation", "User", new { userID = Model.UserID, roleID = role.Id })" type="button" class="btnRoleOperation btn btn-success btn-sm btn-round btn-icon-text"><i class="mdi mdi-account-details"></i>Assign</button>
+
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var role in Model.Roles)
+                                {
+                                    if (role.Name != "Super Admin")
+                                    {
+                                    <tr>
+                                        <td>
+                                            @role.Name
+                                        </td>
+                                        <td>
+                                            <button data-href="@Url.Action("UserRoleOperation", "User", new { userID = Model.UserID, roleID = role.Id })" type="button" class="btnRoleOperation btn btn-success btn-sm btn-round btn-icon-text"><i class="mdi mdi-account-details"></i>Assign</button>
+
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning col-md-12" role="alert">
+                    Sorry! No records left.
+                </div>
+            }
+
+            <div class="errorDiv">
+
+            </div>
+        </div>
+
+    </div>
+}
+
+<script>
+    $(".btnRoleOperation").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+            type:"POST"
+        })
+            .done(function (response) {
+                if (response.Success)
+                {
+                    $.ajax({
+                        url: "@Url.Action("UserRoles", "User", new { ID = Model.UserID })",
+                    })
+                        .done(function (response) {
+                            $("#actionModal .modal-dialog").html(response);
+                        });
+                }
+                else
+                {
+                    alert(response.Message);
+                }
+            });
+        });
+</script>

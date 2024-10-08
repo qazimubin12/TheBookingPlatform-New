@@ -1,0 +1,331 @@
+﻿
+@model TheBookingPlatform.ViewModels.EmployeeActionViewModel
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+
+@if (Model != null)
+{
+    <div class="card">
+        <div class="card-content">
+            <h2 class="card-title">
+                @if (Model.ID != 0)
+                {
+                    <span>Edit Employee </span>
+                }
+                else
+                {
+                    <span>Create Employee </span>
+                }
+            </h2>
+
+            <form id="actionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="hidden" name="ID" value="@Model.ID" />
+                        <div class="form-group">
+                            <label>Employee Name</label>
+                            <input class="form-control" name="Name" placeholder="Enter Name." value="@Model.Name">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="Gender" class="form-control" name="Gender">
+                                @if (Model.Gender == "Male")
+                                {
+                                    <option value="Male" selected>Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                }
+                                else if (Model.Gender == "Female")
+                                {
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option selected value="Other">Other</option>
+                                }
+                                else if (Model.Gender == "Other")
+                                {
+                                    <option value="Male">Male</option>
+                                    <option selected value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                }
+                                else
+                                {
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                }
+                            </select>
+                        </div>
+                        <input style="display:none;" type="text" value="@Model.AllowOnlineBooking" name="AllowOnlineBooking" id="AllowOnlineBooking" />
+
+
+
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Specialization
+                            </label>
+                            <input type="text" class="form-control" name="Specialization" value="@Model.Specialization" placeholder="Enter Specialization" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                Link Employee to User
+                            </label>
+                            <select class="form-control" name="LinkedEmployee" id="LinkedEmployee">
+                                <option value="">----Select-----</option>
+                                @foreach (var item in Model.Users)
+                                {
+                                    if (Model.LinkedEmployee == item.Id)
+                                    {
+                                        <option selected value="@item.Id">@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="Description" rows="3" class="col-md-12">@Model.Description</textarea>
+                        </div>
+                        <div style="margin-top:50px;cursor:pointer;" class="form-group">
+                            <label>Choose Image (Click on Image to Change)</label>
+                            @if (Model.Photo == "" || Model.Photo == null)
+                            {
+                                <img id="MainThumb" style="width:150px;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                            }
+                            else
+                            {
+                                <img id="MainThumb" style="width:150px;" src="@Model.Photo" alt="...">
+
+                            }
+
+                            <input value="@Model.Photo" type="hidden" name="Photo" id="Photo" />
+                            <input type="file" id="PhotoUpload" accept="image/*" />
+
+                        </div>
+                    </div>
+                    @if (Model.ID == 0)
+                    {
+                        if (Model.DisableRegister)
+                        {
+                            <span class="text-danger">Please Upgrade your Package for more employees adding.</span>
+                        }
+                        else
+                        {
+                            <button type="button" id="ActionBtn" class="btn btn-primary btn-round">
+                                <i class="material-icons">person</i>
+                                SAVE EMPLOYEE
+                                <div class="ripple-container"></div>
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <button type="button" id="ActionBtn" class="btn btn-primary btn-round">
+                            <i class="material-icons">edit</i>
+                            UPDATE EMPLOYEE
+                            <div class="ripple-container"></div>
+                        </button>
+                    }
+                </div>
+
+            </form>
+
+            <div class="errorDiv">
+
+            </div>
+        </div>
+
+    </div>
+}
+
+<div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropModalLabel">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="display:flex;justify-content:center;">
+                <div class="img-container" style="transform:scale(1.5)">
+                    <img id="imageToCrop" src="" alt="Image for cropping">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="cropButton" class="btn btn-primary">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        CheckAllowBooking();
+        $('#AllowOnlineBookingCB').change(function () {
+            var isChecked = $(this).is(':checked');
+            if (isChecked) {
+                $("#AllowOnlineBooking").val("True");
+            } else {
+                $("#AllowOnlineBooking").val("False");
+
+            }
+        });
+
+        function CheckAllowBooking() {
+            var isChecked = $("#AllowOnlineBookingCB").is(':checked');
+            if (isChecked) {
+                $("#AllowOnlineBooking").val("True");
+            } else {
+                $("#AllowOnlineBooking").val("False");
+
+            }
+        }
+       var cropper;
+$("#PhotoUpload").change(function (event) {
+    var files = event.target.files;
+    var done = function (url) {
+        $("#imageToCrop").attr("src", url);
+        $('#cropModal').modal('show'); // Show the Bootstrap modal
+        cropper = new Cropper(document.getElementById('imageToCrop'), {
+            aspectRatio: 1,
+            viewMode: 1,
+            responsive: true,
+            autoCropArea: 1,
+            background: false,
+            zoomable: true,
+            scalable: true,
+            movable: true,
+            cropBoxMovable: true,
+            cropBoxResizable: false, // Prevent resizing of the crop box
+        });
+    };
+    var reader;
+    var file;
+    var url;
+    if (files && files.length > 0) {
+        file = files[0];
+        if (URL) {
+            done(URL.createObjectURL(file));
+        } else if (FileReader) {
+            reader = new FileReader();
+            reader.onload = function (event) {
+                done(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+});
+
+        $("#cropButton").click(function () {
+            var canvas;
+            $('#cropModal').modal('hide');
+            if (cropper) {
+                canvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300
+                });
+                canvas.toBlob(function (blob) {
+                    var formData = new FormData();
+                    formData.append("Logo", blob, "cropped.jpg");
+                    showLoadingSpinner();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("UploadImage", "Shared")',
+                        data: formData,
+                        dataType: 'json',
+                        contentType: false,
+                        processData: false
+                    })
+                        .done(function (response) {
+                            hideLoadingSpinner();
+                            if (response.Success) {
+
+                                $("#Photo").val(response.DocURL);
+                                $("#MainThumb").attr("src", response.DocURL);
+                            }
+                        })
+                        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert("FAIL");
+                        });
+                });
+            }
+        });
+        @*$("#PhotoUpload").change(function () {
+
+            showLoadingSpinner();
+            var element = this;
+            var formData = new FormData();
+            var totalFiles = element.files.length;
+
+            for (var i = 0; i < totalFiles; i++) {
+                var file = element.files[i];
+                formData.append("Logo", file);
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UploadImage", "Shared")',
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false
+            })
+                .done(function (response) {
+
+                    if (response.Success) {
+                        // For now, we'll just delay the fade out for demonstration
+                        hideLoadingSpinner();
+                        $("#Photo").val(response.DocURL);
+                        $("#MainThumb").attr("src", response.DocURL);
+                    }
+
+                })
+                .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("FAIL");
+                })
+        });*@
+
+
+
+        $("#ActionBtn").click(function () {
+            if ($("#LinkedEmployee").val() == "") {
+                alert('Please link employee to a user, if you have not made a user yet, frist create one, go to "Users > Create"');
+            } else {
+                $("#ActionBtn").text("Loading...");
+
+                $("#ActionBtn").attr("disabled", "disabled");
+                $.ajax({
+                    url: '@Url.Action("Action", "Employee")',
+                    type: "post",
+                    data: $("#actionForm").serialize()
+                })
+                    .done(function (response) {
+                        if (response.success) {
+                            window.location.href = '@Url.Action("Index","Employee")';
+                        }
+                        else {
+                            $(".errorDiv").html(response.Message);
+                        }
+                    });
+            }
+        });
+    });
+
+
+</script>

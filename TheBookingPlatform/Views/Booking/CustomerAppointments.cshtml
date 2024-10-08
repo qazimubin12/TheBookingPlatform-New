@@ -1,0 +1,161 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "CustomerAppointments";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">APPOINTMENTS</h4>
+        <a href="@Url.Action("Index", "Booking", new {businessName = Model.Company.Business})" class="btn btn-primary">BOOK NEW </a>
+        @if (Model.Appointments != null)
+        {
+            foreach (var item in Model.Appointments)
+            {
+                <div class="bg-white rounded-4 p-3 mb-3 shadow-sm">
+                    <h6 class="mb-3">
+                        @foreach (var services in item.Services)
+                        {
+                            <span>| @services.Name - @services.Duration </span>
+                        }
+                    </h6>
+                    <p class="text-muted mb-2">
+                        Date and Time<br>
+                        <span class="text-dark">@item.Date.ToString("yyyy-MM-dd") ( @item.Time.ToString("H:mm") -  @item.AppointmentEndTime.ToString("H:mm") )</span>
+                    </p>
+                    <p class="text-muted mb-2">
+                        Employee<br>
+                        <span class="text-dark">@item.EmployeeName ( @item.EmployeeSpecialization )</span>
+                    </p>
+                    <p class="text-muted mb-0">
+                        Time and Price<br>
+                        <span class="text-dark">@item.TotalDuration mins - @item.TotalCost @Model.Company.Currency</span>
+                    </p>
+                    <p class="text-muted mb-0">
+                        Booked Date<br>
+                        <span class="text-dark">@item.BookingDate.ToString("yyyy-MM-dd")</span>
+                    </p>
+                    @if (item.IsCancelled)
+                    {
+                        <button class="btn btn-danger" disabled type="button">CANCELLED</button>
+                    }
+                    else
+                    {
+
+                        DateTime bookingDate = item.BookingDate;
+                        DateTime now = DateTime.Now; // Get the current time
+                        if ((now - bookingDate).TotalMinutes > 15 && item.IsPaid == false)
+                        {
+                            <span class="text-danger">
+                                Your Appointment was cancelled due to
+                                no payment was made.
+                            </span>
+                        }
+                        if (item.IsPaid == false)
+                        {
+                            <span class="text-danger">
+                                Your Appointment Payment is awating, Kindly pay as soon as possbile to
+                                reserved your slot. Otherwise It'll be cancelled after <b>15 Minutes</b>.
+                            </span>
+
+                            DateTime combinedDateTime = new DateTime(item.Date.Year, item.Date.Month, item.Date.Day, item.Time.Hour, item.Time.Minute, item.Time.Second);
+                            TimeSpan difference = combinedDateTime - DateTime.Now;
+
+                            if (difference.TotalHours >= (int.Parse(Model.Company.CancellationTime.Replace("Hours", "").Replace("Hour", ""))))
+                            {
+                                <button id="Cancelled_@(item.ID)" class="btn btn-danger btn-sm btn-round" onclick="CancelAppointment('@item.ID')" type="button">CANCEL</button>
+
+                            }
+
+
+                            <button class="btn btn-primary btn-sm btn-round" onclick="AfterPayment('@item.ID')" id="PayNow">Pay Now</button>
+                        }
+                        else
+                        {
+
+                        if (item.Status != "No Show")
+                        {
+                                <span class="text-primary">
+                                    Your appointment has been booked successfully.
+
+                                    Check your email for more information!
+                                </span>
+                                DateTime combinedDateTime = new DateTime(item.Date.Year, item.Date.Month, item.Date.Day, item.Time.Hour, item.Time.Minute, item.Time.Second);
+                                TimeSpan difference = combinedDateTime - DateTime.Now;
+
+                                if (difference.TotalHours >= (int.Parse(Model.Company.CancellationTime.Replace("Hours", "").Replace("Hour", ""))))
+                                {
+                                    <button id="Cancelled_@(item.ID)" class="btn btn-danger btn-sm btn-round" onclick="CancelAppointment('@item.ID')" type="button">CANCEL</button>
+
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-danger">
+                                    Your appointment has been marked as no show.
+
+                                    Check your email for more information!
+                                </span>
+                            }
+
+                        }
+                    }
+
+                </div>
+            }
+
+        }
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        if ('@Model.Customer.ID' != 0) {
+            var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.Customer.ID, businessName = Model.Company.Business })";
+            $("#ProfileNAVTab").attr("href", href);
+        }
+    });
+
+    function AfterPayment(ID) {
+        $.ajax({
+            url: '@Url.Action("AfterPayment", "Booking")', // Replace with your controller and action name
+            type: 'GET',
+            data: { AppointmentID: ID }, // Data to be sent to the server
+            success: function (data) {
+
+                window.location.href = data.session;
+
+            },
+            error: function () {
+                console.error('An error occurred while canceling the appointment.');
+            }
+        });
+    }
+    function CancelAppointment(ID) {
+        if (confirm("Are you sure you want to cancel this appointment?")) {
+            $.ajax({
+                url: '@Url.Action("CancelAppointment","Booking")', // Replace with your controller and action name
+                type: 'POST',
+                data: { ID: ID }, // Data to be sent to the server
+                success: function (response) {
+                    if (response.success) {
+                        // If the cancellation was successful, perform any necessary actions
+                        alert("Appointment Cancelled Successfully");
+
+                        $("#Cancelled_"+ID).text("CANCELLED");
+                        $("#Cancelled_" + ID).attr("disabled","disabled");
+                    } else {
+                        // Handle any failure scenarios
+                        console.error('Failed to cancel the appointment. Please try again.');
+                    }
+                },
+                error: function () {
+                    console.error('An error occurred while canceling the appointment.');
+                }
+            });
+        } else {
+            console.log('Appointment cancellation was canceled by the user.');
+        }
+    }
+
+</script>

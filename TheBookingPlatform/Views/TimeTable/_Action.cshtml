@@ -1,0 +1,565 @@
+﻿@model TheBookingPlatform.ViewModels.TimeTableActionViewModel
+@{
+    var daysOfWeek = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
+ }
+
+<style>
+    
+    .col-md-3 {
+        display: flex;
+        justify-content: center;
+        align-items: end;
+    }
+
+    .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+        padding: 0px 8px;
+        vertical-align: bottom;
+    }
+</style>
+@if (Model != null)
+{
+    <div class="modal-content" style="padding:15px;">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                @if (Model.ID != 0)
+                {
+                    <span>Edit TimeTable </span>
+                }
+                else
+                {
+                    <span>Create TimeTable </span>
+                }
+            </h5>
+
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                @if (Model.ID == 0)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="hidden" name="ID" value="@Model.ID" />
+                            <input type="hidden" name="EmployeeID" value="@Model.Employee.ID" />
+
+                            <div class="form-group">
+                                <label>Employee Name</label>
+                                <input class="form-control" readonly value="@Model.Employee.Name" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Roster Start Date</label>
+                                @if (Model.ID != 0)
+                                {
+                                    <input type="date" id="RosterStartDate" class="form-control" value="@Model.RosterStartDate.ToString("yyyy-MM-dd")" name="RosterStartDate">
+
+                                }
+                                else
+                                {
+                                    <input type="date" id="StartDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="StartDate">
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Start Date</label>
+                                <input type="date" id="StartDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="StartDate">
+                            </div>
+                        </div>
+                        <div style=" display: flex; justify-content: center; align-items: end; " class="row">
+                            
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">
+                                            Day
+                                        </th>
+                                        <th class="text-center">
+                                            Start Time
+                                        </th>
+                                        <th class="text-center">
+                                            End Time
+                                        </th>
+                                        <th class="text-center">
+                                            Type
+                                        </th>
+                                        <th class="text-center">
+                                            Is Repeat
+                                        </th>
+                                        <th class="text-center">
+                                            Repeat Type and Date
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var day in daysOfWeek)
+                                    {
+                                        <tr>
+                                            <td class="text-center">
+                                                <div class="form-group" style="display:flex !important;justify-content:center;">
+                                                    <div class="checkbox form-horizontal-checkbox">
+                                                        <label>
+                                                            @day
+
+                                                            <input type="checkbox" name="@(day)CB" id="@(day)CB">
+
+                                                        </label>
+
+                                                        <input type="hidden" name="@day" id="@day" />
+
+                                                    </div>
+                                                </div>
+
+                                                <input type="hidden" value="" id="@(day)Final" name="@(day)Time" />
+
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="form-group" style="display:flex !important;justify-content:center;">
+                                                    <input type="time" id="StartTime@(day)" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="form-group" style="display:flex !important;justify-content:center;">
+                                                    <input type="time" id="EndTime@(day)" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="form-group" style="display:flex !important;justify-content:center;" id="@(day)TypeDiv">
+                                                    <label></label>
+                                                    <select class="form-control" name="@(day)Type">
+
+                                                        <option value="Weekly">Weekly</option>
+                                                        <option value="Bi-Weekly">Bi-Weekly</option>
+
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div id="@(day)RepeatCBROW" class="form-group">
+                                                    <div class="checkbox form-horizontal-checkbox">
+                                                        <label>
+                                                            Repeat
+                                                            <input type="checkbox" name="@(day)RepeatCBX" id="@(day)RepeatCBX">
+                                                            <input type="hidden" name="@(day)RepeatCB" id="@(day)RepeatCB" />
+                                                        </label>
+
+
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="form-group" style="display:grid !important;justify-content:center;" id="@(day)RepeatEndROW">
+                                                    <select name="@(day)RepeatEnd" id="@(day)RepeatEnd" class="form-control">
+
+                                                        <option value="Never">Never</option>
+                                                        <option value="Custom Date">Custom Date</option>
+
+                                                    </select>
+
+
+                                                    <input type="date" id="@(day)DateOfRepeatEnd" name="@(day)DateOfRepeatEnd" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+
+
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+
+                                    }
+
+                                </tbody>
+                            </table>
+                            
+                            
+                            
+                            </div>
+                            </div>
+                            
+                            
+                            
+                            
+                      
+                }
+                else
+                {
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="hidden" name="ID" value="@Model.ID" />
+                    <input type="hidden" name="EmployeeID" value="@Model.Employee.ID" />
+
+                    <div class="form-group">
+                        <label>Employee Name</label>
+                        <input class="form-control" readonly value="@Model.Employee.Name" />
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="StartDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="StartDate">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Roster Start Date</label>
+                        @if (Model.ID != 0)
+                        {
+                            <input type="date" id="RosterStartDate" class="form-control" value="@Model.RosterStartDate.ToString("yyyy-MM-dd")" name="RosterStartDate">
+
+                        }
+                        else
+                        {
+                            <input type="date" id="StartDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="StartDate">
+                        }
+                    </div>
+                </div>
+
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                Day
+                            </th>
+                            <th class="text-center">
+                                Start Time
+                            </th>
+                            <th class="text-center">
+                                End Time
+                            </th>
+                            <th class="text-center">
+                                Type
+                            </th>
+                            <th class="text-center">
+                                Is Repeat
+                            </th>
+                            <th class="text-center">
+                                Repeat Type and Date
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var day in daysOfWeek)
+                        {
+                            var item = Model.TimeTable.FirstOrDefault(t => t.Day == day);
+                            <tr>
+                                <td style="width:100px;" class="text-center">
+                                    <div class="form-group" style="display:flex !important;justify-content:center;">
+                                        <div class="checkbox form-horizontal-checkbox">
+                                            <label>
+                                                @day
+                                                @if (item != null)
+                                                {
+                                                    <input checked type="checkbox" name="@(day)CB" id="@(day)CB">
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" name="@(day)CB" id="@(day)CB">
+                                                }
+                                            </label>
+                                            @if (item != null)
+                                            {
+                                                <input type="hidden" name="@day" id="@day" value="@(item.TimeStart) - @(item.TimeEnd)" />
+                                            }
+                                            else
+                                            {
+                                                <input type="hidden" name="@day" id="@day" />
+                                            }
+                                        </div>
+                                    </div>
+
+                                    @if (item != null)
+                                    {
+                                        <input type="hidden" value="@DateTime.Parse(item.TimeStart).ToString("HH:mm") - @DateTime.Parse(item.TimeEnd).ToString("HH:mm")" id="@(day)Final" name="@(day)Time" />
+                                    }
+                                    else
+                                    {
+                                        <input type="hidden" value="" id="@(day)Final" name="@(day)Time" />
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-group" style="display:flex !important;justify-content:center;">
+                                        <input type="time" id="StartTime@(day)" class="form-control" @if (item != null) { <text> value="@DateTime.Parse(item.TimeStart).ToString("HH:mm")" </text>  } else { <text> value="@DateTime.Now.ToString("HH:mm")" </text> }>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-group" style="display:flex !important;justify-content:center;">
+                                        <input type="time" id="EndTime@(day)" class="form-control" @if (item != null) { <text> value="@DateTime.Parse(item.TimeEnd).ToString("HH:mm")" </text>  } else { <text> value="@DateTime.Now.ToString("HH:mm")" </text> }>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-group" style="display:flex !important;justify-content:center;" id="@(day)TypeDiv">
+                                        <label></label>
+                                        <select class="form-control" name="@(day)Type">
+                                            @if (item != null)
+                                            {
+                                                <option value="Weekly" @(item.Type == "Weekly" ? "selected" : "")>Weekly</option>
+                                                <option value="Bi-Weekly" @(item.Type == "Bi-Weekly" ? "selected" : "")>Bi-Weekly</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Weekly">Weekly</option>
+                                                <option value="Bi-Weekly">Bi-Weekly</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div id="@(day)RepeatCBROW" class="form-group">
+                                        <div class="checkbox form-horizontal-checkbox">
+                                            <label>
+                                                Repeat
+                                                @if (item != null)
+                                                {
+                                                    if (item.Repeat)
+                                                    {
+                                                        <input checked type="checkbox" name="@(day)RepeatCBX" id="@(day)RepeatCBX">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" name="@(day)RepeatCBX" id="@(day)RepeatCBX">
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" name="@(day)RepeatCBX" id="@(day)RepeatCBX">
+
+                                                }
+                                            </label>
+                                            <input type="hidden" name="@(day)RepeatCB" id="@(day)RepeatCB" />
+
+
+
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-group" style="display:grid !important;justify-content:center;" id="@(day)RepeatEndROW">
+                                        <select name="@(day)RepeatEnd" id="@(day)RepeatEnd" class="form-control">
+                                            @if (item != null)
+                                            {
+                                                if (item.RepeatEnd == "Never")
+                                                {
+                                                    <option selected value="Never">Never</option>
+                                                    <option value="Custom Date">Custom Date</option>
+
+                                                }
+                                                else if (item.RepeatEnd == "Custom Date")
+                                                {
+
+                                                    <option value="Never">Never</option>
+                                                    <option selected value="Custom Date">Custom Date</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Never">Never</option>
+                                                    <option value="Custom Date">Custom Date</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option value="Never">Never</option>
+                                                <option value="Custom Date">Custom Date</option>
+                                            }
+                                        </select>
+
+                                        @if (item != null)
+                                        {
+                                            <input type="date" id="@(day)DateOfRepeatEnd" name="@(day)DateOfRepeatEnd" value="@item.DateOfRepeatEnd" />
+                                        }
+                                        else
+                                        {
+                                            <input type="date" id="@(day)DateOfRepeatEnd" name="@(day)DateOfRepeatEnd" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+                                        }
+
+                                    </div>
+                                </td>
+                            </tr>
+
+
+
+                        }
+
+                    </tbody>
+                </table>
+
+
+            </div>
+                }
+            </form>
+
+            <div class="errorDiv">
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            @if (Model.ID != 0)
+            {
+                <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Update</button>
+            }
+            else
+            {
+                <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
+            }
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function toggleFields(day) {
+        // Get the checkbox, start time, end time, and type fields
+        var checkbox = document.getElementById(day + "CB");
+        var startTime = document.getElementById("StartTime" + day);
+        var endTime = document.getElementById("EndTime" + day);
+        var typeDiv = document.getElementById(day + "TypeDiv"); // Use a div container for the label and select input
+        var hiddenInput = document.getElementById(day);
+        var RepeatCB = $("#" + day + "RepeatCBROW");
+
+        if (checkbox.checked) {
+            // If the checkbox is checked, show the timepickers and type field
+            startTime.style.display = "block";
+            endTime.style.display = "block";
+            typeDiv.style.display = "block";
+            hiddenInput.value = "True";
+            RepeatCB.show();
+        } else {
+            // If the checkbox is not checked, hide the timepickers and type field
+            startTime.style.display = "none";
+            endTime.style.display = "none";
+            typeDiv.style.display = "none";
+            hiddenInput.value = "False";
+            RepeatCB.hide();
+        }
+    }
+    // Attach the toggleFields function to each checkbox's onchange event
+    var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                    days.forEach(function (day) {
+
+        var checkbox = document.getElementById(day + "CB");
+        checkbox.addEventListener("change", function () {
+            toggleFields(day);
+        });
+    });
+
+    // Initial call to toggleFields to set the initial visibility based on checkbox state
+    days.forEach(function (day) {
+        toggleFields(day);
+    });
+
+
+
+
+
+    function CheckDaysOfWeek() {
+        var daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        //var daysOfWeek = ["Tuesday", "Wednesday"];
+
+        $.each(daysOfWeek, function (index, day) {
+
+            var elem = "#" + day + "RepeatCBX";
+            
+            if ($(elem).is(":checked")) {
+                
+           
+                $('#' + day + 'RepeatCB').val('true');
+                $("#" + day + "RepeatEndROW").show();
+                if ($("#" + day + "RepeatEnd").val() == "Never") {
+                    $("#" + day + "DateOfRepeatEnd").hide();
+                } else {
+                    $("#" + day + "DateOfRepeatEnd").show();
+
+                }
+
+            } else {
+                $("#" + day + "RepeatEndROW").hide();
+                $('#' + day + 'RepeatCB').val('false');
+
+            }
+
+
+        });
+    }
+
+
+
+    function updateDayFinal(day) {
+        // Get the values of StartTime and EndTime for the specified day
+        var startTime = $("#StartTime" + day).val();
+        var endTime = $("#EndTime" + day).val();
+
+        // Concatenate the values with a hyphen
+        var result = startTime + " - " + endTime;
+
+        // Update the value of dayFinal input for the specified day
+        $("#" + day + "Final").val(result);
+    }
+
+    // Attach an input change event listener for each day of the week
+    var daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    //var daysOfWeek = ["Tuesday", "Wednesday"];
+
+    $.each(daysOfWeek, function (index, day) {
+        var elem = "#" + day + "RepeatCBX";
+        
+        if ($(elem).is(":checked")) {
+
+            $('#' + day + 'RepeatCB').val('true');
+        
+
+            $("#" + day + "RepeatEndROW").show();
+            if ($("#" + day + "RepeatEnd").val() == "Never") {
+                $("#" + day + "DateOfRepeatEnd").hide();
+            } else {
+                $("#" + day + "DateOfRepeatEnd").show();
+
+            }
+
+        } else {
+            $("#" + day + "RepeatEndROW").hide();
+            $('#' + day + 'RepeatCB').val('false');
+
+        }
+
+        $("#" + day + "RepeatCBX").on("change", function () {
+            
+            CheckDaysOfWeek();
+        })
+
+        $("#" + day + "RepeatEnd").on("change", function () {
+            CheckDaysOfWeek();
+        })
+        $("#StartTime" + day + ", #EndTime" + day).on("input", function () {
+            updateDayFinal(day);
+        });
+    });
+    $("#actionButton").click(function () {
+        showLoadingSpinner();
+		$.ajax({
+			url: '@Url.Action("Action", "TimeTable")',
+			type: "post",
+			data: $("#actionForm").serialize()
+		})
+		.done(function (response) {
+			if(response.success)
+            {
+                hideLoadingSpinner();
+                $(".btn-secondary[data-dismiss='modal']").click();
+                window.location.href = '@Url.Action("Index","TimeTable")';
+			}
+            else {
+                hideLoadingSpinner();
+				$(".errorDiv").html(response.Message);
+			}
+		});
+    });
+
+
+
+
+</script>

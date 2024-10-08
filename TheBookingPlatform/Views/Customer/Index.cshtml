@@ -1,0 +1,117 @@
+﻿@model TheBookingPlatform.ViewModels.CustomerListingViewModel
+
+<style>
+    .card {
+        margin: 0px;
+    }
+</style>
+<div class="card">
+   
+    <div class="row">
+        <div class="col col-lg-12">
+            @{
+                Html.RenderPartial("_Listing", Model);
+            }
+        </div>
+    </div>
+
+</div>
+<div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+
+
+
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+    function RepopulateCustomers(SearchTerm) {
+        $.ajax({
+            url: '@Url.Action("GetCustomers", "Customer")', // Replace with the actual URL
+            method: 'GET',
+            data: { SearchTerm: SearchTerm },
+            dataType: 'json',
+            success: function (data) {
+                // Clear existing options
+
+                $('#CustomersTable tbody').empty();
+
+                // Repopulate with new data
+                $.each(data, function (index, item) {
+                    var newRow = $('<tr>');
+
+
+                    newRow.append($('<td style="cursor:pointer;" onclick="redirectToProfile(' + item.ID + ')">').addClass('text-center').text(item.FirstName + ' ' + item.LastName));
+                    newRow.append($('<td style="cursor:pointer;" onclick="redirectToProfile(' + item.ID + ')">').addClass('text-center').text(item.Email));
+                    newRow.append($('<td style="cursor:pointer;" onclick="redirectToProfile(' + item.ID + ')">').addClass('text-center').text(item.MobileNumber));
+                    var selectElement = $('<select>', {
+                        class: 'form-control',
+                        onchange: 'ChangeBlockStatus(' + item.ID + ')'
+                    });
+
+                    // Add the options to the select element
+                    selectElement.append($('<option>', {
+                        value: 'True',
+                        text: 'Yes',
+                        selected: item.IsBlocked
+                    }));
+
+                    selectElement.append($('<option>', {
+                        value: 'False',
+                        text: 'No',
+                        selected: !item.IsBlocked
+                    }));
+
+                    // Create a new td element
+                    var tdElement = $('<td>', {
+                        class: 'text-center'
+                    });
+
+                    // Append the select element to the td element
+                    tdElement.append(selectElement);
+
+                    // Append the td element to the newRow or any other container as needed
+                    newRow.append(tdElement);
+                    var actionColumn = $('<td>').addClass('text-center');
+                    var editLink = $('<a>')
+                        .attr('href', '@Url.Action("Action", "Customer")' + '?ID=' + item.ID)
+                        .addClass('btn btn-sm btn-rounded btn-info btn-icon-text')
+                        .html('<i class="mdi mdi-pencil"></i> EDIT');
+                    var deleteButton = $('<button>')
+                        .attr('data-href', '@Url.Action("Delete", "Customer")' + '?ID=' + item.ID)
+                        .attr('type', 'button')
+                        .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
+                        .attr('data-toggle', 'modal')
+                        .attr('data-target', '#actionModal')
+                        .html('<i class="mdi mdi-delete"></i> DELETE');
+
+                    actionColumn.append(editLink);
+                    actionColumn.append(deleteButton);
+
+                    newRow.append(actionColumn);
+
+
+                    $('#CustomersTable tbody').append(newRow);
+
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+    function redirectToProfile(id) {
+        window.location.href = '@Url.Action("CustomerProfile", "Customer")' + '?ID=' + id;
+    }
+
+</script>

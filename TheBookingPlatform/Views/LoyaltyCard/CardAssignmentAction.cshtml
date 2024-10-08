@@ -1,0 +1,149 @@
+﻿@model TheBookingPlatform.ViewModels.LoyaltyCardAssignmentActionViewModel
+@{
+    ViewBag.Title = "CardAssignmentAction";
+}
+
+<style>
+
+
+    .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: black;
+        font-weight: 400;
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: black;
+    }
+</style>
+<form id="actionForm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit LoyaltyCard Assignment
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create LoyaltyCard
+                    </h4>
+                }
+            </div>
+
+
+            <div class="card-content">
+                <div style="display:flex;align-items:end;" class="row">
+                    <div class="col-md-6">
+                        <input type="hidden" id="ID" name="ID" value="@Model.ID" />
+                        <div class="form-group">
+                            <label>
+                                Card Name
+                            </label>
+                            <input type="text" value="@Model.LoyaltyCard.Name" readonly class="form-control" name="Name" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Days in Expiry
+
+                            </label>
+                            <input type="number" value="@Model.Days" class="form-control" name="Days" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                Cash Back
+
+                            </label>
+                            <input type="number" value="@Model.CashBack" class="form-control" name="CashBack" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="checkbox form-horizontal-checkbox">
+                            <label>
+                                Selected Customer
+                            </label>
+                            <select class="form-control" name="CustomerID" id="CustomerID">
+                                @foreach (var item in Model.Customer)
+                                {
+                                    if (Model.CustomerID == item.ID)
+                                    {
+                                        <option selected value="@item.ID">@item.FirstName @item.LastName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.ID">@item.FirstName @item.LastName</option>
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+                </div>
+
+                <div class="col-md-12">
+                    @if (Model.ID == 0)
+                    {
+
+
+                        <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SAVE</button>
+                    }
+                    else
+                    {
+                        <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+
+                    }
+                    <a href="@Url.Action("CardAssignmentIndex","LoyaltyCard")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+    
+
+
+
+<script>
+
+
+    $("#ActionBtn").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("LoyaltyCardAssignmentAction", "LoyaltyCard")',
+            type: "post",
+            data: $("#actionForm").serialize()
+        })
+            .done(function (response) {
+                if (response.success) {
+                    hideLoadingSpinner();
+                    window.location.href = '@Url.Action("CardAssignmentIndex", "LoyaltyCard")';
+                }
+                else {
+                    hideLoadingSpinner();
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+    });
+</script>

@@ -1,0 +1,239 @@
+﻿@model TheBookingPlatform.ViewModels.LoyaltyCardIssueViewModel
+
+<style>
+    #datatables_length {
+        display: none;
+    }
+
+    div.dataTables_wrapper div.dataTables_filter input {
+        margin-left: 0.5em;
+        display: flex;
+        width: 400px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        text-align: center;
+    }
+</style>
+<div class="row">
+    <div class="card">
+        <div class="card-content">
+            <h4 class="card-title">Issue Loyalty Card</h4>
+            <h4 style="display:none;" class="card-title" id="SelectedCustomer"></h4>
+            <button style="display:none;" class="btn btn-sm btn-danger" id="BackButton">Change Customer</button>
+            <div id="CustomerTable" class="material-datatables">
+                <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile Number</th>
+                            <th class="disabled-sorting">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.Customers)
+                        {
+                            <tr>
+                                <td id="Customer_@(item.ID)">@item.FirstName @item.LastName</td>
+                                <td>@item.Email</td>
+                                <td>@item.MobileNumber</td>
+
+                                <td>
+                                    <button data-name="@item.FirstName @item.LastName" onclick="ShowLoyaltyCard('@item.ID','@item.FirstName @item.LastName')" class="btn btn-primary btn-sm" type="button">
+                                        SELECT
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <input type="hidden" id="CustomerID" value="@Model.Customer" />
+            <input type="hidden" id="LoyaltyCardID" />
+
+
+            <div style="display:none;" id="loyaltyCardTable" class="table table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Card Name
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.LoyaltyCards)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td><button type="button" data-name="@item.Name" onclick="ShowGenerateNumberPopup('@item.ID')" class="btn btn-sm btn-success btn-round">Issue Card</button> </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <button class="close-button btn btn-danger btn-sm btn-round" id="closeModal" style="padding-top: 0px;padding-left: 10px;float:right;padding-right: 10px;padding-bottom: 0px;font-size: large;">&times;</button>
+        <h2>Assign Card</h2>
+        <input type="hidden" class="form-control" id="Customer" value="@Model.Customer" name="Customer">
+        <input type="hidden" class="form-control" id="LoyaltyCardIDModal">
+        <div class="form-group">
+            <label>
+                Card Number
+            </label>
+            <input type="text" class="form-control" name="CardNumber" id="CardNumber" />
+        </div>
+        <div class="form-group">
+            <label>
+              Initial Cash Back
+            </label>
+            <input type="text" class="form-control" name="CashBack" id="CashBack" value="0" />
+        </div>
+
+        <button class="btn btn-sm btn-primary btn-round" type="button" id="generateNumberBtn">Generate New Number</button>
+        <button class="btn btn-sm btn-success btn-round" type="button" id="actionButton">Issue Card</button>
+    </div>
+</div>
+
+
+
+<script>
+
+    function ShowGenerateNumberPopup(ID) {
+        $("#myModal").fadeIn();
+        $("#Customer").val($("#CustomerID").val());
+        $("#LoyaltyCardIDModal").val(ID);
+        var randomNumber = Math.floor(100000000000 + Math.random() * 900000000000);
+        $("#CardNumber").val(randomNumber);
+    }
+
+
+
+    $("#BackButton").click(function () {
+        $("#CustomerTable").slideDown();
+        $("#loyaltyCardTable").slideUp();
+        $("#BackButton").slideUp();
+
+    });
+    function ShowLoyaltyCard(ID, Name) {
+
+        $("#SelectedCustomer").slideDown();
+
+        $("#SelectedCustomer").text("Selected Customer: "+Name);
+        $("#CustomerID").val(ID);
+        $("#CustomerTable").slideUp();
+        $("#loyaltyCardTable").slideDown();
+        $("#BackButton").slideDown();
+    }
+
+    $(document).ready(function () {
+
+        $("#closeModal").on("click", function () {
+            $("#myModal").hide(); // You may need to use the appropriate method to hide the modal based on your modal library (e.g., Bootstrap modal).
+        });
+        var Customer = $("#Customer").val();
+
+        if (Customer != '0') {
+            var CustomerName = $("#Customer_" + Customer).text();
+            $("#CustomerTable").slideUp();
+            $("#loyaltyCardTable").slideDown();
+            $("#BackButton").slideDown();
+            $("#SelectedCustomer").slideDown();
+            $("#SelectedCustomer").text("Selected Customer: " + CustomerName);
+
+
+        }
+
+
+
+        $('#datatables').DataTable({
+            "pagingType": "full_numbers",
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            responsive: true,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search records",
+            }
+
+        });
+
+        // Generate a random 12-digit number and display it
+        $("#generateNumberBtn").click(function () {
+            var randomNumber = Math.floor(100000000000 + Math.random() * 900000000000);
+            $("#CardNumber").val(randomNumber);
+        });
+
+
+    });
+
+
+    $("#actionButton").click(function () {
+        showLoadingSpinner();
+        var customer = $("#Customer").val();
+        var LoyaltyCardID = $("#LoyaltyCardIDModal").val();
+        var CardNumber = $("#CardNumber").val();
+        var CashBack = $("#CashBack").val();
+
+        $.ajax({
+			url: '@Url.Action("CheckCustomerWithLoyaltyCard", "LoyaltyCard")',
+            type: "get",
+            data: { CustomerID: customer, LoyaltyCardID: LoyaltyCardID}
+		})
+		.done(function (response) {
+            if (response.AlreadyAssigned)
+            {
+                hideLoadingSpinner();
+                alert("This Loyalty Card is already assigned to this customer,Please choose different card");
+                return;
+            }
+            else
+            {
+                $.ajax({
+                    url: '@Url.Action("Issue", "LoyaltyCard")',
+                    type: "post",
+                    data: { Customer: customer, CardNumber: CardNumber, LoyaltyCardID: LoyaltyCardID,CashBack: CashBack }
+                })
+                    .done(function (response) {
+                        if (response.success) {
+                            alert("Card Issued Succesfully");
+                            window.location.href = '@Url.Action("Index","LoyaltyCard")';
+                        }
+                        else {
+                            hideLoadingSpinner();
+                            $(".errorDiv").html(response.Message);
+                        }
+                    });
+			}
+		});
+
+	});
+</script>

@@ -1,0 +1,108 @@
+﻿@model TheBookingPlatform.ViewModels.PackageListingViewModel
+
+<style>
+ 
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Packages </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+
+                <div class="form-group">
+
+                    <input type="text" name="searchterm" id="Search" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                    <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="submit"><i class="fas fa-search mr-1"></i> Search</button>
+                    <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                   
+                    <a href="@Url.Action("Action", "Package")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+                   
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="row">
+
+                <div class="col-lg-12 grid-margin stretch-card">
+                    @if (Model.Packages != null)
+                    {
+                        <div class="card">
+
+                            <div class="table-responsive">
+                                <table id="PackageTable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+
+                                            <th class="text-center">
+                                                Name
+                                            </th>
+                                           
+                                            <th class="text-center">
+                                                Price
+                                            </th>
+                                           
+
+                                            <th class="text-center">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Packages)
+                                        {
+                                            <tr>
+                                                <td class="text-center">@item.Name</td>
+                                                @*<td class="text-center">@item.Code</td>*@
+                                                @*<td class="text-center">@item.HaveExpiry</td>*@
+                                                <td class="text-center">@item.Price</td>
+                                                <td class="text-center">
+
+                                                    <a href="@Url.Action("Action", "Package", new { ID = item.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                    <button data-href="@Url.Action("Delete", "Package", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="alert alert-warning col-md-12" role="alert">
+                            Sorry! No records exist.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+
+ 
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+</script>

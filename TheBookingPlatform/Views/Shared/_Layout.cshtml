@@ -1,0 +1,2327 @@
+﻿@using System.Security.Claims
+@{
+    var package = "";
+    var inTrial = "";
+}
+@if (User.Identity.IsAuthenticated)
+{
+    var claimsPrincipal = User as ClaimsPrincipal;
+
+    // Use traditional null checks
+    if (claimsPrincipal != null)
+    {
+        var claim = claimsPrincipal.FindAll("Package").Where(x => x.Value != "").FirstOrDefault();
+        if (claim != null)
+        {
+            package = claim.Value;
+        }
+        var InTrial = claimsPrincipal.FindAll("InTrial").Where(x => x.Value != "").FirstOrDefault();
+        if (InTrial != null)
+        {
+            inTrial = InTrial.Value;
+        }
+    }
+}
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="~/Content/MainTemplate/assets/img/apple-icon.png" />
+    <link rel="icon" type="image/png" href="~/Content/TBPContent/bookingplatform.png" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>The Booking Platform</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+    <!-- Bootstrap core CSS     -->
+    <link href="~/Content/MainTemplate/assets/css/bootstrap.min.css" rel="stylesheet" />
+
+
+
+    <!--  Material Dashboard CSS    -->
+    <link href="~/Content/MainTemplate/assets/css/material-dashboard.css?v=1.3.0" rel="stylesheet" />
+
+    <!--  CSS for Demo Purpose, don't include it in your project     -->
+    @*<link href="~/Content/MainTemplate/assets/css/demo.css" rel="stylesheet" />*@
+
+
+    <!--     Fonts and icons     -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+
+    <script src="~/Content/MainTemplate/assets/js/jquery.min.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <link href="~/Content/summernote/summernote-bs4.css" rel="stylesheet">
+    <script src="~/Content/summernote/summernote-bs4.js"></script>
+    <script src="~/Content/MainTemplate/assets/js/moment.min.js"></script>
+
+
+
+    <style>
+        footer {
+            padding: 0px 0;
+        }
+
+        .main-panel {
+            position: relative;
+            float: right;
+            width: calc(100% - 220px);
+            -webkit-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+            -moz-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+            -o-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+            -ms-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+            transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+        }
+
+        @@media (min-width: 992px) {
+            .sidebar-mini .sidebar:hover {
+                width: 220px;
+            }
+        }
+
+        @@media (max-width: 991px) {
+            .main-panel {
+                width: 100% !important;
+            }
+        }
+
+        .sidebar .user {
+            padding-bottom: 20px;
+            margin: 10px 10px;
+            position: relative;
+        }
+
+        .sidebar .nav li:first-child > a {
+            margin: auto;
+        }
+
+        .sidebar .nav li > a {
+            margin: 10px 0px 0;
+            border-radius: 3px;
+            color: #3C4858;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .ui-datepicker table th span {
+            font-weight: 600 !important;
+            margin-left: 6px;
+        }
+
+        .mini-navbar #calendar-block {
+            position: absolute;
+            top: 0;
+            left: 70px
+        }
+
+        .ui-datepicker {
+            width: 220px;
+            display: none;
+            padding: 0 1px 7px;
+            font-size: 14px;
+            border: none
+        }
+
+        nav.navbar-new.navbar-new-design .ui-datepicker {
+            padding: 0 1px
+        }
+
+        .ui-datepicker-prev {
+            float: left;
+            text-indent: -9999px;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            cursor: pointer;
+            margin-top: 4px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-right: 5px solid #dfe4ed
+        }
+
+        .ui-datepicker-next {
+            float: right;
+            text-indent: -9999px;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            cursor: pointer;
+            margin-top: 4px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid #dfe4ed
+        }
+
+            .ui-datepicker-next:hover {
+                background: 0 0;
+                border-left: 5px solid #fff
+            }
+
+        .ui-datepicker-prev:hover {
+            background: 0 0;
+            border-right: 5px solid #fff
+        }
+
+        .ui-datepicker-title {
+            height: 1%;
+            overflow: hidden;
+            text-align: center;
+            font-size: 14px;
+            color: #4a5054;
+            text-transform: none
+        }
+
+        .ui-datepicker-header {
+            overflow: hidden;
+            width: 212px;
+            margin: 0 0 6px;
+            padding: 8px 10px 10px 0;
+            background: 0 0
+        }
+
+        .ui-datepicker table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+            .ui-datepicker table th {
+                color: #a7b1c2;
+                font-weight: 600 !important;
+                padding-bottom: 5px
+            }
+
+                .ui-datepicker table th span {
+                    font-weight: 600 !important
+                }
+
+            .ui-datepicker table td {
+                text-align: center;
+                padding: 0
+            }
+
+        .ui-datepicker .ui-state-disabled {
+            color: #696e72;
+            background: 0 0
+        }
+
+        .ui-datepicker table a {
+            text-decoration: none;
+            color: white;
+            float: left;
+            height: 24px;
+            width: 24px;
+            text-align: center;
+            padding-top: 2px;
+            border: none !important;
+            text-shadow: none !important;
+            line-height: normal !important;
+            font-weight: 400 !important
+        }
+
+        .ui-datepicker table span {
+            height: 24px;
+            width: 24px;
+            border: none !important;
+            text-shadow: none !important;
+            line-height: normal !important;
+            font-weight: 400 !important;
+            float: left;
+            padding-top: 4px
+        }
+
+        #ui-datepicker-div.ui-datepicker table span {
+            background: #fff
+        }
+
+        #ui-datepicker-div.ui-datepicker .ui-state-disabled span {
+            color: #ccc
+        }
+
+        .ui-datepicker .not_work a {
+            color: #4a5054;
+            background: 0 0
+        }
+
+        .ui-datepicker .work a {
+            color: #a7b1c2;
+            background: 0 0
+        }
+
+        .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .ui-datepicker .ui-datepicker-current-day a {
+            border-radius: 20%;
+            background: #757575 !important;
+            color: #fff
+        }
+
+        .calendar-container .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .calendar-container .ui-datepicker .ui-datepicker-current-day a {
+            background: #FACA00 !important;
+            color: black;
+        }
+
+        #master_cal .ui-datepicker .ui-datepicker-calendar .ui-state-hover, #master_cal .ui-datepicker .ui-datepicker-current-day a {
+            background: 0 0 !important
+        }
+
+        /*  .calendar-container .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .calendar-container .ui-datepicker .ui-datepicker-current-day a {
+            background: #000 !important
+        }*/
+
+        .ui-datepicker table a.ui-state-default {
+            background: 0 0
+        }
+
+
+
+        .ui-datepicker .ui-datepicker-today a {
+            color: #7092cc;
+            font-weight: 700 !important;
+            background: yellow;
+        }
+
+        .navbar-new.navbar-new-design .ui-datepicker .ui-datepicker-today a {
+            font-weight: 400 !important
+        }
+
+        .ui-datepicker-month, .ui-datepicker-year {
+            color: #a7b1c2;
+            font-weight: 700;
+            background: 0 0
+        }
+
+        #calendar-block.week-calendar tr.ui-datepicker-not-workweek, #calendar-block.week-calendar tr.ui-datepicker-not-workweek td, #calendar-block.week-calendar tr.ui-datepicker-not-workweek td a {
+            cursor: not-allowed !important;
+            background: 0 0 !important;
+            color: #0e324a !important
+        }
+
+        #calendar-block tr.ui-datepicker-current-week, #calendar-block tr.ui-datepicker-workweek, #master_cal tr.ui-datepicker-current-week, #master_cal tr.ui-datepicker-workweek {
+            cursor: pointer
+        }
+
+        .ui-datepicker .ui-datepicker-calendar tbody tr.ui-datepicker-current-week a, .ui-datepicker .ui-datepicker-calendar tbody tr.ui-datepicker-workweek:hover a {
+            background: #000;
+            color: #fff;
+            border-radius: 0
+        }
+
+        .ui-datepicker .ui-datepicker-calendar tbody tr.ui-datepicker-current-week td, .ui-datepicker .ui-datepicker-calendar tbody tr.ui-datepicker-workweek:hover td {
+            background: #000
+        }
+
+        .sidebar-wrapper::-webkit-scrollbar {
+            width: 10px; /* Set the width of the scrollbar */
+        }
+
+        /* Define the scrollbar thumb */
+        .sidebar-wrapper::-webkit-scrollbar-thumb {
+            background-color: #999; /* Color of the thumb */
+            border-radius: 5px; /* Rounded corners for the thumb */
+        }
+
+            /* Define the scrollbar thumb on hover */
+            .sidebar-wrapper::-webkit-scrollbar-thumb:hover {
+                background-color: #666; /* Color of the thumb on hover */
+            }
+
+        /* Define the scrollbar track on hover */
+        .sidebar-wrapper::-webkit-scrollbar-track {
+            border-radius: 5px;
+            background-color: #FFF; /* Color of the track */
+        }
+
+        /* Define the scrollbar corner (optional) */
+        .sidebar-wrapper::-webkit-scrollbar-corner {
+            background-color: #FFF; /* Color of the scrollbar corner */
+        }
+
+        .center {
+            top: -10%;
+        }
+
+        .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+            padding: 0px 8px;
+            vertical-align: middle;
+        }
+
+        .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+            font-size: 14px;
+            line-height: 1.428571429;
+            color: black;
+            font-weight: 400;
+        }
+
+        .checkbox label {
+            cursor: pointer;
+            padding-left: 0;
+            color: black;
+        }
+
+        .menuicons {
+            margin-right: 20px;
+            height: 24px;
+        }
+
+        .loading-spinner-overlay {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 9999; /* Ensure it appears above all other content */
+            background-color: rgba(0,0,0,0.5); /* Transparent black */
+        }
+
+
+        .spinner {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="">
+    <div class="wrapper">
+        <input type="hidden" id="FINALDATEO" />
+        <div class="sidebar" data-active-color="rose" data-background-color="black" @*data-image="/Content/MainTemplate/assets/img/sidebar-1.jpg"*@>
+            <!--
+                Tip 1: You can change the color of active element of the sidebar using: data-active-color="purple | blue | green | orange | red | rose"
+                Tip 2: you can also add an image using data-image tag
+                Tip 3: you can change the color of the sidebar with data-background-color="white | black"
+            -->
+
+            <div class="logo">
+                <a style="font-size:smaller;" target="_blank" href="http://www.yourbookingplatform.com" class="simple-text logo-mini">
+                    YBP
+                </a>
+
+                <a target="_blank" style="font-size:smaller;" href="http://www.yourbookingplatform.com" class="simple-text logo-normal">
+                    Your Booking Platform
+                </a>
+            </div>
+
+            <div class="sidebar-wrapper" style="overflow-x:hidden;">
+                <div class="user">
+
+
+                    <div class="info">
+                        <a data-toggle="collapse" href="#collapseExample" class="collapsed">
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+
+                                <span style="white-space:normal;width:115%;" id="TextOfUser">
+                                    @User.Identity.Name
+                                    <i class="material-icons">arrow_drop_down</i>
+
+                                </span>
+                            }
+
+
+
+
+                        </a>
+
+                        <div class="clearfix"></div>
+                        <!-- Mini Calendar Container -->
+
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Switch Organisation</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="exampleFormControlSelect1">Select Organisation</label>
+                                            <select class="form-control" id="SelectedOrg">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" id="SwitchOrg" class="btn btn-sm btn-success">Switch Organisation</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="collapseExample">
+                            <ul class="nav">
+                                @if (inTrial == "Yes")
+                                {
+                                    <li>
+                                        <a id="openModalBtn">
+                                            <span class="sidebar-mini"> S </span>
+                                            <span class="sidebar-normal"> Switch </span>
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    if (package.Split(',').Contains("Company Switch"))
+                                    {
+                                        <li>
+                                            <a id="openModalBtn">
+                                                <span class="sidebar-mini"> S </span>
+                                                <span class="sidebar-normal"> Switch </span>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                                <li>
+                                    <a href="@Url.Action("UserProfile","Account")">
+                                        <span class="sidebar-mini"> MP </span>
+                                        <span class="sidebar-normal"> My Profile </span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a style="cursor:pointer" onclick="logout()">
+                                        <span class="sidebar-mini"> L </span>
+                                        <span class="sidebar-normal"> Logout </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <ul class="nav">
+                    <li id="MainDatePickerContainer" style=" display: flex; justify-content: center;" class="calendar-container">
+                        <div id="datepicker-container" translate="no"></div>
+
+                    </li>
+                    @if (User.IsInRole("Calendar"))
+                    {
+
+                        if (inTrial == "No")
+                        {
+                            if (package.Split(',').Contains("PayRoll"))
+                            {
+                                <li id="PayRollTAB">
+                                    <a href="@Url.Action("ViewEmployeesPayRoll", "PayRoll")">
+                                        <img class="menuicons" src="~/Content/TBPContent/icons/gift.png" />
+                                        <span class="sidebar-normal"> PayRoll </span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li id="PayRollTAB">
+                                <a href="@Url.Action("ViewEmployeesPayRoll", "PayRoll")">
+                                    <img class="menuicons" src="~/Content/TBPContent/icons/gift.png" />
+                                    <span class="sidebar-normal"> PayRoll </span>
+                                </a>
+                            </li>
+                        }
+
+
+
+                    }
+
+                    @if (User.IsInRole("Accountant"))
+                    {
+
+                        <li>
+                            <a href="@Url.Action("Dashboard", "Admin")">
+                                <i class="material-icons">dashboard</i>
+                                <p> Dashboard </p>
+                            </a>
+                        </li>
+
+                        if (inTrial == "No")
+                        {
+                            if (package.Split(',').Contains("Invoice Maker"))
+                            {
+                                <li>
+                                    <a href="@Url.Action("Index", "NInvoice")">
+                                        <i class="material-icons">money</i>
+                                        <p> Invoice Maker </p>
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "NInvoice")">
+                                    <i class="material-icons">money</i>
+                                    <p> Invoice Maker </p>
+                                </a>
+                            </li>
+                        }
+                        if (inTrial == "No")
+                        {
+                            if (package.Split(',').Contains("Report"))
+                            {
+                                <li>
+                                    <a data-toggle="collapse" href="#reportDD">
+                                        <i class="material-icons">analytics</i>
+                                        <p>
+                                            Reports
+                                            <b class="caret"></b>
+                                        </p>
+                                    </a>
+
+                                    <div class="collapse" id="reportDD">
+                                        <ul class="nav">
+
+                                            <li id="AnalysisTAB">
+                                                <a href="@Url.Action("Analysis", "Admin")">
+                                                    <span class="sidebar-mini"> A </span>
+                                                    <span class="sidebar-normal"> Analysis </span>
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </li>
+
+                            }
+                        }
+                        else
+                        {
+                            <li>
+                                <a data-toggle="collapse" href="#reportDD">
+                                    <i class="material-icons">analytics</i>
+                                    <p>
+                                        Reports
+                                        <b class="caret"></b>
+                                    </p>
+                                </a>
+
+                                <div class="collapse" id="reportDD">
+                                    <ul class="nav">
+
+                                        <li id="AnalysisTAB">
+                                            <a href="@Url.Action("Analysis", "Admin")">
+                                                <span class="sidebar-mini"> A </span>
+                                                <span class="sidebar-normal"> Analysis </span>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </li>
+                        }
+
+
+
+
+
+                        <li>
+                            <a data-toggle="collapse" href="#servicesDD">
+                                <i class="material-icons">lists</i>
+                                <p>
+                                    Services
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="servicesDD">
+                                <ul class="nav">
+                                    @if (inTrial == "No")
+                                    {
+                                        if (package.Split(',').Contains("Products"))
+                                        {
+                                            <li id="ProductsTAB">
+                                                <a href="@Url.Action("Index", "Product")">
+                                                    <span class="sidebar-mini"> P </span>
+                                                    <span class="sidebar-normal"> Products </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        if (package.Split(',').Contains("Resources"))
+                                        {
+
+                                            <li style="display:none;" id="ResourceTAB">
+                                                <a href="@Url.Action("Index", "Resource")">
+                                                    <span class="sidebar-mini"> R </span>
+                                                    <span class="sidebar-normal"> Resource </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <li id="ProductsTAB">
+                                            <a href="@Url.Action("Index", "Product")">
+                                                <span class="sidebar-mini"> P </span>
+                                                <span class="sidebar-normal"> Products </span>
+                                            </a>
+                                        </li>
+                                        <li style="display:none;" id="ResourceTAB">
+                                            <a href="@Url.Action("Index", "Resource")">
+                                                <span class="sidebar-mini"> R </span>
+                                                <span class="sidebar-normal"> Resource </span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+
+
+
+
+                    }
+                    @if (User.IsInRole("Manager"))
+                    {
+                        <li>
+                            <a href="@Url.Action("Dashboard", "Admin")">
+                                <i class="material-icons">dashboard</i>
+                                <p> Dashboard </p>
+                            </a>
+                        </li>
+
+                        if (inTrial == "No")
+                        {
+                            if (package.Split(',').Contains("Invoice Maker"))
+                            {
+                                <li>
+                                    <a href="@Url.Action("Index", "NInvoice")">
+                                        <i class="material-icons">money</i>
+                                        <p> Invoice Maker </p>
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "NInvoice")">
+                                    <i class="material-icons">money</i>
+                                    <p> Invoice Maker </p>
+                                </a>
+                            </li>
+                        }
+                        <li>
+                            <a data-toggle="collapse" href="#reportDD">
+                                <i class="material-icons">analytics</i>
+                                <p>
+                                    Reports
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="reportDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+                                        @if (package.Split(',').Contains("Report"))
+                                        {
+                                            <li id="AnalysisTAB">
+                                                <a href="@Url.Action("Analysis", "Admin")">
+                                                    <span class="sidebar-mini"> A </span>
+                                                    <span class="sidebar-normal"> Analysis </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Appointments"))
+                                        {
+                                            <li id="AppointmentsTAB">
+                                                <a href="@Url.Action("Index", "Appointment")">
+                                                    <span class="sidebar-mini"> AP </span>
+                                                    <span class="sidebar-normal"> Appointments </span>
+                                                </a>
+                                            </li>
+                                        }
+
+
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+
+                                        <li id="AnalysisTAB">
+                                            <a href="@Url.Action("Analysis", "Admin")">
+                                                <span class="sidebar-mini"> A </span>
+                                                <span class="sidebar-normal"> Analysis </span>
+                                            </a>
+                                        </li>
+
+
+
+                                        <li id="AppointmentsTAB">
+                                            <a href="@Url.Action("Index", "Appointment")">
+                                                <span class="sidebar-mini"> AP </span>
+                                                <span class="sidebar-normal"> Appointments </span>
+                                            </a>
+                                        </li>
+
+
+
+
+                                    </ul>
+                                }
+                            </div>
+                        </li>
+
+                        <li>
+                            <a data-toggle="collapse" href="#settingsDD">
+                                <i class="material-icons">settings</i>
+                                <p>
+                                    Settings
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="settingsDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+
+                                        @if (package.Split(',').Contains("Holidays"))
+                                        {
+                                            <li id="HolidayTAB">
+                                                <a href="@Url.Action("Index", "Holiday")">
+                                                    <span class="sidebar-mini"> CH </span>
+                                                    <span class="sidebar-normal">Company Holidays </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Opening Hours"))
+                                        {
+                                            <li id="OpeningHoursTAB">
+                                                <a href="@Url.Action("Index", "OpeningHour")">
+                                                    <span class="sidebar-mini"> OP </span>
+                                                    <span class="sidebar-normal"> Opening Hours </span>
+                                                </a>
+                                            </li>
+                                        }
+
+
+
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+                                        <li id="HolidayTAB">
+                                            <a href="@Url.Action("Index", "Holiday")">
+                                                <span class="sidebar-mini"> CH </span>
+                                                <span class="sidebar-normal">Company Holidays </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="OpeningHoursTAB">
+                                            <a href="@Url.Action("Index", "OpeningHour")">
+                                                <span class="sidebar-mini"> OP </span>
+                                                <span class="sidebar-normal"> Opening Hours </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                }
+                            </div>
+                        </li>
+
+
+
+
+                        <li>
+                            <a data-toggle="collapse" href="#customerDD">
+                                <i class="material-icons">groups</i>
+                                <p>
+                                    Customer
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="customerDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+                                        @if (package.Split(',').Contains("Customers"))
+                                        {
+                                            <li id="CustomersTAB">
+                                                <a href="@Url.Action("Index", "Customer")">
+                                                    <span class="sidebar-mini"> C </span>
+                                                    <span class="sidebar-normal"> Customers </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Gift Cards"))
+                                        {
+                                            <li id="GiftCardTAB">
+                                                <a href="@Url.Action("Index", "GiftCard")">
+                                                    <span class="sidebar-mini"> GC </span>
+                                                    <span class="sidebar-normal">Gift Cards </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Coupons"))
+                                        {
+                                            <li id="CouponTAB">
+                                                <a href="@Url.Action("Index", "Coupon")">
+                                                    <span class="sidebar-mini"> C </span>
+                                                    <span class="sidebar-normal">Coupons </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Loyalty Cards"))
+                                        {
+                                            <li id="LoyaltyCardTAB">
+                                                <a href="@Url.Action("Index", "LoyaltyCard")">
+                                                    <span class="sidebar-mini"> LC </span>
+                                                    <span class="sidebar-normal">Loyalty Cards </span>
+                                                </a>
+                                            </li>
+                                        }
+
+
+
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+
+                                        <li id="CustomersTAB">
+                                            <a href="@Url.Action("Index", "Customer")">
+                                                <span class="sidebar-mini"> C </span>
+                                                <span class="sidebar-normal"> Customers </span>
+                                            </a>
+                                        </li>
+
+
+
+                                        <li id="GiftCardTAB">
+                                            <a href="@Url.Action("Index", "GiftCard")">
+                                                <span class="sidebar-mini"> GC </span>
+                                                <span class="sidebar-normal">Gift Cards </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="CouponTAB">
+                                            <a href="@Url.Action("Index", "Coupon")">
+                                                <span class="sidebar-mini"> C </span>
+                                                <span class="sidebar-normal">Coupons </span>
+                                            </a>
+                                        </li>
+
+
+                                        <li id="LoyaltyCardTAB">
+                                            <a href="@Url.Action("Index", "LoyaltyCard")">
+                                                <span class="sidebar-mini"> LC </span>
+                                                <span class="sidebar-normal">Loyalty Cards </span>
+                                            </a>
+                                        </li>
+
+
+
+
+
+                                    </ul>
+                                }
+                            </div>
+                        </li>
+
+                        <li>
+                            <a data-toggle="collapse" href="#staffTDD">
+                                <i class="material-icons">account_circle</i>
+                                <p>
+                                    Staff
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="staffTDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+                                        @if (package.Split(',').Contains("Employees"))
+                                        {
+                                            <li id="EmployeeTAB">
+                                                <a href="@Url.Action("Index", "Employee")">
+                                                    <span class="sidebar-mini"> E </span>
+                                                    <span class="sidebar-normal"> Employees </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Time Table"))
+                                        {
+                                            <li id="ShiftTAB">
+                                                <a href="@Url.Action("Index", "Shift")">
+                                                    <span class="sidebar-mini"> T </span>
+                                                    <span class="sidebar-normal">Timetable </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+
+                                        <li id="EmployeeTAB">
+                                            <a href="@Url.Action("Index", "Employee")">
+                                                <span class="sidebar-mini"> E </span>
+                                                <span class="sidebar-normal"> Employees </span>
+                                            </a>
+
+                                        <li id="ShiftTAB">
+                                            <a href="@Url.Action("Index", "Shift")">
+                                                <span class="sidebar-mini"> T </span>
+                                                <span class="sidebar-normal">Timetable </span>
+                                            </a>
+                                        </li>
+
+
+                                    </ul>
+                                }
+
+                            </div>
+                        </li>
+
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li>
+                            <a href="@Url.Action("Dashboard", "Admin")">
+                                <i class="material-icons">dashboard</i>
+                                <p> Dashboard </p>
+                            </a>
+                        </li>
+                       
+                        if (inTrial == "No")
+                        {
+                            if (package.Split(',').Contains("Users"))
+                            {
+                                <li id="UserTAB">
+                                    <a href="@Url.Action("Index", "User")">
+                                        <img class="menuicons" src="~/Content/TBPContent/icons/group.png" />
+                                        <span class="sidebar-normal"> Users </span>
+                                    </a>
+                                </li>
+
+                            }
+                        }
+                        else
+                        {
+                            <li id="UserTAB">
+                                <a href="@Url.Action("Index", "User")">
+                                    <img class="menuicons" src="~/Content/TBPContent/icons/group.png" />
+                                    <span class="sidebar-normal"> Users </span>
+                                </a>
+                            </li>
+                        }
+
+
+                        if (inTrial == "No")
+                        {
+                            if (package.Split(',').Contains("Report"))
+                            {
+                                <li>
+                                    <a data-toggle="collapse" href="#reportDD">
+                                        <i class="material-icons">analytics</i>
+                                        <p>
+                                            Reports
+                                            <b class="caret"></b>
+                                        </p>
+                                    </a>
+
+                                    <div class="collapse" id="reportDD">
+                                        <ul class="nav">
+
+
+                                            <li id="AppointmentsTAB">
+                                                <a href="@Url.Action("Index", "Appointment")">
+                                                    <span class="sidebar-mini"> AP </span>
+                                                    <span class="sidebar-normal"> Appointments </span>
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </li>
+                            }
+
+                        }
+                        else
+                        {
+                            <li>
+                                <a data-toggle="collapse" href="#reportDD">
+                                    <i class="material-icons">analytics</i>
+                                    <p>
+                                        Reports
+                                        <b class="caret"></b>
+                                    </p>
+                                </a>
+
+                                <div class="collapse" id="reportDD">
+                                    <ul class="nav">
+
+
+                                        <li id="AppointmentsTAB">
+                                            <a href="@Url.Action("Index", "Appointment")">
+                                                <span class="sidebar-mini"> AP </span>
+                                                <span class="sidebar-normal"> Appointments </span>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </li>
+                        }
+
+                        <li>
+                            <a data-toggle="collapse" href="#settingsDD">
+                                <i class="material-icons">settings</i>
+                                <p>
+                                    Settings
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="settingsDD">
+                                <ul class="nav">
+
+                                    <li id="SettingsTAB">
+                                        <a href="@Url.Action("Settings", "User")">
+                                            <span class="sidebar-mini"> S </span>
+                                            <span class="sidebar-normal"> Settings </span>
+                                        </a>
+                                    </li>
+                                    @if (inTrial == "No")
+                                    {
+                                        if (package.Split(',').Contains("Holidays"))
+                                        {
+                                            <li id="HolidayTAB">
+                                                <a href="@Url.Action("Index", "Holiday")">
+                                                    <span class="sidebar-mini"> CH </span>
+                                                    <span class="sidebar-normal">Company Holidays </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        if (package.Split(',').Contains("Opening Hours"))
+                                        {
+                                            <li id="OpeningHoursTAB">
+                                                <a href="@Url.Action("Index", "OpeningHour")">
+                                                    <span class="sidebar-mini"> OP </span>
+                                                    <span class="sidebar-normal"> Opening Hours </span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li id="HolidayTAB">
+                                            <a href="@Url.Action("Index", "Holiday")">
+                                                <span class="sidebar-mini"> CH </span>
+                                                <span class="sidebar-normal">Company Holidays </span>
+                                            </a>
+                                        </li>
+                                        <li id="OpeningHoursTAB">
+                                            <a href="@Url.Action("Index", "OpeningHour")">
+                                                <span class="sidebar-mini"> OP </span>
+                                                <span class="sidebar-normal"> Opening Hours </span>
+                                            </a>
+                                        </li>
+                                    }
+
+
+
+                                </ul>
+                            </div>
+                        </li>
+
+
+                        <li>
+                            <a data-toggle="collapse" href="#servicesDD">
+                                <i class="material-icons">lists</i>
+                                <p>
+                                    Services
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="servicesDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+                                        @if (package.Split(',').Contains("Services"))
+                                        {
+                                            <li id="ServicesTAB">
+                                                <a href="@Url.Action("Index", "Service")">
+                                                    <span class="sidebar-mini"> S </span>
+                                                    <span class="sidebar-normal"> Services </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Service Categories "))
+                                        {
+                                            <li id="ServiceCategoryTAB">
+                                                <a href="@Url.Action("Index", "ServiceCategory")">
+                                                    <span class="sidebar-mini"> SC </span>
+                                                    <span class="sidebar-normal">Service Categories </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("VAT"))
+                                        {
+                                            <li id="VatTAB">
+                                                <a href="@Url.Action("Index", "Vat")">
+                                                    <span class="sidebar-mini"> V </span>
+                                                    <span class="sidebar-normal"> Vats </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Products"))
+                                        {
+                                            <li id="ProductsTAB">
+                                                <a href="@Url.Action("Index", "Product")">
+                                                    <span class="sidebar-mini"> P </span>
+                                                    <span class="sidebar-normal"> Products </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Resources"))
+                                        {
+                                            <li style="display:none;" id="ResourceTAB">
+                                                <a href="@Url.Action("Index", "Resource")">
+                                                    <span class="sidebar-mini"> R </span>
+                                                    <span class="sidebar-normal"> Resources </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+
+                                        <li id="ServicesTAB">
+                                            <a href="@Url.Action("Index", "Service")">
+                                                <span class="sidebar-mini"> S </span>
+                                                <span class="sidebar-normal"> Services </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="ServiceCategoryTAB">
+                                            <a href="@Url.Action("Index", "ServiceCategory")">
+                                                <span class="sidebar-mini"> SC </span>
+                                                <span class="sidebar-normal">Service Categories </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="VatTAB">
+                                            <a href="@Url.Action("Index", "Vat")">
+                                                <span class="sidebar-mini"> V </span>
+                                                <span class="sidebar-normal"> Vats </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="ProductsTAB">
+                                            <a href="@Url.Action("Index", "Product")">
+                                                <span class="sidebar-mini"> P </span>
+                                                <span class="sidebar-normal"> Products </span>
+                                            </a>
+                                        </li>
+
+                                        <li style="display:none;" id="ResourceTAB">
+                                            <a href="@Url.Action("Index", "Resource")">
+                                                <span class="sidebar-mini"> R </span>
+                                                <span class="sidebar-normal"> Resources </span>
+                                            </a>
+                                        </li>
+
+
+                                    </ul>
+                                }
+
+                            </div>
+                        </li>
+
+                        <li>
+                            <a data-toggle="collapse" href="#customerDD">
+                                <i class="material-icons">groups</i>
+                                <p>
+                                    Customer
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="customerDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+
+                                        @if (package.Split(',').Contains("Customers"))
+                                        {
+                                            <li id="CustomersTAB">
+                                                <a href="@Url.Action("Index", "Customer")">
+                                                    <span class="sidebar-mini"> C </span>
+                                                    <span class="sidebar-normal"> Customers </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Gift Cards"))
+                                        {
+                                            <li id="GiftCardTAB">
+                                                <a href="@Url.Action("Index", "GiftCard")">
+                                                    <span class="sidebar-mini"> GC </span>
+                                                    <span class="sidebar-normal">Gift Cards </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Coupons"))
+                                        {
+                                            <li id="CouponTAB">
+                                                <a href="@Url.Action("Index", "Coupon")">
+                                                    <span class="sidebar-mini"> C </span>
+                                                    <span class="sidebar-normal">Coupons </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Loyalty Cards"))
+                                        {
+                                            <li id="LoyaltyCardTAB">
+                                                <a href="@Url.Action("Index", "LoyaltyCard")">
+                                                    <span class="sidebar-mini"> LC </span>
+                                                    <span class="sidebar-normal">Loyalty Cards </span>
+                                                </a>
+                                            </li>
+                                        }
+
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+
+
+                                        <li id="CustomersTAB">
+                                            <a href="@Url.Action("Index", "Customer")">
+                                                <span class="sidebar-mini"> C </span>
+                                                <span class="sidebar-normal"> Customers </span>
+                                            </a>
+
+                                        <li id="GiftCardTAB">
+                                            <a href="@Url.Action("Index", "GiftCard")">
+                                                <span class="sidebar-mini"> GC </span>
+                                                <span class="sidebar-normal">Gift Cards </span>
+                                            </a>
+
+                                        <li id="CouponTAB">
+                                            <a href="@Url.Action("Index", "Coupon")">
+                                                <span class="sidebar-mini"> C </span>
+                                                <span class="sidebar-normal">Coupons </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="LoyaltyCardTAB">
+                                            <a href="@Url.Action("Index", "LoyaltyCard")">
+                                                <span class="sidebar-mini"> LC </span>
+                                                <span class="sidebar-normal">Loyalty Cards </span>
+                                            </a>
+                                        </li>
+
+
+
+                                    </ul>
+                                }
+
+                            </div>
+                        </li>
+
+                        <li>
+                            <a data-toggle="collapse" href="#staffTDD">
+                                <i class="material-icons">account_circle</i>
+                                <p>
+                                    Staff
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="staffTDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+
+                                        @if (package.Split(',').Contains("Employees"))
+                                        {
+                                            <li id="EmployeeTAB">
+                                                <a href="@Url.Action("Index", "Employee")">
+                                                    <span class="sidebar-mini"> E </span>
+                                                    <span class="sidebar-normal"> Employees </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Time Table"))
+                                        {
+                                            <li id="ShiftTAB">
+                                                <a href="@Url.Action("Index", "Shift")">
+                                                    <span class="sidebar-mini"> T </span>
+                                                    <span class="sidebar-normal">Timetable </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+                                        <li id="EmployeeTAB">
+                                            <a href="@Url.Action("Index", "Employee")">
+                                                <span class="sidebar-mini"> E </span>
+                                                <span class="sidebar-normal"> Employees </span>
+                                            </a>
+
+                                        <li id="ShiftTAB">
+                                            <a href="@Url.Action("Index", "Shift")">
+                                                <span class="sidebar-mini"> T </span>
+                                                <span class="sidebar-normal">Timetable </span>
+                                            </a>
+                                        </li>
+
+
+                                    </ul>
+                                }
+
+                            </div>
+                        </li>
+
+
+                    }
+                    @if (User.IsInRole("Owner"))
+                    {
+
+                        <li>
+                            <a href="@Url.Action("Dashboard", "Admin")">
+                                <i class="material-icons">dashboard</i>
+                                <p> Dashboard </p>
+                            </a>
+                        </li>
+                        if (inTrial == "No")
+                        {
+                            if (package.Split(',').Contains("Invoice Maker"))
+                            {
+                                <li>
+                                    <a href="@Url.Action("Index", "NInvoice")">
+                                        <i class="material-icons">money</i>
+                                        <p> Invoice Maker </p>
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "NInvoice")">
+                                    <i class="material-icons">money</i>
+                                    <p> Invoice Maker </p>
+                                </a>
+                            </li>
+                        }
+                        if (inTrial == "No")
+                        {
+                            if (package.Split(',').Contains("Users"))
+                            {
+                                <li id="UserTAB">
+                                    <a href="@Url.Action("Index", "User")">
+                                        <img class="menuicons" src="~/Content/TBPContent/icons/group.png" />
+                                        <span class="sidebar-normal"> Users </span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+
+                            <li id="UserTAB">
+                                <a href="@Url.Action("Index", "User")">
+                                    <img class="menuicons" src="~/Content/TBPContent/icons/group.png" />
+                                    <span class="sidebar-normal"> Users </span>
+                                </a>
+                            </li>
+
+                        }
+
+
+                        <li>
+                            <a data-toggle="collapse" href="#reportDD">
+                                <i class="material-icons">analytics</i>
+                                <p>
+                                    Reports
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="reportDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+
+                                        @if (package.Split(',').Contains("Report"))
+                                        {
+                                            <li id="AnalysisTAB">
+                                                <a href="@Url.Action("Analysis", "Admin")">
+                                                    <span class="sidebar-mini"> A </span>
+                                                    <span class="sidebar-normal"> Analysis </span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (package.Split(',').Contains("Appointments"))
+                                        {
+                                            <li id="AppointmentsTAB">
+                                                <a href="@Url.Action("Index", "Appointment")">
+                                                    <span class="sidebar-mini"> AP </span>
+                                                    <span class="sidebar-normal"> Appointments </span>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+
+
+                                    <ul class="nav">
+                                        <li id="AnalysisTAB">
+                                            <a href="@Url.Action("Analysis", "Admin")">
+                                                <span class="sidebar-mini"> A </span>
+                                                <span class="sidebar-normal"> Analysis </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="AppointmentsTAB">
+                                            <a href="@Url.Action("Index", "Appointment")">
+                                                <span class="sidebar-mini"> AP </span>
+                                                <span class="sidebar-normal"> Appointments </span>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                }
+                            </div>
+                        </li>
+
+                        <li>
+                            <a data-toggle="collapse" href="#settingsDD">
+                                <i class="material-icons">settings</i>
+                                <p>
+                                    Settings
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="settingsDD">
+                                <ul class="nav">
+
+                                    <li id="SettingsTAB">
+                                        <a href="@Url.Action("Settings", "User")">
+                                            <span class="sidebar-mini"> S </span>
+                                            <span class="sidebar-normal"> Settings </span>
+                                        </a>
+                                    </li>
+                                    @if (inTrial == "No")
+                                    {
+                                        if (package.Split(',').Contains("Holidays"))
+                                        {
+                                            <li id="HolidayTAB">
+                                                <a href="@Url.Action("Index", "Holiday")">
+                                                    <span class="sidebar-mini"> CH </span>
+                                                    <span class="sidebar-normal">Company Holidays </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        if (package.Split(',').Contains("Opening Hours"))
+                                        {
+                                            <li id="OpeningHoursTAB">
+                                                <a href="@Url.Action("Index", "OpeningHour")">
+                                                    <span class="sidebar-mini"> OP </span>
+                                                    <span class="sidebar-normal"> Opening Hours </span>
+                                                </a>
+                                            </li>
+                                        }
+                                        if (package.Split(',').Contains("Integrations"))
+                                        {
+                                            <li id="EmployeeRequestTAB">
+                                                <a href="@Url.Action("Index", "EmployeeRequest")">
+                                                    <span class="sidebar-mini"> I </span>
+                                                    <span class="sidebar-normal"> Integrations </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <li id="HolidayTAB">
+                                            <a href="@Url.Action("Index", "Holiday")">
+                                                <span class="sidebar-mini"> CH </span>
+                                                <span class="sidebar-normal">Company Holidays </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="OpeningHoursTAB">
+                                            <a href="@Url.Action("Index", "OpeningHour")">
+                                                <span class="sidebar-mini"> OP </span>
+                                                <span class="sidebar-normal"> Opening Hours </span>
+                                            </a>
+                                        </li>
+                                        <li id="EmployeeRequestTAB">
+                                            <a href="@Url.Action("Index", "EmployeeRequest")">
+                                                <span class="sidebar-mini"> I </span>
+                                                <span class="sidebar-normal"> Integrations </span>
+                                            </a>
+                                        </li>
+
+                                    }
+
+                                </ul>
+                            </div>
+                        </li>
+
+
+                        <li>
+                            <a data-toggle="collapse" href="#servicesDD">
+                                <i class="material-icons">lists</i>
+                                <p>
+                                    Services
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="servicesDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+                                        @if (package.Split(',').Contains("Services"))
+                                        {
+                                            <li id="ServicesTAB">
+                                                <a href="@Url.Action("Index", "Service")">
+                                                    <span class="sidebar-mini"> S </span>
+                                                    <span class="sidebar-normal"> Services </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Service Categories"))
+                                        {
+                                            <li id="ServiceCategoryTAB">
+                                                <a href="@Url.Action("Index", "ServiceCategory")">
+                                                    <span class="sidebar-mini"> SC </span>
+                                                    <span class="sidebar-normal">Service Categories </span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (package.Split(',').Contains("VAT"))
+                                        {
+
+                                            <li id="VatTAB">
+                                                <a href="@Url.Action("Index", "Vat")">
+                                                    <span class="sidebar-mini"> V </span>
+                                                    <span class="sidebar-normal"> Vats </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Products"))
+                                        {
+                                            <li id="ProductsTAB">
+                                                <a href="@Url.Action("Index", "Product")">
+                                                    <span class="sidebar-mini"> P </span>
+                                                    <span class="sidebar-normal"> Products </span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (package.Split(',').Contains("Resources"))
+                                        {
+                                            <li style="display:none;" id="ResourceTAB">
+                                                <a href="@Url.Action("Index", "Resource")">
+                                                    <span class="sidebar-mini"> R </span>
+                                                    <span class="sidebar-normal"> Resources </span>
+                                                </a>
+                                            </li>
+                                        }
+
+
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+
+                                        <li id="ServicesTAB">
+                                            <a href="@Url.Action("Index", "Service")">
+                                                <span class="sidebar-mini"> S </span>
+                                                <span class="sidebar-normal"> Services </span>
+                                            </a>
+
+                                        <li id="ServiceCategoryTAB">
+                                            <a href="@Url.Action("Index", "ServiceCategory")">
+                                                <span class="sidebar-mini"> SC </span>
+                                                <span class="sidebar-normal">Service Categories </span>
+                                            </a>
+                                        </li>
+
+
+                                        <li id="VatTAB">
+                                            <a href="@Url.Action("Index", "Vat")">
+                                                <span class="sidebar-mini"> V </span>
+                                                <span class="sidebar-normal"> Vats </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="ProductsTAB">
+                                            <a href="@Url.Action("Index", "Product")">
+                                                <span class="sidebar-mini"> P </span>
+                                                <span class="sidebar-normal"> Products </span>
+                                            </a>
+                                        </li>
+
+                                        <li style="display:none;" id="ResourceTAB">
+                                            <a href="@Url.Action("Index", "Resource")">
+                                                <span class="sidebar-mini"> R </span>
+                                                <span class="sidebar-normal"> Resources </span>
+                                            </a>
+                                        </li>
+
+
+
+
+                                    </ul>
+                                }
+                            </div>
+                        </li>
+
+                        <li>
+                            <a data-toggle="collapse" href="#customerDD">
+                                <i class="material-icons">groups</i>
+                                <p>
+                                    Customer
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="customerDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+                                        @if (package.Split(',').Contains("Customers"))
+                                        {
+                                            <li id="CustomersTAB">
+                                                <a href="@Url.Action("Index", "Customer")">
+                                                    <span class="sidebar-mini"> C </span>
+                                                    <span class="sidebar-normal"> Customers </span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (package.Split(',').Contains("Gift Cards"))
+                                        {
+                                            <li id="GiftCardTAB">
+                                                <a href="@Url.Action("Index", "GiftCard")">
+                                                    <span class="sidebar-mini"> GC </span>
+                                                    <span class="sidebar-normal">Gift Cards </span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (package.Split(',').Contains("Coupons"))
+                                        {
+                                            <li id="CouponTAB">
+                                                <a href="@Url.Action("Index", "Coupon")">
+                                                    <span class="sidebar-mini"> C </span>
+                                                    <span class="sidebar-normal">Coupons </span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (package.Split(',').Contains("Loyalty Cards"))
+                                        {
+                                            <li id="LoyaltyCardTAB">
+                                                <a href="@Url.Action("Index", "LoyaltyCard")">
+                                                    <span class="sidebar-mini"> LC </span>
+                                                    <span class="sidebar-normal">Loyalty Cards </span>
+                                                </a>
+                                            </li>
+                                        }
+
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+
+                                        <li id="CustomersTAB">
+                                            <a href="@Url.Action("Index", "Customer")">
+                                                <span class="sidebar-mini"> C </span>
+                                                <span class="sidebar-normal"> Customers </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="GiftCardTAB">
+                                            <a href="@Url.Action("Index", "GiftCard")">
+                                                <span class="sidebar-mini"> GC </span>
+                                                <span class="sidebar-normal">Gift Cards </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="CouponTAB">
+                                            <a href="@Url.Action("Index", "Coupon")">
+                                                <span class="sidebar-mini"> C </span>
+                                                <span class="sidebar-normal">Coupons </span>
+                                            </a>
+
+                                        <li id="LoyaltyCardTAB">
+                                            <a href="@Url.Action("Index", "LoyaltyCard")">
+                                                <span class="sidebar-mini"> LC </span>
+                                                <span class="sidebar-normal">Loyalty Cards </span>
+                                            </a>
+                                        </li>
+
+
+
+                                    </ul>
+                                }
+
+                            </div>
+                        </li>
+
+                        <li>
+                            <a data-toggle="collapse" href="#staffTDD">
+                                <i class="material-icons">account_circle</i>
+                                <p>
+                                    Staff
+                                    <b class="caret"></b>
+                                </p>
+                            </a>
+
+                            <div class="collapse" id="staffTDD">
+                                @if (inTrial == "No")
+                                {
+                                    <ul class="nav">
+                                        @if (package.Split(',').Contains("Employees"))
+                                        {
+                                            <li id="EmployeeTAB">
+                                                <a href="@Url.Action("Index", "Employee")">
+                                                    <span class="sidebar-mini"> E </span>
+                                                    <span class="sidebar-normal"> Employees </span>
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (package.Split(',').Contains("Time Table"))
+                                        {
+                                            <li id="ShiftTAB">
+                                                <a href="@Url.Action("Index", "Shift")">
+                                                    <span class="sidebar-mini"> T </span>
+                                                    <span class="sidebar-normal">Timetable </span>
+                                                </a>
+                                            </li>
+                                        }
+
+
+
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <ul class="nav">
+
+                                        <li id="EmployeeTAB">
+                                            <a href="@Url.Action("Index", "Employee")">
+                                                <span class="sidebar-mini"> E </span>
+                                                <span class="sidebar-normal"> Employees </span>
+                                            </a>
+                                        </li>
+
+                                        <li id="ShiftTAB">
+                                            <a href="@Url.Action("Index", "Shift")">
+                                                <span class="sidebar-mini"> T </span>
+                                                <span class="sidebar-normal">Timetable </span>
+                                            </a>
+                                        </li>
+
+
+
+
+                                    </ul>
+                                }
+                            </div>
+                        </li>
+
+                    }
+                    @if (User.IsInRole("Super Admin"))
+                    {
+
+
+                        <li id="CompaniesTAB">
+                            <a href="@Url.Action("Index", "Company")">
+                                <img class="menuicons" src="~/Content/TBPContent/icons/company.png" />
+                                <span class="sidebar-normal"> Companies </span>
+                            </a>
+                        </li>
+
+                        <li id="CompaniesTAB">
+                            <a href="@Url.Action("Index", "Package")">
+                                <img class="menuicons" src="~/Content/TBPContent/icons/gift.png" />
+                                <span class="sidebar-normal"> Packages </span>
+                            </a>
+                        </li>
+
+                    }
+
+                </ul>
+            </div>
+        </div>
+
+        <a target="_self" href="#" id="GoToLink"></a>
+        <div class="main-panel">
+
+            <nav class="navbar navbar-transparent navbar-absolute">
+                <div class="container-fluid">
+                    <div class="navbar-minimize">
+                        <button id="minimizeSidebar" class="btn btn-round btn-white btn-fill btn-just-icon">
+                            <i class="material-icons visible-on-sidebar-regular">more_vert</i>
+                            <i class="material-icons visible-on-sidebar-mini">view_list</i>
+                        </button>
+                    </div>
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#"> Dashboard </a>
+                    </div>
+                    <div class="collapse navbar-collapse">
+
+
+
+
+                    </div>
+                </div>
+            </nav>
+
+
+
+
+            <div class="content">
+                <div class="container-fluid">
+                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                    {
+                    }
+                    @RenderBody()
+
+                </div>
+            </div>
+
+            <div id="loadingSpinner" class="loading-spinner-overlay">
+                <div class="spinner"></div>
+                <h3 id="LoaderText" style="color: white; position: absolute; left: 36%; top: 60%;"></h3>
+
+            </div>
+
+
+
+
+            <footer class="footer">
+                <div class="container-fluid">
+                    <nav class="pull-left">
+
+                    </nav>
+                    <p class="copyright pull-right">
+                        &copy;
+                        <script>document.write(new Date().getFullYear())</script>  Powered by <a href="https://www.yourbookingplatform.com">Your Booking Platform</a>
+                    </p>
+                </div>
+            </footer>
+
+
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+<!--   Core JS Files   -->
+<script src="~/Content/MainTemplate/assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="~/Content/MainTemplate/assets/js/material.min.js" type="text/javascript"></script>
+<script src="~/Content/MainTemplate/assets/js/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
+
+
+<!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+
+<!-- Library for adding dinamically elements -->
+<script src="~/Content/MainTemplate/assets/js/arrive.min.js" type="text/javascript"></script>
+
+<!-- Forms Validations Plugin -->
+<script src="~/Content/MainTemplate/assets/js/jquery.validate.min.js"></script>
+
+<!--  Plugin for Date Time Picker and Full Calendar Plugin-->
+<script src="~/Content/MainTemplate/assets/js/moment.min.js"></script>
+
+<!--  Charts Plugin, full documentation here: https://gionkunz.github.io/chartist-js/ -->
+@*<script src="~/Content/MainTemplate/assets/js/chartist.min.js"></script>*@
+
+<!--  Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+<script src="~/Content/MainTemplate/assets/js/jquery.bootstrap-wizard.js"></script>
+
+<!--  Notifications Plugin, full documentation here: http://bootstrap-notify.remabledesigns.com/    -->
+@*<script src="~/Content/MainTemplate/assets/js/bootstrap-notify.js"></script>*@
+
+<!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+<script src="~/Content/MainTemplate/assets/js/bootstrap-datetimepicker.js"></script>
+
+@*<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/locales/bootstrap-datepicker.ru.min.js"></script>*@
+
+<!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
+@*<script src="~/Content/MainTemplate/assets/js/jquery-jvectormap.js"></script>*@
+
+<!-- Sliders Plugin, full documentation here: https://refreshless.com/nouislider/ -->
+<script src="~/Content/MainTemplate/assets/js/nouislider.min.js"></script>
+
+<!--  Google Maps Plugin    -->
+@*<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>*@
+
+<!--  Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+<script src="~/Content/MainTemplate/assets/js/jquery.select-bootstrap.js"></script>
+
+<!--  DataTables.net Plugin, full documentation here: https://datatables.net/    -->
+<script src="~/Content/MainTemplate/assets/js/jquery.datatables.js"></script>
+
+<!-- Sweet Alert 2 plugin, full documentation here: https://limonte.github.io/sweetalert2/ -->
+<script src="~/Content/MainTemplate/assets/js/sweetalert2.js"></script>
+
+<!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+@*<script src="~/Content/MainTemplate/assets/js/jasny-bootstrap.min.js"></script>*@
+
+<!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
+@*<script src="~/Content/MainTemplate/assets/js/fullcalendar.min.js"></script>*@
+
+<!-- Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+<script src="~/Content/MainTemplate/assets/js/jquery.tagsinput.js"></script>
+
+<!-- Material Dashboard javascript methods -->
+<script src="~/Content/MainTemplate/assets/js/material-dashboard.js?v=1.3.0"></script>
+
+<!-- Material Dashboard DEMO methods, don't include it in your project! -->
+@*<script src="~/Content/MainTemplate/assets/js/demo.js"></script>*@
+
+
+
+<script type="text/javascript">
+   
+    function CheckOpeningHours() {
+       showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("GetOpeningHoursCount", "Admin")',
+            type: 'GET',
+            dataType: 'json',
+
+            success: function (data) {
+                // Handle the response here
+                var openingHoursCount = data.count;
+                // You can perform actions based on the opening hours count
+                if (openingHoursCount > 7) {
+                    $("#MainDatePickerContainer").hide();
+                } else {
+                    $("#MainDatePickerContainer").show();
+
+                }
+                $("#TextOfUser").html(data.Company+'<i class="material-icons">arrow_drop_down</i>');
+
+                var companies = data.Companies;
+                var dropdown = $("#SelectedOrg"); // Replace "yourDropdownID" with the actual ID of your dropdown
+                dropdown.empty(); // Clear existing options
+
+                $.each(companies, function (index, company) {
+                    dropdown.append($("<option></option>").attr("value", company.ID).text(company.Business));
+                });
+
+
+                hideLoadingSpinner();
+                // You might want to update the UI or perform other operations based on this count
+            },
+            error: function (error) {
+                console.error('Error fetching opening hours count');
+                hideLoadingSpinner();
+
+                // Handle error scenarios here
+            }
+        });
+    }
+   
+    $("#SwitchOrg").click(function () {
+        var Business = $("#SelectedOrg").val();
+
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("SwitchOrganisation", "Admin")',
+            type: 'POST',
+            data: { Business: Business },
+
+            success: function (data) {
+                // Handle the response here
+
+                if (data.success)
+                {
+                    var Email = data.Email;
+                    var Password = data.Password;
+                    var goToLink = '@Url.Action("AutoLogin", "Account", new { Email = "__Email__", PasswordKAK = "__Password__" })'
+                        .replace("__Email__", encodeURIComponent(Email))
+                        .replace("__Password__", encodeURIComponent(Password));
+
+                    // Set the href attribute of the anchor tag
+                    $("#GoToLink").attr("href", goToLink);
+                    
+                    // Optionally, trigger a click event on the link
+                    $("#GoToLink")[0].click();
+
+                }
+                else {
+                    alert(data.Message);
+                    hideLoadingSpinner();
+                }
+                // You might want to update the UI or perform other operations based on this count
+            },
+            error: function (error) {
+                hideLoadingSpinner();
+                alert("Fail");
+
+                // Handle error scenarios here
+            }
+        });
+    });
+
+
+    function logout() {
+        clearCredentialsMain();
+        document.getElementById('logoutForm').submit();
+    }
+    function clearCredentialsMain() {
+        localStorage.removeItem('Mainemail');
+        localStorage.removeItem('Mainpassword');
+    }
+
+   $(document).ready(function () {
+        // Initialize the Datepicker
+        CheckOpeningHours();
+        function getBrowserLanguage() {
+            return navigator.language || navigator.userLanguage || 'en-US';
+        }
+
+        // Set the language and format based on the browser's language
+        var browserLanguage = getBrowserLanguage().toLowerCase();
+        var dateFormat = (browserLanguage.startsWith('ru')) ? 'dd.mm.yyyy' : 'mm/dd/yyyy';
+
+        $('#datepicker-container').datepicker({
+            inline: true, // Show the datepicker inline
+            showOtherMonths: true, // Show days from other months
+            selectOtherMonths: true, // Allow selecting days from other months
+            todayHighlight: true, // Highlight today's date
+            language: browserLanguage,
+            format: dateFormat,
+            firstDay: 1, // Set Monday as the first day of the week
+            language: browserLanguage, // Language setting
+
+            beforeShowDay: function (date) {
+                // Convert the date to a string in the format yyyy-mm-dd
+                var dateString = $.datepicker.formatDate('yy-mm-dd', date);
+
+                // Add a data-date attribute to the day element
+                return [true, '', '' + dateString + '"'];
+            },
+            onSelect: function (selectedDate) {
+
+                // Handle date selection
+                showLoadingSpinner();
+                var url = '@Url.Action("Calendar","Appointment")'; // Replace with the actual URL of your full calendar page
+                var selectedDateParam = encodeURIComponent(selectedDate);
+                // Add the selected date as a query parameter
+                url += '?date=' + selectedDateParam;
+                // Navigate to the full calendar page with the selected date
+                window.location.href = url;
+            }
+
+        });
+
+        SetDadte();
+        var $sidebar = $(".sidebar");
+        var $body = $("body");
+
+
+        $("#minimizeSidebar").click(function () {
+            if ($('#MainDatePickerContainer').is(':visible')) {
+
+                if ($body.hasClass("sidebar-mini")) {
+                    // The 'sidebar-mini' class is present on the <body> element
+                    $("#datepicker-container").hide();
+                } else {
+                    // The 'sidebar-mini' class is not present on the <body> element
+                    $("#datepicker-container").show();
+                }
+            }
+        });
+
+        if ($('#MainDatePickerContainer').is(':visible')) {
+
+            $sidebar.hover(
+                function () {
+                    $("#datepicker-container").show();
+                },
+                function () {
+                    if ($body.hasClass("sidebar-mini")) {
+                        $("#datepicker-container").hide();
+                    } else {
+                        $("#datepicker-container").show();
+                    }
+                }
+            );
+        }
+
+       CheckTheEmployeePayRollSettings();
+    });
+
+    function SetDadte() {
+        // Set the datepicker's date to the selected date
+        $('#datepicker-container').datepicker('setDate', $("#FINALDATEO").val());
+
+    }
+
+    function showLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+    }
+
+    function hideLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+
+
+    function CheckTheEmployeePayRollSettings() {
+        $.ajax({
+            url: '@Url.Action("CheckEmployee", "Admin")',
+            type: 'GET',
+            success: function (data) {
+                // Handle the response here
+
+                if (data.success) {
+                    $("#PayRollTAB").show();
+                }
+                else
+                {
+                    $("#PayRollTAB").hide();
+                }
+                // You might want to update the UI or perform other operations based on this count
+            },
+            error: function (error) {
+                hideLoadingSpinner();
+                alert("Fail");
+
+                // Handle error scenarios here
+            }
+        });
+    }
+
+    var openModalBtn = document.getElementById('openModalBtn');
+
+    if (openModalBtn) {
+        openModalBtn.addEventListener('click', function () {
+            $('#exampleModal').modal({
+                backdrop: false
+            });
+        });
+    }
+
+
+
+
+    (function (global) {
+
+        if (typeof (global) === "undefined") {
+            throw new Error("window is undefined");
+        }
+
+        var _hash = "!";
+        var noBackPlease = function () {
+            global.location.href += "#";
+
+            // Making sure we have the fruit available for juice (^__^)
+            global.setTimeout(function () {
+                global.location.href += "!";
+            }, 50);
+        };
+
+        global.onhashchange = function () {
+            if (global.location.hash !== _hash) {
+                global.location.hash = _hash;
+            }
+        };
+
+        global.onload = function () {
+            noBackPlease();
+
+            // Disables backspace on page except on input fields and textarea..
+            document.body.onkeydown = function (e) {
+                var elm = e.target.nodeName.toLowerCase();
+                if (e.which === 8 && (elm !== 'input' && elm !== 'textarea')) {
+                    e.preventDefault();
+                }
+                // Stopping the event bubbling up the DOM tree...
+                e.stopPropagation();
+            };
+        }
+    })(window);
+
+
+</script>
+
+
+

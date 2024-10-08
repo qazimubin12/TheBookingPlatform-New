@@ -1,0 +1,151 @@
+﻿@model TheBookingPlatform.ViewModels.CalendarManageActionViewModel
+<style>
+    .services {
+        display: none;
+        padding-left: 20px;
+    }
+
+    .toggle-btn::before {
+        content: '\25B6';
+        display: inline-block;
+        margin-right: 5px;
+        transform: rotate(0deg);
+        transition: transform 0.3s ease;
+    }
+
+    .rotate::before {
+        transform: rotate(90deg); /* Add your desired rotation angle */
+        transition: transform 0.3s ease-in-out; /* Add transition effect for smooth rotation */
+    }
+
+
+    .service-container {
+        display: flex;
+        justify-content: space-between;
+        max-height: 300px; /* Adjust the height as per your requirements */
+        overflow-y: auto;
+    }
+</style>
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+
+                <span>Assign Calendar for Employee: @Model.User.Name </span>
+
+            </h5>
+
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="service-container">
+                            <input hidden type="text" value="@Model.User.Id" name="UserID" id="UserID" />
+                            
+                            <input hidden type="text" name="ManageOf" id="ManageOfDataJson" />
+
+                            <ul class="main-topics list-group col-md-12">
+                                @if (Model.AssignedUsers != null)
+                                {
+                                    foreach (var item in Model.AssignedUsers)
+                                    {
+                                    <li class="list-group-item" data-user-id="@item.ID" data-user-name="@item.Name">
+                                        <label>
+
+                                            @if (Model.ManageOf.Split(',').ToList().Contains(item.ID.ToString()))
+                                            {
+                                                <input checked onchange="FillData()" class="user-checkbox" type="checkbox" />
+                                            }
+                                            else
+                                            {
+                                                <input onchange="FillData()" class="user-checkbox" type="checkbox" />
+
+                                            }
+
+                                            @item.Name
+                                        </label>
+                                    </li>
+
+                                    }
+                                }
+
+                                @foreach (var item in Model.ExceptUsers)
+                                {
+                                    <li class="list-group-item" data-user-id="@item.ID" data-user-name="@item.Name">
+                                        <label>
+                                            <input onchange="FillData()" class="user-checkbox" type="checkbox" />
+                                            @item.Name
+                                        </label>
+                                    </li>
+
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <button id="ActionBtn" type="button" class="btn btn-primary">SAVE</button>
+                </div>
+            </form>
+            <div class="errorDiv">
+
+            </div>
+        </div>
+
+    </div>
+}
+
+<script>
+
+
+    function FillData() {
+        var selectedUsers = [];
+        $(".user-checkbox:checked").each(function () {
+            var userId = $(this).closest("li").data("user-id");
+            selectedUsers.push(userId);
+        });
+        
+
+        var selectedUsersID = selectedUsers.join(",");
+        $("#ManageOfDataJson").val(selectedUsersID);
+        console.log($("#ManageOfDataJson").val());
+    }
+      
+
+    $(document).ready(function () {
+
+        $(".user-checkbox").click(function () {
+            FillData();
+        });
+
+
+    });
+
+
+
+    $("#ActionBtn").click(function () {
+        if ($("#ManageOfDataJson").val() != "") {
+            showLoadingSpinner();
+
+            $.ajax({
+                url: '@Url.Action("AssignCalendar", "CalendarManage")',
+                type: "post",
+                data: $("#actionForm").serialize()
+            })
+                .done(function (response) {
+                    if (response.success) {
+                        location.reload();
+                        hideLoadingSpinner();
+                    }
+                    else {
+                        $(".errorDiv").html(response.Message);
+                        hideLoadingSpinner();
+                    }
+                });
+        } else {
+            alert("Please Select User");
+        }
+	});
+</script>

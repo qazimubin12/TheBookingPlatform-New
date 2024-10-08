@@ -1,0 +1,436 @@
+﻿@model TheBookingPlatform.ViewModels.ProductListingViewModel
+
+<style>
+    #loader {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card .card-content {
+        padding: 0px 20px;
+        position: relative;
+    }
+
+    .card .nav-pills, .card .tab-content {
+        margin-top: 0px;
+    }
+</style>
+<div class="card">
+    <div class="card-content text-center">
+        <div class="table-responsive">
+            @*<span class="text-center">Choose Option</span>*@
+            <div class="nav-center">
+                <input type="hidden" id="Selected" value="@Model.Selected" />
+                <ul class="nav nav-pills nav-pills-warning nav-pills-icons" role="tablist">
+
+                    <li>
+                        <a id="Products" href="#description-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">inventory_2</i>
+                            Products
+                        </a>
+                    </li>
+                    <li>
+                        <a id="Categories" href="#schedule-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">category</i>
+                            Categories
+                        </a>
+                    </li>
+                    <li>
+                        <a id="Suppliers" href="#tasks-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">
+                                sensor_occupied
+                            </i>
+                            Suppliers
+                        </a>
+                    </li>
+                    <li>
+                        <a id="StockOrders" href="#tasks-2" role="tab" data-toggle="tab">
+                            <i class="material-icons">warehouse</i>
+                            Stock Orders
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>
+<div style="display:none;" id="loader"><img style="width:150px;" src="~/Content/TBPContent/Loader.gif" /></div>
+
+<div id="ActionPanel">
+</div>
+
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+    $("#Products").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowProducts", "Product")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                hideLoadingSpinner();
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+    $("#Categories").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowCategories", "Category")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                hideLoadingSpinner();
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+    $("#Suppliers").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowSuppliers", "Supplier")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                hideLoadingSpinner();
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+    $("#StockOrders").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowStockOrders", "StockOrder")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                hideLoadingSpinner();
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    function ShowProductsRedirected() {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowProducts", "Product")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    }
+    function RepopulateCategories(SearchTerm) {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("GetCategories", "Product")', // Replace with the actual URL
+            method: 'GET',
+            data: { SearchTerm: SearchTerm },
+            dataType: 'json',
+            success: function (data) {
+                // Clear existing options
+
+                $('#CategoriesTable tbody').empty();
+
+                    // Repopulate with new data
+                $.each(data, function (index, item) {
+                    var newRow = $('<tr>');
+
+                    // Create table data cells
+                    var editButton = $('<button>')
+                        .addClass('data-btn btn btn-sm btn-rounded btn-info btn-icon-text')
+                        .attr('data-toggle', 'modal')
+                        .attr('data-target', '#actionModal')
+                        .attr('data-id', item.ID) // Store the item ID as a data attribute
+                        .html('<i class="mdi mdi-pencil"></i> EDIT');
+
+                    var deleteButton = $('<button>')
+                        .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
+                        .attr('data-toggle', 'modal')
+                        .attr('data-target', '#actionModal')
+                        .attr('data-id', item.ID) // Store the item ID as a data attribute
+                        .html('<i class="mdi mdi-delete"></i> DELETE');
+
+                    var actionCell = $('<td>').addClass('text-center').append(editButton, deleteButton);
+
+                    newRow.append($('<td>').addClass('text-center').text(item.Name), actionCell);
+
+                    $('#CategoriesTable tbody').append(newRow);
+
+                });
+                hideLoadingSpinner();
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+                hideLoadingSpinner();
+            }
+        });
+    }
+    function RepopulateProducts(SearchTerm) {
+        showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("GetProducts", "Product")', // Replace with the actual URL
+                method: 'GET',
+                data: { SearchTerm: SearchTerm },
+                dataType: 'json',
+                success: function (data) {
+                    // Clear existing options
+
+                    $('#ProductsTable tbody').empty();
+
+                    // Repopulate with new data
+                    $.each(data, function (index, item) {
+                        var newRow = $('<tr>');
+
+                        newRow.append($('<td>').addClass('text-center').text(item.Name));
+                        newRow.append($('<td>').addClass('text-center').text(item.Category));
+                        newRow.append($('<td>').addClass('text-center').text(item.Price));
+                        newRow.append($('<td>').addClass('text-center').text(item.VAT));
+                        newRow.append($('<td>').addClass('text-center').text(item.CurrentStock));
+
+                        var actionColumn = $('<td>').addClass('text-center');
+                        var editLink = $('<a>')
+                            .attr('href', '@Url.Action("Action", "Product")' + '?ID=' + item.ID)
+                            .addClass('btn btn-sm btn-rounded btn-info btn-icon-text')
+                            .html('<i class="mdi mdi-pencil"></i> EDIT');
+                        var deleteButton = $('<button>')
+                            .attr('data-href', '@Url.Action("Delete", "Product")' + '?ID=' + item.ID)
+                            .attr('type', 'button')
+                            .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
+                            .attr('data-toggle', 'modal')
+                            .attr('data-target', '#actionModal')
+                            .html('<i class="mdi mdi-delete"></i> DELETE');
+
+                        actionColumn.append(editLink);
+                        actionColumn.append(deleteButton);
+
+                        newRow.append(actionColumn);
+
+
+                        $('#ProductsTable tbody').append(newRow);
+
+                    });
+                    hideLoadingSpinner();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                    hideLoadingSpinner();
+                }
+            });
+    }
+    function RepopulateSuppliers(SearchTerm) {
+        {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("GetSuppliers", "Product")', // Replace with the actual URL
+                method: 'GET',
+                data: { SearchTerm: SearchTerm },
+                dataType: 'json',
+                success: function (data) {
+                    // Clear existing options
+
+                    $('#SupplierTable tbody').empty();
+
+                    // Repopulate with new data
+                    $.each(data, function (index, item) {
+                        var newRow = $('<tr>');
+
+                        newRow.append($('<td>').addClass('text-center').text(item.Supplier.Name));
+                        newRow.append($('<td>').addClass('text-center').text(item.Supplier.Email));
+                        newRow.append($('<td>').addClass('text-center').text(item.Supplier.Address));
+                        newRow.append($('<td>').addClass('text-center').text(item.Supplier.PostalCode));
+                        newRow.append($('<td>').addClass('text-center').text(item.TotalInventory));
+
+                        var actionColumn = $('<td>').addClass('text-center');
+                        var editLink = $('<a>')
+                            .attr('href', '@Url.Action("Action", "Supplier")' + '?ID=' + item.Supplier.ID)
+                            .addClass('btn btn-sm btn-rounded btn-info btn-icon-text')
+                            .html('<i class="mdi mdi-pencil"></i> EDIT');
+                        var deleteButton = $('<button>')
+                            .attr('data-href', '@Url.Action("Delete", "Supplier")' + '?ID=' + item.Supplier.ID)
+                            .attr('type', 'button')
+                            .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
+                            .attr('data-toggle', 'modal')
+                            .attr('data-target', '#actionModal')
+                            .html('<i class="mdi mdi-delete"></i> DELETE');
+
+                        actionColumn.append(editLink);
+                        actionColumn.append(deleteButton);
+
+                        newRow.append(actionColumn);
+
+
+                        $('#SupplierTable tbody').append(newRow);
+
+                    });
+                    hideLoadingSpinner();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                    hideLoadingSpinner();
+                }
+            });
+        }
+    }
+
+    function ShowStockOrdesRedirected() {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowStockOrders", "StockOrder")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    }
+
+    function RepopulateStockOrders(SearchTerm)
+    {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("GetStockOrders", "Product")', // Replace with the actual URL
+            method: 'GET',
+            data: { SearchTerm: SearchTerm },
+            dataType: 'json',
+            success: function (data) {
+                // Clear existing options
+
+                $('#StockOrdersTable tbody').empty();
+
+                // Repopulate with new data
+                $.each(data, function (index, item) {
+                    var newRow = $('<tr>');
+                    newRow.append($('<td>').addClass('text-center').text(item.StockOrder.SupplierName));
+                    var createdDate = new Date(parseInt(item.StockOrder.CreatedDate.substr(6)));    
+                    var formattedDate = createdDate.toISOString().split('T')[0]; // Format as 'yyyy-MM-dd'
+                    newRow.append($('<td>').addClass('text-center').text(formattedDate));
+                    newRow.append($('<td>').addClass('text-center').text(item.Quantity + " products"));
+                    var className = "";
+                    if (item.StockOrder.Status == "Open") {
+                        className = "label-info";
+                    } else if (item.StockOrder.Status == "Ordered") {
+                        className = "label-warning";
+                    } else if (item.StockOrder.Status == "Complete") {
+                        className = "label-success";
+                    } else if (item.StockOrder.Status == "Paid") {
+                        className = "label-primary";
+                    }
+
+                    var $label = $('<span>').addClass('label ' + className).text(item.StockOrder.Status);
+                    newRow.append($('<td>').addClass('text-center').append($label));
+
+                    var actionColumn = $('<td>').addClass('text-center');
+                    var editLink = $('<a>')
+                        .attr('href', '@Url.Action("Action", "StockOrder")' + '?ID=' + item.ID)
+                        .addClass('btn btn-sm btn-rounded btn-info btn-icon-text')
+                        .html('<i class="mdi mdi-pencil"></i> EDIT');
+                    var deleteButton = $('<button>')
+                        .attr('data-href', '@Url.Action("Delete", "StockOrder")' + '?ID=' + item.ID)
+                        .attr('type', 'button')
+                        .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
+                        .attr('data-toggle', 'modal')
+                        .attr('data-target', '#actionModal')
+                        .html('<i class="mdi mdi-delete"></i> DELETE');
+
+                    actionColumn.append(editLink);
+                    actionColumn.append(deleteButton);
+
+                    newRow.append(actionColumn);
+
+
+                    $('#StockOrdersTable tbody').append(newRow);
+
+                });
+                hideLoadingSpinner();
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+                hideLoadingSpinner();
+            }
+        });
+
+    }
+
+
+    $(document).ready(function () {
+        if ($("#Selected").val() == "Product") {
+            $("#Products").click();
+        } else if ($("#Selected").val() == "Stock Order") {
+            $("#StockOrders").click();
+
+        } else {
+            $("#Products").click();
+
+        }
+
+    })
+
+</script>

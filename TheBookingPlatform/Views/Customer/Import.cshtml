@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewBag.Title = "Import";
+}
+
+<h4>Customers Imported</h4>
+@if (ViewBag.Customers != null)
+{
+    <table class="table table-responsive" cellpadding="2" cellspacing="2" border="1">
+        <tr>
+            <th>
+                Customer
+            </th>
+            <th>
+                Status
+            </th>
+
+        </tr>
+        @foreach (var item in ViewBag.Customers)
+        {
+            <tr>
+                <td>@item.FirstName @item.LastName</td>
+                <td>IMPORTED</td>
+
+
+            </tr>
+        }
+    </table>
+}
+
+<a class="btn btn-block btn-danger" href="@Url.Action("Index", "Customer")">Back to Customers</a>
+
+
+
+

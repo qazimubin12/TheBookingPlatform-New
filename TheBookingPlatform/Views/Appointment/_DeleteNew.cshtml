@@ -1,0 +1,65 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentDetailsViewModel
+
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <span>Delete Appointment </span>
+            </h5>
+           
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <input type="hidden" id="ID" name="ID" value="@Model.Appointment.ID" />
+                <input type="hidden" value="@Model.Date" id="Date" name="Date" />
+
+            </form>
+            <div class="alert alert-danger" role="alert">
+                Are you sure you want to delete this Appointment ?
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="actionButton" type="button" class="btn btn-danger"><i class="fas fa-trash-alt mr-1"></i> Delete</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+        </div>
+    </div>
+}
+
+<script>
+    $("#actionButton").click(function () {
+        var ID = $("#ID").val();
+        swal({
+            title: 'Are you sure?',
+            text: 'Do you want to delete this appointment?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+
+            if (result) {
+                showLoadingSpinner();
+
+                // User confirmed, proceed with the AJAX request
+                $.ajax({
+                    url: '@Url.Action("DeleteNewPost", "Appointment")',
+                    type: "post",
+                    data: { ID: ID }
+                })
+                    .done(function (response) {
+                        if (response.success) {
+                            var Date = $("#Date").val();
+                            let encodedDate = encodeURIComponent(Date);
+                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
+                        } else {
+                            $(".errorDiv").html(response.Message);
+                            hideLoadingSpinner();
+                        }
+                    });
+            }
+        });
+	});
+</script>

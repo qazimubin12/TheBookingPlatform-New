@@ -1,0 +1,1678 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.props" Condition="Exists('..\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.props')" />
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F913DE5C-3A8F-41BA-930B-24A87CD8ED2B}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TheBookingPlatform</RootNamespace>
+    <AssemblyName>TheBookingPlatform</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>44302</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=6.2.8.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.6.2.8\lib\net462\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.Interfaces, Version=6.1.1.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.Interfaces.6.1.1\lib\net462\EPPlus.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.System.Drawing.6.1.1\lib\net462\EPPlus.System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNetCore.Http.Abstractions.2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Features, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNetCore.Http.Features.2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=8.0.0.1, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.8.0.1\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.FileProviders.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileProviders.Abstractions.8.0.0\lib\net462\Microsoft.Extensions.FileProviders.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.8.0.0\lib\net462\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.1.4.1\lib\net46\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Net.Http.Headers, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.Headers.2.2.0\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>C:\Windows\assembly\GAC_MSIL\Microsoft.Office.Interop.Word\15.0.0.0__71e9bce111e9429c\Microsoft.Office.Interop.Word.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="RestSharp, Version=111.2.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.111.2.0\lib\net471\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Stripe.net, Version=43.14.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stripe.net.43.14.0\lib\net461\Stripe.net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=8.0.0.3, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.8.0.3\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.3\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.4.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.4.0.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.4.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.4.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.4.0.1\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.4.0.1\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\BookingController.cs" />
+    <Compile Include="Controllers\CalendarManageController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\CompanyController.cs" />
+    <Compile Include="Controllers\CouponAssignmentController.cs" />
+    <Compile Include="Controllers\CouponController.cs" />
+    <Compile Include="Controllers\CustomerController.cs" />
+    <Compile Include="Controllers\EmailTemplateController.cs" />
+    <Compile Include="Controllers\EmployeeController.cs" />
+    <Compile Include="Controllers\EmployeePriceChangeController.cs" />
+    <Compile Include="Controllers\EmployeeRequestController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\FranchiseRequestController.cs" />
+    <Compile Include="Controllers\GiftCardController.cs" />
+    <Compile Include="Controllers\HolidayController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InvoiceController.cs" />
+    <Compile Include="Controllers\LoyaltyCardController.cs" />
+    <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\NInvoiceController.cs" />
+    <Compile Include="Controllers\OnlineGiftCardController.cs" />
+    <Compile Include="Controllers\OpeningHourController.cs" />
+    <Compile Include="Controllers\PackageController.cs" />
+    <Compile Include="Controllers\PayRollController.cs" />
+    <Compile Include="Controllers\PriceChangeController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\ResourceController.cs" />
+    <Compile Include="Controllers\ReviewController.cs" />
+    <Compile Include="Controllers\RoleController.cs" />
+    <Compile Include="Controllers\ServiceCategoryController.cs" />
+    <Compile Include="Controllers\ServiceController.cs" />
+    <Compile Include="Controllers\SharedController.cs" />
+    <Compile Include="Controllers\ShiftController.cs" />
+    <Compile Include="Controllers\StockOrderController.cs" />
+    <Compile Include="Controllers\SupplierController.cs" />
+    <Compile Include="Controllers\TimeTableController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\VatController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\AdminViewModel.cs" />
+    <Compile Include="ViewModels\AppointmentViewModel.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\BookingViewModel.cs" />
+    <Compile Include="ViewModels\CalendarManageViewModel.cs" />
+    <Compile Include="ViewModels\CouponViewModel.cs" />
+    <Compile Include="ViewModels\EmailTemplateViewModel.cs" />
+    <Compile Include="ViewModels\CompanyViewModel.cs" />
+    <Compile Include="ViewModels\CustomerViewModel.cs" />
+    <Compile Include="ViewModels\EmployeePriceChangeViewModel.cs" />
+    <Compile Include="ViewModels\FranchiseRequestViewModel.cs" />
+    <Compile Include="ViewModels\EmployeeRequestViewModel.cs" />
+    <Compile Include="ViewModels\EmployeeServiceViewModel.cs" />
+    <Compile Include="ViewModels\EventViewModel.cs" />
+    <Compile Include="ViewModels\GiftCardViewModel.cs" />
+    <Compile Include="ViewModels\GoogleViewModel.cs" />
+    <Compile Include="ViewModels\HolidayViewModel.cs" />
+    <Compile Include="ViewModels\InvoiceViewModel.cs" />
+    <Compile Include="ViewModels\LoyaltyCardViewModel.cs" />
+    <Compile Include="ViewModels\NInvoiceViewModel.cs" />
+    <Compile Include="ViewModels\OAuthViewModel.cs" />
+    <Compile Include="ViewModels\OnlineGiftCardViewModel.cs" />
+    <Compile Include="ViewModels\OpeningHourViewModel.cs" />
+    <Compile Include="ViewModels\PackageViewModel.cs" />
+    <Compile Include="ViewModels\PayRollViewModel.cs" />
+    <Compile Include="ViewModels\PayViewModel.cs" />
+    <Compile Include="ViewModels\PriceChangeViewModel.cs" />
+    <Compile Include="ViewModels\ReviewViewModel.cs" />
+    <Compile Include="ViewModels\RolesViewModel.cs" />
+    <Compile Include="ViewModels\ProductViewModel.cs" />
+    <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\ShiftViewModel.cs" />
+    <Compile Include="ViewModels\StockOrderViewModel.cs" />
+    <Compile Include="ViewModels\SupplierViewModel.cs" />
+    <Compile Include="ViewModels\TimeTableViewModel.cs" />
+    <Compile Include="ViewModels\VatViewModel.cs" />
+    <Compile Include="ViewModels\ServiceViewModel.cs" />
+    <Compile Include="ViewModels\ServiceCategoryViewModel.cs" />
+    <Compile Include="ViewModels\EmployeeViewModel.cs" />
+    <Compile Include="ViewModels\ResourceViewModel.cs" />
+    <Compile Include="ViewModels\UsersViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bookingtemplate\book-appointment.html" />
+    <Content Include="Content\bookingtemplate\call-doctor.html" />
+    <Content Include="Content\bookingtemplate\call-end.html" />
+    <Content Include="Content\bookingtemplate\call.html" />
+    <Content Include="Content\bookingtemplate\change-profile.html" />
+    <Content Include="Content\bookingtemplate\chat.html" />
+    <Content Include="Content\bookingtemplate\congrats.html" />
+    <Content Include="Content\bookingtemplate\css\style.css" />
+    <Content Include="Content\bookingtemplate\demo\custom.js" />
+    <Content Include="Content\bookingtemplate\demo\elite-logo.svg" />
+    <Content Include="Content\bookingtemplate\demo\envato.png" />
+    <Content Include="Content\bookingtemplate\demo\logo.svg" />
+    <Content Include="Content\bookingtemplate\demo\qr.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\1.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\10.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\11.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\12.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\13.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\14.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\15.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\16.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\17.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\18.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\19.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\2.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\20.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\21.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\22.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\23.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\24.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\25.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\26.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\27.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\3.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\4.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\5.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\6.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\7.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\8.png" />
+    <Content Include="Content\bookingtemplate\demo\screens\9.png" />
+    <Content Include="Content\bookingtemplate\demo\style.css" />
+    <Content Include="Content\bookingtemplate\doctor-profile.html" />
+    <Content Include="Content\bookingtemplate\favorite-doctor.html" />
+    <Content Include="Content\bookingtemplate\forget-password.html" />
+    <Content Include="Content\bookingtemplate\history.html" />
+    <Content Include="Content\bookingtemplate\home.html" />
+    <Content Include="Content\bookingtemplate\img\appointment-doctor.png" />
+    <Content Include="Content\bookingtemplate\img\background-blob.svg" />
+    <Content Include="Content\bookingtemplate\img\explore.svg" />
+    <Content Include="Content\bookingtemplate\img\favorite\favorite-1.jpg" />
+    <Content Include="Content\bookingtemplate\img\favorite\favorite-2.jpg" />
+    <Content Include="Content\bookingtemplate\img\favorite\favorite-3.jpg" />
+    <Content Include="Content\bookingtemplate\img\favorite\favorite-4.jpg" />
+    <Content Include="Content\bookingtemplate\img\favorite\favorite-5.jpg" />
+    <Content Include="Content\bookingtemplate\img\favorite\favorite-6.jpg" />
+    <Content Include="Content\bookingtemplate\img\flags\australia.png" />
+    <Content Include="Content\bookingtemplate\img\flags\bangladesh.png" />
+    <Content Include="Content\bookingtemplate\img\flags\india.png" />
+    <Content Include="Content\bookingtemplate\img\flags\indonasia.png" />
+    <Content Include="Content\bookingtemplate\img\flags\malaysia.png" />
+    <Content Include="Content\bookingtemplate\img\flags\south-arabica.png" />
+    <Content Include="Content\bookingtemplate\img\flags\usa.png" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-1.jpg" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-2.jpg" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-3.jpg" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-4.jpg" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-5.jpg" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-6.jpg" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-7.jpg" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-8.jpg" />
+    <Content Include="Content\bookingtemplate\img\gallery\gallery-9.jpg" />
+    <Content Include="Content\bookingtemplate\img\home\available-doctor-1.png" />
+    <Content Include="Content\bookingtemplate\img\home\available-doctor-2.png" />
+    <Content Include="Content\bookingtemplate\img\home\available-doctor-3.png" />
+    <Content Include="Content\bookingtemplate\img\home\doctor.png" />
+    <Content Include="Content\bookingtemplate\img\home\medicine.png" />
+    <Content Include="Content\bookingtemplate\img\home\prescription.png" />
+    <Content Include="Content\bookingtemplate\img\home\schedule.png" />
+    <Content Include="Content\bookingtemplate\img\home\top-doctor-1.jpg" />
+    <Content Include="Content\bookingtemplate\img\home\top-doctor-2.jpg" />
+    <Content Include="Content\bookingtemplate\img\home\top-doctor-3.jpg" />
+    <Content Include="Content\bookingtemplate\img\invite-1.png" />
+    <Content Include="Content\bookingtemplate\img\landing\1.png" />
+    <Content Include="Content\bookingtemplate\img\landing\2.png" />
+    <Content Include="Content\bookingtemplate\img\landing\3.png" />
+    <Content Include="Content\bookingtemplate\img\logo.svg" />
+    <Content Include="Content\bookingtemplate\img\review\profile-1.jpg" />
+    <Content Include="Content\bookingtemplate\img\review\profile-2.jpg" />
+    <Content Include="Content\bookingtemplate\img\review\profile-3.jpg" />
+    <Content Include="Content\bookingtemplate\img\review\profile-4.jpg" />
+    <Content Include="Content\bookingtemplate\img\review\profile-5.jpg" />
+    <Content Include="Content\bookingtemplate\img\review\profile-6.jpg" />
+    <Content Include="Content\bookingtemplate\img\social-icon\facebook.jpeg" />
+    <Content Include="Content\bookingtemplate\img\social-icon\instagram.jpeg" />
+    <Content Include="Content\bookingtemplate\img\social-icon\linkin.png" />
+    <Content Include="Content\bookingtemplate\img\social-icon\pinterest.png" />
+    <Content Include="Content\bookingtemplate\img\social-icon\twitter.png" />
+    <Content Include="Content\bookingtemplate\img\social-icon\whatsapp.jpg" />
+    <Content Include="Content\bookingtemplate\img\video\available-doctor-1.jpg" />
+    <Content Include="Content\bookingtemplate\img\video\available-doctor-2.jpg" />
+    <Content Include="Content\bookingtemplate\img\video\available-doctor-3.jpg" />
+    <Content Include="Content\bookingtemplate\img\video\available-doctor-4.jpg" />
+    <Content Include="Content\bookingtemplate\img\video\available-doctor-5.jpg" />
+    <Content Include="Content\bookingtemplate\img\video\symptom-1.svg" />
+    <Content Include="Content\bookingtemplate\img\video\symptom-2.svg" />
+    <Content Include="Content\bookingtemplate\img\video\symptom-3.svg" />
+    <Content Include="Content\bookingtemplate\img\video\symptom-4.svg" />
+    <Content Include="Content\bookingtemplate\img\video\symptom-5.svg" />
+    <Content Include="Content\bookingtemplate\img\video\symptom-6.svg" />
+    <Content Include="Content\bookingtemplate\img\video\symptom-7.svg" />
+    <Content Include="Content\bookingtemplate\img\video\symptom-8.svg" />
+    <Content Include="Content\bookingtemplate\index.html" />
+    <Content Include="Content\bookingtemplate\intro.html" />
+    <Content Include="Content\bookingtemplate\js\script.js" />
+    <Content Include="Content\bookingtemplate\landing.html" />
+    <Content Include="Content\bookingtemplate\message.html" />
+    <Content Include="Content\bookingtemplate\my-appointment-upcoming.html" />
+    <Content Include="Content\bookingtemplate\my-appointment.html" />
+    <Content Include="Content\bookingtemplate\my-profile.html" />
+    <Content Include="Content\bookingtemplate\notification.html" />
+    <Content Include="Content\bookingtemplate\overview.html" />
+    <Content Include="Content\bookingtemplate\play-recording-2.html" />
+    <Content Include="Content\bookingtemplate\play-recording.html" />
+    <Content Include="Content\bookingtemplate\recording-2.html" />
+    <Content Include="Content\bookingtemplate\recording.html" />
+    <Content Include="Content\bookingtemplate\request-appointment.html" />
+    <Content Include="Content\bookingtemplate\reset-password.html" />
+    <Content Include="Content\bookingtemplate\review.html" />
+    <Content Include="Content\bookingtemplate\search.html" />
+    <Content Include="Content\bookingtemplate\sign-in-email.html" />
+    <Content Include="Content\bookingtemplate\sign-in.html" />
+    <Content Include="Content\bookingtemplate\sign-up.html" />
+    <Content Include="Content\bookingtemplate\stripeImp.js" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-grid.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-grid.min.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-grid.rtl.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-grid.rtl.min.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-reboot.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-reboot.min.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-reboot.rtl.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-reboot.rtl.min.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-utilities.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-utilities.min.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-utilities.rtl.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-utilities.rtl.min.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap.min.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap.rtl.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap.rtl.min.css" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.bundle.js" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.bundle.min.js" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.esm.js" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.esm.min.js" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.js" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.min.js" />
+    <Content Include="Content\bookingtemplate\vender\jquery\jquery.min.js" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\css\materialdesignicons.css" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\css\materialdesignicons.min.css" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\preview.html" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scripts\verify.js" />
+    <Content Include="Content\bookingtemplate\vender\sidebar\demo.css" />
+    <Content Include="Content\bookingtemplate\vender\sidebar\hc-offcanvas-nav.js" />
+    <Content Include="Content\bookingtemplate\vender\slick\.gitignore" />
+    <Content Include="Content\bookingtemplate\vender\slick\index.html" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\ajax-loader.gif" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\fonts\slick.svg" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\slick-theme.css" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\slick.css" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\slick.js" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\slick.min.js" />
+    <Content Include="Content\bookingtemplate\verify.html" />
+    <Content Include="Content\bookingtemplate\video.html" />
+    <Content Include="Content\bookingtemplate\visit-info.html" />
+    <Content Include="Content\bookingtemplate\welcome.html" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\build\css\demo.css" />
+    <Content Include="Content\build\css\intlTelInput.css" />
+    <Content Include="Content\build\css\intlTelInput.min.css" />
+    <Content Include="Content\build\img\flags%402x.png" />
+    <Content Include="Content\build\img\flags.png" />
+    <Content Include="Content\build\js\data.js" />
+    <Content Include="Content\build\js\data.min.js" />
+    <Content Include="Content\build\js\intlTelInput-jquery.js" />
+    <Content Include="Content\build\js\intlTelInput-jquery.min.js" />
+    <Content Include="Content\build\js\intlTelInput.js" />
+    <Content Include="Content\build\js\intlTelInput.min.js" />
+    <Content Include="Content\build\js\utils.js" />
+    <Content Include="Content\datepicker\index.htm" />
+    <Content Include="Content\datepicker\ios-7-date-picker.js" />
+    <Content Include="Content\FinalDatePicker\datedropper-javascript.js" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\dist\index.global.js" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\dist\index.global.min.js" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\resource-add-remove.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\resource-grouping.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\resource-ordering.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timegrid-sticky-header.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timegrid-views-hscroll.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-background-events.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-column-grouping.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-columns.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-external-dragging.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-full-height.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-no-interaction.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-no-overlap.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-no-resources.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-scale.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-selectable.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline-sticky-header.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\timeline.html" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\examples\week-numbers.html" />
+    <Content Include="Content\MainTemplate\assets\css\bootstrap.min.css" />
+    <Content Include="Content\MainTemplate\assets\css\demo.css" />
+    <Content Include="Content\MainTemplate\assets\css\material-dashboard.css" />
+    <Content Include="Content\MainTemplate\assets\img\apple-icon.png" />
+    <Content Include="Content\MainTemplate\assets\img\bg-pricing.jpeg" />
+    <Content Include="Content\MainTemplate\assets\img\card-1.jpeg" />
+    <Content Include="Content\MainTemplate\assets\img\card-2.jpeg" />
+    <Content Include="Content\MainTemplate\assets\img\card-3.jpeg" />
+    <Content Include="Content\MainTemplate\assets\img\default-avatar.png" />
+    <Content Include="Content\MainTemplate\assets\img\faces\avatar.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\faces\card-profile1-square.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\faces\card-profile2-square.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\faces\marc.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\favicon.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\AD.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\AE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\AG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\AM.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\AR.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\AT.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\AU.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\BE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\BF.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\BG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\BO.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\BR.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CA.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CD.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CH.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CL.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CM.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CN.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CO.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\CZ.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\DE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\DJ.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\DK.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\DZ.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\EE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\EG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\ES.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\FI.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\FR.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\GA.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\GB.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\GM.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\GT.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\HN.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\HT.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\HU.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\ID.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\IE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\IL.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\IN.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\IQ.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\IR.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\IT.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\JM.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\JO.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\JP.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\KG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\KN.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\KP.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\KR.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\KW.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\KZ.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\LA.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\LB.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\LC.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\LS.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\LU.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\LV.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\MG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\MK.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\ML.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\MM.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\MT.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\MX.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\NA.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\NE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\NG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\NI.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\NL.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\NO.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\OM.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\PA.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\PE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\PG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\PK.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\PL.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\PT.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\PY.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\QA.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\RO.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\RU.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\RW.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\SA.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\SE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\SG.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\SL.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\SN.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\SO.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\SV.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\TD.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\TJ.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\TL.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\TR.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\TZ.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\UA.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\US.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\VE.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\VN.png" />
+    <Content Include="Content\MainTemplate\assets\img\flags\YE.png" />
+    <Content Include="Content\MainTemplate\assets\img\header-doc.jpeg" />
+    <Content Include="Content\MainTemplate\assets\img\image_placeholder.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\lock.jpeg" />
+    <Content Include="Content\MainTemplate\assets\img\login.jpeg" />
+    <Content Include="Content\MainTemplate\assets\img\mask.png" />
+    <Content Include="Content\MainTemplate\assets\img\new_logo.png" />
+    <Content Include="Content\MainTemplate\assets\img\placeholder.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\product1.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\product2.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\product3.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\register.jpeg" />
+    <Content Include="Content\MainTemplate\assets\img\sidebar-1.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\sidebar-2.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\sidebar-3.jpg" />
+    <Content Include="Content\MainTemplate\assets\img\sidebar-4.jpg" />
+    <Content Include="Content\MainTemplate\assets\js\arrive.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\bootstrap-datetimepicker.js" />
+    <Content Include="Content\MainTemplate\assets\js\bootstrap-notify.js" />
+    <Content Include="Content\MainTemplate\assets\js\bootstrap.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\chartist.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\demo.js" />
+    <Content Include="Content\MainTemplate\assets\js\fullcalendar.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\jasny-bootstrap.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\jquery-jvectormap.js" />
+    <Content Include="Content\MainTemplate\assets\js\jquery.bootstrap-wizard.js" />
+    <Content Include="Content\MainTemplate\assets\js\jquery.datatables.js" />
+    <Content Include="Content\MainTemplate\assets\js\jquery.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\jquery.select-bootstrap.js" />
+    <Content Include="Content\MainTemplate\assets\js\jquery.tagsinput.js" />
+    <Content Include="Content\MainTemplate\assets\js\jquery.validate.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\material-dashboard.js" />
+    <Content Include="Content\MainTemplate\assets\js\material.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\moment.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\nouislider.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\perfect-scrollbar.jquery.min.js" />
+    <Content Include="Content\MainTemplate\assets\js\sweetalert2.js" />
+    <Content Include="Content\MainTemplate\examples\calendar.html" />
+    <Content Include="Content\MainTemplate\examples\charts.html" />
+    <Content Include="Content\MainTemplate\examples\components\buttons.html" />
+    <Content Include="Content\MainTemplate\examples\components\grid.html" />
+    <Content Include="Content\MainTemplate\examples\components\icons.html" />
+    <Content Include="Content\MainTemplate\examples\components\notifications.html" />
+    <Content Include="Content\MainTemplate\examples\components\panels.html" />
+    <Content Include="Content\MainTemplate\examples\components\sweet-alert.html" />
+    <Content Include="Content\MainTemplate\examples\components\typography.html" />
+    <Content Include="Content\MainTemplate\examples\dashboard.html" />
+    <Content Include="Content\MainTemplate\examples\forms\extended.html" />
+    <Content Include="Content\MainTemplate\examples\forms\regular.html" />
+    <Content Include="Content\MainTemplate\examples\forms\validation.html" />
+    <Content Include="Content\MainTemplate\examples\forms\wizard.html" />
+    <Content Include="Content\MainTemplate\examples\maps\fullscreen.html" />
+    <Content Include="Content\MainTemplate\examples\maps\google.html" />
+    <Content Include="Content\MainTemplate\examples\maps\vector.html" />
+    <Content Include="Content\MainTemplate\examples\pages\lock.html" />
+    <Content Include="Content\MainTemplate\examples\pages\login.html" />
+    <Content Include="Content\MainTemplate\examples\pages\pricing.html" />
+    <Content Include="Content\MainTemplate\examples\pages\register.html" />
+    <Content Include="Content\MainTemplate\examples\pages\rtl.html" />
+    <Content Include="Content\MainTemplate\examples\pages\timeline.html" />
+    <Content Include="Content\MainTemplate\examples\pages\user.html" />
+    <Content Include="Content\MainTemplate\examples\tables\datatables.net.html" />
+    <Content Include="Content\MainTemplate\examples\tables\extended.html" />
+    <Content Include="Content\MainTemplate\examples\tables\regular.html" />
+    <Content Include="Content\MainTemplate\examples\template.html" />
+    <Content Include="Content\MainTemplate\examples\widgets.html" />
+    <Content Include="Content\main\assets\css\bootstrap.min.css" />
+    <Content Include="Content\main\assets\css\style.css" />
+    <Content Include="Content\main\assets\fonts\bootstrap-icons\bootstrap-icons.css" />
+    <Content Include="Content\main\assets\fonts\bootstrap-icons\index.html" />
+    <Content Include="Content\main\assets\fonts\font-awesome\css\font-awesome.css" />
+    <Content Include="Content\main\assets\fonts\font-awesome\css\font-awesome.min.css" />
+    <Content Include="Content\main\assets\fonts\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\main\assets\fonts\font-awesome\HELP-US-OUT.txt" />
+    <Content Include="Content\main\assets\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\main\assets\img\favicon.ico" />
+    <Content Include="Content\main\assets\img\favicon.png" />
+    <Content Include="Content\main\assets\img\img-10.png" />
+    <Content Include="Content\main\assets\img\img-11.png" />
+    <Content Include="Content\main\assets\img\img-12.png" />
+    <Content Include="Content\main\assets\img\img-8.jpg" />
+    <Content Include="Content\main\assets\img\img-9.jpg" />
+    <Content Include="Content\main\assets\img\loader.gif" />
+    <Content Include="Content\main\assets\img\logos\logo-2.png" />
+    <Content Include="Content\main\assets\img\logos\logo.png" />
+    <Content Include="Content\main\assets\js\app.js" />
+    <Content Include="Content\main\assets\js\html2canvas.js" />
+    <Content Include="Content\main\assets\js\jquery.min.js" />
+    <Content Include="Content\main\assets\js\jspdf.min.js" />
+    <Content Include="Content\main\invoice-1.html" />
+    <Content Include="Content\main\invoice-2.html" />
+    <Content Include="Content\main\invoice-3.html" />
+    <Content Include="Content\main\invoice-4.html" />
+    <Content Include="Content\main\invoice-5.html" />
+    <Content Include="Content\main\invoice-6.html" />
+    <Content Include="Content\main\invoice-7.html" />
+    <Content Include="Content\main\invoice-8.html" />
+    <Content Include="Content\slickdd\jquery.ddslick.min.js" />
+    <Content Include="Content\summernote\lang\summernote-ar-AR.js" />
+    <Content Include="Content\summernote\lang\summernote-ar-AR.min.js" />
+    <Content Include="Content\summernote\lang\summernote-ar-AR.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-az-AZ.js" />
+    <Content Include="Content\summernote\lang\summernote-az-AZ.min.js" />
+    <Content Include="Content\summernote\lang\summernote-az-AZ.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-bg-BG.js" />
+    <Content Include="Content\summernote\lang\summernote-bg-BG.min.js" />
+    <Content Include="Content\summernote\lang\summernote-bg-BG.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-ca-ES.js" />
+    <Content Include="Content\summernote\lang\summernote-ca-ES.min.js" />
+    <Content Include="Content\summernote\lang\summernote-ca-ES.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-cs-CZ.js" />
+    <Content Include="Content\summernote\lang\summernote-cs-CZ.min.js" />
+    <Content Include="Content\summernote\lang\summernote-cs-CZ.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-da-DK.js" />
+    <Content Include="Content\summernote\lang\summernote-da-DK.min.js" />
+    <Content Include="Content\summernote\lang\summernote-da-DK.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-de-DE.js" />
+    <Content Include="Content\summernote\lang\summernote-de-DE.min.js" />
+    <Content Include="Content\summernote\lang\summernote-de-DE.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-el-GR.js" />
+    <Content Include="Content\summernote\lang\summernote-el-GR.min.js" />
+    <Content Include="Content\summernote\lang\summernote-el-GR.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-es-ES.js" />
+    <Content Include="Content\summernote\lang\summernote-es-ES.min.js" />
+    <Content Include="Content\summernote\lang\summernote-es-ES.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-es-EU.js" />
+    <Content Include="Content\summernote\lang\summernote-es-EU.min.js" />
+    <Content Include="Content\summernote\lang\summernote-es-EU.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-fa-IR.js" />
+    <Content Include="Content\summernote\lang\summernote-fa-IR.min.js" />
+    <Content Include="Content\summernote\lang\summernote-fa-IR.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-fi-FI.js" />
+    <Content Include="Content\summernote\lang\summernote-fi-FI.min.js" />
+    <Content Include="Content\summernote\lang\summernote-fi-FI.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-fr-FR.js" />
+    <Content Include="Content\summernote\lang\summernote-fr-FR.min.js" />
+    <Content Include="Content\summernote\lang\summernote-fr-FR.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-gl-ES.js" />
+    <Content Include="Content\summernote\lang\summernote-gl-ES.min.js" />
+    <Content Include="Content\summernote\lang\summernote-gl-ES.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-he-IL.js" />
+    <Content Include="Content\summernote\lang\summernote-he-IL.min.js" />
+    <Content Include="Content\summernote\lang\summernote-he-IL.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-hr-HR.js" />
+    <Content Include="Content\summernote\lang\summernote-hr-HR.min.js" />
+    <Content Include="Content\summernote\lang\summernote-hr-HR.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-hu-HU.js" />
+    <Content Include="Content\summernote\lang\summernote-hu-HU.min.js" />
+    <Content Include="Content\summernote\lang\summernote-hu-HU.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-id-ID.js" />
+    <Content Include="Content\summernote\lang\summernote-id-ID.min.js" />
+    <Content Include="Content\summernote\lang\summernote-id-ID.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-it-IT.js" />
+    <Content Include="Content\summernote\lang\summernote-it-IT.min.js" />
+    <Content Include="Content\summernote\lang\summernote-it-IT.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-ja-JP.js" />
+    <Content Include="Content\summernote\lang\summernote-ja-JP.min.js" />
+    <Content Include="Content\summernote\lang\summernote-ja-JP.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-ko-KR.js" />
+    <Content Include="Content\summernote\lang\summernote-ko-KR.min.js" />
+    <Content Include="Content\summernote\lang\summernote-ko-KR.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-lt-LT.js" />
+    <Content Include="Content\summernote\lang\summernote-lt-LT.min.js" />
+    <Content Include="Content\summernote\lang\summernote-lt-LT.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-lt-LV.js" />
+    <Content Include="Content\summernote\lang\summernote-lt-LV.min.js" />
+    <Content Include="Content\summernote\lang\summernote-lt-LV.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-mn-MN.js" />
+    <Content Include="Content\summernote\lang\summernote-mn-MN.min.js" />
+    <Content Include="Content\summernote\lang\summernote-mn-MN.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-nb-NO.js" />
+    <Content Include="Content\summernote\lang\summernote-nb-NO.min.js" />
+    <Content Include="Content\summernote\lang\summernote-nb-NO.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-nl-NL.js" />
+    <Content Include="Content\summernote\lang\summernote-nl-NL.min.js" />
+    <Content Include="Content\summernote\lang\summernote-nl-NL.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-pl-PL.js" />
+    <Content Include="Content\summernote\lang\summernote-pl-PL.min.js" />
+    <Content Include="Content\summernote\lang\summernote-pl-PL.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-pt-BR.js" />
+    <Content Include="Content\summernote\lang\summernote-pt-BR.min.js" />
+    <Content Include="Content\summernote\lang\summernote-pt-BR.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-pt-PT.js" />
+    <Content Include="Content\summernote\lang\summernote-pt-PT.min.js" />
+    <Content Include="Content\summernote\lang\summernote-pt-PT.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-ro-RO.js" />
+    <Content Include="Content\summernote\lang\summernote-ro-RO.min.js" />
+    <Content Include="Content\summernote\lang\summernote-ro-RO.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-ru-RU.js" />
+    <Content Include="Content\summernote\lang\summernote-ru-RU.min.js" />
+    <Content Include="Content\summernote\lang\summernote-ru-RU.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-sk-SK.js" />
+    <Content Include="Content\summernote\lang\summernote-sk-SK.min.js" />
+    <Content Include="Content\summernote\lang\summernote-sk-SK.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-sl-SI.js" />
+    <Content Include="Content\summernote\lang\summernote-sl-SI.min.js" />
+    <Content Include="Content\summernote\lang\summernote-sl-SI.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-sr-RS-Latin.js" />
+    <Content Include="Content\summernote\lang\summernote-sr-RS-Latin.min.js" />
+    <Content Include="Content\summernote\lang\summernote-sr-RS-Latin.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-sr-RS.js" />
+    <Content Include="Content\summernote\lang\summernote-sr-RS.min.js" />
+    <Content Include="Content\summernote\lang\summernote-sr-RS.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-sv-SE.js" />
+    <Content Include="Content\summernote\lang\summernote-sv-SE.min.js" />
+    <Content Include="Content\summernote\lang\summernote-sv-SE.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-ta-IN.js" />
+    <Content Include="Content\summernote\lang\summernote-ta-IN.min.js" />
+    <Content Include="Content\summernote\lang\summernote-ta-IN.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-th-TH.js" />
+    <Content Include="Content\summernote\lang\summernote-th-TH.min.js" />
+    <Content Include="Content\summernote\lang\summernote-th-TH.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-tr-TR.js" />
+    <Content Include="Content\summernote\lang\summernote-tr-TR.min.js" />
+    <Content Include="Content\summernote\lang\summernote-tr-TR.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-uk-UA.js" />
+    <Content Include="Content\summernote\lang\summernote-uk-UA.min.js" />
+    <Content Include="Content\summernote\lang\summernote-uk-UA.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-uz-UZ.js" />
+    <Content Include="Content\summernote\lang\summernote-uz-UZ.min.js" />
+    <Content Include="Content\summernote\lang\summernote-uz-UZ.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-vi-VN.js" />
+    <Content Include="Content\summernote\lang\summernote-vi-VN.min.js" />
+    <Content Include="Content\summernote\lang\summernote-vi-VN.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-zh-CN.js" />
+    <Content Include="Content\summernote\lang\summernote-zh-CN.min.js" />
+    <Content Include="Content\summernote\lang\summernote-zh-CN.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\lang\summernote-zh-TW.js" />
+    <Content Include="Content\summernote\lang\summernote-zh-TW.min.js" />
+    <Content Include="Content\summernote\lang\summernote-zh-TW.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\plugin\databasic\summernote-ext-databasic.css" />
+    <Content Include="Content\summernote\plugin\databasic\summernote-ext-databasic.js" />
+    <Content Include="Content\summernote\plugin\hello\summernote-ext-hello.js" />
+    <Content Include="Content\summernote\plugin\specialchars\summernote-ext-specialchars.js" />
+    <Content Include="Content\summernote\summernote-bs4.css" />
+    <Content Include="Content\summernote\summernote-bs4.js" />
+    <Content Include="Content\summernote\summernote-bs4.min.css" />
+    <Content Include="Content\summernote\summernote-bs4.min.js" />
+    <Content Include="Content\summernote\summernote-bs4.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\summernote-lite.css" />
+    <Content Include="Content\summernote\summernote-lite.js" />
+    <Content Include="Content\summernote\summernote-lite.min.css" />
+    <Content Include="Content\summernote\summernote-lite.min.js" />
+    <Content Include="Content\summernote\summernote-lite.min.js.LICENSE.txt" />
+    <Content Include="Content\summernote\summernote.css" />
+    <Content Include="Content\summernote\summernote.js" />
+    <Content Include="Content\summernote\summernote.min.css" />
+    <Content Include="Content\summernote\summernote.min.js" />
+    <Content Include="Content\summernote\summernote.min.js.LICENSE.txt" />
+    <Content Include="Content\TBPContent\autocomplete\content\styles.css" />
+    <Content Include="Content\TBPContent\autocomplete\dist\jquery.autocomplete.js" />
+    <Content Include="Content\TBPContent\autocomplete\dist\jquery.autocomplete.min.js" />
+    <Content Include="Content\TBPContent\autocomplete\dist\license.txt" />
+    <Content Include="Content\TBPContent\autocomplete\gruntfile.js" />
+    <Content Include="Content\TBPContent\autocomplete\index.htm" />
+    <Content Include="Content\TBPContent\autocomplete\license.txt" />
+    <Content Include="Content\TBPContent\autocomplete\scripts\countries.js" />
+    <Content Include="Content\TBPContent\autocomplete\scripts\demo.js" />
+    <Content Include="Content\TBPContent\autocomplete\scripts\jquery-1.8.2.min.js" />
+    <Content Include="Content\TBPContent\autocomplete\scripts\jquery-2.1.1.js" />
+    <Content Include="Content\TBPContent\autocomplete\scripts\jquery.mockjax.js" />
+    <Content Include="Content\TBPContent\autocomplete\spec\autocompleteBehavior.js" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-1.3.1\jasmine-html.js" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-1.3.1\jasmine.css" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-1.3.1\jasmine.js" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-2.0.1\boot.js" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-2.0.1\console.js" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-2.0.1\jasmine-html.js" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-2.0.1\jasmine.css" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-2.0.1\jasmine.js" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-2.0.1\jasmine_favicon.png" />
+    <Content Include="Content\TBPContent\autocomplete\spec\runner.html" />
+    <Content Include="Content\TBPContent\autocomplete\src\jquery.autocomplete.js" />
+    <Content Include="Content\TBPContent\bookingplatform.png" />
+    <Content Include="Content\TBPContent\cart-image.jpg" />
+    <Content Include="Content\TBPContent\icons\appointment.png" />
+    <Content Include="Content\TBPContent\icons\card.png" />
+    <Content Include="Content\TBPContent\icons\company.png" />
+    <Content Include="Content\TBPContent\icons\customer-review.png" />
+    <Content Include="Content\TBPContent\icons\erp.png" />
+    <Content Include="Content\TBPContent\icons\gift-card.png" />
+    <Content Include="Content\TBPContent\icons\gift.png" />
+    <Content Include="Content\TBPContent\icons\group.png" />
+    <Content Include="Content\TBPContent\icons\house.png" />
+    <Content Include="Content\TBPContent\icons\multiply.png" />
+    <Content Include="Content\TBPContent\icons\open-24-hours.png" />
+    <Content Include="Content\TBPContent\icons\options-lines.png" />
+    <Content Include="Content\TBPContent\icons\schedule.png" />
+    <Content Include="Content\TBPContent\icons\setting.png" />
+    <Content Include="Content\TBPContent\icons\shopping-cart.png" />
+    <Content Include="Content\TBPContent\icons\teamwork %281%29.png" />
+    <Content Include="Content\TBPContent\icons\teamwork.png" />
+    <Content Include="Content\TBPContent\icons\timetable.png" />
+    <Content Include="Content\TBPContent\icons\vat.png" />
+    <Content Include="Content\TBPContent\Loader.gif" />
+    <Content Include="Content\TBPContent\LogoBlack.png" />
+    <Content Include="Content\TBPContent\LogoWhite.png" />
+    <Content Include="Content\TBPContent\man.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\assets\ajax-loader.gif" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\assets\owl.carousel.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\assets\owl.carousel.min.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\assets\owl.theme.default.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\assets\owl.theme.default.min.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\assets\owl.theme.green.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\assets\owl.theme.green.min.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\assets\owl.video.play.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\owl.carousel.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\owl.carousel.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\css\animate.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\css\docs.theme.min.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\bird_blue_32.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\download.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\feature-drag.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\feature-modern.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\feature-module.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\feature-options.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\feature-responsive.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\feature-zombie.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\owl-logo.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\img\twitter_25.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\js\app.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\js\foundation.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\assets\ajax-loader.gif" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\assets\owl.carousel.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\assets\owl.carousel.min.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\assets\owl.theme.default.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\assets\owl.theme.default.min.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\assets\owl.theme.green.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\assets\owl.theme.green.min.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\assets\owl.video.play.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\owl.carousel.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\owl.carousel.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\vendors\foundation.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\vendors\highlight.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\vendors\jquery.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\vendors\jquery.mousewheel.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\animate.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\autoheight.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\autoplay.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\autowidth.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\basic.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\center.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\demos.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\events.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\lazyLoad.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\merge.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\mousewheel.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\responsive.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\rtl.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\stagepadding.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\test.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\urlhashnav.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\demos\video.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\api-classes.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\api-events.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\api-options.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\dev-buildin-plugins.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\dev-external.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\dev-plugin-api.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\dev-styles.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\started-faq.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\started-installation.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\started-welcome.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\support-changelog.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\support-contact.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\docs\support-contributing.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\index.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\css\animate.css" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\bird_blue_32.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\download.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\feature-drag.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\feature-modern.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\feature-module.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\feature-options.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\feature-responsive.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\feature-zombie.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\owl-logo.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\img\twitter_25.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\js\app.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\js\foundation.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\vendors\foundation.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\vendors\highlight.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\vendors\jquery.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\vendors\jquery.mousewheel.min.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\helpers\modulo.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\helpers\test.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\Gruntfile.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\img\ajax-loader.gif" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\img\owl.video.play.png" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.animate.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.autoheight.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.autoplay.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.autorefresh.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.carousel.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.hash.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.lazyload.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.navigation.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.support.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.support.modernizr.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\owl.video.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\test\index.html" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\test\unit\autoplay.js" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\test\unit\core.js" />
+    <Content Include="Content\TBPContent\people.png" />
+    <Content Include="Content\TBPContent\placeholder.png" />
+    <Content Include="Content\TBPContent\visual.png" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Content\MainTemplate\assets\.DS_Store" />
+    <Content Include="Content\MainTemplate\assets\scss\.DS_Store" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\.DS_Store" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\mixins\_chartist.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\mixins\_sidebar-color.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\mixins\_transparency.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\mixins\_vendor-prefixes.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\.DS_Store" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_animate.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_chartist.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_datatables.net.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_fullcalendar.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_jquery.jvectormap.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_perfect-scrollbar.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_plugin-datetime-picker.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_plugin-nouislider.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_select-bootstrap.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_sweetalert2.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\plugins\_wizard-card.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_alerts.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_buttons.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_cards.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_checkboxes.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_colors.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_dialogs.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_dropdown.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_fileupload.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_footers.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_forms.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_inputs-size.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_inputs.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_labels.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_misc.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_mixins.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_navbars.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_pages.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_pagination.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_panels.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_pills.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_popups.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_progress.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_radios.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_responsive.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_ripples.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_rtl.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_shadows.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_sidebar-and-main-panel.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_tables.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_tabs.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_tags.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_timeline.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_togglebutton.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_typography.scss" />
+    <Content Include="Content\MainTemplate\assets\scss\material-dashboard\_variables.scss" />
+    <Content Include="Content\TBPContent\ProductsImportDemo.xlsx" />
+    <Content Include="Content\TBPContent\DemForImportingCustomer.xlsx" />
+    <Content Include="Content\TBPContent\autocomplete\.gitignore" />
+    <Content Include="Content\TBPContent\autocomplete\bower.json" />
+    <Content Include="Content\TBPContent\autocomplete\devbridge-autocomplete.jquery.json" />
+    <Content Include="Content\TBPContent\autocomplete\package.json" />
+    <Content Include="Content\TBPContent\autocomplete\readme.md" />
+    <Content Include="Content\TBPContent\autocomplete\spec\lib\jasmine-1.3.1\MIT.LICENSE" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\.gitattributes" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\.gitignore" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\.travis.yml" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\bower.json" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\CONTRIBUTING.md" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\LICENSE" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\dist\README.md" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\owlcarousel\README.md" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs\assets\vendors\jquery.min.map" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\scss\custom.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\scss\demos.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\scss\docs.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\scss\docs.theme.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\scss\highlight.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\scss\_settings.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\assets\vendors\jquery.min.map" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\data\classes.json" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\data\events.json" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\data\features.json" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\data\options.json" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\layouts\demos.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\layouts\docs.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\layouts\home.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\animate.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\autoheight.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\autoplay.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\autowidth.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\basic.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\center.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\demos.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\events.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\lazyLoad.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\merge.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\mousewheel.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\responsive.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\rtl.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\stagepadding.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\test.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\urlhashnav.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\demos\video.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\api-classes.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\api-events.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\api-options.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\dev-buildin-plugins.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\dev-external.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\dev-plugin-api.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\dev-styles.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\started-faq.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\started-installation.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\started-welcome.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\support-changelog.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\support-contact.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\docs\support-contributing.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\pages\index.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\footer.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\head.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\header.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\home-carousel.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\home-features.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\home-hero.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\home-teaser-text.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\javascripts.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\releated-docs.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\sidenav-docs.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\title.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\docs_src\templates\partials\vendors.hbs" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\ISSUE_TEMPLATE.md" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\LICENSE" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\package-lock.json" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\package.json" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\README.md" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\ROADMAP.md" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\.jscsrc" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\js\.jshintrc" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\owl.carousel.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\owl.theme.default.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\owl.theme.green.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\_animate.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\_autoheight.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\_core.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\_lazyload.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\_theme.default.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\_theme.green.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\_theme.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\src\scss\_video.scss" />
+    <Content Include="Content\TBPContent\OwlCarousel2-2.3.4\_config.json" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\LICENSE.md" />
+    <Content Include="Content\fullcalendar-scheduler-6.1.8\README.md" />
+    <Content Include="Content\summernote\font\summernote.eot" />
+    <Content Include="Content\summernote\font\summernote.ttf" />
+    <Content Include="Content\summernote\font\summernote.woff" />
+    <Content Include="Content\summernote\font\summernote.woff2" />
+    <Content Include="Content\summernote\summernote-bs4.js.map" />
+    <Content Include="Content\summernote\summernote-bs4.min.js.map" />
+    <Content Include="Content\summernote\summernote-lite.js.map" />
+    <Content Include="Content\summernote\summernote-lite.min.js.map" />
+    <Content Include="Content\summernote\summernote.js.map" />
+    <Content Include="Content\summernote\summernote.min.js.map" />
+    <Content Include="Content\bookingtemplate\.DS_Store" />
+    <Content Include="Content\bookingtemplate\demo\.DS_Store" />
+    <Content Include="Content\bookingtemplate\demo\screens\.DS_Store" />
+    <Content Include="Content\bookingtemplate\img\.DS_Store" />
+    <Content Include="Content\bookingtemplate\img\favorite\.DS_Store" />
+    <Content Include="Content\bookingtemplate\img\flags\.DS_Store" />
+    <Content Include="Content\bookingtemplate\img\gallery\.DS_Store" />
+    <Content Include="Content\bookingtemplate\img\home\.DS_Store" />
+    <Content Include="Content\bookingtemplate\img\landing\.DS_Store" />
+    <Content Include="Content\bookingtemplate\img\review\.DS_Store" />
+    <Content Include="Content\bookingtemplate\img\video\.DS_Store" />
+    <Content Include="Content\bookingtemplate\vender\.DS_Store" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\.DS_Store" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-grid.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-grid.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-grid.rtl.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-reboot.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-reboot.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-reboot.rtl.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-reboot.rtl.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-utilities.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-utilities.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-utilities.rtl.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap-utilities.rtl.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap.rtl.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\css\bootstrap.rtl.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.bundle.js.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.bundle.min.js.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.esm.js.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.esm.min.js.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.js.map" />
+    <Content Include="Content\bookingtemplate\vender\bootstrap\js\bootstrap.min.js.map" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\.github\ISSUE_TEMPLATE.md" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\css\materialdesignicons.css.map" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\css\materialdesignicons.min.css.map" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\fonts\materialdesignicons-webfont.eot" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\fonts\materialdesignicons-webfont.ttf" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\fonts\materialdesignicons-webfont.woff" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\fonts\materialdesignicons-webfont.woff2" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\LICENSE" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\package.json" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\README.md" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scss\materialdesignicons.scss" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scss\_animated.scss" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scss\_core.scss" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scss\_extras.scss" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scss\_functions.scss" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scss\_icons.scss" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scss\_path.scss" />
+    <Content Include="Content\bookingtemplate\vender\materialdesign\scss\_variables.scss" />
+    <Content Include="Content\bookingtemplate\vender\sidebar\.DS_Store" />
+    <Content Include="Content\bookingtemplate\vender\slick\bower.json" />
+    <Content Include="Content\bookingtemplate\vender\slick\component.json" />
+    <Content Include="Content\bookingtemplate\vender\slick\CONTRIBUTING.markdown" />
+    <Content Include="Content\bookingtemplate\vender\slick\ISSUE_TEMPLATE.md" />
+    <Content Include="Content\bookingtemplate\vender\slick\LICENSE" />
+    <Content Include="Content\bookingtemplate\vender\slick\Makefile" />
+    <Content Include="Content\bookingtemplate\vender\slick\package.json" />
+    <Content Include="Content\bookingtemplate\vender\slick\README.markdown" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick.jquery.json" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\config.rb" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\fonts\slick.eot" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\fonts\slick.ttf" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\fonts\slick.woff" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\slick-theme.less" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\slick-theme.scss" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\slick.less" />
+    <Content Include="Content\bookingtemplate\vender\slick\slick\slick.scss" />
+    <Content Include="Content\main\assets\fonts\bootstrap-icons\bootstrap-icons.json" />
+    <Content Include="Content\main\assets\fonts\bootstrap-icons\bootstrap-icons.scss" />
+    <Content Include="Content\main\assets\fonts\bootstrap-icons\fonts\bootstrap-icons.woff" />
+    <Content Include="Content\main\assets\fonts\bootstrap-icons\fonts\bootstrap-icons.woff2" />
+    <Content Include="Content\main\assets\fonts\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\main\assets\fonts\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\main\assets\fonts\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\main\assets\fonts\font-awesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\main\assets\fonts\font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\animated.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\bordered-pulled.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\core.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\fixed-width.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\font-awesome.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\icons.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\larger.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\list.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\mixins.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\path.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\rotated-flipped.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\screen-reader.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\stacked.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\less\variables.less" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\font-awesome.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_animated.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_bordered-pulled.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_core.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_fixed-width.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_icons.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_larger.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_list.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_mixins.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_path.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_rotated-flipped.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_screen-reader.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_stacked.scss" />
+    <Content Include="Content\main\assets\fonts\font-awesome\scss\_variables.scss" />
+    <Content Include="Content\main\assets\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\main\assets\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\main\assets\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\main\assets\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\main\assets\img\logos\logo.psd" />
+    <None Include="Properties\PublishProfiles\YourBookingplatform - Web Deploy.pubxml" />
+    <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.4.1.js" />
+    <Content Include="Scripts\jquery-3.4.1.min.js" />
+    <Content Include="Scripts\jquery-3.4.1.slim.js" />
+    <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Views\NInvoice\Invoice.html" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Account\ConfirmEmail.cshtml" />
+    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\SendCode.cshtml" />
+    <Content Include="Views\Account\VerifyCode.cshtml" />
+    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
+    <Content Include="Views\Manage\ChangePassword.cshtml" />
+    <Content Include="Views\Manage\Index.cshtml" />
+    <Content Include="Views\Manage\ManageLogins.cshtml" />
+    <Content Include="Views\Manage\SetPassword.cshtml" />
+    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
+    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Admin\Dashboard.cshtml" />
+    <Content Include="Views\Home\Login.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\User\_Register.cshtml" />
+    <Content Include="Views\User\_Action.cshtml" />
+    <Content Include="Views\User\_Listing.cshtml" />
+    <Content Include="Views\User\_Delete.cshtml" />
+    <Content Include="Views\Role\Index.cshtml" />
+    <Content Include="Views\Role\_Listing.cshtml" />
+    <Content Include="Views\Role\_Action.cshtml" />
+    <Content Include="Views\Role\_Delete.cshtml" />
+    <Content Include="Views\User\_UserRoles.cshtml" />
+    <Content Include="Views\Account\UserProfile.cshtml" />
+    <Content Include="Views\Shared\_InitialLayout.cshtml" />
+    <Content Include="Views\User\RegisterCompany.cshtml" />
+    <Content Include="Views\User\Settings.cshtml" />
+    <Content Include="Views\Home\_CompanySettings.cshtml" />
+    <Content Include="Views\Company\_Delete.cshtml" />
+    <Content Include="Views\Company\Index.cshtml" />
+    <Content Include="Views\Company\_Listing.cshtml" />
+    <Content Include="Views\Company\Action.cshtml" />
+    <Content Include="Views\ServiceCategory\_Delete.cshtml" />
+    <Content Include="Views\ServiceCategory\_Listing.cshtml" />
+    <Content Include="Views\ServiceCategory\Index.cshtml" />
+    <Content Include="Views\Service\Action.cshtml" />
+    <Content Include="Views\ServiceCategory\_Action.cshtml" />
+    <Content Include="Views\Service\_Delete.cshtml" />
+    <Content Include="Views\Service\_Listing.cshtml" />
+    <Content Include="Views\Service\Index.cshtml" />
+    <Content Include="Views\Service\_ActionCategory.cshtml" />
+    <Content Include="Views\Vat\_Action.cshtml" />
+    <Content Include="Views\Vat\_Delete.cshtml" />
+    <Content Include="Views\Vat\_Listing.cshtml" />
+    <Content Include="Views\Vat\Index.cshtml" />
+    <Content Include="Views\Employee\Action.cshtml" />
+    <Content Include="Views\Employee\_Delete.cshtml" />
+    <Content Include="Views\Employee\_Listing.cshtml" />
+    <Content Include="Views\Employee\Index.cshtml" />
+    <Content Include="Views\Service\_ActionEmployee.cshtml" />
+    <Content Include="Views\Resource\Action.cshtml" />
+    <Content Include="Views\Resource\_Delete.cshtml" />
+    <Content Include="Views\Resource\_Listing.cshtml" />
+    <Content Include="Views\Resource\Index.cshtml" />
+    <Content Include="Views\Service\_ActionResource.cshtml" />
+    <Content Include="Views\Account\NotAllowed.cshtml" />
+    <Content Include="Views\Home\_ServiceListing.cshtml" />
+    <Content Include="Views\Home\_EmployeeListing.cshtml" />
+    <Content Include="Views\User\PassKey.cshtml" />
+    <Content Include="Views\Home\_CompanyListing.cshtml" />
+    <Content Include="Views\Category\_Action.cshtml" />
+    <Content Include="Views\Category\_Delete.cshtml" />
+    <Content Include="Views\Category\_Listing.cshtml" />
+    <Content Include="Views\Category\Index.cshtml" />
+    <Content Include="Views\Supplier\_Action.cshtml" />
+    <Content Include="Views\Supplier\_Delete.cshtml" />
+    <Content Include="Views\Supplier\_Listing.cshtml" />
+    <Content Include="Views\Supplier\Index.cshtml" />
+    <Content Include="Views\Product\_Delete.cshtml" />
+    <Content Include="Views\Product\_Listing.cshtml" />
+    <Content Include="Views\Product\Index.cshtml" />
+    <Content Include="Views\Product\Action.cshtml" />
+    <Content Include="Views\Product\_ProductImport.cshtml" />
+    <Content Include="Views\Product\Import.cshtml" />
+    <Content Include="Views\StockOrder\_Delete.cshtml" />
+    <Content Include="Views\StockOrder\_Listing.cshtml" />
+    <Content Include="Views\StockOrder\Action.cshtml" />
+    <Content Include="Views\StockOrder\Index.cshtml" />
+    <Content Include="Views\StockOrder\ShowStockOrderDetail.cshtml" />
+    <Content Include="Views\StockOrder\_ProcessOrderView.cshtml" />
+    <Content Include="Views\Employee\_AssignService.cshtml" />
+    <Content Include="Views\Customer\_Delete.cshtml" />
+    <Content Include="Views\Customer\_Listing.cshtml" />
+    <Content Include="Views\Customer\_CustomerImport.cshtml" />
+    <Content Include="Views\Customer\Action.cshtml" />
+    <Content Include="Views\Customer\Import.cshtml" />
+    <Content Include="Views\Customer\Index.cshtml" />
+    <Content Include="Views\Appointment\Index.cshtml" />
+    <Content Include="Views\Appointment\_Listing.cshtml" />
+    <Content Include="Views\Appointment\Action.cshtml" />
+    <Content Include="Views\Appointment\_Delete.cshtml" />
+    <Content Include="Views\Appointment\Calendar.cshtml" />
+    <Content Include="Views\Appointment\_CalendarPartial.cshtml" />
+    <Content Include="Views\Appointment\AppointmentDetails.cshtml" />
+    <Content Include="Views\Appointment\_DetailsPartial.cshtml" />
+    <Content Include="Views\Appointment\_Checkout.cshtml" />
+    <Content Include="Views\Appointment\_UploadFile.cshtml" />
+    <Content Include="Views\User\Dashboard.cshtml" />
+    <Content Include="Views\Appointment\_DeleteNew.cshtml" />
+    <Content Include="Views\Appointment\_ActionPartial.cshtml" />
+    <Content Include="Views\Appointment\Invoice.cshtml" />
+    <Content Include="Views\OpeningHour\Index.cshtml" />
+    <Content Include="Views\OpeningHour\Action.cshtml" />
+    <Content Include="Views\OpeningHour\_Listing.cshtml" />
+    <Content Include="Views\OpeningHour\_Delete.cshtml" />
+    <Content Include="Views\Home\_OpeningHoursListing.cshtml" />
+    <Content Include="Views\TimeTable\Index.cshtml" />
+    <Content Include="Views\TimeTable\_Action.cshtml" />
+    <Content Include="Views\LoyaltyCard\_Delete.cshtml" />
+    <Content Include="Views\LoyaltyCard\Index.cshtml" />
+    <Content Include="Views\LoyaltyCard\Action.cshtml" />
+    <Content Include="Views\LoyaltyCard\Issue.cshtml" />
+    <Content Include="Views\Customer\CustomerProfile.cshtml" />
+    <Content Include="Views\LoyaltyCard\CardAssignmentIndex.cshtml" />
+    <Content Include="Views\LoyaltyCard\_DeleteAssignment.cshtml" />
+    <Content Include="Views\Home\_HistoryListing.cshtml" />
+    <Content Include="Views\Appointment\AppointmentDetailsCheckOutView.cshtml" />
+    <Content Include="Views\EmailTemplate\Index.cshtml" />
+    <Content Include="Views\EmailTemplate\Action.cshtml" />
+    <Content Include="Views\EmailTemplate\_Delete.cshtml" />
+    <Content Include="Views\Shared\_BookingLayout.cshtml" />
+    <Content Include="Views\Booking\Index.cshtml" />
+    <Content Include="Views\Booking\Form.cshtml" />
+    <Content Include="Views\Booking\GoToPayment.cshtml" />
+    <Content Include="Views\Booking\CustomerProfile.cshtml" />
+    <Content Include="Views\PriceChange\_Delete.cshtml" />
+    <Content Include="Views\PriceChange\_Listing.cshtml" />
+    <Content Include="Views\PriceChange\Index.cshtml" />
+    <Content Include="Views\PriceChange\Action.cshtml" />
+    <Content Include="Views\Home\_PriceChangeListing.cshtml" />
+    <Content Include="Views\Booking\CustomerSettings.cshtml" />
+    <Content Include="Views\Booking\Welcome.cshtml" />
+    <Content Include="Views\Booking\Login.cshtml" />
+    <Content Include="Views\Booking\CustomerAppointments.cshtml" />
+    <Content Include="Views\Booking\CustomerLoyaltyCardAssignments.cshtml" />
+    <Content Include="Views\Booking\CustomerHistory.cshtml" />
+    <Content Include="Views\GiftCard\_Delete.cshtml" />
+    <Content Include="Views\GiftCard\_DeleteAssignment.cshtml" />
+    <Content Include="Views\GiftCard\Action.cshtml" />
+    <Content Include="Views\GiftCard\CardAssignmentIndex.cshtml" />
+    <Content Include="Views\GiftCard\Index.cshtml" />
+    <Content Include="Views\GiftCard\AssignmentAction.cshtml" />
+    <Content Include="Views\Booking\ForgotPassword.cshtml" />
+    <Content Include="Views\OnlineGiftCard\Index.cshtml" />
+    <Content Include="Views\Shared\_GiftCardLayout.cshtml" />
+    <Content Include="Views\OnlineGiftCard\Purchased.cshtml" />
+    <Content Include="Views\OnlineGiftCard\NotPurchased.cshtml" />
+    <Content Include="Views\GiftCard\HistoryOfGiftCard.cshtml" />
+    <Content Include="Views\CalendarManage\Index.cshtml" />
+    <Content Include="Views\CalendarManage\_Listing.cshtml" />
+    <Content Include="Views\CalendarManage\_AssignCalendars.cshtml" />
+    <Content Include="Views\Booking\CustomerGiftCardAssignment.cshtml" />
+    <Content Include="Views\Appointment\CancelByEmail.cshtml" />
+    <Content Include="Views\LoyaltyCard\UpdatePromotion.cshtml" />
+    <Content Include="Views\OnlineGiftCard\NotFound.cshtml" />
+    <Content Include="Views\Home\_AssignService.cshtml" />
+    <Content Include="Views\Appointment\CannotCancelled.cshtml" />
+    <Content Include="Views\Booking\PrivacyPolicy.cshtml" />
+    <Content Include="Views\Appointment\DeletedAppointments.cshtml" />
+    <Content Include="Views\Booking\PriceList.cshtml" />
+    <Content Include="Views\Appointment\AppointmentCancelled.cshtml" />
+    <Content Include="Views\Appointment\ActionEvent.cshtml" />
+    <Content Include="Views\Appointment\CannotReschedule.cshtml" />
+    <Content Include="Views\Appointment\Unsubscribe.cshtml" />
+    <Content Include="Views\Appointment\_ShowWaitingLists.cshtml" />
+    <Content Include="Views\Booking\SubscribedToWaitingList.cshtml" />
+    <Content Include="Views\User\_Activate.cshtml" />
+    <Content Include="Views\Admin\Analysis.cshtml" />
+    <Content Include="Views\LoyaltyCard\CardAssignmentAction.cshtml" />
+    <Content Include="Views\Review\ProvideFeedback.cshtml" />
+    <Content Include="Views\Review\Index.cshtml" />
+    <Content Include="Views\Review\_Delete.cshtml" />
+    <Content Include="Views\Booking\AboutCompany.cshtml" />
+    <Content Include="Views\Error\Index.cshtml" />
+    <Content Include="Views\Home\_ShowRebookReminders.cshtml" />
+    <Content Include="Views\EmployeeRequest\Index.cshtml" />
+    <Content Include="Views\EmployeeRequest\Action.cshtml" />
+    <Content Include="Views\EmployeeRequest\_Delete.cshtml" />
+    <Content Include="Views\FranchiseRequest\_Delete.cshtml" />
+    <Content Include="Views\FranchiseRequest\Action.cshtml" />
+    <Content Include="Views\Shift\Index.cshtml" />
+    <Content Include="Views\Shift\_Action.cshtml" />
+    <Content Include="Views\Holiday\_Delete.cshtml" />
+    <Content Include="Views\Holiday\Action.cshtml" />
+    <Content Include="Views\Holiday\Index.cshtml" />
+    <Content Include="Views\PayRoll\Index.cshtml" />
+    <Content Include="Views\PayRoll\ViewPayRoll.cshtml" />
+    <Content Include="Views\EmployeeRequest\IntegrationSettings.cshtml" />
+    <Content Include="Views\EmployeePriceChange\Index.cshtml" />
+    <Content Include="Views\EmployeePriceChange\Action.cshtml" />
+    <Content Include="Views\EmployeePriceChange\_Delete.cshtml" />
+    <Content Include="Views\Coupon\Action.cshtml" />
+    <Content Include="Views\Coupon\Index.cshtml" />
+    <Content Include="Views\Coupon\_Delete.cshtml" />
+    <Content Include="Views\CouponAssignment\Action.cshtml" />
+    <Content Include="Views\CouponAssignment\Index.cshtml" />
+    <Content Include="Views\CouponAssignment\_Delete.cshtml" />
+    <Content Include="Views\Booking\Referrals.cshtml" />
+    <Content Include="Views\User\Pay.cshtml" />
+    <Content Include="Views\Package\Action.cshtml" />
+    <Content Include="Views\Package\Index.cshtml" />
+    <Content Include="Views\Package\_Delete.cshtml" />
+    <Content Include="Views\Booking\ProcessPayment.cshtml" />
+    <Content Include="Views\NInvoice\Action.cshtml" />
+    <Content Include="Views\NInvoice\Index.cshtml" />
+    <Content Include="Views\NInvoice\View.cshtml" />
+    <Content Include="Views\NInvoice\_Delete.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Content\TBPContent\autocomplete\typings\jquery-autocomplete\" />
+    <Folder Include="Views\Invoice\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <None Include="packages.config" />
+    <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.4.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TheBookingPlatform.Database\TheBookingPlatform.Database.csproj">
+      <Project>{1627dc5e-e0e0-4b90-a971-30664d250b9d}</Project>
+      <Name>TheBookingPlatform.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TheBookingPlatform.Entities\TheBookingPlatform.Entities.csproj">
+      <Project>{d708eba2-38f4-4bc2-b11a-13e31489770b}</Project>
+      <Name>TheBookingPlatform.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TheBookingPlatform.Services\TheBookingPlatform.Services.csproj">
+      <Project>{a9c277e4-367c-4c87-98df-adc018daee4b}</Project>
+      <Name>TheBookingPlatform.Services</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Content\TBPContent\autocomplete\typings\jquery\jquery.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>1432</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44314/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.targets'))" />
+    <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <Import Project="..\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.targets" Condition="Exists('..\packages\Microsoft.TypeScript.MSBuild.5.2.2\build\Microsoft.TypeScript.MSBuild.targets')" />
+  <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

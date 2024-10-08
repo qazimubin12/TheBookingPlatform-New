@@ -1,0 +1,213 @@
+﻿@model TheBookingPlatform.ViewModels.EmployeeListingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+<div style="padding-left:0px;padding-right:0px;" class="col-md-12">
+    @if (Model.Employees != null)
+    {
+        <div class="card">
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+
+                            <th class="text-center">
+                                Order
+                            </th>
+                            <th class="text-center">
+                                Name
+                            </th>
+
+                            <th class="text-center">
+                                Online Booking
+                            </th>
+                            <th class="text-center">
+                                Calendar History
+                            </th>
+                            <th class="text-center">
+                                Type
+                            </th>
+                            <th class="text-center">
+                                Price Change
+                            </th>
+
+                            <th class="text-center">
+                                Amount
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Employees)
+                        {
+                            <tr>
+                                <td style="width:40px;" class="text-center">
+                                    <input type="number" class="form-control" value="@item.Employee.DisplayOrder" onchange="ChangeOrder('@item.Employee.ID', this.value)" />
+                                </td>
+                                <td class="text-center">@item.Employee.Name</td>
+
+
+                                @if (item.Employee.AllowOnlineBooking == true)
+                                {
+                                    <td class="text-center">
+                                        <select class="form-control" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
+                                            <option value="True" selected>Yes</option>
+                                            <option value="False">No</option>
+                                        </select>
+                                    </td>
+
+                                }
+                                else
+                                {
+                                    <td class="text-center">
+                                        <select class="form-control" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
+                                            <option value="True">Yes</option>
+                                            <option selected value="False">No</option>
+                                        </select>
+                                    </td>
+
+                                }
+                                <td class="text-center">
+                                    <select class="form-control limitAccess" id="Limit_@(item.Employee.ID)" onchange="ChangeLimitoFCalendarAccess('@item.Employee.ID')">
+                                        @foreach (var access in Model.CalendarHistoryAccessList)
+                                        {
+                                            if (access == item.Employee.LimitCalendarHistory)
+                                            {
+                                                <option selected value="@access">@access</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@access">@access</option>
+
+                                            }
+                                        }
+                                    </select>
+                                </td>
+
+                                <td class="text-center">
+                                    <select class="form-control changeType" data-id="@item.Employee.ID" id="Type_@(item.Employee.ID)">
+                                        @foreach (var access in Model.Types)
+                                        {
+                                            if (access == item.Employee.Type)
+                                            {
+                                                <option selected value="@access">@access</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@access">@access</option>
+
+                                            }
+                                        }
+                                    </select>
+
+                                </td>
+                                <td class="text-center">
+                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Index", "EmployeePriceChange", new {EmployeeID = item.Employee.ID})">Price Change</a>
+                                </td>
+                                <td style="display:flex;">
+                                    <input type="text" class="form-control numberPercentage" data-id="@item.Employee.ID" value="@item.Employee.Percentage" name="Number" id="Number_@(item.Employee.ID)" />
+                                    <button class="btn btn-primary btn-sm" onclick="ChangeTypeOfEmployee('@item.Employee.ID')" type="button">
+                                        <i class="material-icons">payments</i>
+                                    </button>
+                                </td>
+
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+
+        <div class="alert alert-warning col-md-12" role="alert">
+            Sorry! No records exist.
+        </div>
+    }
+</div>
+
+
+<script>
+           function ChangeLimitoFCalendarAccess(employeeID) {
+            var LimitToBeSet = $("#Limit_" + employeeID).val();
+            $.ajax({
+                url: '@Url.Action("UpdateLimit", "Employee")', // Update this with your controller and action names
+                type: 'POST',
+                data: { employeeID: employeeID, LimitToBeSet: LimitToBeSet },
+                success: function (result) {
+                    //alert("Order Updated");
+                    console.log("Updated");
+                },
+                error: function (error) {
+                    // Handle error response if needed
+                }
+            });
+        }
+
+        function ChangeTypeOfEmployee(employeeID) {
+            var Type = $("#Type_" + employeeID).val();
+            var Number = $("#Number_" + employeeID).val();
+            $.ajax({
+                url: '@Url.Action("UpdateType", "Employee")', // Update this with your controller and action names
+                type: 'POST',
+                data: { ID: employeeID, Type: Type,Number:Number },
+                success: function (result) {
+                    //alert("Order Updated");
+                    var employee = result.Employee.ID;
+                    var type = result.Employee.Type;
+                    if (type != "Do not Display Payroll") {
+                        window.location.href = `@Url.Action("Index", "PayRoll")?Employee=${employee}&Type=${type}`;
+                    }
+                },
+                error: function (error) {
+                    // Handle error response if needed
+                }
+            });
+        }
+
+
+        $(document).ready(function () {
+            $(document).on("change", ".numberPercentage", function () {
+                var employeeID = $(this).data("id");
+                var Type = $("#Type_" + employeeID).val();
+                var Number = $("#Number_" + employeeID).val();
+                $.ajax({
+                    url: '@Url.Action("UpdateType", "Employee")', // Ensure this is correct
+                    type: 'POST',
+                    data: { ID: employeeID, Type: Type, Number: Number },
+                    success: function (result) {
+                        console.log("Updated");
+                    },
+                    error: function (error) {
+                        // Handle error response if needed
+                        console.log("Error:", error);
+                    }
+                });
+            });
+
+            $(document).on("change", ".changeType", function () {
+                var employeeID = $(this).data("id");
+                var Type = $("#Type_" + employeeID).val();
+                var Number = $("#Number_" + employeeID).val();
+                $.ajax({
+                    url: '@Url.Action("UpdateType", "Employee")', // Ensure this is correct
+                    type: 'POST',
+                    data: { ID: employeeID, Type: Type, Number: Number },
+                    success: function (result) {
+                        console.log("Updated");
+                    },
+                    error: function (error) {
+                        // Handle error response if needed
+                        console.log("Error:", error);
+                    }
+                });
+            });
+        });
+</script>
+
+
+
+

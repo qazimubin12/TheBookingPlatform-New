@@ -1,0 +1,182 @@
+﻿@model TheBookingPlatform.ViewModels.OnlineGiftCardViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="my-auto overflow-auto p-3">
+    <!-- banner -->
+    <div class="rounded-4 px-3 appointment-banner mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <img src="@Model.GiftCard.GiftCardImage" alt="" class="img-fluid appointment-doctor-img">
+            <div>
+                <h6 id="nameofCard">@Model.GiftCard.Name </h6>
+               <input type="hidden" value="@Model.Company.Business" id="Company" />
+            </div>
+        </div>
+    </div>
+    <div class="mb-4">
+        <p class="fs-14 fw-bold text-black mb-3">Select Amount</p>
+        <div class="row align-items-center justify-content-between g-2 custom-check">
+            @foreach (var item in Model.GiftCard.GiftCardAmount.Split(',').ToList())
+            {
+                <div class="col">
+                    <input type="radio" class="btn-check" name="btnradio0" id="Amount_@(item)" autocomplete="off">
+                    <label class="btn btn-outline-info text-center"
+                           for="Amount_@(item)">
+                        @item @Model.Company.Currency
+                    </label>
+                </div>
+            }
+
+
+        </div>
+        <hr />
+        <p class="fs-14 fw-bold text-black mb-3">Enter Details </p>
+        <div class="row align-items-center justify-content-between g-2 custom-check">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Enter First Name</label>
+                        <input type="text" class="form-control common-field" name="FirstName" id="FirstName" />
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Enter Last Name</label>
+                        <input type="text" class="form-control common-field" name="LastName" id="LastName" />
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="form-group">
+                    <label>Enter Email (this should be used while booking appointments)</label>
+                    <input type="email" class="form-control common-field" name="Email" id="Email" />
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="form-group">
+                    <label>Enter Mobile Number</label>
+                    <input type="text" class="form-control common-field" name="MobileNumber" id="MobileNumber" />
+                </div>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            Summary
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            Gift Card Amount
+                        </td>
+                        <td id="GiftCardAmountText">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Total
+                        </td>
+                        <td id="GiftCardAmountTextTotal">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+
+
+        </div>
+
+
+
+    </div>
+    
+</div>
+<!-- footer -->
+<div class="footer mt-auto p-3">
+    <span class="text-danger" id="Error"></span>
+    <button id="PayButton" class="btn btn-info btn-lg w-100 rounded-4">BUY NOW</button>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        function CheckData() {
+            if ($("#GiftCardAmountText").text().trim() == "") {
+                $("#PayButton").attr("disabled", "disabled");
+                $("#Error").text("Please Select Amount");
+            } else {
+                $("#PayButton").removeAttr("disabled");
+            }
+        }
+        $("#PayButton").attr("disabled", "disabled");
+        $('.btn-check').on('click', function () {
+            var amountWithCurrency = $(this).next('label').text().trim();
+            $("#GiftCardAmountText").text(amountWithCurrency);
+            $("#GiftCardAmountTextTotal").text(amountWithCurrency);
+            CheckData();
+            // You can use the 'amountWithCurrency' variable as needed here.
+        });
+
+        $(".common-field").on("input", function () {
+            var name = $("#FirstName").val().trim();
+            var email = $("#Email").val().trim();
+            var mobileNumber = $("#MobileNumber").val().trim();
+            var lastname = $("#LastName").val().trim();
+
+            if (name === '' || email === '' || mobileNumber === '' || lastname === '') {
+                $("#PayButton").attr("disabled", "disabled");
+
+                $("#FirstName").css("border", name === '' ? "0.5px solid red" : "none");
+                $("#LastName").css("border", lastname === '' ? "0.5px solid red" : "none");
+                $("#Email").css("border", email === '' ? "0.5px solid red" : "none");
+                $("#MobileNumber").css("border", mobileNumber === '' ? "0.5px solid red" : "none");
+
+            }
+            else {
+                $("#PayButton").removeAttr("disabled");
+                CheckData();
+                $(".common-field").css("border", "none"); // Remove border from all fields
+            }
+        });
+
+
+        $("#PayButton").click(function () {
+            showLoadingSpinner();
+            var company = $("#Company").val();
+            var nameofCard = $("#nameofCard").text();
+            var amount = $("#GiftCardAmountText").text();
+            var FirstName = $("#FirstName").val();
+            var LastName = $("#LastName").val();
+            var Email = $("#Email").val();
+            var MobileNumber = $("#MobileNumber").val();
+
+            $.ajax({
+                url: '@Url.Action("BuyGiftCard", "OnlineGiftCard")', // Replace with the actual route to your controller action
+                type: 'POST',
+                data: { CardName: nameofCard, Amount: amount, Email: Email, MobileNumber: MobileNumber, FirstName: FirstName, LastName: LastName, Company: company },
+                success: function (data) {
+                    window.location.href = data.session;
+                    hideLoadingSpinner();
+                    //location.reload();  
+
+                },
+                error: function (xhr, status, error) {
+                    hideLoadingSpinner();
+                }
+            });
+        });
+
+
+    });
+</script>

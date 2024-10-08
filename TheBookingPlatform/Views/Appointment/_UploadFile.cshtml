@@ -1,0 +1,101 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentDetailsViewModel
+
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <span>Upload File </span>
+            </h5>
+           
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <input type="hidden" id="CustomerID" name="ID" value="@Model.Customer.ID" />
+                <input type="hidden" id="FileID" name="ID" value="@Model.FileID" />
+                <div class="form-group">
+                    <label><button id="MainFilebutton" class="btn btn-primary">UPLOAD FILE</button></label>
+                    <input type="file" id="FileUpload" class="form-control" />
+                    <input type="hidden" name="URL" id="URL" />
+                    <input type="hidden" name="Name" id="Name" />
+                    <input type="hidden" name="Size" id="Size" />
+
+                </div>
+            </form>
+           
+        </div>
+        <div class="modal-footer">
+            <button id="ActionBtn" type="button" class="btn btn-primary" ><i class="fas fa-save mr-1"></i> SAVE</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+        </div>
+    </div>
+}
+
+<script>
+
+
+
+    $("#FileUpload").change(function () {
+
+        showLoadingSpinner();
+        var element = this;
+        var formData = new FormData();
+        var totalFiles = element.files.length;
+
+        for (var i = 0; i < totalFiles; i++) {
+            var file = element.files[i];
+            formData.append("Logo", file);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("UploadImage", "Shared")',
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false
+        })
+            .done(function (response) {
+
+                if (response.Success)
+                {
+                    // For now, we'll just delay the fade out for demonstration
+                    hideLoadingSpinner();
+                    $("#URL").val(response.DocURL);
+                    $("#Name").val(response.FileName);
+                    $("#Size").val(response.FileSizeKB);
+                    console.log(response.DocURL + response.FileName + response.FileSizeKB);
+                    $("#MainFilebutton").text("RE-UPLOAD?");
+                }
+
+            })
+            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("FAIL");
+            })
+    });
+
+    $("#ActionBtn").click(function () {
+        var CustomerID = $("#CustomerID").val();
+        var URL = $("#URL").val();
+        var Name = $("#Name").val();
+        var Size = $("#Size").val();
+        var ID = $("#FileID").val();
+		$.ajax({
+			url: '@Url.Action("UploadFile", "Appointment")',
+            type: "post",
+            data: { ID:ID, CustomerID: CustomerID, URL: URL,Name:Name,Size:Size}
+		})
+		.done(function (response) {
+			if(response.success)
+            {
+                alert("File Saved");
+                $(".btn-secondary[data-dismiss='modal']").click();
+
+
+			}
+			else {
+				$(".errorDiv").html(response.Message);
+			}
+		});
+	});
+</script>

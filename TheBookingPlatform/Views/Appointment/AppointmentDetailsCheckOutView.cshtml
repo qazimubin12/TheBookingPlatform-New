@@ -1,0 +1,139 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentDetailsViewModel
+@{
+    ViewBag.Title = "AppointmentDetails";
+}
+
+<style>
+    #loader {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card .card-content {
+        padding: 0px 20px;
+        position: relative;
+    }
+
+    .card .nav-pills, .card .tab-content {
+        margin-top: 0px;
+    }
+</style>
+<div class="card">
+    <input type="hidden" name="ID" value="@Model.Appointment.ID" id="ID" />
+    <div class="card-content text-center">
+        <div class="table-responsive">
+            @*<span class="text-center">Choose Option</span>*@
+            <div class="nav-center">
+                <input type="hidden" id="Selected" value="@Model.Selected" />
+                <ul class="nav nav-pills nav-pills-warning nav-pills-icons" role="tablist">
+
+                    <li>
+                        <a id="AppointmentDetails" href="#description-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">info</i>
+                            Appointment Details
+                        </a>
+                    </li>
+
+                    <li>
+                        <a id="Checkout" href="#tasks-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">
+                                money
+                            </i>
+                            Checkout
+                        </a>
+                    </li>
+                    <li>
+                        <a id="Status" href="#schedule-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">category</i>
+                            Status
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>
+<div style="display:none;" id="loader"><img style="width:150px;" src="~/Content/TBPContent/Loader.gif" /></div>
+
+<div id="ActionPanel">
+</div>
+
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+<script>
+    $("#AppointmentDetails").click(function () {
+        showLoadingSpinner();
+
+        var ID = $("#ID").val();
+        $.ajax({
+            url: '@Url.Action("AppointmentDetailsPartial", "Appointment")', // Replace with your controller and action names
+            type: 'GET',
+            data: { AppointmentID:ID},
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    function GoToCheckOutPage() {
+        $("#Checkout").click();
+    }
+    $("#Checkout").click(function () {
+        showLoadingSpinner();
+        var ID = $("#ID").val();
+        $.ajax({
+            url: '@Url.Action("Checkout", "Appointment")', // Replace with your controller and action names
+            type: 'GET',
+            data: { ID:ID},
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+
+    $(document).ready(function () {
+        if ($("#Selected").val() == "Appointment Details") {
+            $("#AppointmentDetails").click();
+        }
+        else if ($("#Selected").val() == "Checkout") {
+            $("#Checkout").click();
+        }
+        else {
+            $("#AppointmentDetails").click();
+
+        }
+
+    })
+
+</script>

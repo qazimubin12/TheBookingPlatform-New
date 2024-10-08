@@ -1,0 +1,2029 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "Form";
+}
+<head>
+    <link rel="stylesheet" href="~/Content/build/css/intlTelInput.css" />
+    <script src="~/Content/slickdd/jquery.ddslick.min.js"></script>
+    <script src="~/Content/FinalDatePicker/datedropper-javascript.js"></script>
+</head>
+
+<style>
+    .btnTimeSlot {
+        position: relative;
+        display: inline-block;
+        font-size: 14px;
+        width: 135px;
+        margin: 10px 5px 5px 5px;
+    }
+
+    .discount-ribbon {
+        position: absolute;
+        top: 0;
+        background-color: forestgreen; /* Adjust the color as needed */
+        color: white;
+        padding: 5px 10px;
+        font-size: 12px;
+        width: 50px;
+        font-weight: bold;
+    }
+
+        .discount-ribbon:first-of-type {
+            left: 0;
+            top: -15px;
+            transform-origin: left top;
+        }
+
+        .discount-ribbon:last-of-type {
+            right: 0;
+            top: -15px;
+            transform-origin: right top;
+        }
+
+
+    .discount-ribbon2 {
+        position: absolute;
+        top: 0;
+        background-color: indianred; /* Adjust the color as needed */
+        color: white;
+        padding: 5px 10px;
+        font-size: 12px;
+        width: 50px;
+        font-weight: bold;
+    }
+
+        .discount-ribbon2:first-of-type {
+            left: 0;
+            top: -15px;
+            transform-origin: left top;
+        }
+
+        .discount-ribbon2:last-of-type {
+            right: 0;
+            top: -15px;
+            transform-origin: right top;
+        }
+
+    .calendar-box {
+        text-align: center;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        display: contents;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+    }
+
+    .calendar-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .calendar {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        position: absolute;
+        z-index: 1;
+        display: none;
+    }
+
+    .dd-select {
+        width: 240% !important;
+        border-radius: 20px;
+        background: white !important;
+    }
+
+    .day.disabled {
+        background-color: gainsboro;
+        color: darkgrey;
+    }
+
+    .header {
+        background-color: #3498db;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    #prevBtn,
+    #nextBtn {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    #monthYear {
+        font-size: 18px;
+        font-weight: bold;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    /*
+    .dd-pointer-down {
+        border: solid 15px transparent !important;
+        border-top: solid 20px gray !important;
+    }*/
+    .dd-pointer {
+        width: 0;
+        height: 0;
+        position: absolute;
+        right: 60px !important;
+        top: 15% !important;
+    }
+
+    input#FirstName::placeholder {
+        font-size: smaller;
+        padding: 10px;
+    }
+
+    input#LastName::placeholder {
+        font-size: smaller;
+        padding: 10px;
+    }
+
+    input#Email::placeholder {
+        font-size: smaller;
+        padding: 10px;
+    }
+
+    input#MobileNumber::placeholder {
+        font-size: smaller;
+        padding: 10px;
+    }
+
+    .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        padding: 10px;
+    }
+
+    .weekday {
+        font-weight: bold;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .badge-tilted {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform-origin: 0 0;
+        padding: 5px 10px;
+        background-color: #f8f9fa; /* Background color for the badge */
+        color: #000; /* Text color for the badge */
+    }
+
+    .day {
+        padding: 10px;
+        text-align: center;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .day.current {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .day.selected {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+
+    .dd-option-image, .dd-selected-image {
+        vertical-align: middle;
+        float: left;
+        margin-right: 5px;
+        max-width: 60px;
+    }
+
+    #dateInput {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .dd-selected-text {
+        line-height: 65px !important;
+    }
+
+    .dd-option-text {
+        line-height: 65px !important;
+    }
+
+    .loading-spinner-overlay {
+        display: none; /* Initially hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 9999; /* Ensure it appears above all other content */
+        background-color: rgba(0,0,0,0.5); /* Transparent black */
+    }
+
+    .list-group-item {
+        font-size: large;
+    }
+
+
+    .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check) + .btn:active {
+        background-color: var(--bs-btn-active-bg);
+        border-color: var(--bs-btn-active-border-color);
+        border: solid 2px cornflowerblue;
+    }
+
+    #demo-htmlselect {
+        width: 42% !important;
+    }
+
+    .dd-options.dd-click-off-close {
+        border-radius: 20px;
+        width: 240% !important; /* You can adjust the width value according to your preference */
+    }
+
+    .spinner {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+
+
+    .custom-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-btn {
+        padding: 5px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        border-radius: 20px;
+    }
+
+    .dropdown-content {
+        display: none;
+        width: 100%;
+        position: absolute;
+        background-color: #f9f9f9;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+        .dropdown-content a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+            .dropdown-content a:hover {
+                background-color: #ddd;
+            }
+</style>
+<ul class="nav doctor-profile-tabs mb-2 shadow-sm" style="display:none;" id="pills-tab" role="tablist">
+    @*<li class="nav-item col" role="presentation">
+            <button class="nav-link w-100 " id="pills-beautician-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-beautician" type="button" role="tab" aria-controls="pills-beautician"
+                    aria-selected="true">
+                Select Beautician
+            </button>
+        </li>*@
+    <li class="nav-item col" role="presentation">
+        <button disabled class="nav-link w-100 active" id="pills-info-tab" data-bs-toggle="pill"
+                data-bs-target="#pills-info" type="button" role="tab" aria-controls="pills-info"
+                aria-selected="false">
+            Details
+
+        </button>
+    </li>
+
+    <li class="nav-item col" role="presentation">
+        <button disabled class="nav-link w-100" id="pills-payment-tab" data-bs-toggle="pill"
+                data-bs-target="#pills-payment" type="button" role="tab" aria-controls="pills-payment"
+                aria-selected="false">
+            Payment
+        </button>
+    </li>
+</ul>
+<form id="ActionForm">
+    <div class="tab-content" id="pills-tabContent">
+        <!-- upcoming -->
+        <!--<div style="padding:15px;" class="tab-pane fade show active" id="pills-beautician" role="tabpanel"
+             aria-labelledby="pills-beautician-tab" tabindex="0">
+
+
+            <hr />
+            <button type="button" style="display: none; position: fixed; top: 480px; left:0px;" id="NextToInfo" class="btn btn-info btn-lg w-100 rounded-4">Next</button>
+        </div>-->
+        <!-- past -->
+        <div style="padding:15px;" class="tab-pane fade  show active" id="pills-info" role="tabpanel" aria-labelledby="pills-info-tab"
+             tabindex="0">
+            <div class="card">
+                <div class="card-body">
+                    @*<h6 style="font-size:18px;" class="px-2 card-title">
+            Choose your specialist
+        </h6>*@
+                    <span style="display:none;"translate="no" id="NewTimeSlotSelected"></span>
+                    <input type="hidden" id="ServiceIDs" name="ServiceIDs" value="@Model.ServiceIDs" />
+                    <input type="hidden" id="MyEmployeeID" />
+
+                    <input type="hidden" id="CompanyID" name="CompanyID" value="@Model.CompanyID" />
+                    <input type="hidden" id="By" name="By" value="@Model.By" />
+                    <input type="hidden" id="AnyAvailableEmployeeSelected" name="AnyAvailableEmployeeSelected" />
+                    <input type="hidden" id="CustomerID" name="CustomerID" value="@Model.CustomerID" />
+                    <input type="hidden" id="CouponID" name="CouponID" />
+                    <input type="hidden" id="DepositText_" name="DepositText_" />
+                    <input type="hidden" id="CouponAssignmentID" name="CouponAssignmentID" />
+                    <input type="hidden" id="Time" class="common-input" name="Time" />
+                    <div class="custom-dropdown col-md-12" style="width:100%;" id="customDropdown">
+                        <div class="dropdown-btn" onclick="toggleDropdown()"></div>
+                        <div class="dropdown-content col-md-12" id="dropdownContent">
+                            <div id="row_0" style="display:flex;justify-content:flex-start;align-items:center;" onclick="selectEmployee('Any Available Specialist','0')" class="row">
+                                <div style=" display: flex; justify-content: flex-start; align-items: center; margin: 5px;width:100%;" class="col-md-12">
+                                    <img style="margin-right:20px;width:65px;" src="~/Content/TBPContent/people.png" class="img-fluid emp_Image" />
+                                    <h5 style="width:100%;" class="emp_Name">Any Available Specialist</h5>
+                                    <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-down downArrow"></i>
+                                    <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-up upArrow"></i>
+
+                                </div>
+                            </div>
+
+                            @foreach (var item in Model.Employees)
+                            {
+                                <div id="row_@(item.Employee.ID)" style="display:flex;justify-content:flex-start;align-items:center;" onclick="selectEmployee('@item.Employee.Name','@item.Employee.ID')" class="row">
+                                    <div style=" display: flex; justify-content: flex-start; align-items: center; margin: 5px; width: 100%;" class="col-md-12">
+                                        <img style="margin-right:20px;width:65px;" src="@item.Employee.Photo" class="img-fluid emp_Image" />
+                                        <div class="dataText" style="margin-top:20px;width:85%;">
+
+                                            <h5 style="margin-bottom:0px;" class="emp_Name">@item.Employee.Name </h5>
+
+                                            <p style="margin-bottom:0px;" class="emp_Specs">@item.Employee.Specialization</p>
+                                            @if (item.HaveEmpPriceChange)
+                                            {
+                                                <p style="margin-bottom: 0px; color: red; font-weight: bold;" class="">This staff has price @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</p>
+
+                                            }
+                                            @if (item.Rating > 0)
+                                            {
+
+                                                <h6 class="emp_Rating" style="font-size:large;">
+                                                    @for (int i = 1; i <= item.Rating; i++)
+                                                    {
+                                                        <i style="color:goldenrod;font-size:large" class="mdi mdi-star"></i>
+                                                    }
+                                                    (@(item.Count))
+                                                </h6>
+                                            }
+                                        </div>
+                                        <button type="button" class="info-button btn" data-bs-toggle="modal" data-bs-target="#infoModal_@(item.Employee.ID)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
+                                                <circle cx="50" cy="50" r="40" fill="#3498db" />
+                                                <text x="50" y="50" text-anchor="middle" alignment-baseline="middle" font-size="40" fill="#fff">i</text>
+                                            </svg>
+                                        </button>
+                                        <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-down downArrow"></i>
+                                        <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-up upArrow"></i>
+                                        <div class="modal fade" id="infoModal_@(item.Employee.ID)" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="infoModalLabel">@item.Employee.Name</h5>
+                                                        <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">X</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <span style="display:block;">@item.Employee.Description</span>
+                                                        <ul class="list-group">
+                                                            @foreach (var review in item.Reviews)
+                                                            {
+                                                                <li class="list-group-item">
+                                                                    <span style="font-size:small;"><b>@review.CustomerName</b></span>
+                                                                    <br />
+                                                                    <span style=" display: block; margin-bottom: -10px;">
+                                                                        @for (int i = 0; i < review.Review.Rating; i++)
+                                                                        {
+                                                                            if (i > 0)
+                                                                            {
+
+
+                                                                                <i style="margin-left:-5px;color:orange;" class="mdi mdi-star"></i>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <i style="color:orange;" class="mdi mdi-star"></i>
+
+                                                                            }
+                                                                        }
+                                                                    </span>
+                                                                    <span style="font-size:small;">
+
+                                                                        @review.Review.Feedback
+                                                                    </span>
+
+                                                                </li>
+
+
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+                    </div>
+
+
+
+                    @if (Model.ErrorNote == "Yes")
+                    {
+                        <h6 style="padding:20px;" class="text-danger px-3" id="NEWError">
+                            You can't book further due to one of the reasons:<br /><br />
+                            * You've selected service(s) that require the involvement of multiple employees.<br />
+                            * You haven't chosen a "services" yet!<br /><br />
+                            Please go back to the booking page
+                            or call @Model.Company.Business for an appointment!
+                        </h6>
+
+                    }
+                    <div class="mb-3">
+
+                        <input translate="no" readonly type="text" style="display:none;" id="dateInput" name="Date" onchange="renderCalendar()" placeholder="Select a date">
+                        <div class="calendar" id="calendar">
+                            <div class="header">
+                                <button type="button" id="prevBtn">&lt;</button>
+                                <h2 translate="no" id="monthYear">Month Year</h2>
+                                <button type="button" id="nextBtn">&gt;</button>
+                            </div>
+                            <div class="days" id="daysContainer"></div>
+                        </div>
+
+                    </div>
+
+                    <div id="MainSlotsView" class="mb-3">
+                        <label for="floatingTextarea" class="mb-1">Time Slots</label>
+                        @if (Model.ErrorNote == "Yes")
+                        {
+
+                        }
+                        else
+                        {
+                            <div class="row" style="width:100%; display: flex; justify-content: center; " id="TimeSlots">
+
+                            </div>
+                        }
+                        <div id="EmpPriceChangeRow" class="row" style="display:none; border: solid 0.5px; border-radius: 20px; padding: 5px;">
+                            <img style="width:100px;height:100%;" src="" id="EmployeePriceChangeImg" />
+                            <div class="col-md-12" style="width:60%;">
+                                <h3 id="EmployeePriceChangeName"> <span id="empDiscountTextH"></span></h3>
+                                <p style="color:red;font-weight:bold;" id="DetailsofPriceChange">
+                                    The selected staff has a <span id="empPercentagetext"></span> <span id="empDiscountText"></span> on the selected date, if you
+                                    are not comfortable with that kindly change staff.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 style="font-size:18px;" class="px-2 card-title">Personal Information</h6>
+
+                    @if (Model.SentBy == "Cancellation")
+                    {
+                        <div class="row">
+                            <div style="margin-bottom:15px;" class="col-12">
+                                <label style="color:black;font-weight:600;" for="exampleFormControlName" class="form-label mb-1">First Name</label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                                    <input name="FirstName" id="FirstName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                           readonly value="@Model.FirstName" placeholder="Please Enter Your First Name" aria-label="First name" aria-describedby="name">
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom:15px;" class="col-12">
+                                <label style="color:black;font-weight:600;" for="exampleFormControlAge" class="form-label mb-1">Last Name</label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                                    <input name="LastName" id="LastName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                           readonly value="@Model.LastName" placeholder="Please Enter Your Last Name" aria-label="Last name" aria-describedby="name">
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div style="margin-bottom:15px;" class="mb-3">
+                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Email <span class="text-success">*Please ensure your email is correct for confirmation</span></label>
+                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                <input name="Email" id="Email" type="email" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                       readonly value="@Model.Email" placeholder="Please Enter Your Email" aria-label="Email" aria-describedby="Email">
+                            </div>
+                            <span id="ErrorText" class="text-danger"></span>
+                        </div>
+
+                        <div style="margin-bottom:15px;" class="mb-3">
+                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Mobile Number</label>
+                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                <input maxlength="13" type="text" value="" placeholder="+31XXXXXXXXX" id="MobileNumber" class="form-control common-input" name="MobileNumber" />
+                                <span id="phoneNumberError" class="text-danger"></span>
+
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:15px;" class="mb-3">
+                            <input type="hidden" translate="no" id="SentBy" value="@Model.SentBy" />
+                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Comment</label>
+                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                @if (Model.SentBy == "Cancellation")
+                                {
+                                    <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
+                                           value="@Model.Appointment.Notes" placeholder="Please Enter Your Comment" aria-label="Comment" aria-describedby="Comment">
+                                    <input type="hidden" value="@Model.Appointment.ID" id="AppointmentID" name="AppointmentID" />
+                                }
+                                else
+                                { <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
+                                         value="" placeholder="Please Enter Your Comment" aria-label="Comment" aria-describedby="Comment">
+
+                                }
+
+                            </div>
+                        </div>
+
+
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div style="margin-bottom:15px;" class="col-12">
+                                <label style="color:black;font-weight:600;" for="exampleFormControlName" class="form-label mb-1">First Name</label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                                    <input name="FirstName" id="FirstName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                           value="" placeholder="John" aria-label="First name" aria-describedby="name">
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom:15px;" class="col-12">
+                                <label style="color:black;font-weight:600;" for="exampleFormControlAge" class="form-label mb-1">Last Name</label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                                    <input name="LastName" id="LastName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                           value="" placeholder="Doe" aria-label="Last name" aria-describedby="name">
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div style="margin-bottom:15px;" class="mb-3">
+                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Email <span class="text-success">*Please ensure your email is correct for confirmation</span></label>
+                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                <input name="Email" id="Email" type="email" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                       value="" placeholder="john@doe.com" aria-label="Email" aria-describedby="Email">
+                            </div>
+                            <span id="ErrorText" class="text-danger"></span>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Mobile Number</label>
+                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                <input style="margin-bottom:15px;" maxlength="13" type="text" value="" placeholder="+31XXXXXXXXX" id="MobileNumber" class="form-control common-input" name="MobileNumber" />
+                                <span id="phoneNumberError" class="text-danger"></span>
+
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:15px;" class="mb-3">
+                            <input type="hidden" translate="no" id="SentBy" value="@Model.SentBy" />
+                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Comment</label>
+                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                @if (Model.SentBy == "Cancellation")
+                                {
+                                    <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
+                                           value="@Model.Appointment.Notes" placeholder="" aria-label="Comment" aria-describedby="Comment">
+                                    <input type="hidden" value="@Model.Appointment.ID" id="AppointmentID" name="AppointmentID" />
+                                }
+                                else
+                                { <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
+                                         value="" placeholder="" aria-label="Comment" aria-describedby="Comment">
+
+                                }
+
+                            </div>
+                        </div>
+                    }
+
+                    <div id="loadingSpinner" class="loading-spinner-overlay">
+                        <div class="spinner"></div>
+                    </div>
+                    <hr />
+
+
+
+                    @*<div class="mb-3">
+            <label for="floatingTextarea" class="mb-1">Reminder in</label>
+            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                <select class="form-control" name="ReminderIn" id="ReminderIn">
+                    <option value="12 Hours">12 Hours</option>
+                    <option value="24 Hours">24 Hours</option>
+                    <option value="Do Not Send">Do Not Send</option>
+                </select>
+            </div>
+        </div>*@
+                </div>
+                <span class="text-danger px-3" id="Error"></span>
+            </div>
+
+            <input type="text" class="form-control" name="SelectedEmployeeID" hidden id="SelectedEmployeeID" />
+            <input type="text" class="form-control" name="FinalSelectedEmployeeID" hidden id="FinalSelectedEmployeeID" />
+            <input type="text" class="form-control" name="FomrSubmittedID" hidden id="FomrSubmittedID" />
+            <input type="text" class="form-control" name="CheckDisabledDayID" hidden id="CheckDisabledDayID" />
+
+            <button type="button" style="display:none;" id="NextToPayment" class="btn btn-info btn-lg w-100 rounded-4">Next</button>
+        </div>
+
+        <div style="padding:15px;" class="tab-pane fade" id="pills-payment" role="tabpanel"
+             aria-labelledby="pills-payment-tab" tabindex="0">
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="col-12">
+                        <h6 style="font-size:18px;" class="medium card-title">Employee</h6>
+                        <hr />
+                        <div style="padding: 1px 15px !important; display: flex;" class="link-dark col-12">
+                            <div style="justify-content:space-around" class="bg-white d-flex align-items-center">
+                                <img style="height:50px;width:50px;margin-right:10px;" id="Emp_Image" alt="" class="img-fluid rounded-4 voice-img">
+                                <div>
+                                    <h6 style="font-size:18px;" id="Emp_Name" class="mb-1"></h6>
+                                    <p id="Emp_Specialization" style="color:gray;" class="mb-2"></p>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="card">
+                <div class="card-body" style=" padding-bottom: 0px;">
+                    <h6 style="font-size:18px;" class="card-title">
+                        Appointment Summary
+                    </h6>
+                    <br />
+                    <div class="row">
+                        <div style="display:flex;">
+                            <h6 style="font-weight:700;" id="DateSelected" class="medium"></h6>
+                            <h6 style="margin-left: 5px; font-weight: 700;" translate="no" id="TimeSlotSelected" class="medium"></h6>
+                        </div>
+                        <p id="DurationOFAllService" translate="no" class="">Total Duration: @(Model.ServicesOnly.Select(x=>x.OnlyDuration).Sum()) minutes </p>
+                        <table class="table table-borderless" style=" margin-bottom: 0px; ">
+                            <tbody>
+                                @foreach (var item in Model.ServicesOnly)
+                                {
+                                    <tr>
+                                        <td class="serviceNamesinSummary">@item.Name</td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <div style=" display: flex; justify-content: space-between; ">
+                                            <h6 style="font-weight:700;">
+                                                Total
+                                            </h6>
+                                            <h6 style="font-weight:700;" id="Remainder"></h6>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div style=" display: flex; justify-content: space-between; ">
+                                            <p>Deposit (@(Model.Company.Deposit)%)</p>
+
+                                            <h6 style="font-weight:800;" id="Remainder"></h6>
+                                            <input type="hidden" id="EmployeePriceChange" name="EmployeePriceChange" />
+                                            @if (Model.SentBy != "Cancellation")
+                                            {
+                                                <input type="hidden" id="OnlinePriceChange" name="OnlinePriceChange" />
+
+                                            }
+                                            @if (Model.Company.PaymentMethodIntegration)
+                                            {
+                                                <p id="DepositText"> @Model.Deposit @Model.Company.Currency </p>
+                                            }
+                                            else
+                                            {
+                                                <p id="DepositText"> @Model.Deposit  @Model.Company.Currency </p>
+                                            }
+                                        </div>
+                                        <h6 id="Percentage"></h6>
+                                        <h6 id="EmpPercentage"></h6>
+
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" id="CouponCode" placeholder="Enter coupon code" aria-label="Coupon Code" aria-describedby="button-addon">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" type="button" id="button-addon" onclick="CheckCouponCode()">Apply Coupon</button>
+                                            </div>
+
+
+                                        </div>
+                                        <span class="text-success" id="SuccessMsg"></span>
+                                        <span class="text-danger" id="ErrorMESSage"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" name="ReferralCode" id="ReferralCode" placeholder="Enter Referral Code" aria-label="Referral Code" aria-describedby="button-addon">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @if (Model.Company.PaymentMethodIntegration)
+            {
+                <input type="hidden" id="RemainderValue" value="@(Model.ServicesOnly.Sum(x => x.Price) - Model.Deposit)" />
+            }
+            else
+            {
+                <input type="hidden" id="RemainderValue" value="@(Model.ServicesOnly.Sum(x => x.Price) - Model.Deposit)" />
+
+            }
+
+            <button id="openWindowButton" style="display:none" type="button"></button>
+            <div class="card">
+                <div class="card-body">
+                    <div style="display:flex;justify-content:flex-start;">
+                        <span style="padding:10px;font-size:large;color:green;" class="mdi mdi-bell-outline"></span>
+                        <p>@Model.Company.BookingLinkInfo</p>
+                    </div>
+                </div>
+            </div>
+            @if (Model.SentBy == "Cancellation")
+            {
+                <button type="button" id="RescheduleNow" class="btn btn-info btn-lg w-100 rounded-4">RESCHEDULE NOW</button>
+            }
+            else
+            {
+                <button type="button" id="PayNow" class="btn btn-info btn-lg w-100 rounded-4">BOOK NOW</button>
+
+            }
+            <button type="button" style="display:none;" id="AddToWaitingList" class="btn btn-info btn-lg w-100 rounded-4">PUT ME ON THE WAITING LIST</button>
+
+            <span>By booking your appointment, you agree to our <a target="_blank" href="@Url.Action("PrivacyPolicy","Booking", new { businessName = Model.Company.Business })">Terms and Conditions</a></span>
+        </div>
+    </div>
+
+</form>
+
+<script src="~/Content/build/js/intlTelInput.js"></script>
+<script>
+    var currentDate = new Date();
+    var selectedDate = null;
+    var daysContainer = document.getElementById("daysContainer");
+    var prevBtn = document.getElementById("prevBtn");
+    var nextBtn = document.getElementById("nextBtn");
+    var monthYear = document.getElementById("monthYear");
+    var dateInput = document.getElementById("dateInput");
+    var calendar = document.getElementById("calendar");
+    function handleDayClick(dayeleme) {
+
+        if (!dayeleme.classList.contains("disabled")) {
+            selectedDate = new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth(),
+                dayeleme.textContent
+            );
+            var year = selectedDate.getFullYear();
+            var month = ('0' + (selectedDate.getMonth() + 1)).slice(-2); // Months are zero-based
+            var day = ('0' + selectedDate.getDate()).slice(-2);
+
+            // Format the date in "yyyy-MM-dd" format
+            var formattedDate = year + '-' + month + '-' + day;
+
+            $(".day").removeClass("selected");
+            dayeleme.classList.add("selected");
+            dateInput.value = formattedDate;
+            updateTimeSlots();
+        }
+    }
+    function renderCalendar(data, finalSelectedDate) {
+
+        daysContainer.innerHTML = "";
+        const firstDay = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            1
+        );
+        const lastDay = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() + 1,
+            0
+        );
+
+
+        monthYear.textContent = `${currentDate.toLocaleString("en-US", {
+            month: "long"
+        })} ${currentDate.getFullYear()}`;
+        // Adjusting weekdays array to start from Monday
+        const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        for (let i = 0; i < weekdays.length; i++) {
+            const weekdayElement = document.createElement("div");
+            weekdayElement.classList.add("weekday");
+            weekdayElement.textContent = weekdays[i];
+            daysContainer.appendChild(weekdayElement);
+        }
+
+
+
+        // Adjust index to start week from Monday
+        let firstDayIndex = firstDay.getDay() - 1;
+        if (firstDayIndex < 0) {
+            firstDayIndex = 6; // if Sunday, set to the last index
+        }
+
+        // Add empty days to match first day index
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyDayElement = document.createElement("div");
+            emptyDayElement.classList.add("day");
+            emptyDayElement.classList.add("empty");
+            daysContainer.appendChild(emptyDayElement);
+        }
+        const monthYearDate = new Date(monthYear.textContent);
+        if (finalSelectedDate != null) {
+
+            const parsedTimestamp = finalSelectedDate.match(/\d+/);
+            const selectedDate = new Date(parseInt(parsedTimestamp[0], 10));
+            // Populate calendar with actual days
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const currentDate = new Date(monthYearDate.getFullYear(), monthYearDate.getMonth(), day);
+                createDayElement(day, data, currentDate, selectedDate);
+            }
+        } else {
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                createDayElement(day, currentDate, data);
+            }
+        }
+        positionCalendar();
+
+
+        var elementId = "monthYear";
+        if (isCurrentMonthYear(elementId)) {
+            console.log("The month and year are current.");
+            $("#prevBtn").hide();
+        } else {
+            $("#prevBtn").show();
+        }
+
+    }
+
+    function isCurrentMonthYear(elementId) {
+        // Get the current date
+        var currentDate = new Date();
+
+        // Get the month and year from the current date
+        var currentMonth = currentDate.getMonth() + 1; // JavaScript months are zero-based
+        var currentYear = currentDate.getFullYear();
+
+        // Get the text content of the element
+        var elementText = document.getElementById(elementId).innerText;
+
+        // Extract month and year from the element text
+        var parts = elementText.split(' ');
+        var elementMonth = parts[0];
+        var elementYear = parseInt(parts[1]);
+
+        // Compare the current month and year with the element's month and year
+        return (currentYear === elementYear && currentMonth === getMonthNumber(elementMonth));
+    }
+
+    // Function to get the month number from its name
+    function getMonthNumber(monthName) {
+        var months = {
+            "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
+            "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
+        };
+        return months[monthName];
+    }
+
+    // Example usage
+
+
+
+    // Function to check if two dates have the same year, month, and day
+    function isSameDate(date1, date2) {
+        const iteratedMilliseconds = parseInt(date2.match(/\/Date\((\d+)\)\//)[1]);
+        const finalDate2 = new Date(iteratedMilliseconds);
+
+        return date1.getFullYear() === finalDate2.getFullYear() &&
+            date1.getMonth() === finalDate2.getMonth() &&
+            date1.getDate() === finalDate2.getDate();
+    }
+    function createDayElement(day, data, iteratedDate, finalSelectedDate) {
+
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+        const dayElement = document.createElement("div");
+        dayElement.classList.add("day");
+        dayElement.textContent = day;
+
+        if (finalSelectedDate != null) {
+            if (finalSelectedDate && date.toDateString() === finalSelectedDate.toDateString()) {
+                dayElement.classList.add("selected");
+
+                handleDayClick(dayElement); // Call handleDayClick if the day is selected
+
+            }
+        }
+        const today = new Date(); // Get the current date
+
+        var resetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0); // Reset time values
+        var resetToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0); // Reset time values for today
+
+        if (resetDate < resetToday) {
+            dayElement.classList.add("disabled");
+        } else {
+            dayElement.addEventListener("click", () => {
+                handleDayClick(dayElement);
+            });
+        }
+
+        if (date.toDateString() === new Date().toDateString()) {
+        //    dayElement.classList.add("current");
+        }
+        if (selectedDate && date.toDateString() === selectedDate.toDateString()) {
+            dayElement.classList.add("selected");
+        }
+
+
+        // Disable days based on received disabled days
+        const dayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
+
+        if (data.length >  0) {
+
+            if (data && data.some(date => isSameDate(iteratedDate, date))) {
+                dayElement.classList.add("disabled");
+            }
+        }
+        daysContainer.appendChild(dayElement);
+    }
+    prevBtn.addEventListener("click", () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+        var employeeID = $("#CheckDisabledDayID").val();
+        var serviceIDs = $("#ServiceIDs").val();
+        var monthyear = $("#monthYear").text();
+
+        if (employeeID == "") {
+            employeeID = 0;
+        }
+            var businessName = '@Model.Company.Business';
+            $.ajax({
+                url: '@Url.Action("GetDisabledDaysNEW", "Booking")', // Replace with the actual route to your controller action
+                type: 'GET',
+                data: { EmployeeID: employeeID, ServiceIds: serviceIDs, businessName: businessName, PrevOrNext:"Prev", monthYear: monthyear },
+                success: function (data) {
+
+                    if (employeeID == "0" && data.HaveMultiple) {
+                        // Process the received disabled days
+                        StartCalendar(data.FinalSelectedDate);
+                    }
+                    else if (employeeID == "0") {
+                        StartCalendar(data.FinalSelectedDate, data.disabledDays);
+                    }
+                    else {
+                        StartCalendar(data.FinalSelectedDate, data.disabledDays);
+                        //$("#SelectedEmployeeID").val(data.EmployeeID);
+
+                    }
+                    var timeSlotsContainer = $('#TimeSlots'); // Get the timeSlots div by its ID
+                    // Clear the container before adding new content
+                    timeSlotsContainer.empty();
+                    hideLoadingSpinner();
+
+                },
+                error: function (xhr, status, error) {
+                    hideLoadingSpinner();
+                    console.error('Error fetching disabled days:', error);
+                }
+            });
+      });
+    nextBtn.addEventListener("click", () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+        var employeeID = $("#CheckDisabledDayID").val();
+
+        if (employeeID == "") {
+            employeeID = 0;
+        }
+            var serviceIDs = $("#ServiceIDs").val();
+            var businessName = '@Model.Company.Business';
+        var monthyear = $("#monthYear").text();
+
+            $.ajax({
+                url: '@Url.Action("GetDisabledDaysNEW", "Booking")', // Replace with the actual route to your controller action
+                type: 'GET',
+                data: { EmployeeID: employeeID, ServiceIds: serviceIDs, businessName: businessName, PrevOrNext:"Next", monthYear: monthyear },
+                success: function (data) {
+
+                    // Process the received disabled days
+                    if (employeeID == "0" && data.HaveMultiple) {
+                        // Process the received disabled days
+                        StartCalendar(data.FinalSelectedDate);
+                    }
+                    else if (employeeID == "0") {
+                        StartCalendar(data.FinalSelectedDate, data.disabledDays);
+                    }
+                    else {
+                        StartCalendar(data.FinalSelectedDate, data.disabledDays);
+                        //$("#SelectedEmployeeID").val(data.EmployeeID);
+
+                    }
+                    hideLoadingSpinner();
+
+
+
+                },
+                error: function (xhr, status, error) {
+                    hideLoadingSpinner();
+
+                    console.error('Error fetching disabled days:', error);
+                }
+            });
+        });
+    function positionCalendar() {
+
+        calendar.style.width = "98%";
+        calendar.style.zIndex = 5;
+        calendar.style.display = "contents";
+    }
+    window.addEventListener("resize", positionCalendar);
+    function InitDatePicker(disabledWeekDays,FinalSelectedDate) {
+        if (!disabledWeekDays || disabledWeekDays.length === 0) {
+            // Handle the case when disabledWeekDays is null or empty
+            console.warn("disabledWeekDays is either null or empty. Datepicker will not have disabled weekdays.");
+            disabledWeekDays = []; // You can set it to an empty array or handle it according to your requirements.
+        }
+
+        renderCalendar(disabledWeekDays, FinalSelectedDate);
+    }
+    var input = document.querySelector("#MobileNumber");
+    window.intlTelInput(input, {
+        // allowDropdown: false,
+        autoInsertDialCode: true,
+        // autoPlaceholder: "off",
+        preferredCountries: ['nl'],
+        dropdownContainer: document.body,
+        separateDialCode: false
+    });
+    var DataOfCountry = $(".iti__selected-flag").attr("title").split(":")[1].trim();
+
+    $("#MobileNumber").val(DataOfCountry);
+    $(".iti").addClass("col-md-12");
+    var SentBy = $("#SentBy").val();
+    if (SentBy == "Cancellation") {
+        $("#MobileNumber").val('@Model.MobileNumber');
+    }
+    $("#MobileNumber").on("keydown", function (event) {
+        // Check if the pressed key is the space key (key code 32)
+        if (event.keyCode === 32) {
+            event.preventDefault(); // Prevent the space from being entered
+        }
+    });
+    $("#MobileNumber").on("change", function () {
+        var phoneNumber = $("#MobileNumber").val();
+
+        // Check if the phone number starts with a valid country code (e.g., +1 for the US)
+        if (/^\+\d+/.test(phoneNumber)) {
+            $("#ActionBtn").removeAttr("disabled");
+            $("#phoneNumberError").text("");
+
+            $("#MobileNumber").css("border", "none");
+
+
+            // You can proceed with form submission or other actions here
+        } else {
+            $("#phoneNumberError").text("Phone number must start with a valid country code (e.g., +1 for the US).");
+            $("#MobileNumber").css("border", "0.5px solid red");
+            $("#ActionBtn").attr("disabled", "disabled");
+            // Prevent form submission or take appropriate action
+        }
+    });
+
+    function convertCSharpDate(csharpDate) {
+        // Extract the timestamp from the string
+        var timestamp = parseInt(csharpDate.replace("/Date(", "").replace(")/", ""), 10);
+
+        // Convert the timestamp to a JavaScript date object
+        var date = new Date(timestamp);
+
+        return date;
+    }
+    function RenderCalendarDate() {
+        showLoadingSpinner();
+        var serviceIDs = $("#ServiceIDs").val();
+        var employeeID = $("#CheckDisabledDayID").val();
+        var businessName = '@Model.Company.Business';
+        var monthyear = $("#monthYear").text();
+
+        if (employeeID == "") {
+            employeeID = 0;
+        }
+
+
+        $.ajax({
+            url: '@Url.Action("GetDisabledDaysNEW", "Booking")', // Replace with the actual route to your controller action
+            type: 'GET',
+            data: { EmployeeID: employeeID, ServiceIds: serviceIDs, monthyear: monthyear },
+            success: function (data) {
+
+                if (employeeID == "0" && data.HaveMultiple) {
+                    // Process the received disabled days
+                    StartCalendar(data.FinalSelectedDate);
+                }
+                else if (employeeID == "0"){
+                    StartCalendar(data.FinalSelectedDate, data.disabledDays);
+                }
+                else {
+                    StartCalendar(data.FinalSelectedDate, data.disabledDays);
+
+                }
+
+                //updateTimeSlots();
+                hideLoadingSpinner();
+
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching disabled days:', error);
+                hideLoadingSpinner();
+
+            }
+        });
+    }
+    function StartCalendar(FinalSelectedDate, data) {
+
+        if (data != null) {
+            InitDatePicker(data, FinalSelectedDate);
+        } else {
+            InitDatePicker(null,FinalSelectedDate);
+        }
+    }
+
+    $(document).ready(function () {
+        $("#ShowCartBtn").hide();
+        $(".DescriptionText").hide();
+        $(".footer").hide();
+     
+        
+        SetFirst();
+        var $dropdownBtn = $('.dropdown-btn');
+
+        //  elements within the div
+        var $empImage = $dropdownBtn.find('.emp_Image');
+        var $empName = $dropdownBtn.find('.emp_Name');
+        var $empSpecialization = $dropdownBtn.find('.emp_Specialization');
+        var $empRating = $dropdownBtn.find('.emp_Rating');
+
+        // Retrieving values
+        var Image = $empImage.attr('src');
+        var Name = $empName.text();
+        var Spec = $empSpecialization.text();
+        var Ratings = $empRating.html();
+        $('#Emp_Name').text(Name);
+        $('#Emp_Image').attr('src', Image);
+        $('#Emp_Specialization').text(Spec);
+        $("#infoModalLabelNew").text(Name);
+
+        RenderCalendarDate();
+        $("#NextToInfo").click(function () {
+            $("#pills-info-tab").removeAttr("disabled");
+            $("#pills-info-tab").click();
+            $("#pills-info-tab").attr("disabled","disabled");
+            CheckDetails();
+        });
+
+        $(".common-input").keyup(function () {
+            // Your code to handle the keyup event goes here
+            // You can access the current input field using $(this)
+            CheckDetails();
+
+        });
+
+        CheckAviaEmployee();
+
+    });
+    function updateTimeSlots() {
+        showLoadingSpinner();
+        var selectedDate = $("#dateInput").val(); // Get the selected date from the input field
+        const serviceIDs = $("#ServiceIDs").val();
+        const companyID = $("#CompanyID").val();
+        var DoesSelected = false;
+        var selectedEmployee = $("#CheckDisabledDayID").val();
+
+        if (selectedDate == "") {
+            selectedDate = new Date().toISOString().substring(0, 10);
+        } else {
+            DoesSelected = true;
+        }
+        if (selectedEmployee == "") {
+            selectedEmployee = 0;
+        }
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("GetTimeSlots", "Booking")', // Replace with your controller action URL
+            type: 'GET',
+            dataType: 'json',
+            data: { CompanyID: companyID, SelectedDate: selectedDate, ServiceIDs: serviceIDs, EmployeeID: selectedEmployee, DoesSelected: DoesSelected },
+            success: function (data) {
+
+                var ListOfTimeSlotsWithDiscount = data.ListOfTimeSlotsWithDiscount;
+                // Update your UI with the retrieved time slots
+                var timeSlotsContainer = $('#TimeSlots'); // Get the timeSlots div by its ID
+                // Clear the container before adding new content
+                timeSlotsContainer.empty();
+                if (ListOfTimeSlotsWithDiscount != null) {
+                    if (ListOfTimeSlotsWithDiscount.length > 0) {
+                        //// Create a table element
+                        //var table = $('<table class="table table-borderless"></table>');
+                        //var row = $('<tr></tr>'); // Create a table row for buttons
+
+                        // Iterate through the time slots and create buttons
+                        for (var i = 0; i < ListOfTimeSlotsWithDiscount.length; i++) {
+                            var timeSlot = ListOfTimeSlotsWithDiscount[i];
+                            // Create a button element
+
+                            if (timeSlot.HaveDiscount) {
+                                var button = $('<button type="button" translate="no" data-typeofchange="' + timeSlot.TypeOfChange + '" class="btnTimeSlot btn btn-primary btn-rounded btn-sm"></button>');
+                                button.text(timeSlot.TimeSlot); // Set the text of the button to the time slot
+                                button.attr('data-employee', data.FinalEmployeeID);
+                                button.attr('data-timeslot', timeSlot.TimeSlot);
+                                if (timeSlot.TypeOfChange === "Discount") {
+                                    var discountBadge = $('<span class="discount-ribbon">-' + timeSlot.Percentage + '%</span>');
+                                } else {
+                                    var discountBadge = $('<span class="discount-ribbon2">+' + timeSlot.Percentage + '%</span>');
+                                }
+
+                                button.attr('data-percentage', timeSlot.Percentage);
+                                button.attr('data-pricechangeid', timeSlot.PriceChangeID);
+                                button.append(discountBadge);
+
+                                if (timeSlot.EmpHaveDiscount) {
+                                    button.attr('data-emptypeofchange', timeSlot.EmpTypeOfChange);
+
+                                    //if (timeSlot.EmpTypeOfChange === "Discount") {
+                                    //    var empDiscountBadge = $('<span class="discount-ribbon">-' + timeSlot.EmpPercentage + '%</span>');
+                                    //} else {
+                                    //    var empDiscountBadge = $('<span class="discount-ribbon2">+' + timeSlot.EmpPercentage + '%</span>');
+                                    //}
+
+
+                                    button.attr('data-emppercentage', timeSlot.EmpPercentage);
+                                    button.attr('data-emppricechangeid', timeSlot.EmpPriceChangeID);
+                                //    button.append(empDiscountBadge);
+                                }
+                            } else {
+                                var button = $('<button type="button" translate="no" class="btnTimeSlot btn btn-primary btn-rounded btn-sm"></button>');
+                                button.attr('data-employee', data.FinalEmployeeID);
+                                button.text(timeSlot.TimeSlot); // Set the text of the button to the time slot
+                                button.attr('data-timeslot', timeSlot.TimeSlot);
+                                if (timeSlot.EmpHaveDiscount) {
+                                    button.attr('data-emptypeofchange', timeSlot.EmpTypeOfChange);
+
+                                    //if (timeSlot.EmpTypeOfChange === "Discount") {
+                                    //    var empDiscountBadge = $('<span class="discount-ribbon">-' + timeSlot.EmpPercentage + '%</span>');
+                                    //} else {
+                                    //    var empDiscountBadge = $('<span class="discount-ribbon2">+' + timeSlot.EmpPercentage + '%</span>');
+                                    //}
+
+                                    button.attr('data-emppercentage', timeSlot.EmpPercentage);
+                                    button.attr('data-emppricechangeid', timeSlot.EmpPriceChangeID);
+                                //    button.append(empDiscountBadge);
+                                }
+                            }
+
+                            // Add a click event handler to the button (if needed)
+                            button.click(function () {
+
+                                $("#MyEmployeeID").val($(this).data("employee"));
+                                // Handle button click here
+                                $('button.btn-secondary').toggleClass('btn-secondary btn-primary');
+                                $(this).toggleClass('btn-primary btn-secondary');
+                                var typeofchange = $(this).data('typeofchange');
+                                var emptypeofchange = $(this).data('emptypeofchange');
+                                $("#FomrSubmittedID").val($(this).data('employee'));
+                                var TimeData = $(this).data("timeslot");
+                                var timePart = TimeData.replace(/[+-]\d+%/, ''); // Remove the +3% or -4% part
+                                $("#Time").val(timePart);
+                                
+                                CheckDetails();
+                                debugger
+                                var percentageValue = $(this).data('percentage');
+                                var EmppercentageValue = $(this).data('emppercentage');
+                                var remainderValue = parseFloat($("#RemainderValue").val());
+                                if (percentageValue != null) {
+                                    if (typeofchange == "Discount") {
+                                        var finalpercentage = parseFloat(percentageValue) / 100;
+                                        remainderValue = remainderValue - (finalpercentage * remainderValue);
+                                        $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
+                                        $("#Percentage").text("Discount: -" + percentageValue + " %");
+                                        $("#OnlinePriceChange").val($(this).attr("data-pricechangeid"));
+
+                                        if (emptypeofchange != null) {
+
+                                            if (emptypeofchange == "Discount") {
+                                                var finalpercentage = parseFloat(EmppercentageValue) / 100;
+                                                remainderValue = remainderValue - (finalpercentage * remainderValue);
+                                                $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
+                                                $("#EmpPercentage").text("Employee Discount: -" + EmppercentageValue + " %");
+                                                $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
+                                            }
+                                            else {
+                                                var finalpercentage = parseFloat(EmppercentageValue) / 100;
+                                                remainderValue = remainderValue + (finalpercentage * remainderValue);
+                                                $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
+                                                $("#EmpPercentage").text("Employee Price Change: +" + EmppercentageValue + " %");
+                                                $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        var finalpercentage = parseFloat(percentageValue) / 100;
+                                        remainderValue = remainderValue + (finalpercentage * remainderValue);
+                                        $("#Remainder").text(remainderValue.toFixed(2) + " @Model.Company.Currency");
+                                        $("#Percentage").text("Price Change: +" + percentageValue + " %");
+                                        $("#OnlinePriceChange").val($(this).attr("data-pricechangeid"));
+
+
+                                        if (emptypeofchange != null) {
+                                            if (emptypeofchange == "Discount") {
+                                                var finalpercentage = parseFloat(EmppercentageValue) / 100;
+                                                remainderValue = remainderValue - (finalpercentage * remainderValue);
+                                                $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
+                                                $("#EmpPercentage").text("Employee Discount: -" + EmppercentageValue + " %");
+                                                $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
+                                            }
+                                            else {
+                                                var finalpercentage = parseFloat(EmppercentageValue) / 100;
+                                                remainderValue = remainderValue + (finalpercentage * remainderValue);
+                                                $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
+                                                $("#EmpPercentage").text("Employee Price Change: +" + EmppercentageValue + " %");
+                                                $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (EmppercentageValue != null) {
+                                        if (emptypeofchange == "Discount") {
+                                            var finalpercentage = parseFloat(EmppercentageValue) / 100;
+                                            remainderValue = remainderValue - (finalpercentage * remainderValue);
+                                            $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
+                                            $("#EmpPercentage").text("Employee Discount: -" + EmppercentageValue + " %");
+                                            $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
+                                        }
+                                        else {
+                                            var finalpercentage = parseFloat(EmppercentageValue) / 100;
+                                            remainderValue = remainderValue + (finalpercentage * remainderValue);
+                                            $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
+                                            $("#EmpPercentage").text("Employee Price Change: +" + EmppercentageValue + " %");
+                                            $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
+                                        }
+                                    }
+                                    else {
+                                        $("#Remainder").text(remainderValue.toFixed(2) + " @Model.Company.Currency");
+                                    }
+                                }
+
+
+
+
+                                if ($(this).attr('data-emppercentage') !== undefined) {
+
+                                    var empPercentage = $(this).attr('data-emppercentage');
+                                    var empID = $(this).attr('data-employee');
+                                    // Get the value of the data-emptypeofchange attribute
+                                    var empTypeOfChange = $(this).attr('data-emptypeofchange');
+
+
+                                    $.ajax({
+                                        url: '@Url.Action("GetEmployeeData", "Booking")',
+                                        type: 'GET',
+                                        data: { ID: empID },
+                                        success: function (data) {
+                                            var employee = data.Employee;
+                                            $("#EmpPriceChangeRow").show();
+
+                                            $("#EmployeePriceChangeImg").attr("src", employee.Photo);
+                                            $("#Emp_Image").attr("src", employee.Photo);
+                                            $("#EmployeePriceChangeName").html(employee.Name + " " + '<span id="empDiscountTextH"></span>');
+                                            if (empTypeOfChange == "Discount") {
+                                                $("#empDiscountTextH").text(empTypeOfChange + " -" + empPercentage + "%");
+                                                $("#Emp_Name").text(employee.Name + " (" + empTypeOfChange + " -" + empPercentage + "%)  ");
+                                            } else {
+                                                $("#empDiscountTextH").text(empTypeOfChange + " +" + empPercentage + "%");
+                                                $("#Emp_Name").text(employee.Name + " (" + empTypeOfChange + " +" + empPercentage + "%)  ");
+                                            }
+
+
+
+                                            $("#DetailsofPriceChange").html("The selected staff has a <span id='empPercentagetext'></span> <span id='empDiscountText'></span> on the selected date.")
+                                            $("#empPercentagetext").text(empPercentage + "%");
+                                            $("#empDiscountText").text(empTypeOfChange);
+                                            if (empTypeOfChange == "Discount")
+                                            {
+                                                $("#empDiscountTextH").addClass("text-success").removeClass("text-danger");
+                                            }
+                                            else {
+                                                $("#empDiscountTextH").addClass("text-danger").removeClass("text-success");
+
+                                            }
+                                            //<div id="EmpPriceChangeRow" class="row" style="display:none; border: solid 0.5px; border-radius: 20px; padding: 5px;">
+                                            //    <img style="width:100px;" src="" id="EmployeePriceChangeImg" />
+                                            //    <div class="col-md-12" style="width:auto;">
+                                            //        <h3 id="EmployeePriceChangeName"> <span id="empDiscountTextH"></span></h3>
+                                            //        <p id="DetailsofPriceChange">
+                                            //            The selected staff has a <span id="empPercentagetext"></span> <span id="empDiscountText"></span> on the selected date, if you
+                                            //            are not comfortable with that kindly change staff.
+                                            //        </p>
+                                            //    </div>
+                                            //</div>
+                                        },
+                                        error: function () {
+                                            alert("An error occurred while saving.");
+                                        }
+                                    });
+
+                                }
+                                else {
+                                    $("#EmpPriceChangeRow").hide();
+
+                                }
+
+                                CheckDiscountAgainstCoupon();
+
+                            });
+
+                            timeSlotsContainer.append(button);
+                           
+                        }
+
+                        // Append the table row to the table
+
+                        /*$("#SelectedEmployeeID").val(data.FinalEmployeeID);*/
+                        //$("#FinalSelectedEmployeeID").val(data.FinalEmployeeID);
+                        console.log($("#FinalSelectedEmployeeID").val());
+                        console.log($("#SelectedEmployeeID").val());
+                        // Append the table to the timeSlots div
+                        hideLoadingSpinner();
+                    }
+                    else {
+                        // Append an h4 message in case there are no slots available
+                        var noSlotsMessage = $('<h4 class="card-title">No slots available for this day</h4>');
+                        timeSlotsContainer.append(noSlotsMessage);
+                        var formCheckDiv = $('<div style="display: flex;padding: 30px;align-items: center;" class="form-check">');
+
+                        // Create the checkbox input with Bootstrap form-check-input class
+                        var addToWaitListCheckbox = $('<input onchange="CheckDetails()" style="width: 30px;border: 0.5px solid black;height: 30px;" type="checkbox" class="form-check-input" id="addToWaitListCheckbox">');
+
+                        // Create a label for the checkbox with Bootstrap form-check-label class
+                        var checkboxLabel = $('<label style="font-size:large;margin-left:10px;" class="form-check-label" for="addToWaitListCheckbox">Add Me To Wait List</label>');
+
+                        // Append the checkbox and label to the form-check div
+                        formCheckDiv.append(addToWaitListCheckbox);
+                        formCheckDiv.append(checkboxLabel);
+
+                        timeSlotsContainer.append(formCheckDiv);
+                        hideLoadingSpinner();
+                    }
+                } else {
+                    var noSlotsMessage = $('<h4 class="card-title">No slots available for this day</h4>');
+                    timeSlotsContainer.append(noSlotsMessage);
+                    var formCheckDiv = $('<div style="display: flex;padding: 30px;align-items: center;" class="form-check">');
+
+                    // Create the checkbox input with Bootstrap form-check-input class
+                    var addToWaitListCheckbox = $('<input onchange="CheckDetails()" style="width: 30px;border: 0.5px solid black;height: 30px;" type="checkbox" class="form-check-input" id="addToWaitListCheckbox">');
+
+                    // Create a label for the checkbox with Bootstrap form-check-label class
+                    var checkboxLabel = $('<label style="font-size:large;margin-left:10px;" class="form-check-label" for="addToWaitListCheckbox">Add Me To Wait List</label>');
+
+                    // Append the checkbox and label to the form-check div
+                    formCheckDiv.append(addToWaitListCheckbox);
+                    formCheckDiv.append(checkboxLabel);
+
+                    timeSlotsContainer.append(formCheckDiv);
+                }
+
+                hideLoadingSpinner();
+
+                var targetPosition = $("#MainSlotsView").offset().top;
+
+
+            },
+            error: function (error) {
+                console.error('Error fetching time slots:', error);
+                hideLoadingSpinner();
+
+            }
+        });
+    }
+
+    function CheckDiscountAgainstCoupon() {
+        if ($("#Percentage").text() === "") {
+            $("#button-addon").removeAttr("disabled");
+            $("#CouponCode").removeAttr("disabled");
+        } else {
+            $("#button-addon").attr("disabled", "disabled");
+            $("#CouponCode").attr("disabled","disabled");
+        }
+    }
+
+    function CheckCouponCode() {
+        var business = '@Model.Company.Business';
+        var Email = $("#Email").val();
+        var CouponCode = $("#CouponCode").val();
+
+        $.ajax({
+            url: '@Url.Action("CheckCouponCode", "Booking")',
+            data: { Business: business, CustomerEmail: Email, CouponCode: CouponCode },
+            type: 'GET',
+            success: function (response) {
+                hideLoadingSpinner();
+                // Assuming the response contains a property 'IsBlocked'
+                if (response.success) {
+                    $("#SuccessMsg").text(response.Message);
+                    var couponPercentage = response.Percentage;
+
+                    // Extracting and converting the remainder amount from the text
+                    var Remainder = $("#Remainder").text();
+                    var originalRemainderText = $("#Remainder").text();
+                    var originalDepositText = $("#DepositText").text();
+
+                    var characterPart = Remainder.replace(/[0-9,.]/g, '').trim();
+
+                    var numberPart = Remainder.match(/[0-9,.]+/);
+                    var FinalRemainder = parseFloat(numberPart);
+
+                    // Calculating the coupon percentage amount
+                    var couponPercentageAmount = (couponPercentage / 100) * FinalRemainder;
+                    couponPercentageAmount = couponPercentageAmount.toFixed(2); // Round off to 2 decimal places
+
+                    // Subtracting the coupon percentage amount from the final remainder
+                    var UpdatedRemainder = FinalRemainder - couponPercentageAmount;
+                    UpdatedRemainder = UpdatedRemainder.toFixed(2); // Round off to 2 decimal places
+
+                    $("#Remainder").html("<s>" + originalRemainderText + "</s> " + UpdatedRemainder + " " + characterPart);
+
+                    var depositPercentage = '@Model.Company.Deposit';
+                    var depositAmount = (depositPercentage / 100) * UpdatedRemainder;
+                    depositAmount = depositAmount.toFixed(2); // Round off to 2 decimal places
+
+                    $("#DepositText").html("<s>" + originalDepositText + "</s> " + depositAmount + " " + characterPart);
+                    $("#DepositText_").val(depositAmount);
+                    $("#CouponID").val(response.CouponID);
+                    $("#CouponAssignmentID").val(response.CouponAssignmentID);
+                    $("#button-addon").attr("disabled", "disabled");
+                    $("#ErrorMESSage").text("");
+                    hideLoadingSpinner();
+                }
+
+                else {
+                    $("#ErrorMESSage").text("Coupon Capacity Used / Expired");
+                    $("#SuccessMsg").text("");
+
+                    hideLoadingSpinner();
+                }
+
+            },
+            error: function (error) {
+                console.error('Error', error);
+                hideLoadingSpinner();
+            }
+        });
+    }
+    function CheckDetails() {
+        var FirstName = $("#FirstName").val();
+        var LastName = $("#LastName").val();
+        var Email = $("#Email").val();
+        var MobileNumber = $("#MobileNumber").val()
+        var Time = $("#Time").val();
+
+
+        if (FirstName.trim() == "" || LastName.trim() == "") {
+            $("#Error").text("Please Enter First or Last Name");
+            $("#NextToPayment").attr("disabled", "disabled");
+
+        }
+        else if (Email.trim() == "") {
+            $("#Error").text("Please Enter Email");
+            $("#NextToPayment").attr("disabled", "disabled");
+
+        }
+        else if (MobileNumber.length < 12) {
+
+            $("#Error").text("Please Enter Correct Mobile Number");
+            $("#NextToPayment").attr("disabled", "disabled");
+
+
+        }
+        //else if (Password.trim() == "") {
+        //    $("#Error").text("Please Enter Password");
+        //}
+
+        else if (Time.trim() == "" && $('#addToWaitListCheckbox').is(':checked') == false) {
+            $("#Error").text("Please Select Time Slots");
+            $("#NextToPayment").attr("disabled", "disabled");
+        }
+        else if ($('#addToWaitListCheckbox').is(':checked') == true) {
+            $("#NextToPayment").show();
+            $("#Error").text("");
+        }
+        else if (FirstName.trim() != "" && LastName.trim() != ""
+            && MobileNumber.trim() != "" && Email.trim() != "" ) {
+            $("#NextToPayment").show();
+            $("#NextToPayment").removeAttr("disabled");
+            $("#Error").text("");
+
+        }
+    }
+
+    function showLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+    }
+    function hideLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+    $("#NextToPayment").click(function () {
+        $("#pills-payment-tab").removeAttr("disabled");
+        $("#pills-payment-tab").click();
+        $("#pills-payment-tab").attr("disabled","disabled");
+        const inputDate = new Date($("#dateInput").val());
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        const formattedDate = inputDate.toLocaleDateString('en-US', options);
+        $("#DateSelected").text(formattedDate);
+
+        let firstPart = $("#Time").val().split(' - ')[0];
+
+        $("#TimeSlotSelected").text("at " + firstPart);
+        $("#NewTimeSlotSelected").text(firstPart);
+        $("#Name").text("Name: " + $("#FirstName").val() + " " + $("#LastName").val());
+
+        let currentDate = new Date();
+        let currentyear = currentDate.getFullYear();
+        let currentmonth = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+        let currentday = ('0' + currentDate.getDate()).slice(-2);
+
+        // Get current time
+        let currenthours = ('0' + currentDate.getHours()).slice(-2);
+        let currentmin = ('0' + currentDate.getMinutes()).slice(-2);
+
+        // Combine date and time
+        let formattedDateTime = currentyear + '-' + currentmonth + '-' + currentday + ' ' + currenthours + ':' + currentmin;
+        $("#TodaysDate").text(formattedDateTime);
+
+        if ($('#addToWaitListCheckbox').is(':checked')) {
+            $("#PayNow").hide();
+            $("#AddToWaitingList").show();
+            $("#TimeSlotSelected").text("Time: Waiting List");
+        } else {
+            $("#AddToWaitingList").hide();
+            $("#PayNow").show();
+        }
+    });
+    $("#PayNow").click(function () {
+
+        var business = '@Model.Company.Business';
+        var timeslot = $("#TimeSlotSelected").text();
+        var date = $("#dateInput").val();
+        var serviceDuration = $("#DurationOFAllService").text();
+        var employeeId = $("#MyEmployeeID").val();
+        showLoadingSpinner();
+        $.ajax({
+            url: "@Url.Action("CheckRunTimeSlot", "Appointment")", // Replace with the URL of your server-side script
+            method: "GET", // Or "GET" depending on your server-side implementation
+            data: { business: business, timeslot: timeslot, Date: date, serviceDuration: serviceDuration, EmployeeID: employeeId },
+            success: function (response) {
+                // Response will be true or false
+                if (response.isSlotAvailable) {
+                  var IsBlocked = false;
+                    var Email = $("#Email").val();
+                    $.ajax({
+                        url: '@Url.Action("CheckStatusByEmail", "Customer")',
+                        data: { CustomerEmail: Email },
+                        type: 'GET',
+                        success: function (response) {
+                            // Assuming the response contains a property 'IsBlocked'
+                            var isBlocked = response.IsBlocked;
+                            IsBlocked = isBlocked;
+                            if (IsBlocked) {
+                                alert("You are blocked from the system");
+                                hideLoadingSpinner();
+                                return;
+                            } else {
+                                $("#SelectedEmployeeID").val($("#FomrSubmittedID").val());
+                                $.ajax({
+                                    url: '@Url.Action("Form", "Booking")',
+                                    type: 'POST',
+                                    data: $("#ActionForm").serialize(),
+                                    success: function (data) {
+
+
+                                        if (data.session == null) {
+                                            hideLoadingSpinner();
+                                            console.log(data.Message);
+                                            $("#pills-info-tab").removeAttr("disabled");
+                                            $("#pills-info-tab").trigger("click");
+                                            //updateTimeSlots();
+                                            return;
+                                        }
+                                        else {
+                                            hideLoadingSpinner();
+                                            //handleAuthClick();
+                                            let selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
+                                            // Use splice to remove all items from the array
+                                            selectedServices.splice(0, selectedServices.length);
+                                            // Update the localStorage with the modified array
+                                            localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+                                            window.location.href = data.session;
+
+                                            //window.open(data.session, '_blank');
+                                            //window.close();
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+
+                                        hideLoadingSpinner();
+                                        console("Response Text: " + data.Message);
+                                    }
+                                });
+                            }                // Now you can use the isBlocked value in your logic
+                        },
+                        error: function (error) {
+                            console.error('Error fetching customer information:', error);
+                            hideLoadingSpinner();
+                        }
+                    });
+                }
+                else {
+                    alert("Following Slot was booked by someone else");
+                    hideLoadingSpinner();
+
+
+                }
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error(error);
+                hideLoadingSpinner();
+
+
+            }
+        });
+
+    });
+    function CheckAviaEmployee() {
+        if ($('.dropdown-btn').find(".emp_Name").text() == "Any Available Specialist") {
+            $("#AnyAvailableEmployeeSelected").val("True");
+        } else {
+            $("#AnyAvailableEmployeeSelected").val("False");
+        }
+    }
+    $("#RescheduleNow").click(function () {
+
+        showLoadingSpinner();
+        $("#SelectedEmployeeID").val($("#FomrSubmittedID").val());
+        var AppointmentID = $("#AppointmentID").val();
+        var SelectedEmployeeID = $("#SelectedEmployeeID").val();
+        var Time = $("#Time").val();
+        var Date = $("#dateInput").val();
+        var Notes = $("#Comment").val();
+        var OnlinePriceChange = $("#OnlinePriceChange").val();
+        var EmployeePriceChange = $("#EmployeePriceChange").val();
+        $.ajax({
+            url: '/Booking/RescheduleAppointment',
+            type: 'POST',
+            data: { AppointmentID: AppointmentID, Time: Time, Date: Date, SelectedEmployeeID: SelectedEmployeeID, Notes: Notes, OnlinePriceChange: OnlinePriceChange, EmployeePriceChange: EmployeePriceChange },
+            success: function (data) {
+                hideLoadingSpinner();
+                let selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
+                // Use splice to remove all items from the array
+                selectedServices.splice(0, selectedServices.length);
+                // Update the localStorage with the modified array
+                localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+                window.location.href = data.session;
+            },
+            error: function () {
+                hideLoadingSpinner();
+                alert("An error occurred while saving.");
+            }
+        });
+    });
+    $("#AddToWaitingList").click(function () {
+        showLoadingSpinner();
+        $("#SelectedEmployeeID").val($("#FomrSubmittedID").val());
+
+        $.ajax({
+            url: '@Url.Action("AddToWaitingList", "Booking")',
+            type: 'POST',
+            data: $("#ActionForm").serialize(),
+            success: function (data) {
+                if (data.session == null) {
+                    hideLoadingSpinner();
+                    console.log(data.Message);
+                    $("#pills-info-tab").removeAttr("disabled");
+                    $("#pills-info-tab").trigger("click");
+                    //updateTimeSlots();
+                    return;
+                }
+                else {
+                    hideLoadingSpinner();
+                    let selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
+                    // Use splice to remove all items from the array
+                    selectedServices.splice(0, selectedServices.length);
+                    // Update the localStorage with the modified array
+                    localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+                    window.location.href = data.session;
+                }
+            },
+            error: function () {
+                hideLoadingSpinner();
+                alert("An error occurred while saving.");
+            }
+        });
+    });
+    function MoveTheContent() {
+        var contentToMoveFirst = $("#datedropper").detach();
+        contentToMoveFirst.css("display", "contents");
+        var destinationDiv = $("#DateContainer");
+        // Append the content to the destination div
+        destinationDiv.append(contentToMoveFirst);
+
+        $(".dd__footer").hide();
+
+    }
+    function SetFirst() {
+        var dropdownBtn = document.getElementById("customDropdown").querySelector(".dropdown-btn");
+        //dropdownBtn.textContent = employee;
+        var selectedRow = document.getElementById("row_0"); // Assuming you have unique IDs for each row
+
+        // Get the HTML content of the selected row
+        var selectedRowHTML = selectedRow.innerHTML;
+
+        // Set the inner HTML of the dropdown button
+        dropdownBtn.innerHTML = selectedRowHTML;
+        $(".upArrow").hide();
+        $(".downArrow").show();
+        $("#SelectedEmployeeID").val("0");
+
+    }
+    function toggleDropdown() {
+        var dropdownContent = document.getElementById("dropdownContent");
+        $(".upArrow").show();
+        $(".downArrow").hide();
+        $(".dropdown-content").find(".upArrow").hide();
+        dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
+        if (dropdownContent.style.display == "none") {
+            $(".upArrow").hide();
+            $(".downArrow").show();
+            $(".info-button").show();
+
+        } else {
+            $(".info-button").hide();
+
+        }
+    }
+    function selectEmployee(employee, ID) {
+        var dropdownBtn = document.getElementById("customDropdown").querySelector(".dropdown-btn");
+        //dropdownBtn.textContent = employee;
+        var selectedRow = document.getElementById("row_" + ID); // Assuming you have unique IDs for each row
+        $("#CheckDisabledDayID").val(ID);
+        // Get the HTML content of the selected row
+        var selectedRowHTML = selectedRow.innerHTML;
+
+        // Set the inner HTML of the dropdown button
+        dropdownBtn.innerHTML = selectedRowHTML;
+        if ($('.dropdown-btn').find(".emp_Name").text() == "Any Available Specialist") {
+            $("#AnyAvailableEmployeeSelected").val("True");
+        } else {
+            $("#AnyAvailableEmployeeSelected").val("False");
+        }
+        toggleDropdown();
+
+        //$("#SelectedEmployeeID").val(ID);
+        RenderCalendarDate();
+        CheckAviaEmployee();
+
+        $(".upArrow").hide();
+        $(".downArrow").show();
+
+        var $dropdownBtn = $('.dropdown-btn');
+
+        //  elements within the div
+        var $empImage = $dropdownBtn.find('.emp_Image');
+        var $empName = $dropdownBtn.find('.emp_Name');
+        var $empSpecialization = $dropdownBtn.find('.emp_Specialization');
+        var $empRating = $dropdownBtn.find('.emp_Rating');
+
+        // Retrieving values
+        var Image = $empImage.attr('src');
+        var Name = $empName.text();
+        var Spec = $empSpecialization.text();
+        var Ratings = $empRating.html();
+        $('#Emp_Name').text(Name);
+        $('#Emp_Image').attr('src', Image);
+        $('#Emp_Specialization').text(Spec);
+        $("#infoModalLabelNew").text(Name);
+
+        // Add your logic for handling the selected employee or "All" option here
+
+    }
+
+
+    $("#Email").on("input", function () {
+        var email = $("#Email").val();
+
+        // Make an AJAX request to a server-side script
+        $.ajax({
+            url: "@Url.Action("IsValidEmailAjx","Booking")", // Replace with the URL of your server-side script
+            method: "POST", // Or "GET" depending on your server-side implementation
+            data: { email: email },
+            success: function (response) {
+                // Response will be true or false
+                if (response.success) {
+                    $("#ErrorText").text(""); // Clear error text if email is valid
+                    $("#NextToPayment").show();
+                } else {
+                    $("#ErrorText").text("Invalid Email, please type correct Email");
+                    $("#NextToPayment").hide();
+                }
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error(error);
+                $("#ErrorText").text("Invalid Email, please type correct Email");
+                $("#NextToPayment").hide();
+
+            }
+        });
+    });
+    $(document).ready(function () {
+        if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+            $("#ProfileNAVTab").attr("href", href);
+        }
+
+        if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("Index", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+            $("#HomeNAVTAB").attr("href", href);
+        }
+    });
+
+
+</script>

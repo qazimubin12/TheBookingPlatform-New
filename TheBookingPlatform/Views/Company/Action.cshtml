@@ -1,0 +1,469 @@
+﻿@model TheBookingPlatform.ViewModels.CompanyActionViewModel
+@{
+    ViewBag.Title = "Action";
+}
+
+<form id="MainCompanyRegisterForm">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">
+                Company Details
+            </h4>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input type="hidden" name="ID" value="@Model.ID" id="ID" />
+                            <label>
+                                Business Name
+                            </label>
+                            <input value="@Model.Business" class="form-control" placeholder="Enter Business Name..." type="text" name="Business" required />
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>
+                                Business Address
+                            </label>
+                            <input value="@Model.Address" class="form-control" placeholder="Enter Business Address..." type="text" name="Address" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Postal Code
+                            </label>
+                            <input class="form-control" value="@Model.PostalCode" placeholder="Enter Postal Code..." type="text" name="PostalCode" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                City
+                            </label>
+                            <input class="form-control" value="@Model.City" placeholder="Enter City..." type="text" name="City" />
+                        </div>
+
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Phone Number
+                            </label>
+                            <input class="form-control" value="@Model.PhoneNumber" id="PhoneNumber" placeholder="Enter Phone Number..." type="text" name="PhoneNumber" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <legend>Logo</legend>
+                            <span>Click on the Picture to change</span>
+                            @if (Model.Logo == null)
+                            {
+                                <img id="MainThumb" style="width:150px;" src="~/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                            }
+                            else
+                            {
+                                <img id="MainThumb" style="width:150px;" src="@Model.Logo" alt="...">
+
+                            }
+
+                            <input value="@Model.Logo" type="hidden" name="Logo" id="Logo" />
+                            <input type="file" id="LogoUpload" accept="image/*" />
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Enter Deposit Percentage </label>
+                            <input type="number" class="form-control" name="Deposit" value="@Model.Deposit" id="Deposit" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Select Country</label>
+                            <select class="form-control" name="CountryName" id="CountryName">
+                                @foreach (var item in Model.Countries)
+                                {
+                                    if (item == Model.CountryName)
+                                    {
+                                        <option value="@item" selected>@item</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item">@item</option>
+
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Select Currency</label>
+                            <input type="text" name="Currency" class="form-control" value="@Model.Currency" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Invoice Footer Line</label>
+                            <textarea class="form-control" name="InvoiceLine" id="InvoiceLine">@Model.InvoiceLine</textarea>
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Enter Newsletter Interval Weeks </label>
+                            <input type="number" class="form-control" name="NewsLetterWeekInterval" value="@Model.NewsLetterWeekInterval" id="NewsLetterWeekInterval" />
+                        </div>
+                    </div> 
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Cancellation Time</label>
+                            <select class="form-control" name="CancellationTime" id="CancellationTime">
+
+                                @if (Model.CancellationTime == "1 Hour")
+                                {
+
+                                    <option selected value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hours</option>
+                                    <option value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+                                }
+                                else if (Model.CancellationTime == "3 Hours")
+                                {
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option selected value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hour</option>
+                                    <option value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+
+                                }
+                                else if (Model.CancellationTime == "5 Hours")
+                                {
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option selected value="5 Hours">5 Hours</option>
+                                    <option value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+                                }
+                                else if (Model.CancellationTime == "24 Hours")
+                                {
+
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hours</option>
+                                    <option selected value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+                                }
+                                else if (Model.CancellationTime == "48 Hours")
+                                {
+
+
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hours</option>
+                                    <option value="24 Hours">24 Hours</option>
+                                    <option selected value="48 Hours">48 Hours</option>
+                                }
+                                else
+                                {
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hours</option>
+                                    <option selected value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">
+                Email Details
+            </h4>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Notification Email
+                            </label>
+                            <input class="form-control" value="@Model.NotificationEmail" placeholder="Enter Notification Email..." type="email" name="NotificationEmail" required />
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Contact Email
+                            </label>
+                            <input class="form-control" value="@Model.ContactEmail" placeholder="Enter Contact Email..." type="email" name="ContactEmail" required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                Billing Email
+                            </label>
+                            <input class="form-control" value="@Model.BillingEmail" placeholder="Enter Billing Email..." type="email" name="BillingEmail" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label>Enable Integration</label>
+                        <select class="form-control" onchange="PaymentIntegrationChange()" name="PaymentMethodIntegration" id="PaymentMethodIntegration">
+                            @if (Model.PaymentMethodIntegration)
+                            {
+                                <option selected value="true">Yes</option>
+                                <option value="false">No</option>
+                            }
+                            else
+                            {
+                                <option value="true">Yes</option>
+                                <option selected value="false">No</option>
+                            }
+                        </select>
+                    </div>
+                    <div id="PaymentIntegrationBOX">
+                        <div class="form-group col-md-4">
+                            <label>Enter API/Secret Key</label>
+                            <input type="text" class="form-control" name="APIKEY" value="@Model.APIKEY" id="APIKEY" />
+
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Enter PUBLISH Key</label>
+                            <input type="text" class="form-control" name="PUBLISHEDKEY" value="@Model.PUBLISHEDKEY" id="PUBLISHEDKEY" />
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">
+                Employees Linking
+            </h4>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div style="margin-top:2px;" class="btn-group bootstrap-select show-tick">
+                                <select class="selectpicker" name="EmployeesLinked" data-style="select-with-transition" multiple title="Choose Employee" data-size="100">
+                                    <option disabled=""> Choose Employee</option>
+                                    @foreach (var item in Model.Users)
+                                    {
+                                        <option value="@item.Name">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                           
+
+                        </div>
+                    </div>
+
+
+                 
+                </div>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+@if (Model.ID == 0)
+{
+    <button id="ActionBtn" class="btn btn-primary btn-round">
+        <i class="material-icons">appartment</i>
+        SAVE COMPANY
+        <div class="ripple-container"></div>
+    </button>
+}
+else
+{
+    <button id="ActionBtn" class="btn btn-primary btn-round">
+        <i class="material-icons">edit</i>
+        UPDATE COMPANY
+        <div class="ripple-container"></div>
+    </button>
+}
+
+<script>
+
+    function PaymentIntegrationChange() {
+        if ($("#PaymentMethodIntegration").val() == true) {
+            $("#PaymentIntegrationBOX").show();
+            $("#PUBLISHEDKEY").val("");
+            $("#APIKEY").val("");
+        } else {
+            $("#PaymentIntegrationBOX").hide();
+            $("#PUBLISHEDKEY").val("");
+            $("#APIKEY").val("");
+        }
+    }
+
+    function showSuccessAlert() {
+        swal({
+            icon: 'success',
+            title: 'Image Uploaded Successfully!',
+            showConfirmButton: true
+        });
+    }
+
+    function showFormSubmitted() {
+        swal({
+            icon: 'success',
+            title: 'Company Registered Successfully! ',
+            text: 'Redirecting you to the company page',
+            showConfirmButton: false
+        });
+    }
+    function showFieldsError(fieldNames) {
+        var message = 'These are the required fields:\n' + fieldNames.join(', ');
+
+        swal({
+            icon: 'error',
+            title: 'Required Fields Missing',
+            text: message,
+            showConfirmButton: true
+        });
+    }
+    $("#LogoUpload").change(function () {
+
+        showLoadingSpinner();
+        var element = this;
+        var formData = new FormData();
+        var totalFiles = element.files.length;
+
+        for (var i = 0; i < totalFiles; i++) {
+            var file = element.files[i];
+            formData.append("Logo", file);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("UploadImage", "Shared")',
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false
+        })
+            .done(function (response) {
+
+                if (response.Success)
+                {
+                    // For now, we'll just delay the fade out for demonstration
+                    hideLoadingSpinner();
+                    $("#Logo").val(response.DocURL);
+                    $("#MainThumb").attr("src", response.DocURL);
+                    showSuccessAlert();
+                    setTimeout(function () {
+                        $("#overlay").fadeOut();
+                        $("#centeredElement").fadeOut();
+                    }, 2000);
+                }
+
+            })
+            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("FAIL");
+            })
+    });
+
+    $("#ActionBtn").click(function () {
+
+
+        var requiredFields = $('#MainCompanyRegisterForm :input[required]').filter(function () {
+            return !$(this).val();
+        });
+
+        var requiredFieldNames = requiredFields.map(function () {
+            return $(this).attr('name');
+        }).get();
+
+        if (requiredFieldNames.length > 0) {
+            showFieldsError(requiredFieldNames);
+        }
+        else {
+            var errorFields = $('.form-group.has-error input');
+            var errorFieldNames = [];
+            errorFields.each(function () {
+                var fieldName = $(this).attr('name');
+                errorFieldNames.push(fieldName);
+            });
+            if (errorFieldNames.length > 0) {
+                showFieldsError(errorFieldNames);
+
+            } else {
+                // Submit the form or perform other actions
+                showLoadingSpinner(); // Fade in the loader element
+            
+                $.ajax({
+                    url: '@Url.Action("Action", "Company")',
+                    type: "post",
+                    data: $("#MainCompanyRegisterForm").serialize()
+                })
+                    .done(function (response) {
+                        if (response.success) {
+                            showFormSubmitted();
+                            window.location.href = '@Url.Action("Settings", "User")';
+                        } else {
+                            $(".errorDiv").html(response.Message);
+                        }
+                    })
+                    .always(function () {
+                        // This function is executed after the AJAX request is completed (success or error)
+                        hideLoadingSpinner(); // Fade out the loader element
+                    });
+            }
+
+        }
+
+    });
+</script>
+

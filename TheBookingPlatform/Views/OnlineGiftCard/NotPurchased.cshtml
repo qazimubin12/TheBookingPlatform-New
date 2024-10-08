@@ -1,0 +1,18 @@
+﻿@model  TheBookingPlatform.ViewModels.OnlineGiftCardViewModel
+@{
+    ViewBag.Title = "NotPurchased";
+}
+
+
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">
+                Error
+            </h4>
+            <h5>
+                There was issue in your payment, if you  want to retry again. Please click <a style="color:blue;" href="@Url.Action("Index", "OnlineGiftCard", new {bussinessName=Model.businessName})">here.</a>
+            </h5>
+        </div>
+    </div>
+</div>

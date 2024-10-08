@@ -1,0 +1,143 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentListingViewModel
+
+<style>
+    .card {
+        margin: 0px;
+    }
+</style>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <div class="card-header">
+                <h4 class="card-title">Deleted Appointments </h4>
+            </div>
+
+            <div class="card-content">
+                <form>
+
+                    <div class="form-group">
+                        <a class="btn btn-outline-secondary btn-sm btn-rounded" href="@Url.Action("Index", "Appointment")"><i class="fas fa-redo-alt mr-1"></i> Back to Appointments</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                @if (Model.Appointments != null)
+                {
+                    <div class="card">
+
+                        <div class="table-responsive">
+                            <table  id="datatables" class="table table-striped">
+                                <thead>
+                                    <tr>
+
+                                        <th class="text-center">
+                                            Customer
+                                        </th>
+                                        <th class="text-center">
+                                            Service
+                                        </th>
+                                        <th class="text-center">
+                                            Start Date - Time
+                                        </th>
+
+                                        <th class="text-center">
+                                            End Date - Time
+                                        </th>
+                                        <th class="text-center">
+                                            Deleted Time
+                                        </th>
+
+
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Appointments)
+                                    {
+                                        <tr>
+                                          
+                                            <td class="text-center">
+
+                                                <span>  @item.CustomerFirstName @item.CustomerLastName</span>
+
+                                            </td>
+                                           
+                                            <td class="text-center">
+                                                <select class="form-control text-center">
+
+                                                    @foreach (var service in item.Services)
+                                                    {
+                                                        <option value="@service.Name">@service.Name - @service.Duration</option>
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td class="text-center">
+                                                @item.StartDate.ToString("yyyy-MM-dd") @item.StartTime.ToString("H:mm")
+                                            </td>
+                                            <td class="text-center">
+                                                @item.StartDate.ToString("yyyy-MM-dd") @item.EndTime.ToString("H:mm")
+                                            </td>
+                                            <td class="text-center">
+                                                @item.DeletedTime
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="@Url.Action("Restore", "Appointment", new { ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text">RESTORE</a>
+                                                <a href="@Url.Action("DeletePermanently", "Appointment", new { ID = item.ID })" class="btn btn-sm btn-rounded btn-danger btn-icon-text" >Delete Permanently</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="alert alert-warning col-md-12" role="alert">
+                        Sorry! No records exist.
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+    <div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        </div>
+    </div>
+</body>
+<script>
+
+
+
+    $(document).ready(function () {
+        $('#datatables').DataTable({
+            "pagingType": "full_numbers",
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            responsive: true,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search records",
+            }
+
+        });
+
+        $(document).on('click', '.data-btn', function () {
+            $.ajax({
+                url: $(this).attr("data-href"),
+            })
+                .done(function (response) {
+                    $("#actionModal .modal-dialog").html(response);
+                    $("#actionModal").modal('show'); // Make sure the modal is shown after the response is loaded
+                });
+        });
+    });
+
+
+</script>

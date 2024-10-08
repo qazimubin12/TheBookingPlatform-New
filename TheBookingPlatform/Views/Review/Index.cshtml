@@ -1,0 +1,232 @@
+﻿@model TheBookingPlatform.ViewModels.SettingsViewModel
+@{
+    ViewBag.Title = "Index";
+    string StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
+    string EndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month)).ToString("yyyy-MM-dd"); ;
+}
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Reviews </h4>
+        </div>
+
+
+        <div class="card-content">
+            <div class="form-group">
+                <label>Filter</label>
+                <select class="form-control" id="SelectedOption">
+                    <option value="All">All</option>
+                    <option selected value="Reviewed">Reviewed</option>
+                    <option value="NotReviewed">Not Reviewed</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="startDate">Start Date:</label>
+                <input value="@StartDate" class="form-control" type="date" id="startDate">
+                <label for="endDate">End Date:</label>
+                <input value="@EndDate" class="form-control" type="date" id="endDate">
+                <button class="btn btn-primary btn-sm" type="button" id="filterDate">Filter Date</button>
+            </div>
+
+            <div>
+                <button class="filterStar btn btn-sm btn-primary" type="button" data-rating="5">5 Star</button>
+                <button class="filterStar btn btn-sm btn-primary" type="button" data-rating="4">4 Star</button>
+                <button class="filterStar btn btn-sm btn-primary" type="button" data-rating="3">3 Star</button>
+                <button class="filterStar btn btn-sm btn-primary" type="button" data-rating="0">Below 3 Star</button>
+
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="col-lg-12 grid-margin stretch-card">
+                @if (Model.Reviews != null)
+                {
+                    <div class="card">
+
+                        <div class="table-responsive">
+                            <table id="ReviewsTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+
+                                        <th class="text-center">
+                                            Customer
+                                        </th>
+                                        <th class="text-center">
+                                            Employee
+                                        </th>
+                                        <th class="text-center">
+                                            Feedback
+                                        </th>
+                                        @*<th class="text-center">
+                                                Email Opened
+                                            </th>
+                                            <th class="text-center">
+                                                Email Clicked
+                                            </th>*@
+
+
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Reviews)
+                                    {
+
+                                        <tr data-reviewedornot="@item.Type" data-ratingdate="@item.Review.Date.ToString("yyyy-MM-dd")" data-rating-row="@item.Review.Rating" class="@item.Type">
+                                            <td class="text-center">@item.CustomerName</td>
+                                            <td class="text-center">@item.EmployeeName</td>
+                                            <td class="text-center DateText" hidden>@item.Review.Date.ToString("yyyy-MM-dd")</td>
+                                            <td class="text-center Rating" hidden>@item.Review.Rating</td>
+                                            @if (item.Review.Rating == 0)
+                                            {
+                                                <td class="text-center"></td>
+                                            }
+                                            else
+                                            {
+                                                <td class="text-center">@item.Review.Feedback @item.Review.Rating<i style="margin-left:5px;" class="fa fa-star"></i></td>
+                                            }
+                                            @*<td class="text-center">@item.Review.EmailOpened</td>
+                                                <td class="text-center">@item.Review.EmailClicked</td>*@
+
+                                            <td class="text-center">
+
+                                                @*<a href="@Url.Action("Action", "Review", new { ID = item.Review.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>*@
+                                                <button data-href="@Url.Action("Delete", "Review", new { ID = item.Review.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="alert alert-warning col-md-12" role="alert">
+                        Sorry! No records exist.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+
+    $(document).ready(function () {
+        // Add event listener for date range filter
+        $('#filterDate').on('click', function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+
+            filterTableByDate(startDate, endDate);
+        });
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+
+        filterTableByDate(startDate, endDate);
+        // Add event listener for star rating filter
+        $('.filterStar').on('click', function () {
+            var rating = $(this).data('rating');
+
+            filterTableByRating(rating);
+        });
+
+        // Add event listener for "no reviews yet" filter
+        $('#filterNoReviews').on('click', function () {
+            filterTableByNoReviews();
+        });
+
+        function filterTableByDate(startDate, endDate) {
+            $('#ReviewsTable tbody tr').each(function () {
+
+                var dateText = $(this).data("ratingdate");
+                var date = new Date(dateText);
+                var startDateObj = new Date(startDate);
+                var endDateObj = new Date(endDate);
+                var selectedOption = $("#SelectedOption").val();
+                var reviewedornot = $(this).data("reviewedornot")
+                if (selectedOption == reviewedornot) {
+                    if (date >= startDateObj && date <= endDateObj) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                }
+                else {
+                    if (selectedOption == "All") {
+                        if (date >= startDateObj && date <= endDateObj) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    }
+                    else {
+                        $(this).hide();
+                    }
+                }
+            });
+        }
+
+
+        function filterTableByRating(rating) {
+            $('#ReviewsTable tbody tr').each(function () {
+                // Update the index to match the position of the Rating class td in your HTML
+                var ratingText = $(this).data('ratingRow');
+
+                var currentRating = ratingText;
+                if (rating == "0") {
+                    if (currentRating > rating && currentRating < 3) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                } else {
+                    if (currentRating == rating) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                }
+            });
+        }
+        function filterTableByNoReviews() {
+            $('tbody tr').each(function () {
+                var feedback = $(this).find('td:nth-child(3)').text().trim();
+
+                if (feedback === "") {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+    });
+
+</script>
+
+
+
+

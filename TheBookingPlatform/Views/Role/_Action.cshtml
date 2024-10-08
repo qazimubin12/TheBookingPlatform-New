@@ -1,0 +1,66 @@
+﻿@model TheBookingPlatform.ViewModels.RoleActionViewModel
+
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                @if (!string.IsNullOrEmpty(Model.ID))
+                {
+                    <span>Edit Role</span>
+                }
+                else
+                {
+                    <span>Create Role</span>
+                }
+            </h5>
+         
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <input type="hidden" name="ID" value="@Model.ID" />
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" name="Name" placeholder="Enter Full Name." value="@Model.Name">
+                </div>
+                
+
+
+            </form>
+
+            <div class="errorDiv">
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            @if (!string.IsNullOrEmpty(Model.ID))
+            {
+                <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Update</button>
+            }
+            else
+            {
+                <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
+            }
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+        </div>
+    </div>
+}
+
+<script>
+	$("#actionButton").click(function () {
+		$.ajax({
+			url: '@Url.Action("Action", "Role")',
+			type: "post",
+			data: $("#actionForm").serialize()
+		})
+		.done(function (response) {
+			if(response.Success)
+			{
+				location.reload();
+			}
+			else {
+				$(".errorDiv").html(response.Message);
+			}
+		});
+	});
+</script>

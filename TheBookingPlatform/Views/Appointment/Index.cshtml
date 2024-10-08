@@ -1,0 +1,96 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentListingViewModel
+
+<style>
+    .card {
+        margin: 0px;
+    }
+</style>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <div class="card-header">
+                <h4 class="card-title">Appointments </h4>
+            </div>
+
+            <div class="card-content">
+                <form>
+
+                    <div class="form-group">
+
+                        <a href="@Url.Action("DeletedAppointments", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded"> VIEW DELETED</a>
+
+                        <a href="@Url.Action("Action", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded" type="button"><i class="fas fa-plus mr-1"></i> Create</a>
+                    </div>
+
+                    @if (!User.IsInRole("Calendar"))
+                    {
+                        if (Model.OpeningHours != null)
+                        {
+                            if (Model.OpeningHours.Count() > 7)
+                            {
+                                <a id="CalendarButton" href="@Url.Action("Calendar", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded" type="button"><i class="fas fa-calendar mr-1"></i> Calendar</a>
+                            }
+                        }
+                        <div class="row">
+                            <div class="col-md-6">
+                                
+                                <label>Start Date:</label>
+                                <input type="date" value="@DateTime.Now.AddDays(1 - DateTime.Now.Day).ToString("yyyy-MM-dd")" class="form-control" name="StartDate" id="StartDate" />
+                            </div>
+                            <div class="col-md-6">
+                                <label>End Date:</label>
+                                <input type="date" value="@DateTime.Now.AddMonths(1).AddDays(-DateTime.Now.AddMonths(1).Day).ToString("yyyy-MM-dd")" class="form-control" name="EndDate" id="EndDate" />
+                            </div>
+                        </div>
+
+                        <a href="@Url.Action("Export", "Appointment")" id="exportBtn" class="btn btn-outline-success btn-sm btn-rounded">EXPORT</a>
+                    }
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col col-lg-12">
+                @{
+                    Html.RenderPartial("_Listing", Model);
+                }
+            </div>
+        </div>
+
+    </div>
+    <div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+        </div>
+    </div>
+</body>
+<script>
+     $(document).ready(function () {
+        // Attach change event handlers to the date inputs
+        $("#StartDate, #EndDate").change(updateExportLink);
+
+        // Function to update the export link
+        function updateExportLink() {
+            // Get the values of Start Date and End Date
+            var startDateValue = $("#StartDate").val();
+            var endDateValue = $("#EndDate").val();
+
+            // Build the new URL for the export link
+            var newUrl = "@Url.Action("Export", "Appointment")?StartDate=" + startDateValue + "&EndDate=" + endDateValue;
+
+            // Update the href attribute of the export button
+            $("#exportBtn").attr("href", newUrl);
+        }
+         updateExportLink();
+    });
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+
+</script>

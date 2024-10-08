@@ -1,0 +1,159 @@
+﻿@model TheBookingPlatform.ViewModels.StockOrderListingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+</style>
+
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Stock Orders </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+                <div class="row">
+
+                    <input type="text" name="searchterm" class="form-control col-md-8" placeholder="Search." value="@Model.SearchTerm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                </div>
+                <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+                <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                <a href="@Url.Action("Action", "StockOrder")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="col-lg-12 grid-margin stretch-card">
+                @if (Model.StockOrders != null)
+                {
+                    <div class="card">
+
+                        <div class="table-responsive">
+                            <table id="StockOrdersTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+
+                                        <th class="text-center">
+                                            Supplier
+                                        </th>
+                                        <th class="text-center">
+                                            Created
+                                        </th>
+                                        <th class="text-center">
+                                            Quantity
+                                        </th>
+                                        <th class="text-center">
+                                            Status
+                                        </th>
+
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.StockOrders)
+                                    {
+                                        <tr style="cursor:pointer;">
+                                            <td  onclick="ShowStockOrderView('@item.StockOrder.ID','@item.StockOrder.Status')" class="text-center">@item.StockOrder.SupplierName</td>
+                                            <td  onclick="ShowStockOrderView('@item.StockOrder.ID','@item.StockOrder.Status')" class="text-center">@item.StockOrder.CreatedDate.ToString("yyyy-MM-dd")</td>
+                                            <td  onclick="ShowStockOrderView('@item.StockOrder.ID','@item.StockOrder.Status')" class="text-center">@item.Quantity products</td>
+                                            
+                                            <td  onclick="ShowStockOrderView('@item.StockOrder.ID','@item.StockOrder.Status')" class="text-center">
+                                                @{string ClassName = "";
+                                                    if (item.StockOrder.Status == "Open")
+                                                    {
+                                                        ClassName = "label-info";
+                                                    }else if(item.StockOrder.Status == "Ordered")
+                                                    {
+                                                        ClassName = "label-warning";
+                                                    }else if(item.StockOrder.Status == "Complete")
+                                                    {
+                                                        ClassName = "label-success";
+
+                                                    }
+                                                    else if (item.StockOrder.Status == "Paid")
+                                                    {
+                                                        ClassName = "label-primary";
+
+                                                    }
+                                                }
+                                                <span class="label @ClassName">@item.StockOrder.Status</span>
+                                            </td>
+
+                                            <td class="text-center">
+
+
+                                                <a href="@Url.Action("Action", "StockOrder", new { ID = item.StockOrder.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                <button data-href="@Url.Action("Delete", "StockOrder", new { ID = item.StockOrder.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="alert alert-warning col-md-12" role="alert">
+                        Sorry! No records exist.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    function ShowStockOrderView(ID, Status) {
+        if (Status == "Open") {
+            var url = '@Url.Action("Action", "StockOrder")?ID=' + ID;
+            window.location.href = url;
+        }
+        else if (Status == "Ordered") {
+            var url = '@Url.Action("ShowStockOrderDetail", "StockOrder")?StockOrderID=' + ID;
+            window.location.href = url;
+        }
+        else if (Status == "Complete") {
+              var url = '@Url.Action("ShowStockOrderDetail", "StockOrder")?StockOrderID=' + ID;
+            window.location.href = url;
+        }
+        else {
+
+        }
+    }
+
+    $("#SearchBtn").click(function () {
+        var SearchTerm = $("#Search").val();
+        RepopulateStockOrders(SearchTerm);
+    })
+
+    $("#ResetBtn").click(function () {
+        RepopulateStockOrders();
+        $("#Search").val('');
+
+    })
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+
+</script>
+
+
+

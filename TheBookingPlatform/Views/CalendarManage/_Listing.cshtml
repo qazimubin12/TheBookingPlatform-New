@@ -1,0 +1,91 @@
+﻿@model TheBookingPlatform.ViewModels.CalendarManageListingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+
+    <div class="col-lg-12 grid-margin stretch-card">
+        @if (Model.CalendarManageModels != null)
+        {
+            <div class="card">
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+
+                                <th class="text-center">
+                                    User
+                                </th>
+                                <th class="text-center">
+                                    Assigned Calendars
+                                </th>
+
+                                <th class="text-center">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CalendarManageModels)
+                            {
+                                <tr>
+                                    @if (item.User == null)
+                                    {
+                                        <td class="text-center">DELETED USER</td>
+                                        <td class="text-center">0</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="text-center">@item.User.Name</td>
+                                        if (item.ManageOfs != null)
+                                        {
+                                            <td class="text-center">@item.ManageOfs.Count()</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-center">0</td>
+                                        }
+                                        <td style="display:flex;" class="text-center">
+                                            <button title="Assign Services" data-href="@Url.Action("AssignCalendars", "CalendarManage", new { ID = item.User.Id })" type="button" class="data-btn btn btn-sm btn-rounded btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">badge</i></button>
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+
+            <div class="alert alert-warning col-md-12" role="alert">
+                Sorry! No records exist.
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $(".data-btn").click(function () {
+            $.ajax({
+                url: $(this).attr("data-href"),
+            })
+                .done(function (response) {
+                    $("#actionModal .modal-dialog").html(response);
+                });
+        });
+    });
+
+
+
+</script>
+
+
+

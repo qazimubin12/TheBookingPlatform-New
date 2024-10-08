@@ -1,0 +1,200 @@
+﻿@model TheBookingPlatform.ViewModels.CouponListingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+</style>
+
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Coupons </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+                <div class="row" style="display:flex;margin:0px;">
+                    <a style="padding:10px;" href="@Url.Action("Action", "Coupon")" class="btn btn-primary btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+                    <a style="padding:10px;" href="@Url.Action("Index", "CouponAssignment")" class="btn btn-success btn-sm btn-rounded"> View Assignments</a>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="col-lg-12 grid-margin stretch-card">
+                @if (Model.Coupons != null)
+                {
+                    <div class="card">
+
+                        <div class="table-responsive">
+                            <table id="CustomersTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+
+                                        <th class="text-center">
+                                            Name
+                                        </th>
+                                        <th class="text-center">
+                                            Description
+                                        </th>
+                                        <th class="text-center">
+                                            Coupon Code
+                                        </th>
+
+                                        <th class="text-center">
+                                            Usage Count
+                                        </th>
+                                        <th class="text-center">
+                                            Date Added
+                                        </th>
+                                        <th class="text-center">
+                                            Expiry Date
+                                        </th>
+
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Coupons)
+                                    {
+                                        <tr class="customerID" data-id="@item.ID">
+                                            <td class="text-center">@item.CouponName </td>
+                                            <td class="text-center">@item.CouponDescription</td>
+                                            <td class="text-center">
+                                                @item.CouponCode
+                                            </td>
+                                            <td class="text-center">@item.UsageCount</td>
+                                            <td class="text-center">@item.DateCreated.ToString("yyyy-MM-dd")</td>
+                                            <td class="text-center">@item.ExpiryDate.ToString("yyyy-MM-dd")</td>
+
+                                            <td class="text-center">
+
+                                                <a href="@Url.Action("Action", "Coupon", new { ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                <button data-href="@Url.Action("Delete", "Coupon", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                @if (item.IsDisabled)
+                                                {
+                                                    <button data-id="@item.ID" onclick="EnableCoupon('@item.ID', this)" type="button" class="btn btn-sm btn-rounded btn-success btn-icon-text EnableBtn"><i class="mdi mdi-delete"></i>ENABLE</button>
+
+                                                }
+                                                else
+                                                {
+
+                                                    <button data-id="@item.ID" onclick="DisableCoupon('@item.ID',this)" type="button" class="btn btn-sm btn-rounded btn-warning btn-icon-text"><i class="mdi mdi-delete"></i>DISABLE</button>
+                                                }
+                                                <button onclick="SendEmailToClients('@item.ID')" data-id="@item.ID" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text sendEmail">SEND EMAIL</button>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="alert alert-warning col-md-12" role="alert">
+                        Sorry! No records exist.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+<script>
+
+
+    $(document).ready(function () {
+        $('#CustomersTable').DataTable({
+            "pagingType": "full_numbers",
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            responsive: true,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search records",
+            }
+
+        });
+        $(document).on('click', '.data-btn', function () {
+            $.ajax({
+                url: $(this).attr("data-href"),
+            })
+                .done(function (response) {
+                    $("#actionModal .modal-dialog").html(response);
+                    $("#actionModal").modal('show'); // Make sure the modal is shown after the response is loaded
+                });
+        });
+
+    });
+
+    function SendEmailToClients(ID) {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("SendEmailToClients","Coupon")',
+            type: 'POST',
+            data: { ID: ID }
+        })
+            .done(function (response) {
+                alert("Coupons are being provided in the background, You can start using the system.");
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.log("Failed to send email to clients: " + errorThrown);
+            })
+            .always(function () {
+                hideLoadingSpinner();
+            });
+    }
+    function DisableCoupon(ID, elem) {
+
+        $.ajax({
+            url: '@Url.Action("DisableCoupon","Coupon")',
+            type: 'POST',
+            data: { ID: ID }
+        })
+            .done(function (response) {
+                $(elem).addClass("btn-success")
+                    .removeClass("btn-warning")
+                    .addClass("EnableBtn")
+                    .removeClass("DisableBtn")
+                    .text("ENABLE")
+                    .attr("onclick", "EnableCoupon('" + ID + "', this)");
+            });
+    }
+
+    function EnableCoupon(ID, elem) {
+
+        $.ajax({
+            url: '@Url.Action("EnableCoupon","Coupon")',
+            type: 'POST',
+            data: { ID: ID }
+        })
+            .done(function (response) {
+                $(elem).addClass("btn-warning")
+                    .removeClass("btn-success")
+                    .addClass("DisableBtn")
+                    .removeClass("EnableBtn")
+                    .text("DISABLE")
+                    .attr("onclick", "DisableCoupon('" + ID + "', this)");
+            });
+    }
+
+
+
+
+   
+</script>
+
+
+

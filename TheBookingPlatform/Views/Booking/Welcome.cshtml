@@ -1,0 +1,30 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    
+    ViewBag.Title = "Welcome";
+}
+
+<div class="welcome d-flex align-items-center justify-content-center">
+    <div style=" margin-top: 80px; " class="text-center pb-5 mb-5">
+        <div class="mb-5">
+            <img src="@Model.Company.Logo" alt="" class="img-fluid blue-logo mb-3">
+            <h1 class="text-primary mb-1">@Model.Company.Business</h1>
+            <p class="text-muted">Welcome to @Model.Company.Business </p>
+        </div>
+    </div>
+</div>
+<!-- fixed-footer -->
+<div class="footer fixed-bottom d-grid gap-3">
+    <h6 class="text-center">Powered by Your Booking Platform</h6>
+    <a href="@Url.Action("Index", "Booking", new { businessName = Model.Company.Business, CustomerID = Model.CustomerID,By=Model.By })" class="btn btn-info btn-lg">START AS GUEST</a>
+    <a href="@Url.Action("Login","Booking",new {businessName = Model.Company.Business})" class="btn btn-outline-info btn-lg">LOGIN</a>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#FooterNAV").hide();
+
+    });
+</script>

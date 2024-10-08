@@ -1,0 +1,227 @@
+﻿@model TheBookingPlatform.ViewModels.StockOrderDetailViewModel
+@{
+    ViewBag.Title = "_ProcessOrderView";
+}
+
+<style>
+    .quantity-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .quantity-input {
+        width: 40px;
+        text-align: center;
+    }
+
+    .quantity-btn {
+        cursor: pointer;
+        padding: 5px 10px;
+    }
+</style>
+<h5 style="margin-left: 20px; float: left; width: 80%;" class="modal-title" id="ProcessModal">
+    Products Process Details
+</h5>
+<form id="actionForm">
+    <input type="hidden" name="ID" value="@Model.StockOrder.ID" id="StockOrderID">
+
+    <div style="display:flex;justify-content:end;" class="row">
+        @if (Model.StockOrder.Status == "Ordered")
+        {
+        <button type="button" class="btn btn-primary  btn-round" id="confirmProcessing"><i class="material-icons">start</i> &nbsp; Confirm Process</button>
+        <button onclick="window.location.href='@Url.Action("ShowStockOrderDetail", "StockOrder", new { StockOrderID = Model.StockOrder.ID })'" type="button" class="btn btn-secondary  btn-round"><i class="material-icons">arrow_back</i> &nbsp; CLOSE </button>
+        }
+        else
+        {
+        <button  id="PayOrder" class="btn btn-success btn-round">PAY</button>
+        }
+    </div>
+</form>
+<table id="ProcessingProductsTable" class="table table-striped table-hover table-striped">
+    <thead>
+        <tr>
+            <th hidden> Product ID</th>
+            <th>
+                Product
+            </th>
+            <th>
+                Part Number
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Ordered
+            </th>
+            <th>
+                Recieved
+            </th>
+            <th>
+                Difference
+            </th>
+            <th>
+                Total
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ProductDetails)
+        {
+            <tr>
+                <td hidden class="ProductID">@item.ProductID></td>
+                <td class="ProductName">@item.ProductName</td>
+                <td class="PartNumber">@item.PartNumber</td>
+                <td class="Price">@item.Price</td>
+
+                <td class="OrderedQty">@item.OrderedQty</td>
+
+
+                @if (Model.StockOrder.Status != "Complete")
+                {
+                    <td>
+                        <div class="quantity-container">
+                            <button style="padding: 5px 10px;" type="button" class="btn quantity-btn minus-button btn-sm btn-danger">-</button>
+                            <input type="text" class="quantity-input Recieved form-control" value="@item.Recieved" />
+                            <button style="padding: 5px 10px;" type="button" class="btn quantity-btn plus-button btn-sm btn-success">+</button>
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    <td class="Recieved">@item.Recieved</td>
+                }
+                <td class="DifferenceQty">
+                    <label class="label label-success">@item.Difference</label>
+                </td>
+                <td class="Total">
+                    @{float Total = item.OrderedQty * item.Price;}
+                    @Total
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+<script>
+  $(document).ready(function () {
+      $(".quantity-btn").on("click", function () {
+          var row = $(this).closest("tr");
+          var quantityInput = row.find(".quantity-input");
+          var orderedQty = parseInt(row.find(".OrderedQty").text());
+          var receivedQty = parseInt(quantityInput.val());
+
+          if ($(this).hasClass("plus-button")) {
+              receivedQty++;
+          } else if ($(this).hasClass("minus-button") && receivedQty > 0) {
+              receivedQty--;
+          }
+
+          quantityInput.val(receivedQty);
+          var TotalElement = row.find(".Total");
+          var Price = parseFloat(row.find(".Price").text());
+          var differenceQty = receivedQty - orderedQty;
+          var differenceQtyElement = row.find(".DifferenceQty");
+
+          // Remove any existing classes and children elements
+          //differenceQtyElement.removeClass("custom-label-danger custom-label-info custom-label-light");
+          differenceQtyElement.empty();
+          TotalElement.empty();
+          var labelClass = "";
+          if (differenceQty < 0) {
+              labelClass = "label-danger";
+          } else if (differenceQty > 0) {
+              labelClass = "label-info";
+          } else {
+              labelClass = "label-success";
+          }
+
+          // Create a new label-like element and apply the custom label class
+          var labelElement = $("<label>").addClass("label " + labelClass).text(differenceQty);
+          differenceQtyElement.append(labelElement);
+
+          TotalElement.text(parseFloat(Price * receivedQty));
+
+
+
+      });
+
+  });
+
+
+
+
+    $("#confirmProcessing").click(function () {
+        var rowDataArray = [];
+
+        $("#ProcessingProductsTable tbody tr").each(function () {
+            var ProductID = $(this).find(".ProductID").text();
+            var ProductName = $(this).find(".ProductName").text();
+            var PartNumber = $(this).find(".PartNumber").text();
+            var Price = $(this).find(".Price").text();
+            var OrderedQty = $(this).find(".OrderedQty").text();
+            var Recieved = $(this).find(".quantity-input").val();
+            var Difference = $(this).find(".DifferenceQty").text();
+            var Total = $(this).find(".Total").text();
+
+            rowDataArray.push({
+                ProductID: ProductID,
+                ProductName: ProductName,
+                PartNumber: PartNumber,
+                Price: Price,
+                OrderedQty: OrderedQty,
+                Recieved: Recieved,
+                Difference: Difference,
+                Total: Total
+            });
+        });
+
+        var ProductDetails = JSON.stringify(rowDataArray);
+
+
+        $.ajax({
+            url: '@Url.Action("ProcessStockOrder", "StockOrder")',
+            type: "post",
+            data: $("#actionForm").serialize() + "&ProductDetailsProcessing=" + encodeURIComponent(ProductDetails)
+        })
+            .done(function (response) {
+                if (response.success) {
+                    var url = '@Url.Action("Index", "Product", new {Selected = "Stock Order"})';
+                    window.location.href = url;
+                }
+                else {
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+    });
+
+
+
+
+
+
+
+    $("#PayOrder").click(function () {
+        var StockOrderID = $("#StockOrderID").val();
+        
+        $.ajax({
+            url: '@Url.Action("PayOrder", "StockOrder")',
+            type: "post",
+            data: { StockOrderID: StockOrderID }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    var url = '@Url.Action("Index", "Product", new {Selected = "Stock Order"})';
+                    window.location.href = url;
+                }
+                else {
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+    });
+
+
+
+</script>

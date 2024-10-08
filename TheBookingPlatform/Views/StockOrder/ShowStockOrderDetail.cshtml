@@ -1,0 +1,251 @@
+﻿@model TheBookingPlatform.ViewModels.StockOrderDetailViewModel
+@{
+    ViewBag.Title = "ShowStockOrderDetail";
+}
+
+<style>
+
+    .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+        padding: 10px 8px;
+        vertical-align: middle;
+    }
+
+    p {
+        margin: 0 0 0px;
+    }
+
+    .card {
+        margin: 0px;
+    }
+    #loader {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    }
+</style>
+<div class="card">
+    <div style="display:none;" id="loader"><img style="width:150px;" src="~/Content/TBPContent/Loader.gif" /></div>
+
+    <div class="card-content">
+        <div class="card-header">
+            <h4 class="card-title">Order # @Model.StockOrder.ID for @Model.StockOrder.SupplierName</h4>
+            <input type="hidden" value="@Model.StockOrder.ID" id="ID" />
+            <input type="hidden" value="@Model.StockOrder.Status" id="Status" />
+        </div>
+        <div id="MainActionPanel">
+            @if (Model.StockOrder.Status == "Ordered")
+            {
+            <div class="col-md-10">
+                <div style="float:right;" id="actionButtons" class="">
+                    <button class="btn btn-sm btn-round btn-info" type="button" id="SendTosupplierBtn"><i class="material-icons">mail</i> Send to Supplier</button>
+                    <button class="btn btn-sm btn-round btn-primary" type="button" id="ProcessBtnOpenModal"><i class="material-icons">start</i> Prcoess</button>
+                </div>
+                <div class="">
+                    <h4>Notes:</h4>
+                    <span id="NotesSaved">
+                        @Model.StockOrder.Notes
+                    </span>
+                    <button id="updateNotesBtn" class="btn btn-sm btn-round btn-info"><i class="material-icons">edit</i></button>
+                    <hr />
+                    <table class="table table-responsive table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Product
+                                </th>
+                                <th  class="text-center">
+                                    Part Number
+                                </th>
+                                <th  class="text-center">
+                                    Amount
+                                </th>
+                                <th  class="text-center">
+                                    Quantity
+                                </th>
+                                <th  class="text-center">
+                                    Total
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ProductDetails)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.ProductName</td>
+                                    <td class="text-center">@item.PartNumber</td>
+                                    <td class="text-center">@item.Price</td>
+                                    <td class="text-center">@item.OrderedQty</td>
+                                    <td class="text-center">@item.Total</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-center" style="text-align:center;"><h4 style="font-weight:bolder;">Grand Total</h4></td>
+                                <td class="text-center"><h4 style="font-weight:bolder;">@Model.StockOrder.GrandTotal</h4></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <p>Ordered for:</p>
+                    <span style="font-weight:bold;">@Model.StockOrder.Business</span>
+                </div>
+                <br />
+                <div class="row">
+                    <p>Total:</p>
+                    <span style="font-weight:bold;">@Model.StockOrder.GrandTotal</span>
+                </div>
+                <br />
+                <div class="row">
+                    <p>Created:</p>
+                    <span style="font-weight:bold;">@Model.StockOrder.CreatedDate</span>
+                </div>
+                <br />
+                <div class="row">
+                    <p>Ordered:</p>
+                    <span style="font-weight:bold;">@Model.StockOrder.OrderedDate</span>
+                </div>
+
+                <div class="row">
+                    <button onclick="window.location.href='@Url.Action("Action", "StockOrder", new { ID = Model.StockOrder.ID })'" class="btn btn-block btn-warning"><i class="material-icons">edit</i> &nbsp; EDIT</button>
+                    <button type="button" id="addNoteBtn" class="btn btn-block btn-info"><i class="material-icons">edit_note</i> &nbsp;ADD NOTE</button>
+                    <button class="btn btn-block btn-success"><i class="fa-solid fa-file-csv"></i>&nbsp; CSV</button>
+                    <button class="btn btn-block btn-danger"><i class="material-icons">picture_as_pdf</i>&nbsp; PDF</button>
+                    <button onclick="window.location.href='@Url.Action("Index", "Product", new { Selected = "Stock Order" })'" class="btn btn-block btn-dark"><i class="material-icons">arrow_back</i>&nbsp; BACK</button>
+
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addNoteModal" tabindex="-1" role="dialog" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 style="float: left;width: 95%;" class="modal-title" id="addNoteModalLabel">Add Note</h5>
+                <i style="cursor:pointer;" data-dismiss="modal" class="material-icons">close</i>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="StockOrderID">
+                <div class="form-group">
+                    <label for="note">Note:</label>
+                    <textarea class="form-control" id="Notes" rows="3">@Model.StockOrder.Notes</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveNoteBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    $("#addNoteBtn").click(function () {
+        // Reset the modal inputs
+        var ID = $("#ID").val();
+        $("#StockOrderID").val(ID);
+        $("#addNoteModal").modal("show");
+    });
+
+    $("#updateNotesBtn").click(function () {
+        // Reset the modal inputs
+        var ID = $("#ID").val();
+        $("#StockOrderID").val(ID);
+        $("#addNoteModal").modal("show");
+    });
+
+    $("#saveNoteBtn").click(function () {
+        var StockOrderID = $("#StockOrderID").val();
+        var Notes = $("#Notes").val();
+          $.ajax({
+            url: '@Url.Action("SaveNotes", "StockOrder")',
+              type: "post",
+              data: { StockOrderID: StockOrderID, Notes: Notes }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    $("#addNoteModal").modal("hide");
+                    $("#NotesSaved").text(Notes);
+                }
+                else {
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+    });
+
+
+    $(document).ready(function () {
+
+        if ($("#Status").val() == "Complete") {
+            showLoadingSpinner(); // Fade in the loader element
+
+            var ID = $("#ID").val();
+
+            $.ajax({
+                url: '@Url.Action("ProcessOrderView", "StockOrder")', // Replace with your controller and action names
+                type: 'GET',
+                data: { ID: ID },
+
+                success: function (result) {
+                    $("#MainActionPanel").html(result);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                },
+                complete: function () {
+                    // This function is executed after the AJAX request is completed (success or error)
+                    hideLoadingSpinner(); // Fade out the loader element
+                }
+            });
+        }
+
+    })
+
+    $("#ProcessBtnOpenModal").click(function () {
+        showLoadingSpinner(); // Fade in the loader element
+
+        var ID = $("#ID").val();
+
+        $.ajax({
+            url: '@Url.Action("ProcessOrderView", "StockOrder")', // Replace with your controller and action names
+            type: 'GET',
+            data: { ID: ID },
+
+            success: function (result) {
+                $("#MainActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner(); // Fade out the loader element
+            }
+        });
+
+
+
+    });
+
+
+</script>

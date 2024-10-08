@@ -1,0 +1,742 @@
+﻿@model TheBookingPlatform.ViewModels.AppointmentActionViewModel
+@{
+    ViewBag.Title = "ActionEvent";
+}
+<link rel="stylesheet" href="~/Content/build/css/demo.css" />
+<link href="~/Content/TBPContent/autocomplete/content/styles.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Content/TBPContent/autocomplete/src/jquery.autocomplete.js"></script>
+<script src="~/Content/MainTemplate/assets/js/bootstrap-datetimepicker.js"></script>
+
+<style>
+    .autocomplete-suggestions {
+        box-sizing: border-box;
+        border-radius: 5px;
+        background: #FFF;
+        cursor: default;
+        overflow: auto;
+        -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        /* Customize the scrollbar */
+        scrollbar-width: thin; /* For Firefox */
+        scrollbar-color: #999 #FFF; /* For Firefox */
+    }
+
+        .autocomplete-suggestions::-webkit-scrollbar {
+            width: 10px; /* Set the width of the scrollbar */
+        }
+
+        /* Define the scrollbar thumb */
+        .autocomplete-suggestions::-webkit-scrollbar-thumb {
+            background-color: #999; /* Color of the thumb */
+            border-radius: 5px; /* Rounded corners for the thumb */
+        }
+
+            /* Define the scrollbar thumb on hover */
+            .autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+                background-color: #666; /* Color of the thumb on hover */
+            }
+
+        /* Define the scrollbar track on hover */
+        .autocomplete-suggestions::-webkit-scrollbar-track {
+            background-color: #FFF; /* Color of the track */
+        }
+
+        /* Define the scrollbar corner (optional) */
+        .autocomplete-suggestions::-webkit-scrollbar-corner {
+            background-color: #FFF; /* Color of the scrollbar corner */
+        }
+
+    #Notes::-webkit-scrollbar {
+        width: 10px; /* Set the width of the scrollbar */
+    }
+
+    /* Define the scrollbar thumb */
+    #Notes::-webkit-scrollbar-thumb {
+        background-color: #999; /* Color of the thumb */
+        cursor: pointer;
+        border-radius: 5px; /* Rounded corners for the thumb */
+    }
+
+    /* Define the scrollbar thumb on hover */
+    #Notess:-webkit-scrollbar-thumb:hover {
+        background-color: #666; /* Color of the thumb on hover */
+    }
+
+    /* Define the scrollbar track on hover */
+    #Notes::-webkit-scrollbar-track {
+        background-color: #FFF; /* Color of the track */
+    }
+
+    /* Define the scrollbar corner (optional) */
+    #Notes::-webkit-scrollbar-corner {
+        background-color: #FFF; /* Color of the scrollbar corner */
+    }
+
+    .autocomplete-suggestion {
+        padding: 2px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .autocomplete-no-suggestion {
+        padding: 2px 5px;
+    }
+
+    .autocomplete-selected {
+        background: #F0F0F0;
+    }
+
+    .autocomplete-suggestions strong {
+        font-weight: bold;
+        color: #000;
+    }
+
+    .autocomplete-group {
+        padding: 2px 5px;
+        font-size: 16px;
+        color: #000;
+        display: block;
+        border-bottom: 1px solid #000;
+    }
+
+
+    .day-button {
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        background-color: #fff;
+    }
+
+        .day-button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .day-button.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+    .circular-box {
+        width: 30px;
+        height: 30px;
+        background-color: lightskyblue;
+        border-radius: 50%; /* Use 50% for a perfect circle */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .close-button {
+        background-color: transparent;
+        color: black;
+        border: none;
+        border-radius: 20px;
+    }
+
+        .close-button:hover {
+            background-color: darkred;
+            color: white;
+            border: none;
+            border-radius: 20px;
+        }
+
+    .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: black;
+        font-weight: 400;
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: black;
+    }
+</style>
+
+
+<div class="row">
+    <div class="modal-content">
+        <div class="modal-body">
+            <div style="width: 100%;">
+
+                <form id="AbsenceForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div style="margin:0px;" class="card">
+                                <div class="card-content">
+
+                                    <h4 class="card-title">
+                                        Update Event
+                                    </h4>
+                                    <div id="MainAbsenseContainer">
+
+                                        <div class="row" id="AbsenseServiceRow_0">
+                                            <input type="hidden" id="IDAB" name="ID" value="@Model.ID" />
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Select Event</label>
+                                                    <select class="form-control" name="Service" id="ServiceAB">
+                                                        @foreach (var item in Model.AbsenseServices)
+                                                        {
+                                                            if (Model.Service == item.ID.ToString())
+                                                            {
+                                                                <option selected data-duration="@item.Duration" value="@item.ID">
+                                                                    @item.Name
+                                                                </option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option data-duration="@item.Duration" value="@item.ID">
+                                                                    @item.Name
+                                                                </option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>
+                                                        Select Date
+                                                    </label>
+
+                                                    <input type="date" id="DateAB" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="form-group col-md-6">
+                                            <label>
+                                                Start Time
+                                            </label>
+
+                                            <input type="text" id="StartTimeAB" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
+
+
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>
+                                                End Time
+                                            </label>
+
+                                            <input type="text" id="EndTimeAB" class="form-control timepicker" value="@Model.EndTime.ToString("HH:mm")" name="Time">
+
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Select Employee</label>
+                                            <select onchange="CheckIfEmployeeProvideTheService()" class="form-control" name="EmployeeID" id="EmployeeIDAB">
+                                                <option value="0">---Select----</option>
+                                                @foreach (var item in Model.Employees)
+                                                {
+                                                    if (item.ID == Model.EmployeeID)
+                                                    {
+                                                        <option selected value="@item.ID">@item.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.ID">@item.Name</option>
+
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div id="AllEmployeePanel" class="col-md-6">
+                                            <div class="checkbox form-horizontal-checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="AllEmployeesCB" id="AllEmployeesCB">
+                                                    All Employees
+                                                </label>
+                                                <input type="hidden" name="AllEmployees" id="AllEmployees" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-12">
+                                    <label>Note</label>
+                                    <textarea rows="3" class="form-control" id="NotesAB" name="Notes">@Model.Notes</textarea>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Select Color</label>
+
+                                        <input class="form-control" type="color" name="Color" value="#D28D00" id="ColorAB" />
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="col-md-5">
+                            <div style="margin:0px;" class="card">
+                                <hr />
+                                <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
+                                    <div class="card-content">
+                                        <h4 class="card-title">Event Summary</h4>
+                                        <hr />
+                                        <div class="col-md-6">
+                                            <label>Date and Time</label>
+                                            <h4>
+                                                <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
+                                            </h4>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+
+                                <button type="button" id="ABactionButton" class="btn btn-primary btn-block btn-rounded">Update Event</button>
+                                <span id="validationTextAB" class="text-danger"></span><br />
+                                <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Set content width to 100% -->
+        <!-- Your content goes here -->
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<script>
+
+
+
+    $(document).ready(function () {
+
+
+        $(".duration-input").on("input", function () {
+            // Get the input value in lowercase
+            var inputValue = $(this).val().toLowerCase();
+
+            // Check if "mins" is already present in the input value
+            if (inputValue.includes("mins")) {
+                // If "mins" is already present, remove the last occurrence
+                var lastIndex = inputValue.lastIndexOf("mins");
+                var newValue = inputValue.substring(0, lastIndex) + inputValue.substring(lastIndex + 4);
+
+                // Update the input value with the corrected value
+                $(this).val(newValue);
+            }
+        });
+        CheckABDurationInput();
+        CheckIsAllEmployee();
+
+    });
+
+    $("#ServiceAB").on("change", function () {
+        $("#ServiceDurationAB").val(duration);
+        if ($("#ID").val() == "0") {
+            var selectedOption = $(this).find(':selected');
+            var StartTime = $("#StartTimeAB").val();
+            var Duration = selectedOption.data("duration");
+            $.ajax({
+                url: '@Url.Action("GetEndTime", "Appointment")',
+                type: 'GET',
+                data: { StartTime: StartTime, Duration: Duration },
+                success: function (data) {
+                    $("#EndTimeAB").val(data.EndTime);
+                },
+                error: function (error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        }
+    })
+
+    function CheckABDurationInput() {
+        var selectedOption = $("#ServiceAB").find(':selected');
+        var duration = selectedOption.data('duration');
+        if ($("#ID").val() == "0") {
+            $("#ServiceDurationAB").val(duration);
+        } else {
+            $("#ServiceDurationAB").val('@Model.ServiceDuration');
+        }
+
+        var StartTime = $("#StartTimeAB").val();
+        var Duration = duration;
+        if ($("#ID").val() == "0") {
+            $.ajax({
+                url: '@Url.Action("GetEndTime", "Appointment")',
+                type: 'GET',
+                data: { StartTime: StartTime, Duration: Duration },
+                success: function (data) {
+                    $("#EndTimeAB").val(data.EndTime);
+                },
+                error: function (error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        }
+    }
+
+    $('.duration-input').on('blur', function () {
+        // Append 'mins' if input isn't empty
+        if (!$(this).val().endsWith(' mins')) {
+
+            if ($(this).val().trim() !== '') {
+                $(this).val($(this).val() + ' mins');
+            }
+        }
+    });
+    $('.duration-input').on('input', function () {
+        // Replace non-numeric characters with an empty string
+        $(this).val($(this).val().replace(/[^0-9]/g, ''));
+
+        // Remove 'mins' if present
+        if ($(this).val().endsWith('mins')) {
+            $(this).val($(this).val().slice(0, -4));
+        }
+    });
+    $('.duration-input').on('focus', function () {
+        // Remove 'mins' if present
+        if ($(this).val().endsWith(' mins')){
+            $(this).val($(this).val().slice(0, -5));
+        }
+        if ($(this).val().endsWith(' min')) {
+            $(this).val($(this).val().slice(0, -4));
+
+        }
+    });
+    $('#MainContainer').on('blur', '.duration-input', function () {
+        // Append 'mins' if input isn't empty
+        if (!$(this).val().endsWith(' mins')) {
+
+            if ($(this).val().trim() !== '') {
+                $(this).val($(this).val() + ' mins');
+            }
+        }
+    });
+
+    $('.timepicker').datetimepicker({
+        //          format: 'H:mm',    // use this format if you want the 24hours timepicker
+        format: 'H:mm',    //use this format if you want the 12hours timpiecker with AM/PM toggle
+        icons: {
+            time: "fa fa-clock-o",
+            date: "fa fa-calendar",
+            up: "fa fa-chevron-up",
+            down: "fa fa-chevron-down",
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-screenshot',
+            clear: 'fa fa-trash',
+            close: 'fa fa-remove'
+        }
+    });
+    $('#MainContainer').on('input', '.duration-input', function () {
+        // Replace non-numeric characters with an empty string
+        $(this).val($(this).val().replace(/[^0-9]/g, ''));
+
+        // Remove 'mins' if present
+        if ($(this).val().endsWith('mins')) {
+            $(this).val($(this).val().slice(0, -4));
+        }
+    });
+    $('#MainContainer').on('focus', '.duration-input', function () {
+        // Remove 'mins' if present
+        if ($(this).val().endsWith(' mins')) {
+            $(this).val($(this).val().slice(0, -5));
+        }
+        if ($(this).val().endsWith(' min')) {
+            $(this).val($(this).val().slice(0, -4));
+        }
+    });
+
+
+
+
+    function CheckIfEmployeeProvideTheService() {
+        var serviceValues = [];
+        $('#MainContainer .row').each(function () {
+            var serviceInput = $(this).find('input[name="ServiceID"]');
+            var serviceValue = serviceInput.val().trim();
+            if (serviceValue !== '') {
+                serviceValues.push(serviceValue);
+            }
+
+        });
+
+        // Join the service values with commas
+        var concatenatedServiceValues = serviceValues.join(', ');
+        var Services = concatenatedServiceValues;
+        var EmployeeID = $("#EmployeeID").val();
+
+        $.ajax({
+            url: '@Url.Action("CheckEmployeeService", "Appointment")',
+            type: 'GET',
+            dataType: 'json',
+            data: { Services: Services, EmployeeID: EmployeeID },
+            success: function (data) {
+                if (data.success == false) {
+                    $("#validationTextForEmployeeService").text(data.Message);
+                    $("#validationTextForEmployeeServiceAB").text(data.Message);
+
+                }
+                else {
+                    $("#validationTextForEmployeeService").text("");
+                    $("#validationTextForEmployeeServiceAB").text("");
+
+
+                }
+            },
+            error: function (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+
+    }
+
+    function CheckIsAllEmployee() {
+        var isChecked = $("#AllEmployeesCB").is(':checked');
+        if (isChecked) {
+            $("#AllEmployees").val("True");
+            $("#EmployeeIDAB").hide();
+
+        } else {
+            $("#AllEmployees").val("False");
+            $("#EmployeeIDAB").show();
+        }
+    }
+    $('#AllEmployeesCB').change(function () {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            $("#AllEmployees").val("True");
+            $("#EmployeeIDAB").hide();
+
+        } else {
+            $("#AllEmployees").val("False");
+            $("#EmployeeIDAB").show();
+        }
+    });
+
+    function updateDeleteButtonVisibility() {
+        var rowElements = $('#MainContainer .row');
+        if (rowElements.length === 1) {
+            // If there's only one row, hide the delete button
+            rowElements.find('.btn-danger').hide();
+        } else {
+            // If there are more than one rows, show the delete buttons
+            rowElements.find('.btn-danger').show();
+        }
+    }
+
+    function updateTotal() {
+        var total = 0;
+
+        $('#MainContainer .row').each(function () {
+            var priceinput = parseFloat($(this).find('input[name="ServicePrice"]').val());
+            var discountPercentageInput = parseFloat($(this).find('input[name="ServiceDiscountInput"]').val());
+
+            // Check if discountPercentageInput is not empty and greater than 0
+            if (!isNaN(discountPercentageInput) && discountPercentageInput > 0) {
+                total += priceinput - (priceinput * (discountPercentageInput / 100));
+            } else {
+                total += priceinput;
+            }
+        });
+
+        var deposit = parseFloat($("#Deposit").val()); // Get the deposit value
+        if (!isNaN(deposit)) {
+            total -= deposit; // Subtract the deposit from the total
+        }
+
+        $("#TotalCost").text("@Model.Company.Currency" + total.toFixed(2)); // Optionally, round the total to two decimal places.
+        EnableTheDepositOptions();
+        CheckIfEmployeeProvideTheService();
+        CheckAvailability();
+
+    }
+
+    var DataOfCountry = $(".iti__selected-dial-code").text();
+    $("#MobileNumber").val(DataOfCountry);
+    $("#MobileNumber").on("keydown", function (event) {
+        // Check if the pressed key is the space key (key code 32)
+        if (event.keyCode === 32) {
+            event.preventDefault(); // Prevent the space from being entered
+        }
+    });
+    $("#MobileNumber").on("change", function () {
+        var phoneNumber = $("#MobileNumber").val();
+
+        // Check if the phone number starts with a valid country code (e.g., +1 for the US)
+        if (/^\+\d+/.test(phoneNumber)) {
+            $("#ActionBtn").removeAttr("disabled");
+            $("#phoneNumberError").text("");
+
+            $("#MobileNumber").css("border", "none");
+
+
+            // You can proceed with form submission or other actions here
+        } else {
+            $("#phoneNumberError").text("Phone number must start with a valid country code (e.g., +1 for the US).");
+            $("#MobileNumber").css("border", "0.5px solid red");
+            $("#ActionBtn").attr("disabled", "disabled");
+            // Prevent form submission or take appropriate action
+        }
+    });
+    function CheckAvailability() {
+        showLoadingSpinner();
+        updateServiceInput();
+
+        var date = $("#Date").val();
+        var time = $("#Time").val();
+        var serviceDuration = $("#ServiceDuration").val();
+        var ID = $("#ID").val();
+        var EmployeeID = $("#EmployeeID").val();
+        $.ajax({
+            url: '@Url.Action("CheckSlotAvailability","Appointment")',
+            type: 'POST',
+            data: {
+                date: date,
+                time: time,
+                serviceDuration: serviceDuration,
+                EmployeeID: EmployeeID,
+                ID:ID
+            },
+            success: function (data) {
+
+                if (data.isSlotAvailable) {
+
+                    $("#actionButton").removeAttr("disabled");
+                    // Slot is available, you can proceed with saving the appointment
+                    // or display a success message.
+                    $("#validationText").text("");
+                    hideLoadingSpinner();
+
+                } else {
+                    $("#validationText").text("Slot is already booked, please try different slot");
+                    hideLoadingSpinner();
+                }
+            },
+            error: function () {
+            //    alert("An error occurred while checking slot availability.");
+            }
+        });
+    }
+    function ClearTheCustomer() {
+        $("#MainCustomerSelectedContainer").empty();
+        $("#Customer").val("");
+
+    }
+    $("#Date").change(function () {
+        var selectedDate = $(this).val();
+        var formattedDate = new Date(selectedDate).toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric"
+        });
+        $("#DateToBeSet").text(formattedDate);
+        CheckAvailability();
+
+    });
+    $("#Time").change(function () {
+        var selectedTime = $(this).val();
+        var timeWithAMPM = formatTimeWithAMPM(selectedTime);
+        $("#TimeToBeSet").text(timeWithAMPM);
+        CheckAvailability();
+
+
+    });
+    $("#createCustomerBtn").click(function () {
+        $("#CreateCustomerPanel").toggle();
+    });
+    function formatTimeWithAMPM(time) {
+        var hours = parseInt(time.split(":")[0]);
+        var minutes = time.split(":")[1];
+        var ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Handle midnight (12:00 AM)
+
+        return hours + ":" + minutes + " " + ampm;
+    }
+    $(document).ready(function () {
+        updateDeleteButtonVisibility();
+    });
+
+
+
+
+    $("#ABactionButton").click(function () {
+        showLoadingSpinner();
+        if ($("#EmployeeIDAB").val() == "0" && $("#AllEmployees").val() == "False") {
+            alert("Please Select Employee");
+            hideLoadingSpinner();
+            return;
+        }
+        var Date = $("#DateAB").val();
+        var Time = $("#StartTimeAB").val() + "_" + $("#EndTimeAB").val();;
+        var Service = $("#ServiceAB").val();
+        var EmployeeID = $("#EmployeeIDAB").val();
+        var AllEmployees = $("#AllEmployees").val()
+        var Notes = $("#NotesAB").val();
+        var Color = $("#ColorAB").val();
+        var ID = $("#IDAB").val();
+        showLoadingSpinner();
+        // If not the specific validation message, proceed with the AJAX request directly
+        $.ajax({
+            url: '@Url.Action("ActionEventUpdate", "Appointment")',
+            type: "post",
+            data: {
+                ID:ID,
+                Date: Date, Time: Time, Service: Service, EmployeeID: EmployeeID,
+                AllEmployees: AllEmployees, Notes: Notes, Color: Color
+            }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    let encodedDate = encodeURIComponent(Date);
+                    window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
+                    hideLoadingSpinner();
+                }
+                else {
+                    hideLoadingSpinner();
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+
+
+
+
+    });
+
+</script>

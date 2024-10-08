@@ -1,0 +1,435 @@
+﻿@model TheBookingPlatform.ViewModels.GiftCardAssignmentActionViewModel
+
+<head>
+    <link href="~/Content/TBPContent/autocomplete/content/styles.css" rel="stylesheet" />
+    <script type="text/javascript" src="~/Content/TBPContent/autocomplete/src/jquery.autocomplete.js"></script>
+</head>
+<style>
+    #datatables_length {
+        display: none;
+    }
+    .autocomplete-suggestions {
+        box-sizing: border-box;
+        border-radius: 5px;
+        background: #FFF;
+        cursor: default;
+        overflow: auto;
+        -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        /* Customize the scrollbar */
+        scrollbar-width: thin; /* For Firefox */
+        scrollbar-color: #999 #FFF; /* For Firefox */
+    }
+
+        .autocomplete-suggestions::-webkit-scrollbar {
+            width: 10px; /* Set the width of the scrollbar */
+        }
+
+        /* Define the scrollbar thumb */
+        .autocomplete-suggestions::-webkit-scrollbar-thumb {
+            background-color: #999; /* Color of the thumb */
+            border-radius: 5px; /* Rounded corners for the thumb */
+        }
+
+            /* Define the scrollbar thumb on hover */
+            .autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+                background-color: #666; /* Color of the thumb on hover */
+            }
+
+        /* Define the scrollbar track on hover */
+        .autocomplete-suggestions::-webkit-scrollbar-track {
+            background-color: #FFF; /* Color of the track */
+        }
+
+        /* Define the scrollbar corner (optional) */
+        .autocomplete-suggestions::-webkit-scrollbar-corner {
+            background-color: #FFF; /* Color of the scrollbar corner */
+        }
+
+    #Notes::-webkit-scrollbar {
+        width: 10px; /* Set the width of the scrollbar */
+    }
+
+    /* Define the scrollbar thumb */
+    #Notes::-webkit-scrollbar-thumb {
+        background-color: #999; /* Color of the thumb */
+        cursor: pointer;
+        border-radius: 5px; /* Rounded corners for the thumb */
+    }
+
+    /* Define the scrollbar thumb on hover */
+    #Notess:-webkit-scrollbar-thumb:hover {
+        background-color: #666; /* Color of the thumb on hover */
+    }
+
+    /* Define the scrollbar track on hover */
+    #Notes::-webkit-scrollbar-track {
+        background-color: #FFF; /* Color of the track */
+    }
+
+    /* Define the scrollbar corner (optional) */
+    #Notes::-webkit-scrollbar-corner {
+        background-color: #FFF; /* Color of the scrollbar corner */
+    }
+
+    .autocomplete-suggestion {
+        padding: 2px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .autocomplete-no-suggestion {
+        padding: 2px 5px;
+    }
+
+    .autocomplete-selected {
+        background: #F0F0F0;
+    }
+
+    .autocomplete-suggestions strong {
+        font-weight: bold;
+        color: #000;
+    }
+
+    .autocomplete-group {
+        padding: 2px 5px;
+        font-size: 16px;
+        color: #000;
+        display: block;
+        border-bottom: 1px solid #000;
+    }
+
+    div.dataTables_wrapper div.dataTables_filter input {
+        margin-left: 0.5em;
+        display: flex;
+        width: 400px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        text-align: center;
+    }
+</style>
+<div class="row">
+    <div class="card">
+        <div class="card-content">
+            <h4 class="card-title">Assignemt Gift Card</h4>
+            <form id="actionForm">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <input type="hidden" id="ID" name="ID" value="@Model.ID" />
+                        <label>Select Gift Card</label>
+                        <select class="form-control" name="GiftCardID" id="GiftCardID">
+                            @foreach (var item in Model.GiftCards)
+                            {
+                                if (Model.GiftCardID == item.ID)
+                                {
+                                    <option value="@item.ID" selected>@item.Name (@item.GiftCardAmount)</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.ID">@item.Name (@item.GiftCardAmount)</option>
+
+                                }
+                            }
+                        </select>
+                    </div>
+
+
+                    <div class="form-group col-md-6">
+                        <label>Select Customer</label>
+                        <input class="form-control autocompleteCustomers" type="text" name="Customer" id="Customer" />
+                        <div id="MainCustomerSelectedContainer" class="">
+                            @if (Model.CustomerID != 0)
+                            {
+                                <table class="table table-hovered">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:70px;" class="suggestion-initial">
+                                                <div class="circular-box">@Model.Customer.FirstName.ToString()[0] @Model.Customer.LastName.ToString()[0]</div>
+                                            </td>
+                                            <td class="suggestion-details">
+                                                <input type="hidden" name="CustomerID" id="CustomerID" value="@Model.Customer.ID" class="customer-id">
+                                                <div class="customer-name">@Model.Customer.FirstName @Model.Customer.LastName </div>
+                                                <div class="customer-email">  @Model.Customer.Email  </div>
+                                                <div class="customer-mobile"> @Model.Customer.MobileNumber </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label>Assigned Date</label>
+                        @if (Model.ID == 0)
+                        {
+                            <input type="date" id="AssignedDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="AssignedDate">
+
+                        }
+                        else
+                        {
+                            <input type="date" id="AssignedDate" class="form-control" value="@Model.AssignedDate.ToString("yyyy-MM-dd")" name="AssignedDate">
+                        }
+                    </div>
+
+
+                    <div class="form-group col-md-4">
+                        <label>Assigned Amount Online</label>
+                        @if (Model.ID != 0)
+                        {
+                            <input type="text" disabled id="AssignedAmount" class="form-control" value="@Model.AssignedAmount" name="AssignedAmount">
+                        }
+                        else
+                        {
+                            <input type="text" disabled id="AssignedAmount" class="form-control" value="@Model.AssignedAmount" name="AssignedAmount">
+
+                        }
+
+                    </div>
+
+
+                    <div class="form-group col-md-4">
+                        <label>Balance</label>
+                        <input type="text" id="Balance" class="form-control" value="@Model.Balance" name="Balance">
+
+                    </div>
+
+
+
+                </div>
+                @*<hr />
+                <div class="form-group col-md-6">
+                    <label>First Name</label>
+                    <input type="text" id="FirstName" class="form-control" readonly name="FirstName">
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Last Name</label>
+                    <input type="text" id="LastName" class="form-control" readonly  name="LastName">
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Email</label>
+                    <input type="text" id="Email" class="form-control" readonly name="Email">
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label>MobileNumber</label>
+                    <input type="text" id="MobileNumber" class="form-control" readonly name="MobileNumber">
+
+                </div>*@
+
+
+            </form>
+            @if (Model.ID == 0)
+            {
+                <button type="button" id="actionButton" class="btn btn-primary btn-round">
+                    <i class="material-icons">person</i>
+                    SAVE
+                    <div class="ripple-container"></div>
+                </button>
+            }
+            else
+            {
+                <button type="button" id="actionButton" class="btn btn-primary btn-round">
+                    <i class="material-icons">edit</i>
+                    UPDATE
+                    <div class="ripple-container"></div>
+                </button>
+            }
+            <a href="@Url.Action("CardAssignmentIndex","GiftCard")" class="btn btn-round btn-secondary  btn-rounded">CLOSE</a>
+
+        </div>
+
+      
+
+    </div>
+</div>
+
+
+
+
+
+<script>
+
+
+
+    $(document).ready(function () {
+        function ClearTheCustomer() {
+            $("#MainCustomerSelectedContainer").empty();
+            $("#Customer").val("");
+
+        }
+        initializeAutocompleteForCustomers();
+        function initializeAutocompleteForCustomers() {
+            $.ajax({
+                url: '@Url.Action("GetCustomers", "Appointment")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var lookup = [];
+
+                    // Iterate through the ServiceModel items
+                    data.forEach(function (customer) {
+
+                        if (customer.LastName == null) {
+                            lookup.push({
+                                value: customer.FirstName,
+                                CustomerInitials: customer.FirstName.charAt(0),
+                                CustomerName: customer.FirstName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        }
+                        else if (customer.FirstName == null) {
+                            lookup.push({
+                                value: customer.LastName,
+                                CustomerInitials: customer.LastName.charAt(0),
+                                CustomerName: customer.LastName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        }
+                        else {
+                            lookup.push({
+                                value: customer.FirstName + " " + customer.LastName,
+                                CustomerInitials: customer.FirstName.charAt(0) + customer.LastName.charAt(0),
+                                CustomerName: customer.FirstName + " " + customer.LastName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        }
+                    });
+
+                    $('.autocompleteCustomers').devbridgeAutocomplete({
+                        lookup: lookup,
+                        minChars: 0,
+                        formatResult: function (suggestion, currentValue) {
+                            // Customize the rendering of each suggestion
+
+                            return '<table class="table table-hovered">' +
+                                '<tbody>' +
+                                '<tr>' +
+                                '<td style="width:70px;" class="suggestion-initial">' +
+                                '<div class="circular-box">' + suggestion.CustomerInitials + '</div>' +
+                                '</td>' +
+                                '<td class="suggestion-details">' +
+                                '<div class="customer-name">' + suggestion.CustomerName + '</div>' +
+                                '<div class="customer-email">' + suggestion.CustomerEmail + '</div>' +
+                                '<div class="customer-mobile">' + suggestion.CustomerMobileNumber + '</div>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>';
+                        },
+                        onSelect: function (suggestion) {
+                            var selectedCustomerID = suggestion.data.id;
+                            var $inputElement = $(this);
+
+                            $.ajax({
+                                url: '@Url.Action("GetCustomerDetails", "Appointment")', // Replace with your controller action URL
+                                type: 'GET',
+                                dataType: 'json',
+                                data: { ID: selectedCustomerID }, // Pass the selectedServiceId as a parameter
+                                success: function (customer) {
+                                    console.log("customer Details" + customer);
+                                    $("#MainCustomerSelectedContainer").empty();
+                                    var DivToBeAdded = '<div class="suggestion-container">' +
+                                        '<table class="table table-hovered">' +
+                                        '<tbody>' +
+                                        '<tr>' +
+                                        '<td style="width:70px;" class="suggestion-initial">' +
+                                        '<div class="circular-box">' + customer.FirstName.charAt(0) + customer.LastName.charAt(0) + '</div>' +
+                                        '</td>' +
+                                        '<td class="suggestion-details">' +
+                                        '<input type="hidden" name="CustomerID" id="CustomerID" value=' + customer.ID + ' class="customer-id">' +
+                                        '<div class="customer-name">' + customer.FirstName + " " + customer.LastName + '</div>' +
+                                        '<div class="customer-email">' + customer.Email + '</div>' +
+                                        '<div class="customer-mobile">' + customer.MobileNumber + '</div>' +
+                                        '</td>' +
+                                        '</tr>' +
+                                        '</tbody>' +
+                                        '</table>' +
+                                        '</div>';
+
+                                    $("#MainCustomerSelectedContainer").append(DivToBeAdded);
+
+
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching service details:', error);
+                                }
+                            });
+                            // Now you can access the selected service ID (selectedServiceId)
+                            // and use it as needed.
+                        },
+                        showNoSuggestionNotice: true,
+                        noSuggestionNotice: 'Sorry, no matching results'
+                    });
+                },
+                error: function (error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+
+            
+        }
+
+
+        $("#actionButton").click(function () {
+            showLoadingSpinner();
+
+            $.ajax({
+                url: '@Url.Action("Issue", "GiftCard")',
+                type: "post",
+                data: $("#actionForm").serialize()
+            })
+                .done(function (response) {
+                    if (response.success) {
+                        hideLoadingSpinner();
+                        alert("Gift Card Assigned Succesfully");
+                        window.location.href = '@Url.Action("CardAssignmentIndex", "GiftCard")';
+                    }
+                    else {
+                        hideLoadingSpinner();
+                        alert(response.Message);
+                    }
+                });
+            hideLoadingSpinner();
+
+
+        });
+    });
+</script>

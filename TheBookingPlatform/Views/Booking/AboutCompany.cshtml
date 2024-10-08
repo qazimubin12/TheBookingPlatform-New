@@ -1,0 +1,106 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "AboutCompany";
+}
+<div class="appointment d-flex flex-column">
+    <!-- navbar -->
+    <div class="d-flex align-items-center justify-content-between mb-auto p-3 bg-white shadow-sm osahan-header">
+        <a href="@Url.Action("Welcome","Booking")" class="text-dark bg-white shadow rounded-circle icon">
+            <span class="mdi mdi-arrow-left mdi-18px"></span>
+        </a>
+        <h6 class="mb-0 ms-3 me-auto fw-bold">About Company</h6>
+       
+    </div>
+    <!-- banner -->
+    <div class="vh-100 my-auto overflow-auto p-3">
+        <div class="overflow-hidden rounded-4 shadow-sm mb-4">
+            <div class="px-3">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="@Model.Company.Logo" alt="" class="img-fluid appointment-doctor-img">
+                    <div>
+                        <h5 class="mb-1">@Model.Company.Business</h5>
+                        <p class="text-muted mb-2">Contact: @Model.Company.ContactEmail</p>
+                        <p class="text-muted mb-2">Address: @Model.Company.Address @Model.Company.City @Model.Company.PostalCode @Model.Company.CountryName</p>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between bg-white">
+                <a href="tel:@Model.Company.PhoneNumber" class="col text-center rounded-0 p-3">
+                    <span class="mdi mdi-phone-outline h4 m-0 text-primary"></span>
+                </a>
+
+                <a href="mailto:@Model.Company.ContactEmail" class="col text-center rounded-0 p-3">
+                    <span class="mdi mdi-message-processing-outline h4 m-0 text-primary"></span>
+                </a>
+            </div>
+
+        </div>
+
+
+        <div class="body">
+            <div class="mb-4">
+                <h5 class="mb-1 text-black">Opening Hours</h5>
+                <ul class="list-group">
+                    @foreach (var item in Model.OpeningHours)
+                    {
+                        <li class="list-group-item">@item.Day   - @item.Time</li>
+                    }
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="body">
+            <div class="mb-4">
+                <h5 class="mb-1 text-black">Reviews</h5>
+                <div class="row">
+                    @foreach (var item in Model.Reviews)
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <h6>@item.CustomerName  </h6>
+                                </div>
+                                <span>
+                                    Employee: @item.EmployeeName - @item.Review.Feedback  @for (int i = 0; i < item.Review.Rating; i++)
+                                    {
+                                        <i style="margin-left:2px;color:orange;" class="mdi mdi-star"></i>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+        <a href="@Url.Action("Index","Booking")" class="btn btn-info btn-lg w-100 rounded-4">Book Appointment</a>
+        <br />
+        <br />
+        <br />
+    </div>
+    <!-- footer -->
+   
+</div>
+
+
+<script>
+    $(document).ready(function () {
+          if ('@Model.CustomerID' != 0) {
+        var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+        $("#ProfileNAVTab").attr("href", href);
+    }
+    if ('@Model.CustomerID' != 0) {
+        var href = "@Url.Action("Index", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+        $("#HomeNAVTAB").attr("href", href);
+    }
+      if ('@Model.CustomerID' != 0) {
+            var href = "@Url.Action("AboutCompany", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
+          $("#CompanyNAVTab").attr("href", href);
+        }
+
+    });
+
+</script>

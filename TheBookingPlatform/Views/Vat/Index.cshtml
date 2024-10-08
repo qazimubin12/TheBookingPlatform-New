@@ -1,0 +1,54 @@
+﻿@model TheBookingPlatform.ViewModels.VatListingViewModel
+
+<style>
+    .card {
+        margin: 0px;
+    }
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Vats </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+
+                <div class="form-group">
+
+                    <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                    <button class="btn btn-outline-primary btn-sm btn-rounded" type="submit"><i class="fas fa-search mr-1"></i> Search</button>
+                    <a class="btn btn-outline-secondary btn-sm btn-rounded" href="@Url.Action("Index", "Vat")"><i class="fas fa-redo-alt mr-1"></i> Reset</a>
+                    <button data-href="@Url.Action("Action", "Vat")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-toggle="modal" data-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            @{
+                Html.RenderPartial("_Listing", Model);
+            }
+        </div>
+    </div>
+
+</div>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+</script>

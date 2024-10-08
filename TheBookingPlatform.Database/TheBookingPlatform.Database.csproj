@@ -1,0 +1,1071 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1627DC5E-E0E0-4B90-A971-30664D250B9D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TheBookingPlatform.Database</RootNamespace>
+    <AssemblyName>TheBookingPlatform.Database</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Migrations\202308101044089_usermanagerimplemented.cs" />
+    <Compile Include="Migrations\202308101044089_usermanagerimplemented.designer.cs">
+      <DependentUpon>202308101044089_usermanagerimplemented.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308120753124_ProductsModule.cs" />
+    <Compile Include="Migrations\202308120753124_ProductsModule.designer.cs">
+      <DependentUpon>202308120753124_ProductsModule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308120804033_companyandcustomers.cs" />
+    <Compile Include="Migrations\202308120804033_companyandcustomers.designer.cs">
+      <DependentUpon>202308120804033_companyandcustomers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308150635099_companycreatedby.cs" />
+    <Compile Include="Migrations\202308150635099_companycreatedby.designer.cs">
+      <DependentUpon>202308150635099_companycreatedby.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308150751095_usercompanymanagement.cs" />
+    <Compile Include="Migrations\202308150751095_usercompanymanagement.designer.cs">
+      <DependentUpon>202308150751095_usercompanymanagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308151154041_Servicesthing.cs" />
+    <Compile Include="Migrations\202308151154041_Servicesthing.designer.cs">
+      <DependentUpon>202308151154041_Servicesthing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308151209017_employeedetailsadded.cs" />
+    <Compile Include="Migrations\202308151209017_employeedetailsadded.designer.cs">
+      <DependentUpon>202308151209017_employeedetailsadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308152018551_roomsandtool.cs" />
+    <Compile Include="Migrations\202308152018551_roomsandtool.designer.cs">
+      <DependentUpon>202308152018551_roomsandtool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308161334008_ithingsometgin.cs" />
+    <Compile Include="Migrations\202308161334008_ithingsometgin.designer.cs">
+      <DependentUpon>202308161334008_ithingsometgin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308171755015_resourcechanges.cs" />
+    <Compile Include="Migrations\202308171755015_resourcechanges.designer.cs">
+      <DependentUpon>202308171755015_resourcechanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308190653383_cityadded.cs" />
+    <Compile Include="Migrations\202308190653383_cityadded.designer.cs">
+      <DependentUpon>202308190653383_cityadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308190655547_cityremovedfromincorrect.cs" />
+    <Compile Include="Migrations\202308190655547_cityremovedfromincorrect.designer.cs">
+      <DependentUpon>202308190655547_cityremovedfromincorrect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308191326386_productpartnumber.cs" />
+    <Compile Include="Migrations\202308191326386_productpartnumber.designer.cs">
+      <DependentUpon>202308191326386_productpartnumber.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308250612144_stocknotesadded.cs" />
+    <Compile Include="Migrations\202308250612144_stocknotesadded.designer.cs">
+      <DependentUpon>202308250612144_stocknotesadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308251510126_displayorderadded.cs" />
+    <Compile Include="Migrations\202308251510126_displayorderadded.designer.cs">
+      <DependentUpon>202308251510126_displayorderadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308251700143_orderingsystem.cs" />
+    <Compile Include="Migrations\202308251700143_orderingsystem.designer.cs">
+      <DependentUpon>202308251700143_orderingsystem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308290933227_newfields.cs" />
+    <Compile Include="Migrations\202308290933227_newfields.designer.cs">
+      <DependentUpon>202308290933227_newfields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308291018338_nsomeremoved.cs" />
+    <Compile Include="Migrations\202308291018338_nsomeremoved.designer.cs">
+      <DependentUpon>202308291018338_nsomeremoved.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308301452229_changesofemployeeservice.cs" />
+    <Compile Include="Migrations\202308301452229_changesofemployeeservice.designer.cs">
+      <DependentUpon>202308301452229_changesofemployeeservice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309011350047_customerdata.cs" />
+    <Compile Include="Migrations\202309011350047_customerdata.designer.cs">
+      <DependentUpon>202309011350047_customerdata.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309020650088_eventsandappointments.cs" />
+    <Compile Include="Migrations\202309020650088_eventsandappointments.designer.cs">
+      <DependentUpon>202309020650088_eventsandappointments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309020658479_eventsbookingdate.cs" />
+    <Compile Include="Migrations\202309020658479_eventsbookingdate.designer.cs">
+      <DependentUpon>202309020658479_eventsbookingdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309030710538_datetimechanges.cs" />
+    <Compile Include="Migrations\202309030710538_datetimechanges.designer.cs">
+      <DependentUpon>202309030710538_datetimechanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309050852341_changesofisrepeatinappointment.cs" />
+    <Compile Include="Migrations\202309050852341_changesofisrepeatinappointment.designer.cs">
+      <DependentUpon>202309050852341_changesofisrepeatinappointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309051933559_endstimeinappointment.cs" />
+    <Compile Include="Migrations\202309051933559_endstimeinappointment.designer.cs">
+      <DependentUpon>202309051933559_endstimeinappointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309060720585_endstimeinDurationappointment.cs" />
+    <Compile Include="Migrations\202309060720585_endstimeinDurationappointment.designer.cs">
+      <DependentUpon>202309060720585_endstimeinDurationappointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309080755230_coloronappointment.cs" />
+    <Compile Include="Migrations\202309080755230_coloronappointment.designer.cs">
+      <DependentUpon>202309080755230_coloronappointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309110554199_changesofemployeeinappointment.cs" />
+    <Compile Include="Migrations\202309110554199_changesofemployeeinappointment.designer.cs">
+      <DependentUpon>202309110554199_changesofemployeeinappointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309131042559_intervaloncalendar.cs" />
+    <Compile Include="Migrations\202309131042559_intervaloncalendar.designer.cs">
+      <DependentUpon>202309131042559_intervaloncalendar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309131633094_discountadded.cs" />
+    <Compile Include="Migrations\202309131633094_discountadded.designer.cs">
+      <DependentUpon>202309131633094_discountadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309140809543_changesofaddingservicediscount.cs" />
+    <Compile Include="Migrations\202309140809543_changesofaddingservicediscount.designer.cs">
+      <DependentUpon>202309140809543_changesofaddingservicediscount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309141326064_changeofstatus.cs" />
+    <Compile Include="Migrations\202309141326064_changeofstatus.designer.cs">
+      <DependentUpon>202309141326064_changeofstatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309160632013_fileesmessageshistory.cs" />
+    <Compile Include="Migrations\202309160632013_fileesmessageshistory.designer.cs">
+      <DependentUpon>202309160632013_fileesmessageshistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309160642295_messagecustomerID.cs" />
+    <Compile Include="Migrations\202309160642295_messagecustomerID.designer.cs">
+      <DependentUpon>202309160642295_messagecustomerID.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309162002492_changesofinvoice.cs" />
+    <Compile Include="Migrations\202309162002492_changesofinvoice.designer.cs">
+      <DependentUpon>202309162002492_changesofinvoice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309221124316_depositchanges.cs" />
+    <Compile Include="Migrations\202309221124316_depositchanges.designer.cs">
+      <DependentUpon>202309221124316_depositchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309251157381_timetableandopeninghours.cs" />
+    <Compile Include="Migrations\202309251157381_timetableandopeninghours.designer.cs">
+      <DependentUpon>202309251157381_timetableandopeninghours.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202309281015048_timetablechanges.cs" />
+    <Compile Include="Migrations\202309281015048_timetablechanges.designer.cs">
+      <DependentUpon>202309281015048_timetablechanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310011821541_employeelinking.cs" />
+    <Compile Include="Migrations\202310011821541_employeelinking.designer.cs">
+      <DependentUpon>202310011821541_employeelinking.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310021147031_companyfieldadded.cs" />
+    <Compile Include="Migrations\202310021147031_companyfieldadded.designer.cs">
+      <DependentUpon>202310021147031_companyfieldadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310040602176_LoyaltycardandPromotions.cs" />
+    <Compile Include="Migrations\202310040602176_LoyaltycardandPromotions.designer.cs">
+      <DependentUpon>202310040602176_LoyaltycardandPromotions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310041833309_customerRedeemdeflaot.cs" />
+    <Compile Include="Migrations\202310041833309_customerRedeemdeflaot.designer.cs">
+      <DependentUpon>202310041833309_customerRedeemdeflaot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310042003281_pendingchangesplease.cs" />
+    <Compile Include="Migrations\202310042003281_pendingchangesplease.designer.cs">
+      <DependentUpon>202310042003281_pendingchangesplease.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310051503059_loyaltycardassignemttocustoemrs.cs" />
+    <Compile Include="Migrations\202310051503059_loyaltycardassignemttocustoemrs.designer.cs">
+      <DependentUpon>202310051503059_loyaltycardassignemttocustoemrs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310051725465_dateofloyaltycards.cs" />
+    <Compile Include="Migrations\202310051725465_dateofloyaltycards.designer.cs">
+      <DependentUpon>202310051725465_dateofloyaltycards.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310051734201_loyaltyCardExpirationDate.cs" />
+    <Compile Include="Migrations\202310051734201_loyaltyCardExpirationDate.designer.cs">
+      <DependentUpon>202310051734201_loyaltyCardExpirationDate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310060910097_changesofdaysinexpiry.cs" />
+    <Compile Include="Migrations\202310060910097_changesofdaysinexpiry.designer.cs">
+      <DependentUpon>202310060910097_changesofdaysinexpiry.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310141231553_emailtemplate.cs" />
+    <Compile Include="Migrations\202310141231553_emailtemplate.designer.cs">
+      <DependentUpon>202310141231553_emailtemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310161827499_bookinglinkaddded.cs" />
+    <Compile Include="Migrations\202310161827499_bookinglinkaddded.designer.cs">
+      <DependentUpon>202310161827499_bookinglinkaddded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310171822103_customerpasswrod.cs" />
+    <Compile Include="Migrations\202310171822103_customerpasswrod.designer.cs">
+      <DependentUpon>202310171822103_customerpasswrod.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310191705568_companydeposit.cs" />
+    <Compile Include="Migrations\202310191705568_companydeposit.designer.cs">
+      <DependentUpon>202310191705568_companydeposit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310231325265_pricechange.cs" />
+    <Compile Include="Migrations\202310231325265_pricechange.designer.cs">
+      <DependentUpon>202310231325265_pricechange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310241702266_changesofisinwaiting.cs" />
+    <Compile Include="Migrations\202310241702266_changesofisinwaiting.designer.cs">
+      <DependentUpon>202310241702266_changesofisinwaiting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310281420417_appointmentiscancelledandcancellationtime.cs" />
+    <Compile Include="Migrations\202310281420417_appointmentiscancelledandcancellationtime.designer.cs">
+      <DependentUpon>202310281420417_appointmentiscancelledandcancellationtime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310301706548_isPaidandOnlineDiscount.cs" />
+    <Compile Include="Migrations\202310301706548_isPaidandOnlineDiscount.designer.cs">
+      <DependentUpon>202310301706548_isPaidandOnlineDiscount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311011452553_giftcardandassignemtnsandemailtemplatescheduledate.cs" />
+    <Compile Include="Migrations\202311011452553_giftcardandassignemtnsandemailtemplatescheduledate.designer.cs">
+      <DependentUpon>202311011452553_giftcardandassignemtnsandemailtemplatescheduledate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311011610533_giftcardexpirydatatypechange.cs" />
+    <Compile Include="Migrations\202311011610533_giftcardexpirydatatypechange.designer.cs">
+      <DependentUpon>202311011610533_giftcardexpirydatatypechange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311031329548_changesoftheitem.cs" />
+    <Compile Include="Migrations\202311031329548_changesoftheitem.designer.cs">
+      <DependentUpon>202311031329548_changesoftheitem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311031617007_changesofhistory.cs" />
+    <Compile Include="Migrations\202311031617007_changesofhistory.designer.cs">
+      <DependentUpon>202311031617007_changesofhistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311061816215_giftcardassignemnt.cs" />
+    <Compile Include="Migrations\202311061816215_giftcardassignemnt.designer.cs">
+      <DependentUpon>202311061816215_giftcardassignemnt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311071749212_stripeapicres.cs" />
+    <Compile Include="Migrations\202311071749212_stripeapicres.designer.cs">
+      <DependentUpon>202311071749212_stripeapicres.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311090759076_giftcardexpirt.cs" />
+    <Compile Include="Migrations\202311090759076_giftcardexpirt.designer.cs">
+      <DependentUpon>202311090759076_giftcardexpirt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311100917187_cardassignmentchanges.cs" />
+    <Compile Include="Migrations\202311100917187_cardassignmentchanges.designer.cs">
+      <DependentUpon>202311100917187_cardassignmentchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311101759478_giftcardtypechange.cs" />
+    <Compile Include="Migrations\202311101759478_giftcardtypechange.designer.cs">
+      <DependentUpon>202311101759478_giftcardtypechange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311130802185_calendarmanage.cs" />
+    <Compile Include="Migrations\202311130802185_calendarmanage.designer.cs">
+      <DependentUpon>202311130802185_calendarmanage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311130813197_changeofdatatype.cs" />
+    <Compile Include="Migrations\202311130813197_changeofdatatype.designer.cs">
+      <DependentUpon>202311130813197_changeofdatatype.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311161120404_customerphoneremoved.cs" />
+    <Compile Include="Migrations\202311161120404_customerphoneremoved.designer.cs">
+      <DependentUpon>202311161120404_customerphoneremoved.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311161548548_removedloayalycardusages.cs" />
+    <Compile Include="Migrations\202311161548548_removedloayalycardusages.designer.cs">
+      <DependentUpon>202311161548548_removedloayalycardusages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311200512559_giftcardDaysRemovedgiftcardassignmentdaysadded.cs" />
+    <Compile Include="Migrations\202311200512559_giftcardDaysRemovedgiftcardassignmentdaysadded.designer.cs">
+      <DependentUpon>202311200512559_giftcardDaysRemovedgiftcardassignmentdaysadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311200514312_giftcardasysagain.cs" />
+    <Compile Include="Migrations\202311200514312_giftcardasysagain.designer.cs">
+      <DependentUpon>202311200514312_giftcardasysagain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311210617156_loyaltycardassignmentdays.cs" />
+    <Compile Include="Migrations\202311210617156_loyaltycardassignmentdays.designer.cs">
+      <DependentUpon>202311210617156_loyaltycardassignmentdays.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311211017067_companyintegrationofpaymentoption.cs" />
+    <Compile Include="Migrations\202311211017067_companyintegrationofpaymentoption.designer.cs">
+      <DependentUpon>202311211017067_companyintegrationofpaymentoption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311240731345_newsletterweekltchanges.cs" />
+    <Compile Include="Migrations\202311240731345_newsletterweekltchanges.designer.cs">
+      <DependentUpon>202311240731345_newsletterweekltchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202311241639286_appointmentreminder.cs" />
+    <Compile Include="Migrations\202311241639286_appointmentreminder.designer.cs">
+      <DependentUpon>202311241639286_appointmentreminder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202312210753358_eventremoved.cs" />
+    <Compile Include="Migrations\202312210753358_eventremoved.designer.cs">
+      <DependentUpon>202312210753358_eventremoved.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202312251109554_deletestatusinappointment.cs" />
+    <Compile Include="Migrations\202312251109554_deletestatusinappointment.designer.cs">
+      <DependentUpon>202312251109554_deletestatusinappointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202312251826297_employeeactivestatus.cs" />
+    <Compile Include="Migrations\202312251826297_employeeactivestatus.designer.cs">
+      <DependentUpon>202312251826297_employeeactivestatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202312261204045_deletedate.cs" />
+    <Compile Include="Migrations\202312261204045_deletedate.designer.cs">
+      <DependentUpon>202312261204045_deletedate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202312271331379_newsletterbot.cs" />
+    <Compile Include="Migrations\202312271331379_newsletterbot.designer.cs">
+      <DependentUpon>202312271331379_newsletterbot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202312291801393_changesofrebookreminder.cs" />
+    <Compile Include="Migrations\202312291801393_changesofrebookreminder.designer.cs">
+      <DependentUpon>202312291801393_changesofrebookreminder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401071821553_userisactive.cs" />
+    <Compile Include="Migrations\202401071821553_userisactive.designer.cs">
+      <DependentUpon>202401071821553_userisactive.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401080956088_waitinglistchanges.cs" />
+    <Compile Include="Migrations\202401080956088_waitinglistchanges.designer.cs">
+      <DependentUpon>202401080956088_waitinglistchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401101657257_nonselectedemployee.cs" />
+    <Compile Include="Migrations\202401101657257_nonselectedemployee.designer.cs">
+      <DependentUpon>202401101657257_nonselectedemployee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401101708429_employeeIds.cs" />
+    <Compile Include="Migrations\202401101708429_employeeIds.designer.cs">
+      <DependentUpon>202401101708429_employeeIds.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401131152566_changess.cs" />
+    <Compile Include="Migrations\202401131152566_changess.designer.cs">
+      <DependentUpon>202401131152566_changess.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401150747109_changesofpostalcode.cs" />
+    <Compile Include="Migrations\202401150747109_changesofpostalcode.designer.cs">
+      <DependentUpon>202401150747109_changesofpostalcode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401180924114_emailtempalteisactive.cs" />
+    <Compile Include="Migrations\202401180924114_emailtempalteisactive.designer.cs">
+      <DependentUpon>202401180924114_emailtempalteisactive.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401281804116_serviceIsActive.cs" />
+    <Compile Include="Migrations\202401281804116_serviceIsActive.designer.cs">
+      <DependentUpon>202401281804116_serviceIsActive.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202402031037449_bookinglinkinfo.cs" />
+    <Compile Include="Migrations\202402031037449_bookinglinkinfo.designer.cs">
+      <DependentUpon>202402031037449_bookinglinkinfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202402150649460_reviewchanges.cs" />
+    <Compile Include="Migrations\202402150649460_reviewchanges.designer.cs">
+      <DependentUpon>202402150649460_reviewchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202402221209266_changesofapp.cs" />
+    <Compile Include="Migrations\202402221209266_changesofapp.designer.cs">
+      <DependentUpon>202402221209266_changesofapp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202402241956578_blockclient.cs" />
+    <Compile Include="Migrations\202402241956578_blockclient.designer.cs">
+      <DependentUpon>202402241956578_blockclient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202402280813371_resourceaddition.cs" />
+    <Compile Include="Migrations\202402280813371_resourceaddition.designer.cs">
+      <DependentUpon>202402280813371_resourceaddition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202402281154526_sessionOption.cs" />
+    <Compile Include="Migrations\202402281154526_sessionOption.designer.cs">
+      <DependentUpon>202402281154526_sessionOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202402290733061_changesofresourceIds.cs" />
+    <Compile Include="Migrations\202402290733061_changesofresourceIds.designer.cs">
+      <DependentUpon>202402290733061_changesofresourceIds.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202402291252470_maybenewchangfes.cs" />
+    <Compile Include="Migrations\202402291252470_maybenewchangfes.designer.cs">
+      <DependentUpon>202402291252470_maybenewchangfes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202403051207232_rebookedremidner.cs" />
+    <Compile Include="Migrations\202403051207232_rebookedremidner.designer.cs">
+      <DependentUpon>202403051207232_rebookedremidner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202403051929311_changesoftheappointment.cs" />
+    <Compile Include="Migrations\202403051929311_changesoftheappointment.designer.cs">
+      <DependentUpon>202403051929311_changesoftheappointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202403070651085_newslettersettings.cs" />
+    <Compile Include="Migrations\202403070651085_newslettersettings.designer.cs">
+      <DependentUpon>202403070651085_newslettersettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202403072004219_clickedradded.cs" />
+    <Compile Include="Migrations\202403072004219_clickedradded.designer.cs">
+      <DependentUpon>202403072004219_clickedradded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404070953525_employeeRequest.cs" />
+    <Compile Include="Migrations\202404070953525_employeeRequest.designer.cs">
+      <DependentUpon>202404070953525_employeeRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404070959205_parentCompnayadded.cs" />
+    <Compile Include="Migrations\202404070959205_parentCompnayadded.designer.cs">
+      <DependentUpon>202404070959205_parentCompnayadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404081943265_companycode.cs" />
+    <Compile Include="Migrations\202404081943265_companycode.designer.cs">
+      <DependentUpon>202404081943265_companycode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404160724595_franchiserequest.cs" />
+    <Compile Include="Migrations\202404160724595_franchiserequest.designer.cs">
+      <DependentUpon>202404160724595_franchiserequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404170828269_usermapping.cs" />
+    <Compile Include="Migrations\202404170828269_usermapping.designer.cs">
+      <DependentUpon>202404170828269_usermapping.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404181903442_userchanges.cs" />
+    <Compile Include="Migrations\202404181903442_userchanges.designer.cs">
+      <DependentUpon>202404181903442_userchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404210526157_rosteradded.cs" />
+    <Compile Include="Migrations\202404210526157_rosteradded.designer.cs">
+      <DependentUpon>202404210526157_rosteradded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404210528220_dailyrosterneedtoadjust.cs" />
+    <Compile Include="Migrations\202404210528220_dailyrosterneedtoadjust.designer.cs">
+      <DependentUpon>202404210528220_dailyrosterneedtoadjust.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404211708272_rosterstartdate.cs" />
+    <Compile Include="Migrations\202404211708272_rosterstartdate.designer.cs">
+      <DependentUpon>202404211708272_rosterstartdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404211725573_timetablerosters.cs" />
+    <Compile Include="Migrations\202404211725573_timetablerosters.designer.cs">
+      <DependentUpon>202404211725573_timetablerosters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404231851081_repeatdata.cs" />
+    <Compile Include="Migrations\202404231851081_repeatdata.designer.cs">
+      <DependentUpon>202404231851081_repeatdata.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404241820373_newtables.cs" />
+    <Compile Include="Migrations\202404241820373_newtables.designer.cs">
+      <DependentUpon>202404241820373_newtables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404241830279_shiftemployeeID.cs" />
+    <Compile Include="Migrations\202404241830279_shiftemployeeID.designer.cs">
+      <DependentUpon>202404241830279_shiftemployeeID.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202404300521103_recurringshiftisdeleeted.cs" />
+    <Compile Include="Migrations\202404300521103_recurringshiftisdeleeted.designer.cs">
+      <DependentUpon>202404300521103_recurringshiftisdeleeted.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202405021328411_shiftrecurringshift.cs" />
+    <Compile Include="Migrations\202405021328411_shiftrecurringshift.designer.cs">
+      <DependentUpon>202405021328411_shiftrecurringshift.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202405140416394_newchangesinshift.cs" />
+    <Compile Include="Migrations\202405140416394_newchangesinshift.designer.cs">
+      <DependentUpon>202405140416394_newchangesinshift.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202405211926087_newtihns.cs" />
+    <Compile Include="Migrations\202405211926087_newtihns.designer.cs">
+      <DependentUpon>202405211926087_newtihns.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202405302017311_newthingsaddedforemployee.cs" />
+    <Compile Include="Migrations\202405302017311_newthingsaddedforemployee.designer.cs">
+      <DependentUpon>202405302017311_newthingsaddedforemployee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202406021635049_statusforpayroll.cs" />
+    <Compile Include="Migrations\202406021635049_statusforpayroll.designer.cs">
+      <DependentUpon>202406021635049_statusforpayroll.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202406091249241_newthingscalendaradded.cs" />
+    <Compile Include="Migrations\202406091249241_newthingscalendaradded.designer.cs">
+      <DependentUpon>202406091249241_newthingscalendaradded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202406240934505_employeepricechange.cs" />
+    <Compile Include="Migrations\202406240934505_employeepricechange.designer.cs">
+      <DependentUpon>202406240934505_employeepricechange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202407041945221_couponandnewchanges.cs" />
+    <Compile Include="Migrations\202407041945221_couponandnewchanges.Designer.cs">
+      <DependentUpon>202407041945221_couponandnewchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202407241219382_referralpackaagecalendar.cs" />
+    <Compile Include="Migrations\202407241219382_referralpackaagecalendar.Designer.cs">
+      <DependentUpon>202407241219382_referralpackaagecalendar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202407280945381_packagesvat.cs" />
+    <Compile Include="Migrations\202407280945381_packagesvat.Designer.cs">
+      <DependentUpon>202407280945381_packagesvat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202407301849107_dbchnagesforpackage.cs" />
+    <Compile Include="Migrations\202407301849107_dbchnagesforpackage.Designer.cs">
+      <DependentUpon>202407301849107_dbchnagesforpackage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202407310533135_referralcodeadded.cs" />
+    <Compile Include="Migrations\202407310533135_referralcodeadded.Designer.cs">
+      <DependentUpon>202407310533135_referralcodeadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202408131831163_couponswitches.cs" />
+    <Compile Include="Migrations\202408131831163_couponswitches.Designer.cs">
+      <DependentUpon>202408131831163_couponswitches.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202408170811037_ninvoiceadded.cs" />
+    <Compile Include="Migrations\202408170811037_ninvoiceadded.Designer.cs">
+      <DependentUpon>202408170811037_ninvoiceadded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202408250721154_reminderservices.cs" />
+    <Compile Include="Migrations\202408250721154_reminderservices.Designer.cs">
+      <DependentUpon>202408250721154_reminderservices.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202408250744246_reminderbool.cs" />
+    <Compile Include="Migrations\202408250744246_reminderbool.Designer.cs">
+      <DependentUpon>202408250744246_reminderbool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202408250755336_newfieldforconditon.cs" />
+    <Compile Include="Migrations\202408250755336_newfieldforconditon.Designer.cs">
+      <DependentUpon>202408250755336_newfieldforconditon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409031812229_pricechangeswitch.cs" />
+    <Compile Include="Migrations\202409031812229_pricechangeswitch.Designer.cs">
+      <DependentUpon>202409031812229_pricechangeswitch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409041635406_pricechangemailsent.cs" />
+    <Compile Include="Migrations\202409041635406_pricechangemailsent.Designer.cs">
+      <DependentUpon>202409041635406_pricechangemailsent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409081856107_firstrepeatedID.cs" />
+    <Compile Include="Migrations\202409081856107_firstrepeatedID.Designer.cs">
+      <DependentUpon>202409081856107_firstrepeatedID.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409101009517_eventswitches.cs" />
+    <Compile Include="Migrations\202409101009517_eventswitches.Designer.cs">
+      <DependentUpon>202409101009517_eventswitches.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409101032407_changesofevents.cs" />
+    <Compile Include="Migrations\202409101032407_changesofevents.Designer.cs">
+      <DependentUpon>202409101032407_changesofevents.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409161914001_newfinalchanges.cs" />
+    <Compile Include="Migrations\202409161914001_newfinalchanges.Designer.cs">
+      <DependentUpon>202409161914001_newfinalchanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409171131383_lastsetupforgoogle.cs" />
+    <Compile Include="Migrations\202409171131383_lastsetupforgoogle.Designer.cs">
+      <DependentUpon>202409171131383_lastsetupforgoogle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409181408542_geventsiwtch.cs" />
+    <Compile Include="Migrations\202409181408542_geventsiwtch.Designer.cs">
+      <DependentUpon>202409181408542_geventsiwtch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202409181715587_geventswtiches.cs" />
+    <Compile Include="Migrations\202409181715587_geventswtiches.Designer.cs">
+      <DependentUpon>202409181715587_geventswtiches.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DSContext.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202308101044089_usermanagerimplemented.resx">
+      <DependentUpon>202308101044089_usermanagerimplemented.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308120753124_ProductsModule.resx">
+      <DependentUpon>202308120753124_ProductsModule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308120804033_companyandcustomers.resx">
+      <DependentUpon>202308120804033_companyandcustomers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308150635099_companycreatedby.resx">
+      <DependentUpon>202308150635099_companycreatedby.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308150751095_usercompanymanagement.resx">
+      <DependentUpon>202308150751095_usercompanymanagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308151154041_Servicesthing.resx">
+      <DependentUpon>202308151154041_Servicesthing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308151209017_employeedetailsadded.resx">
+      <DependentUpon>202308151209017_employeedetailsadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308152018551_roomsandtool.resx">
+      <DependentUpon>202308152018551_roomsandtool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308161334008_ithingsometgin.resx">
+      <DependentUpon>202308161334008_ithingsometgin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308171755015_resourcechanges.resx">
+      <DependentUpon>202308171755015_resourcechanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308190653383_cityadded.resx">
+      <DependentUpon>202308190653383_cityadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308190655547_cityremovedfromincorrect.resx">
+      <DependentUpon>202308190655547_cityremovedfromincorrect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308191326386_productpartnumber.resx">
+      <DependentUpon>202308191326386_productpartnumber.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308250612144_stocknotesadded.resx">
+      <DependentUpon>202308250612144_stocknotesadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308251510126_displayorderadded.resx">
+      <DependentUpon>202308251510126_displayorderadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308251700143_orderingsystem.resx">
+      <DependentUpon>202308251700143_orderingsystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308290933227_newfields.resx">
+      <DependentUpon>202308290933227_newfields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308291018338_nsomeremoved.resx">
+      <DependentUpon>202308291018338_nsomeremoved.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308301452229_changesofemployeeservice.resx">
+      <DependentUpon>202308301452229_changesofemployeeservice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309011350047_customerdata.resx">
+      <DependentUpon>202309011350047_customerdata.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309020650088_eventsandappointments.resx">
+      <DependentUpon>202309020650088_eventsandappointments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309020658479_eventsbookingdate.resx">
+      <DependentUpon>202309020658479_eventsbookingdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309030710538_datetimechanges.resx">
+      <DependentUpon>202309030710538_datetimechanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309050852341_changesofisrepeatinappointment.resx">
+      <DependentUpon>202309050852341_changesofisrepeatinappointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309051933559_endstimeinappointment.resx">
+      <DependentUpon>202309051933559_endstimeinappointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309060720585_endstimeinDurationappointment.resx">
+      <DependentUpon>202309060720585_endstimeinDurationappointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309080755230_coloronappointment.resx">
+      <DependentUpon>202309080755230_coloronappointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309110554199_changesofemployeeinappointment.resx">
+      <DependentUpon>202309110554199_changesofemployeeinappointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309131042559_intervaloncalendar.resx">
+      <DependentUpon>202309131042559_intervaloncalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309131633094_discountadded.resx">
+      <DependentUpon>202309131633094_discountadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309140809543_changesofaddingservicediscount.resx">
+      <DependentUpon>202309140809543_changesofaddingservicediscount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309141326064_changeofstatus.resx">
+      <DependentUpon>202309141326064_changeofstatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309160632013_fileesmessageshistory.resx">
+      <DependentUpon>202309160632013_fileesmessageshistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309160642295_messagecustomerID.resx">
+      <DependentUpon>202309160642295_messagecustomerID.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309162002492_changesofinvoice.resx">
+      <DependentUpon>202309162002492_changesofinvoice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309221124316_depositchanges.resx">
+      <DependentUpon>202309221124316_depositchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309251157381_timetableandopeninghours.resx">
+      <DependentUpon>202309251157381_timetableandopeninghours.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202309281015048_timetablechanges.resx">
+      <DependentUpon>202309281015048_timetablechanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310011821541_employeelinking.resx">
+      <DependentUpon>202310011821541_employeelinking.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310021147031_companyfieldadded.resx">
+      <DependentUpon>202310021147031_companyfieldadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310040602176_LoyaltycardandPromotions.resx">
+      <DependentUpon>202310040602176_LoyaltycardandPromotions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310041833309_customerRedeemdeflaot.resx">
+      <DependentUpon>202310041833309_customerRedeemdeflaot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310042003281_pendingchangesplease.resx">
+      <DependentUpon>202310042003281_pendingchangesplease.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310051503059_loyaltycardassignemttocustoemrs.resx">
+      <DependentUpon>202310051503059_loyaltycardassignemttocustoemrs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310051725465_dateofloyaltycards.resx">
+      <DependentUpon>202310051725465_dateofloyaltycards.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310051734201_loyaltyCardExpirationDate.resx">
+      <DependentUpon>202310051734201_loyaltyCardExpirationDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310060910097_changesofdaysinexpiry.resx">
+      <DependentUpon>202310060910097_changesofdaysinexpiry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310141231553_emailtemplate.resx">
+      <DependentUpon>202310141231553_emailtemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310161827499_bookinglinkaddded.resx">
+      <DependentUpon>202310161827499_bookinglinkaddded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310171822103_customerpasswrod.resx">
+      <DependentUpon>202310171822103_customerpasswrod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310191705568_companydeposit.resx">
+      <DependentUpon>202310191705568_companydeposit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310231325265_pricechange.resx">
+      <DependentUpon>202310231325265_pricechange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310241702266_changesofisinwaiting.resx">
+      <DependentUpon>202310241702266_changesofisinwaiting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310281420417_appointmentiscancelledandcancellationtime.resx">
+      <DependentUpon>202310281420417_appointmentiscancelledandcancellationtime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310301706548_isPaidandOnlineDiscount.resx">
+      <DependentUpon>202310301706548_isPaidandOnlineDiscount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311011452553_giftcardandassignemtnsandemailtemplatescheduledate.resx">
+      <DependentUpon>202311011452553_giftcardandassignemtnsandemailtemplatescheduledate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311011610533_giftcardexpirydatatypechange.resx">
+      <DependentUpon>202311011610533_giftcardexpirydatatypechange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311031329548_changesoftheitem.resx">
+      <DependentUpon>202311031329548_changesoftheitem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311031617007_changesofhistory.resx">
+      <DependentUpon>202311031617007_changesofhistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311061816215_giftcardassignemnt.resx">
+      <DependentUpon>202311061816215_giftcardassignemnt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311071749212_stripeapicres.resx">
+      <DependentUpon>202311071749212_stripeapicres.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311090759076_giftcardexpirt.resx">
+      <DependentUpon>202311090759076_giftcardexpirt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311100917187_cardassignmentchanges.resx">
+      <DependentUpon>202311100917187_cardassignmentchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311101759478_giftcardtypechange.resx">
+      <DependentUpon>202311101759478_giftcardtypechange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311130802185_calendarmanage.resx">
+      <DependentUpon>202311130802185_calendarmanage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311130813197_changeofdatatype.resx">
+      <DependentUpon>202311130813197_changeofdatatype.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311161120404_customerphoneremoved.resx">
+      <DependentUpon>202311161120404_customerphoneremoved.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311161548548_removedloayalycardusages.resx">
+      <DependentUpon>202311161548548_removedloayalycardusages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311200512559_giftcardDaysRemovedgiftcardassignmentdaysadded.resx">
+      <DependentUpon>202311200512559_giftcardDaysRemovedgiftcardassignmentdaysadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311200514312_giftcardasysagain.resx">
+      <DependentUpon>202311200514312_giftcardasysagain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311210617156_loyaltycardassignmentdays.resx">
+      <DependentUpon>202311210617156_loyaltycardassignmentdays.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311211017067_companyintegrationofpaymentoption.resx">
+      <DependentUpon>202311211017067_companyintegrationofpaymentoption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311240731345_newsletterweekltchanges.resx">
+      <DependentUpon>202311240731345_newsletterweekltchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311241639286_appointmentreminder.resx">
+      <DependentUpon>202311241639286_appointmentreminder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202312210753358_eventremoved.resx">
+      <DependentUpon>202312210753358_eventremoved.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202312251109554_deletestatusinappointment.resx">
+      <DependentUpon>202312251109554_deletestatusinappointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202312251826297_employeeactivestatus.resx">
+      <DependentUpon>202312251826297_employeeactivestatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202312261204045_deletedate.resx">
+      <DependentUpon>202312261204045_deletedate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202312271331379_newsletterbot.resx">
+      <DependentUpon>202312271331379_newsletterbot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202312291801393_changesofrebookreminder.resx">
+      <DependentUpon>202312291801393_changesofrebookreminder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401071821553_userisactive.resx">
+      <DependentUpon>202401071821553_userisactive.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401080956088_waitinglistchanges.resx">
+      <DependentUpon>202401080956088_waitinglistchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401101657257_nonselectedemployee.resx">
+      <DependentUpon>202401101657257_nonselectedemployee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401101708429_employeeIds.resx">
+      <DependentUpon>202401101708429_employeeIds.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401131152566_changess.resx">
+      <DependentUpon>202401131152566_changess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401150747109_changesofpostalcode.resx">
+      <DependentUpon>202401150747109_changesofpostalcode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401180924114_emailtempalteisactive.resx">
+      <DependentUpon>202401180924114_emailtempalteisactive.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401281804116_serviceIsActive.resx">
+      <DependentUpon>202401281804116_serviceIsActive.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402031037449_bookinglinkinfo.resx">
+      <DependentUpon>202402031037449_bookinglinkinfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402150649460_reviewchanges.resx">
+      <DependentUpon>202402150649460_reviewchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402221209266_changesofapp.resx">
+      <DependentUpon>202402221209266_changesofapp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402241956578_blockclient.resx">
+      <DependentUpon>202402241956578_blockclient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402280813371_resourceaddition.resx">
+      <DependentUpon>202402280813371_resourceaddition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402281154526_sessionOption.resx">
+      <DependentUpon>202402281154526_sessionOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402290733061_changesofresourceIds.resx">
+      <DependentUpon>202402290733061_changesofresourceIds.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402291252470_maybenewchangfes.resx">
+      <DependentUpon>202402291252470_maybenewchangfes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403051207232_rebookedremidner.resx">
+      <DependentUpon>202403051207232_rebookedremidner.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403051929311_changesoftheappointment.resx">
+      <DependentUpon>202403051929311_changesoftheappointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403070651085_newslettersettings.resx">
+      <DependentUpon>202403070651085_newslettersettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403072004219_clickedradded.resx">
+      <DependentUpon>202403072004219_clickedradded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404070953525_employeeRequest.resx">
+      <DependentUpon>202404070953525_employeeRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404070959205_parentCompnayadded.resx">
+      <DependentUpon>202404070959205_parentCompnayadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404081943265_companycode.resx">
+      <DependentUpon>202404081943265_companycode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404160724595_franchiserequest.resx">
+      <DependentUpon>202404160724595_franchiserequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404170828269_usermapping.resx">
+      <DependentUpon>202404170828269_usermapping.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404181903442_userchanges.resx">
+      <DependentUpon>202404181903442_userchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404210526157_rosteradded.resx">
+      <DependentUpon>202404210526157_rosteradded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404210528220_dailyrosterneedtoadjust.resx">
+      <DependentUpon>202404210528220_dailyrosterneedtoadjust.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404211708272_rosterstartdate.resx">
+      <DependentUpon>202404211708272_rosterstartdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404211725573_timetablerosters.resx">
+      <DependentUpon>202404211725573_timetablerosters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404231851081_repeatdata.resx">
+      <DependentUpon>202404231851081_repeatdata.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404241820373_newtables.resx">
+      <DependentUpon>202404241820373_newtables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404241830279_shiftemployeeID.resx">
+      <DependentUpon>202404241830279_shiftemployeeID.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404300521103_recurringshiftisdeleeted.resx">
+      <DependentUpon>202404300521103_recurringshiftisdeleeted.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405021328411_shiftrecurringshift.resx">
+      <DependentUpon>202405021328411_shiftrecurringshift.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405140416394_newchangesinshift.resx">
+      <DependentUpon>202405140416394_newchangesinshift.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405211926087_newtihns.resx">
+      <DependentUpon>202405211926087_newtihns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405302017311_newthingsaddedforemployee.resx">
+      <DependentUpon>202405302017311_newthingsaddedforemployee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202406021635049_statusforpayroll.resx">
+      <DependentUpon>202406021635049_statusforpayroll.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202406091249241_newthingscalendaradded.resx">
+      <DependentUpon>202406091249241_newthingscalendaradded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202406240934505_employeepricechange.resx">
+      <DependentUpon>202406240934505_employeepricechange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407041945221_couponandnewchanges.resx">
+      <DependentUpon>202407041945221_couponandnewchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407241219382_referralpackaagecalendar.resx">
+      <DependentUpon>202407241219382_referralpackaagecalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407280945381_packagesvat.resx">
+      <DependentUpon>202407280945381_packagesvat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407301849107_dbchnagesforpackage.resx">
+      <DependentUpon>202407301849107_dbchnagesforpackage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407310533135_referralcodeadded.resx">
+      <DependentUpon>202407310533135_referralcodeadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408131831163_couponswitches.resx">
+      <DependentUpon>202408131831163_couponswitches.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408170811037_ninvoiceadded.resx">
+      <DependentUpon>202408170811037_ninvoiceadded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408250721154_reminderservices.resx">
+      <DependentUpon>202408250721154_reminderservices.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408250744246_reminderbool.resx">
+      <DependentUpon>202408250744246_reminderbool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408250755336_newfieldforconditon.resx">
+      <DependentUpon>202408250755336_newfieldforconditon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409031812229_pricechangeswitch.resx">
+      <DependentUpon>202409031812229_pricechangeswitch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409041635406_pricechangemailsent.resx">
+      <DependentUpon>202409041635406_pricechangemailsent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409081856107_firstrepeatedID.resx">
+      <DependentUpon>202409081856107_firstrepeatedID.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409101009517_eventswitches.resx">
+      <DependentUpon>202409101009517_eventswitches.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409101032407_changesofevents.resx">
+      <DependentUpon>202409101032407_changesofevents.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409161914001_newfinalchanges.resx">
+      <DependentUpon>202409161914001_newfinalchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409171131383_lastsetupforgoogle.resx">
+      <DependentUpon>202409171131383_lastsetupforgoogle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409181408542_geventsiwtch.resx">
+      <DependentUpon>202409181408542_geventsiwtch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202409181715587_geventswtiches.resx">
+      <DependentUpon>202409181715587_geventswtiches.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TheBookingPlatform.Entities\TheBookingPlatform.Entities.csproj">
+      <Project>{d708eba2-38f4-4bc2-b11a-13e31489770b}</Project>
+      <Name>TheBookingPlatform.Entities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+</Project>

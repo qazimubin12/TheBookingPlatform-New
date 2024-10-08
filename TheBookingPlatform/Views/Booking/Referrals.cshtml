@@ -1,0 +1,36 @@
+﻿
+@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "Referrals";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Referrals</h4>
+        <p class="text-danger">
+            Refer a new client to this location and win cash backs. At check out, ask them to use your referral code.
+            Good luck.
+        </p>
+        <h6>Referral Code: @Model.Customer.ReferralCode</h6>
+        <h6>Amount Earned: @Model.Customer.ReferralBalance @Model.Company.Currency</h6>
+
+        @if (Model.Referrals != null)
+        {
+            foreach (var item in Model.Referrals)
+            {
+                <div class="bg-white rounded-4 p-3 mb-3 shadow-sm">
+                    <p class="text-muted mb-2">
+                        Referred Customer<br>
+                        <span class="text-dark">@item.ReferredCustomer.FirstName @item.ReferredCustomer.LastName </span>
+                    </p>
+                    <p class="text-muted mb-2">
+                        Date and Time<br>
+                        <span class="text-dark">@item.Appointment.Date.ToString("yyyy-MM-dd") ( @item.Appointment.Time.ToString("H:mm") -  @item.Appointment.EndTime.ToString("H:mm") )</span>
+                    </p>
+
+                </div>
+            }
+
+        }
+    </div>
+</div>

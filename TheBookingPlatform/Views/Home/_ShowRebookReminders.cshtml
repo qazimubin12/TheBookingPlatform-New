@@ -1,0 +1,68 @@
+﻿@model TheBookingPlatform.ViewModels.RebookReminderAppointmentViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div style="padding-left:0px;padding-right:0px;" class="col-md-12">
+    @if (Model.RebookReminderAppointments != null)
+    {
+        <div class="card">
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+
+                            <th class="text-center">
+                                Customer
+                            </th>
+                            <th class="text-center">
+                                Customer Email
+                            </th>
+                            <th class="text-center">
+                                Date
+                            </th>
+                            <th class="text-center">
+                                Mail Sent 
+                            </th>
+                            <th class="text-center">
+                               Mail Opened
+                            </th>
+                            <th>
+                                Clicked
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RebookReminderAppointments)
+                        {
+                            <tr>
+                                <td class="text-center">@item.CustomerName</td>
+                                <td class="text-center">@item.CustomerEmail</td>
+                                <td class="text-center">@item.Date.ToString("yyyy-MM-dd")</td>
+                                <td class="text-center">@item.Sent</td>
+                                <td class="text-center">@item.Opened</td>
+                                <td class="text-center">@item.Clicked</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+
+        <div class="alert alert-warning col-md-12" role="alert">
+            Sorry! No records exist.
+        </div>
+    }
+</div>
+
+
+<script>
+   
+</script>
+
+
+

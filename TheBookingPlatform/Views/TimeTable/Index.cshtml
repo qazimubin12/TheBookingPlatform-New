@@ -1,0 +1,200 @@
+﻿@model TheBookingPlatform.ViewModels.TimeTableListingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .custom-modal {
+        width: 1000px; /* adjust the maximum width as needed */
+        margin: auto;
+        padding:50px;
+    }
+</style>
+<div id="MainTimeTableView">
+    <div class="row">
+
+        <div class="card">
+            <div class="card-content">
+                <h4 class="card-title">
+                    Employee TimeTable
+                </h4>
+
+                <hr />
+                <button type="button" data-start-date="" data-end-date="" class="btn btn-primary btn-sm btn-round" id="prevWeek">Previous Week</button>
+                <button type="button" data-start-date="" data-end-date="" class="btn btn-primary btn-sm btn-round" id="nextWeek">Next Week</button>
+                <a href="@Url.Action("Index", "TimeTable")" class="btn btn-secondary btn-sm btn-round">TODAY</a>
+                <div>
+                    <input type="hidden" id="CurrentWeekStart" value="@Model.CurrentWeekStart" />
+                    <input type="hidden" id="CurrentWeekEnd" value="@Model.CurrentWeekEnd" />
+                    <table id="openingHoursTable" class="table">
+                        <thead id="MainTHRow">
+                            <tr>
+                                <th style="padding: 5px 8px; background-color: bisque; font-size: small; vertical-align: middle;">
+                                    Salon Opening Hours
+                                </th>
+                                @{
+                                    var daysOfWeek = new List<string>{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+};
+
+                                }
+                                @foreach (var day in daysOfWeek)
+                                {
+                                    DateTime currentDate = Model.CurrentWeekStart;
+                                    while (currentDate <= Model.CurrentWeekEnd)
+                                    {
+                                        if (currentDate.DayOfWeek.ToString() == day)
+                                        {
+                                            <th class="day-header" id="@(day)_Head" style="padding: 5px 8px; background-color: bisque; font-size: small; vertical-align: middle;">
+                                                @day
+                                                <br />
+                                                @currentDate.ToString("yyyy-MM-dd")
+                                                @if (DateTime.Now.ToString("yyyy-MM-dd") == currentDate.ToString("yyyy-MM-dd"))
+                                                {
+                                                    <br />
+                                                    <span>(Today)</span>
+                                                }
+                                            </th>
+                                            break;
+                                        }
+                                        currentDate = currentDate.AddDays(1);
+                                    }
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.TimeTables)
+                            {
+
+
+                                <tr>
+                                    <td>
+                                        <button style="display:none;"
+                                                data-href="@Url.Action("Action", "TimeTable", new { EmployeeID = item.Employee.ID })"
+                                                class="data-btn btn btn-outline-success btn-sm btn-rounded"
+                                                type="button"
+                                                data-toggle="modal"
+                                                data-target="#actionModal"
+                                                data-employee-target="@item.Employee.ID">
+                                            <i class="fas fa-plus mr-1"></i>
+                                        </button>
+
+
+
+
+
+
+                                        <table style="width:130px;" class="table table-borderless">
+                                            <tr>
+                                                <td class="employeeTableView"
+                                                    style="background: White;cursor:pointer;"
+                                                    data-employee-id="@item.Employee.ID">
+                                                    @if (item.Employee.Photo == null || item.Employee.Photo == "")
+                                                    {
+                                                        <img class="timetablepic" style="width: 50px; height: 50px;" src="~/Content/TBPContent/placeholder.png" />
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <img class="timetablepic" style="width: 50px; height: 50px;" src="@item.Employee.Photo" />
+
+                                                    }
+                                                    <span class="text-center"><strong>@item.Employee.Name</strong></span>
+                                                    <br />
+                                                    <span class="text-center">@item.HoursWorked hrs/week</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </td>
+                                    @foreach (var day in new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" })
+                                    {
+                                        
+                                        <td>
+                                            @foreach (var tt in item.TimeTable.Where(tt => tt.TimeTable.Day == day))
+                                            {
+                                                if (tt.IsWorking)
+                                                {
+                                                <span data-id="@tt.TimeTable.ID" class="timetabledata">@tt.TimeTable.TimeStart - @tt.TimeTable.TimeEnd</span>
+                                                }
+                                            }
+                                        </td>
+                                    }
+
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog custom-modal" role="document">
+        </div>
+    </div>
+
+</div>
+<script>
+
+    $(document).ready(function () {
+
+        $("#nextWeek").click(function () {
+            var CurrentWeekStart = $("#CurrentWeekStart").val();
+            var CurrentWeekEnd = $("#CurrentWeekEnd").val();
+            $.ajax({
+                url: '@Url.Action("GetNextWeek","TimeTable")',
+                data: { CurrentWeekStart: CurrentWeekStart, CurrentWeekEnd: CurrentWeekEnd },
+                type: 'GET',
+            })
+                .done(function (response) {
+                    $("#MainTimeTableView").html(response);
+                });
+        });
+
+
+
+        $("#prevWeek").click(function () {
+            var CurrentWeekStart = $("#CurrentWeekStart").val();
+            var CurrentWeekEnd = $("#CurrentWeekEnd").val();
+            $.ajax({
+                url: '@Url.Action("GetPreviousWeek","TimeTable")',
+                data: { CurrentWeekStart: CurrentWeekStart, CurrentWeekEnd: CurrentWeekEnd },
+                type: 'GET',
+            })
+                .done(function (response) {
+                    $("#MainTimeTableView").html(response);
+                });
+        });
+
+        $('.employeeTableView').on('click', function () {
+            var employeeId = $(this).data('employee-id');
+
+            // Find the button with the corresponding data-employee-target attribute
+            var button = $('.data-btn[data-employee-target="' + employeeId + '"]');
+
+            // Trigger a click event on the button
+            button.click();
+        });
+        $('.timetabledata').on('click', function () {
+            var ttId = $(this).data('id');
+            // Find the button with the corresponding data-employee-target attribute
+            var button = $('.data-btn[data-timetable-target="' + ttId + '"]');
+            // Trigger a click event on the button
+
+            button.click();
+        });
+        $(".data-btn").click(function () {
+            $.ajax({
+                url: $(this).attr("data-href"),
+            })
+                .done(function (response) {
+                    $("#actionModal .modal-dialog").html(response);
+                });
+        });
+
+    });
+
+
+</script>

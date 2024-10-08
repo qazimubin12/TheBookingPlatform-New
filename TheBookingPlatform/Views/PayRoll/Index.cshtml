@@ -1,0 +1,245 @@
+﻿@model TheBookingPlatform.ViewModels.PayRollViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="card">
+    <div class="card-content">
+        @if (User.IsInRole("Calendar"))
+        {
+            <div class="card">
+                <div class="card-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="card-title" id="EmployeeName">
+                                @Model.Employee.Name
+                            </h2>
+
+                            @if (Model.Employee.Type != "Percentage")
+                            {
+                                <div class="col-md-12">
+                                    <h1>
+                                        @Model.Amount
+                                    </h1>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <h2 class="card-title">
+                                Amount
+                            </h2>
+
+                            <div class="col-md-12">
+                                <h1>
+                                    @Model.FinalAmount
+                                </h1>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        }
+        else
+        {
+            if (Model.Type == "Worked Hours")
+            {
+
+
+                <div style="margin:1rem;" class="row">
+                    <h5 style="font-weight:500;">
+                        Worked Hours
+                    </h5>
+                    <p>
+                        The system looks at the worked hours of the employee Selected for the period of time.
+                        The filters has been pre-selected, you can adjust it to suit your needs. Breaks / Absence are not Included
+                    </p>
+                </div>
+            }
+            else if (Model.Type == "Percentage")
+            {
+                <div style="margin:1rem;" class="row">
+                    <h5 style="font-weight:500;">
+                        Worked Hours
+                    </h5>
+                    <p>
+                        The System looks at the “total price” of all appointment the employee has made within the selected period of time and multiplies
+                        if by the percentage you have set for the employee. Breaks / Absence are not Included
+
+                    </p>
+                </div>
+            }
+            else if (Model.Type == "Time to Time")
+            {
+    <div style="margin:1rem;" class="row">
+        <h5 style="font-weight:500;">
+            Time to Time
+
+        </h5>
+        <p>
+            The system calculates how much time the employee spends in the salon. Breaks / Absence are not Included
+        </p>
+    </div>
+            }
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <input type="date" style="margin-top:8px;" value="@Model.StartDate.ToString("yyyy-MM-dd")" id="StartDate" name="StartDate" class="form-control" />
+                </div>
+                <div class="form-group col-md-3">
+                    <input type="date" style="margin-top:8px;" value="@Model.EndDate.ToString("yyyy-MM-dd")" id="EndDate" name="EndDate" class="form-control" />
+                </div>
+                <div style="display:none;" class="form-group col-md-3">
+                    <select style="margin-top:8px;" class="form-control" id="EmployeeID" name="EmployeeID" title="Choose Employee" data-size="7">
+                        <option disabled>Choose Employee </option>
+                        @foreach (var item in Model.Employees)
+                        {
+                            if (Model.EmployeeID == item.ID)
+                            {
+                                <option selected value="@item.ID">@item.Name </option>
+
+                            }
+                            else
+                            {
+                                <option value="@item.ID">@item.Name </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+
+                <div class="form-group col-md-3">
+                    <select class="selectpicker" data-style="select-with-transition" name="SelectedStatuses" id="SelectedStatuses" multiple title="Choose Status" data-size="7">
+                        <option disabled> Choose Status</option>
+                        @foreach (var item in Model.Statuses)
+                        {
+                            if (item == "Paid" || item == "Pending")
+                            {
+                                <option selected value="@item">@item </option>
+
+                            }
+                            else
+                            {
+                                <option value="@item">@item </option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <select class="selectpicker" data-style="select-with-transition" name="IsCancelled" id="IsCancelled" title="Is Cancelled" data-size="2">
+                        <option selected value="False">False </option>
+                        <option value="True">True </option>
+                    </select>
+                </div>
+                @if (Model.Type == "Percentage" || Model.Type == "Worked Hours")
+                {
+                    <div style="display:none;" class="form-group col-md-3">
+                        <input style="margin-top:8px;" placeholder="Enter Amount" type="number" value="@Model.Employee.Percentage" id="Percentage" class="form-control" />
+                    </div>
+                }
+            </div>
+            <button class="btn btn-primary" type="button" id="ViewData">VIEW PAYROLL</button>
+
+            <div class="card" id="PayRollCard">
+                <div class="card-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="card-title" id="EmployeeName">
+                            </h2>
+
+                            <div class="col-md-12">
+
+                                <h1 id="Amount">
+                                </h1>
+                            </div>
+                        </div>
+                        <div id="SecondAmountBOX" class="col-md-6">
+                            <h2 class="card-title" style="display:none;">
+                                Amount
+                            </h2>
+
+                            <div class="col-md-12">
+                                <h1 id="FinalAmount">
+                                </h1>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#ViewData").click(function () {
+            var StartDate = $("#StartDate").val();
+            var EndDate = $("#EndDate").val();
+            var Status = $("#SelectedStatuses").val();
+            var employeeID = $("#EmployeeID").val();
+            var IsCancelled = $("#IsCancelled").val();
+            var Percentage = $("#Percentage").val();
+            var requestData = JSON.stringify({
+                StartDate: StartDate,
+                EndDate: EndDate,
+                EmployeeID: employeeID,
+                Status: Status,
+                IsCancelled: IsCancelled,
+                Percentage: Percentage
+            });
+            $.ajax({
+                url: '@Url.Action("GetPayRollData", "PayRoll")',
+                type: "get",
+                data: { requestData: requestData }, // Send serialized data
+            })
+                .done(function (response) {
+                    if (response.success) {
+                        var baseUrl = '@Url.Action("ViewPayRoll", "PayRoll")';
+                        var employeeName = encodeURIComponent(response.Employee.Name);
+                        var employeeSpecialization = encodeURIComponent(response.Employee.Specialization);
+                        var amount = encodeURIComponent(response.Amount);
+                        var finalAmount = encodeURIComponent(response.FinalAmount);
+                        var percentage = encodeURIComponent(response.Percentage);
+                        var companyName = encodeURIComponent(response.Company.Business);
+                        var companyPhoneNumber = encodeURIComponent(response.Company.PhoneNumber);
+                        var companyAddress = encodeURIComponent(response.Company.Address);
+                        var companyLogo = encodeURIComponent(response.Company.Logo);
+                        var startDate = encodeURIComponent(response.StartDate);
+                        var endDate = encodeURIComponent(response.EndDate);
+                        var type = encodeURIComponent(response.Employee.Type);
+                        var newTabUrl = `${baseUrl}?employeeName=${employeeName}&employeeSpecialization=${employeeSpecialization}&amount=${amount}&finalAmount=${finalAmount}&percentage=${percentage}&companyName=${companyName}&companyPhoneNumber=${companyPhoneNumber}&companyAddress=${companyAddress}&companyLogo=${companyLogo}&StartDate=${startDate}&EndDate=${endDate}&Type=${type}`;
+                        window.open(newTabUrl, '_blank');
+                    } else {
+                        $(".errorDiv").html(response.Message);
+                    }
+                    //if (response.success) {
+                    //    $("#EmployeeName").text(response.Employee.Name);
+                    //    if (response.Employee.Type == "Percentage") {
+                    //        $("#SecondAmountBOX").hide();
+                    //    } else {
+                    //        $("#SecondAmountBOX").show();
+
+                    //    }
+                    //    if (response.Employee.Type == "Worked Hours") {
+                    //        $("#Amount").text(response.Amount+" Hours");
+                    //    } else {
+                    //        $("#Amount").text(response.Amount);
+
+                    //    }
+                    //    $("#FinalAmount").text(response.FinalAmount);
+                    //    $("#Percentage").val(response.Percentage);
+                    //    $(".card-title").show();
+                    //}
+                    //else {
+                    //    $(".errorDiv").html(response.Message);
+                    //}
+                });
+        });
+    });
+</script>

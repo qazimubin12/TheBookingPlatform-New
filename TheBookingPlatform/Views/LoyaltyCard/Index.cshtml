@@ -1,0 +1,173 @@
+﻿@model TheBookingPlatform.ViewModels.LoyaltyCardListingViewModel
+
+<style>
+ 
+</style>
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h4 class="card-title">Loyalty Cards </h4>
+        </div>
+
+        <div class="card-content">
+            <form>
+
+                <div class="form-group">
+
+                    <input type="text" name="searchterm" id="Search" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                    <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+                    <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                    <a href="@Url.Action("Action", "LoyaltyCard")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+                    <a href="@Url.Action("Issue", "LoyaltyCard")" class="btn btn-sm btn-rounded btn-success btn-icon-text"><i class="mdi mdi-delete"></i>ISSUE</a>
+                    <a href="@Url.Action("CardAssignmentIndex", "LoyaltyCard")" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-delete"></i>ISSUED CARDS</a>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-lg-12">
+            <div class="row">
+
+                <div class="col-lg-12 grid-margin stretch-card">
+                    @if (Model.LoyaltyCards != null)
+                    {
+                        <div class="card">
+
+                            <div class="table-responsive">
+                                <table id="LoyaltyCardTable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+
+                                            <th class="text-center">
+                                                Name
+                                            </th>
+                                            <th class="text-center">
+                                                Expiration Days
+                                            </th>
+                                           
+                                            <th class="text-center">
+                                                isActive
+                                            </th>
+                                         
+
+                                            <th class="text-center">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.LoyaltyCards)
+                                        {
+                                            <tr>
+                                                <td class="text-center">@item.LoyaltyCard.Name</td>
+                                                <td class="text-center">@item.LoyaltyCard.Days</td>
+                                                
+
+                                                <td class="text-center">@item.LoyaltyCard.IsActive</td>
+
+                                                <td class="text-center">
+
+                                                    <a href="@Url.Action("Action", "LoyaltyCard", new { ID = item.LoyaltyCard.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                    <button data-href="@Url.Action("Delete", "LoyaltyCard", new { ID = item.LoyaltyCard.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="alert alert-warning col-md-12" role="alert">
+                            Sorry! No records exist.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+<script>
+
+    $("#SearchBtn").click(function () {
+        var SearchTerm = $("#Search").val();
+        RepopulateLoyaltyCards(SearchTerm);
+    })
+
+    $("#ResetBtn").click(function () {
+        RepopulateLoyaltyCards();
+        $("#Search").val('');
+
+    })
+
+    function RepopulateLoyaltyCards(SearchTerm) {
+        $.ajax({
+            url: '@Url.Action("GetLoyaltyCards", "LoyaltyCard")', // Replace with the actual URL
+            method: 'GET',
+            data: { SearchTerm: SearchTerm },
+            dataType: 'json',
+            success: function (data) {
+                // Clear existing options
+
+                $('#LoyaltyCardTable tbody').empty();
+
+                // Repopulate with new data
+                $.each(data, function (index, item) {
+                    var newRow = $('<tr>');
+
+
+                    newRow.append($('<td>').addClass('text-center').text(item.LoyaltyCard.Name));
+                    newRow.append($('<td>').addClass('text-center').text(item.LoyaltyCard.CardNumber));
+                    newRow.append($('<td>').addClass('text-center').text(item.LoyaltyCard.IsActive));
+
+                    var actionColumn = $('<td>').addClass('text-center');
+                    var editLink = $('<a>')
+                        .attr('href', '@Url.Action("Action", "LoyaltyCard")' + '?ID=' + item.ID)
+                        .addClass('btn btn-sm btn-rounded btn-info btn-icon-text')
+                        .html('<i class="mdi mdi-pencil"></i> EDIT');
+                    var deleteButton = $('<button>')
+                        .attr('data-href', '@Url.Action("Delete", "LoyaltyCard")' + '?ID=' + item.ID)
+                        .attr('type', 'button')
+                        .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
+                        .attr('data-toggle', 'modal')
+                        .attr('data-target', '#actionModal')
+                        .html('<i class="mdi mdi-delete"></i> DELETE');
+
+                    actionColumn.append(editLink);
+                    actionColumn.append(deleteButton);
+
+                    newRow.append(actionColumn);
+
+
+                    $('#LoyaltyCardTable tbody').append(newRow);
+
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+</script>

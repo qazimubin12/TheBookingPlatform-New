@@ -1,0 +1,49 @@
+﻿@model TheBookingPlatform.ViewModels.UserActionModel
+
+@if (Model != null)
+{
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <span>Delete User</span>
+            </h5>
+           
+        </div>
+        <div class="modal-body">
+            <form id="actionForm">
+                <input type="hidden" name="ID" value="@Model.ID" />
+            </form>
+            <div class="alert alert-info" role="alert">
+                Are you sure you want to activate this User?
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="actionButton" type="button" class="btn btn-primary"><i class="fas mdi-fan-plus mr-1"></i> Activate</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+        </div>
+    </div>
+}
+
+<script>
+    $("#actionButton").click(function () {
+        showLoadingSpinner();
+
+		$.ajax({
+			url: '@Url.Action("Activate", "User")',
+			type: "post",
+			data: $("#actionForm").serialize()
+		})
+		.done(function (response) {
+			if(response.Success)
+            {
+
+				window.location.href = "@Url.Action("Index", "User")";
+			}
+            else {
+
+                hideLoadingSpinner();
+                alert(response.Message);
+			}
+		});
+	});
+</script>

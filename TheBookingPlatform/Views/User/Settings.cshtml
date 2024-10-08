@@ -1,0 +1,766 @@
+﻿@model TheBookingPlatform.ViewModels.SettingsViewModel
+@using System.Security.Claims
+@{
+    ViewBag.Title = "Settings";
+}
+@{
+    var package = "";
+    var inTrial = "";
+
+}
+@if (User.Identity.IsAuthenticated)
+{
+    var claimsPrincipal = User as ClaimsPrincipal;
+
+    // Use traditional null checks
+    if (claimsPrincipal != null)
+    {
+        var claim = claimsPrincipal.FindAll("Package").Where(x => x.Value != "").FirstOrDefault();
+        if (claim != null)
+        {
+            package = claim.Value;
+        }
+        var InTrial = claimsPrincipal.FindAll("InTrial").Where(x => x.Value != "").FirstOrDefault();
+        if (InTrial != null)
+        {
+            inTrial = InTrial.Value;
+        }
+    }
+}
+
+
+<style>
+    #loader {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card .card-content {
+        padding: 0px 20px;
+        position: relative;
+    }
+
+    .card .nav-pills, .card .tab-content {
+        margin-top: 0px;
+    }
+</style>
+<div class="card">
+    <div class="card-content text-center">
+        <span class="text-center">Choose Option</span>
+        <input type="hidden" value="@Model.Selected" id="Selected" />
+        <div class="nav-center">
+            <ul class="nav nav-pills nav-pills-warning nav-pills-icons" role="tablist">
+
+                @if (User.IsInRole("Admin"))
+                {
+                    if (inTrial == "No")
+                    {
+                        if (package.Split(',').Contains("Employees"))
+                        {
+                            <li>
+                                <a id="Employees" href="#tasks-1" role="tab" data-toggle="tab">
+                                    <i class="material-icons">person</i>
+                                    Employees
+                                </a>
+                            </li>
+                        }
+                        if (package.Split(',').Contains("Reviews"))
+                        {
+                            <li>
+                                <a id="Reviews" href="#tasks-1" role="tab" data-toggle="tab">
+                                    <i class="material-icons">reviews</i>
+                                    Reviews
+                                </a>
+                            </li>
+                        }
+
+                        if (package.Split(',').Contains("Logs"))
+                        {
+                            <li>
+                                <a id="Logs" href="#tasks-2" role="tab" data-toggle="tab">
+                                    <i class="material-icons">summarize</i>
+                                    Logs
+                                </a>
+                            </li>
+                        }
+
+
+                        if (package.Split(',').Contains("Price Changes"))
+                        {
+                            <li>
+                                <a id="PriceChange" href="#tasks-2" role="tab" data-toggle="tab">
+                                    <i class="material-icons">discount</i>
+                                    Price Changes
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+
+                        <li>
+                            <a id="Employees" href="#tasks-1" role="tab" data-toggle="tab">
+                                <i class="material-icons">person</i>
+                                Employees
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="Reviews" href="#tasks-1" role="tab" data-toggle="tab">
+                                <i class="material-icons">reviews</i>
+                                Reviews
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="Logs" href="#tasks-2" role="tab" data-toggle="tab">
+                                <i class="material-icons">summarize</i>
+                                Logs
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="PriceChange" href="#tasks-2" role="tab" data-toggle="tab">
+                                <i class="material-icons">discount</i>
+                                Price Changes
+                            </a>
+                        </li>
+
+                    }
+                }
+                else
+                {
+
+                    <li>
+                        <a id="Company" href="#description-1" role="tab" data-toggle="tab">
+                            <i class="material-icons">apartment</i>
+                            Company
+                        </a>
+                    </li>
+                    if (inTrial == "No")
+                    {
+                        if (package.Split(',').Contains("Services"))
+                        {
+                            <li>
+                                <a id="Services" href="#schedule-1" role="tab" data-toggle="tab">
+                                    <i class="material-icons">apps</i>
+                                    Services
+                                </a>
+                            </li>
+                        }
+                        if (package.Split(',').Contains("Employees"))
+                        {
+                            <li>
+                                <a id="Employees" href="#tasks-1" role="tab" data-toggle="tab">
+                                    <i class="material-icons">person</i>
+                                    Employees
+                                </a>
+                            </li>
+                        }
+                        if (package.Split(',').Contains("Reviews"))
+                        {
+                            <li>
+                                <a id="Reviews" href="#tasks-1" role="tab" data-toggle="tab">
+                                    <i class="material-icons">reviews</i>
+                                    Reviews
+                                </a>
+                            </li>
+                        }
+                        if (package.Split(',').Contains("Logs"))
+                        {
+                            <li>
+                                <a id="Logs" href="#tasks-2" role="tab" data-toggle="tab">
+                                    <i class="material-icons">summarize</i>
+                                    Logs
+                                </a>
+                            </li>
+                        }
+                        if (package.Split(',').Contains("Rebook Reminders"))
+                        {
+                            <li>
+                                <a id="RebookReminders" href="#tasks-2" role="tab" data-toggle="tab">
+                                    <i class="material-icons">notifications</i>
+                                    Rebook Reminders
+                                </a>
+                            </li>
+                        }
+                        if (package.Split(',').Contains("Email Template"))
+                        {
+                            <li>
+                                <a id="EmailTemplate" href="#tasks-2" role="tab" data-toggle="tab">
+                                    <i class="material-icons">email</i>
+                                    Email Template
+                                </a>
+                            </li>
+                        }
+                        if (package.Split(',').Contains("Opening Hours"))
+                        {
+                            <li>
+                                <a id="OpeningHours" href="#tasks-2" role="tab" data-toggle="tab">
+                                    <i class="material-icons">schedule</i>
+                                    Opening Hours
+                                </a>
+                            </li>
+                        }
+                        if (package.Split(',').Contains("Price Changes"))
+                        {
+                            <li>
+                                <a id="PriceChange" href="#tasks-2" role="tab" data-toggle="tab">
+                                    <i class="material-icons">discount</i>
+                                    Price Changes
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+
+                        <li>
+                            <a id="Services" href="#schedule-1" role="tab" data-toggle="tab">
+                                <i class="material-icons">apps</i>
+                                Services
+                            </a>
+
+                        </li>
+                        <li>
+                            <a id="Employees" href="#tasks-1" role="tab" data-toggle="tab">
+                                <i class="material-icons">person</i>
+                                Employees
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="Reviews" href="#tasks-1" role="tab" data-toggle="tab">
+                                <i class="material-icons">reviews</i>
+                                Reviews
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="Logs" href="#tasks-2" role="tab" data-toggle="tab">
+                                <i class="material-icons">summarize</i>
+                                Logs
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="RebookReminders" href="#tasks-2" role="tab" data-toggle="tab">
+                                <i class="material-icons">notifications</i>
+                                Rebook Reminders
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="EmailTemplate" href="#tasks-2" role="tab" data-toggle="tab">
+                                <i class="material-icons">email</i>
+                                Email Template
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="OpeningHours" href="#tasks-2" role="tab" data-toggle="tab">
+                                <i class="material-icons">schedule</i>
+                                Opening Hours
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="PriceChange" href="#tasks-2" role="tab" data-toggle="tab">
+                                <i class="material-icons">discount</i>
+                                Price Changes
+                            </a>
+                        </li>
+
+                    }
+                }
+
+            </ul>
+        </div>
+
+
+
+
+
+
+    </div>
+</div>
+
+<div style="display:none;" id="loader"><img style="width:150px;" src="~/Content/TBPContent/Loader.gif" /></div>
+
+<div id="ActionPanel">
+</div>
+
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+<div class="modal fade center" id="actionModal2" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+@if (User.IsInRole("Admin"))
+{
+    <script>
+
+    function ChangeIsClosedStatus(ID) {
+        $.ajax({
+            url: '@Url.Action("UpdateIsClosed", "User")', // Update this with your controller and action names
+            type: 'POST',
+            data: { ID: ID },
+            success: function (result) {
+                alert("Status Updated");
+
+            },
+            error: function (error) {
+                // Handle error response if needed
+            }
+        });
+    }
+    $(document).ready(function () {
+        //var Selected = $("#Selected").val();
+        //if (Selected == "Company") {
+        //    $("#Company").click();
+        //} else if (Selected == "Email Template") {
+        //    $("#EmailTemplate").click();
+
+        //}
+        //else if (Selected == "Price Change") {
+        //    $("#PriceChange").click();
+
+        //}
+        //else {
+        $("#Employees").click();
+
+        //}
+    })
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+        $(".data-btn2").click(function () {
+            $.ajax({
+                url: $(this).attr("data-href"),
+            })
+                .done(function (response) {
+                    $("#actionModal2 .modal-dialog").html(response);
+                });
+        });
+
+
+    $("#PriceChange").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("PriceChange", "Home")', // Replace with your controller and action names
+            type: 'GET',
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+
+
+     $("#Company").click(function () {
+         showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowCompanySettings", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    $("#EmailTemplate").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("Index", "EmailTemplate")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+        $("#Reviews").click(function () {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("Index", "Review")', // Replace with your controller and action names
+                type: 'GET',
+
+                success: function (result) {
+                    $("#ActionPanel").html(result);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                },
+                complete: function () {
+                    // This function is executed after the AJAX request is completed (success or error)
+                    hideLoadingSpinner();
+                }
+            });
+        });
+
+        $("#Logs").click(function () {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("ShowHistory", "Home")', // Replace with your controller and action names
+                type: 'GET',
+
+                success: function (result) {
+                    $("#ActionPanel").html(result);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                },
+                complete: function () {
+                    // This function is executed after the AJAX request is completed (success or error)
+                    hideLoadingSpinner();
+                }
+            });
+        });
+
+        $("#RebookReminders").click(function () {
+             showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("ShowRebookReminders", "Home")', // Replace with your controller and action names
+                type: 'GET',
+
+                success: function (result) {
+                    $("#ActionPanel").html(result);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                },
+                complete: function () {
+                    // This function is executed after the AJAX request is completed (success or error)
+                    hideLoadingSpinner();
+                }
+            });
+        });
+
+    $("#Services").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowServices", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    $("#OpeningHours").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowOpeningHours", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+
+    $("#Employees").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowEmployees", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+    </script>
+}
+else
+{
+    <script>
+
+    function ChangeIsClosedStatus(ID) {
+        $.ajax({
+            url: '@Url.Action("UpdateIsClosed", "User")', // Update this with your controller and action names
+            type: 'POST',
+            data: { ID: ID },
+            success: function (result) {
+                alert("Status Updated");
+
+            },
+            error: function (error) {
+                // Handle error response if needed
+            }
+        });
+    }
+        $("#Reviews").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("Index", "Review")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        var Selected = $("#Selected").val();
+        if (Selected == "Company") {
+            $("#Company").click();
+        } else if (Selected == "Email Template") {
+            $("#EmailTemplate").click();
+
+        }
+        else if (Selected == "Price Change") {
+            $("#PriceChange").click();
+
+        }
+        else {
+            $("#Company").click();
+
+        }
+    })
+
+            $("#RebookReminders").click(function () {
+             showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("ShowRebookReminders", "Home")', // Replace with your controller and action names
+                type: 'GET',
+
+                success: function (result) {
+                    $("#ActionPanel").html(result);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                },
+                complete: function () {
+                    // This function is executed after the AJAX request is completed (success or error)
+                    hideLoadingSpinner();
+                }
+            });
+        });
+
+
+    $(".data-btn").click(function () {
+        $.ajax({
+            url: $(this).attr("data-href"),
+        })
+            .done(function (response) {
+                $("#actionModal .modal-dialog").html(response);
+            });
+    });
+
+        $(".data-btn2").click(function () {
+            $.ajax({
+                url: $(this).attr("data-href"),
+            })
+                .done(function (response) {
+                    $("#actionModal2 .modal-dialog").html(response);
+                });
+        });
+
+    $("#PriceChange").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("PriceChange", "Home")', // Replace with your controller and action names
+            type: 'GET',
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+
+
+     $("#Company").click(function () {
+         showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowCompanySettings", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    $("#EmailTemplate").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("Index", "EmailTemplate")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    $("#Logs").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowHistory", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+
+    $("#Services").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowServices", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    $("#OpeningHours").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowOpeningHours", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+
+    $("#Employees").click(function () {
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("ShowEmployees", "Home")', // Replace with your controller and action names
+            type: 'GET',
+
+            success: function (result) {
+                $("#ActionPanel").html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            },
+            complete: function () {
+                // This function is executed after the AJAX request is completed (success or error)
+                hideLoadingSpinner();
+            }
+        });
+    });
+    </script>
+}
