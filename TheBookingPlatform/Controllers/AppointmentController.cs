@@ -913,11 +913,7 @@ namespace TheBookingPlatform.Controllers
                 }
                 appointments = appointments.Distinct(new AppointmentComparer()).ToList();
                 foreach (var item in appointments)
-                {
-                    if(item.ID == 20059 || item.ID == 20060)
-                    {
-
-                    }
+                {  
                     if (item.IsPaid == false && item.DepositMethod == "Online" && item.IsCancelled == false && (DateTime.Now - item.BookingDate).TotalMinutes > 15)
                     {
                         item.IsCancelled = true;
@@ -5416,11 +5412,16 @@ namespace TheBookingPlatform.Controllers
                                     var response = restClient.Delete(request);
                                     if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                                     {
-                                        AppointmentServices.Instance.DeleteAppointment(item.ID);
+                                        item.DELETED = true;
+                                        item.DeletedTime = DateTime.Now.ToString();
+                                        AppointmentServices.Instance.UpdateAppointment(item);
                                     }
                                     else
                                     {
-                                        AppointmentServices.Instance.DeleteAppointment(item.ID);
+                                        item.DELETED = true;
+                                        item.DeletedTime = DateTime.Now.ToString();
+                                        AppointmentServices.Instance.UpdateAppointment(item);
+
 
                                         var history = new History();
                                         history.Date = DateTime.Now;
@@ -5429,6 +5430,12 @@ namespace TheBookingPlatform.Controllers
                                         history.Type = "Error";
                                         HistoryServices.Instance.SaveHistory(history);
                                     }
+                                }
+                                else
+                                {
+                                    item.DELETED = true;
+                                    item.DeletedTime = DateTime.Now.ToString();
+                                    AppointmentServices.Instance.UpdateAppointment(item);
                                 }
                             }
                             catch (Exception ex)
@@ -5442,52 +5449,58 @@ namespace TheBookingPlatform.Controllers
                             }
                           
                         }
-                        try
-                        {
-                            var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(LoggedInUser.Company);
-                            if (googleCalendar != null && !googleCalendar.Disabled)
-                            {
-                                var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + employee.GoogleCalendarID + "/events/" + appointment.GoogleCalendarEventID);
-                                RestClient restClient = new RestClient(url);
-                                RestRequest request = new RestRequest();
+                        //try
+                        //{
+                        //    var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(LoggedInUser.Company);
+                        //    if (googleCalendar != null && !googleCalendar.Disabled)
+                        //    {
+                        //        var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + employee.GoogleCalendarID + "/events/" + appointment.GoogleCalendarEventID);
+                        //        RestClient restClient = new RestClient(url);
+                        //        RestRequest request = new RestRequest();
 
-                                request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                                request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
-                                request.AddHeader("Accept", "application/json");
+                        //        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                        //        request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
+                        //        request.AddHeader("Accept", "application/json");
 
-                                var response = restClient.Delete(request);
-                                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
-                                {
-                                    appointment.DELETED = true;
-                                    appointment.DeletedTime = DateTime.Now.ToString();
-                                    AppointmentServices.Instance.UpdateAppointment(appointment);
-                                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-                                }
-                                else
-                                {
-                                    appointment.DELETED = true;
-                                    appointment.DeletedTime = DateTime.Now.ToString();
-                                    AppointmentServices.Instance.UpdateAppointment(appointment);
+                        //        var response = restClient.Delete(request);
+                        //        if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                        //        {
+                        //            appointment.DELETED = true;
+                        //            appointment.DeletedTime = DateTime.Now.ToString();
+                        //            AppointmentServices.Instance.UpdateAppointment(appointment);
+                        //            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                        //        }
+                        //        else
+                        //        {
+                        //            appointment.DELETED = true;
+                        //            appointment.DeletedTime = DateTime.Now.ToString();
+                        //            AppointmentServices.Instance.UpdateAppointment(appointment);
 
-                                    var history = new History();
-                                    history.Date = DateTime.Now;
-                                    history.Note = response.Content;
-                                    history.Business = appointment.Business;
-                                    history.Type = "Error";
-                                    HistoryServices.Instance.SaveHistory(history);
-                                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            var history = new History();
-                            history.Date = DateTime.Now;
-                            history.Note = ex.Message;
-                            history.Business = appointment.Business;
-                            history.Type = "Error";
-                            HistoryServices.Instance.SaveHistory(history);
-                        }
+                        //            var history = new History();
+                        //            history.Date = DateTime.Now;
+                        //            history.Note = response.Content;
+                        //            history.Business = appointment.Business;
+                        //            history.Type = "Error";
+                        //            HistoryServices.Instance.SaveHistory(history);
+                        //            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        appointment.DELETED = true;
+                        //        appointment.DeletedTime = DateTime.Now.ToString();
+                        //        AppointmentServices.Instance.UpdateAppointment(appointment);
+                        //    }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    var history = new History();
+                        //    history.Date = DateTime.Now;
+                        //    history.Note = ex.Message;
+                        //    history.Business = appointment.Business;
+                        //    history.Type = "Error";
+                        //    HistoryServices.Instance.SaveHistory(history);
+                        //}
 
                     }
                     else
