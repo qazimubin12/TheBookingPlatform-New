@@ -14,7 +14,7 @@
         <div class="card-content">
             <div class="form-group">
                 <label>Filter</label>
-                <select class="form-control" id="SelectedOption">
+                <select class="form-control choices__input" id="SelectedOption">
                     <option value="All">All</option>
                     <option selected value="Reviewed">Reviewed</option>
                     <option value="NotReviewed">Not Reviewed</option>
@@ -98,7 +98,7 @@
                                             <td class="text-center">
 
                                                 @*<a href="@Url.Action("Action", "Review", new { ID = item.Review.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>*@
-                                                <button data-href="@Url.Action("Delete", "Review", new { ID = item.Review.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                <button data-href="@Url.Action("Delete", "Review", new { ID = item.Review.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
 
                                             </td>
                                         </tr>
@@ -136,6 +136,18 @@
 
 
     $(document).ready(function () {
+        var elements = document.getElementsByClassName('choices__input');
+
+        // Check if there are any elements found
+        if (elements.length > 0) {
+            // Loop through each element and initialize Choices for it
+            for (var i = 0; i < elements.length; i++) {
+                const example = new Choices(elements[i], {
+                    searchEnabled: false,
+                    itemSelectText: ''
+                });
+            }
+        }
         // Add event listener for date range filter
         $('#filterDate').on('click', function () {
             var startDate = $('#startDate').val();

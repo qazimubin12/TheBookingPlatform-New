@@ -13,6 +13,13 @@
         font-weight: 400;
     }
 
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
     .checkbox label {
         cursor: pointer;
         padding-left: 0;
@@ -22,77 +29,82 @@
 <form id="actionForm">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
+
                 @if (Model.ID != 0)
                 {
-                    <h4 class="card-title">
+                    <h2 class="card-title">
                         Edit LoyaltyCard Assignment
-                    </h4>
+                    </h2>
                 }
                 else
                 {
-                    <h4 class="card-title">
+                    <h2 class="card-title">
                         Create LoyaltyCard
-                    </h4>
+                    </h2>
                 }
-            </div>
 
 
-            <div class="card-content">
                 <div style="display:flex;align-items:end;" class="row">
                     <div class="col-md-6">
                         <input type="hidden" id="ID" name="ID" value="@Model.ID" />
-                        <div class="form-group">
-                            <label>
-                                Card Name
-                            </label>
-                            <input type="text" value="@Model.LoyaltyCard.Name" readonly class="form-control" name="Name" />
+                        <div class="input-group input-group-dynamic">
+                            <div class="form-group">
+                                <label>
+                                    Card Name
+                                </label>
+                                <input type="text" value="@Model.LoyaltyCard.Name" readonly class="form-control" name="Name" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                Days in Expiry
+                            <div class="input-group input-group-dynamic">
 
-                            </label>
-                            <input type="number" value="@Model.Days" class="form-control" name="Days" />
+                                <label>
+                                    Days in Expiry
+
+                                </label>
+                                <input type="number" value="@Model.Days" class="form-control" name="Days" />
+                            </div>
+                            </div>
                         </div>
-                    </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                Cash Back
+                            <div class="input-group input-group-dynamic">
 
-                            </label>
-                            <input type="number" value="@Model.CashBack" class="form-control" name="CashBack" />
+                                <label>
+                                    Cash Back
+
+                                </label>
+                                <input type="number" value="@Model.CashBack" class="form-control" name="CashBack" />
+                            </div>
+                            </div>
                         </div>
-                    </div>
                 </div>
 
                 <div class="row">
 
                     <div class="col-md-12">
-                        <div class="checkbox form-horizontal-checkbox">
-                            <label>
-                                Selected Customer
-                            </label>
-                            <select class="form-control" name="CustomerID" id="CustomerID">
-                                @foreach (var item in Model.Customer)
+                        <label>
+                            Selected Customer
+                        </label>
+                        <select class="form-control choices__input" name="CustomerID" id="CustomerID">
+                            @foreach (var item in Model.Customer)
+                            {
+                                if (Model.CustomerID == item.ID)
                                 {
-                                    if (Model.CustomerID == item.ID)
-                                    {
-                                        <option selected value="@item.ID">@item.FirstName @item.LastName</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@item.ID">@item.FirstName @item.LastName</option>
-
-                                    }
+                                    <option selected value="@item.ID">@item.FirstName @item.LastName</option>
                                 }
-                            </select>
-                        </div>
+                                else
+                                {
+                                    <option value="@item.ID">@item.FirstName @item.LastName</option>
+
+                                }
+                            }
+                        </select>
                     </div>
 
 

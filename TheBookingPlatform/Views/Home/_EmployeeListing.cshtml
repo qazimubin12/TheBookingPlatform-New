@@ -7,7 +7,6 @@
     {
         <div class="card">
 
-            <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -42,7 +41,7 @@
                         @foreach (var item in Model.Employees)
                         {
                             <tr>
-                                <td style="width:40px;" class="text-center">
+                                <td class="text-center">
                                     <input type="number" class="form-control" value="@item.Employee.DisplayOrder" onchange="ChangeOrder('@item.Employee.ID', this.value)" />
                                 </td>
                                 <td class="text-center">@item.Employee.Name</td>
@@ -50,8 +49,8 @@
 
                                 @if (item.Employee.AllowOnlineBooking == true)
                                 {
-                                    <td class="text-center">
-                                        <select class="form-control" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
+                                    <td  style="width:50px;" class="text-center">
+                                        <select class="form-control choices__input" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
                                             <option value="True" selected>Yes</option>
                                             <option value="False">No</option>
                                         </select>
@@ -60,16 +59,16 @@
                                 }
                                 else
                                 {
-                                    <td class="text-center">
-                                        <select class="form-control" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
+                                    <td  class="text-center" style="width:50px;"> 
+                                        <select class="form-control choices__input" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
                                             <option value="True">Yes</option>
                                             <option selected value="False">No</option>
                                         </select>
                                     </td>
 
                                 }
-                                <td class="text-center">
-                                    <select class="form-control limitAccess" id="Limit_@(item.Employee.ID)" onchange="ChangeLimitoFCalendarAccess('@item.Employee.ID')">
+                                <td class="text-center"  style="width:200px;">
+                                    <select class="form-control limitAccess choices__input" id="Limit_@(item.Employee.ID)" onchange="ChangeLimitoFCalendarAccess('@item.Employee.ID')">
                                         @foreach (var access in Model.CalendarHistoryAccessList)
                                         {
                                             if (access == item.Employee.LimitCalendarHistory)
@@ -85,8 +84,8 @@
                                     </select>
                                 </td>
 
-                                <td class="text-center">
-                                    <select class="form-control changeType" data-id="@item.Employee.ID" id="Type_@(item.Employee.ID)">
+                                <td class="text-center" style="width:200px;">
+                                    <select class="form-control changeType choices__input " data-id="@item.Employee.ID" id="Type_@(item.Employee.ID)">
                                         @foreach (var access in Model.Types)
                                         {
                                             if (access == item.Employee.Type)
@@ -106,10 +105,13 @@
                                     <a class="btn btn-primary btn-sm" href="@Url.Action("Index", "EmployeePriceChange", new {EmployeeID = item.Employee.ID})">Price Change</a>
                                 </td>
                                 <td style="display:flex;">
-                                    <input type="text" class="form-control numberPercentage" data-id="@item.Employee.ID" value="@item.Employee.Percentage" name="Number" id="Number_@(item.Employee.ID)" />
-                                    <button class="btn btn-primary btn-sm" onclick="ChangeTypeOfEmployee('@item.Employee.ID')" type="button">
-                                        <i class="material-icons">payments</i>
-                                    </button>
+                                    <div class="input-group input-group-dynamic">
+
+                                        <input type="text" class="form-control numberPercentage" data-id="@item.Employee.ID" value="@item.Employee.Percentage" name="Number" id="Number_@(item.Employee.ID)" />
+                                    </div>
+                                        <button class="btn btn-primary btn-sm" onclick="ChangeTypeOfEmployee('@item.Employee.ID')" type="button">
+                                            <i class="material-icons">payments</i>
+                                        </button>
                                 </td>
 
 
@@ -118,7 +120,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
     }
     else
     {
@@ -169,7 +170,19 @@
         }
 
 
-        $(document).ready(function () {
+    $(document).ready(function () {
+        var elements = document.getElementsByClassName('choices__input');
+
+        // Check if there are any elements found
+        if (elements.length > 0) {
+            // Loop through each element and initialize Choices for it
+            for (var i = 0; i < elements.length; i++) {
+                const example = new Choices(elements[i], {
+                    searchEnabled: false,
+                    itemSelectText: ''
+                });
+            }
+        }
             $(document).on("change", ".numberPercentage", function () {
                 var employeeID = $(this).data("id");
                 var Type = $("#Type_" + employeeID).val();

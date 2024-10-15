@@ -57,8 +57,8 @@
             right: auto;
         }
 
-        .sidebar-wrapper .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini,
-        .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini{
+        .sidebar-wrapper .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-mini,
+        .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-mini{
             float: right;
             margin-left: 15px;
             margin-right: 0;
@@ -185,8 +185,8 @@
     }
 
     @media (max-width: 991px){
-        .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
-        .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal{
+        .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal{
             text-align: right;
         }
     }
@@ -207,19 +207,19 @@
             margin: 0;
         }
 
-        &.sidebar-mini .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
-        &.sidebar-mini .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        &.sidebar-mini .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        &.sidebar-mini .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
         &.sidebar-mini .sidebar .sidebar-wrapper .user .info > a > span,
         &.sidebar-mini .sidebar .sidebar-wrapper > .nav li > a p{
             position: relative;
         }
 
         &.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav li > a p,
-        &.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
-        &.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        &.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        &.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
         &.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info > a > span,
-        &.sidebar-mini .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
-        &.sidebar-mini .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        &.sidebar-mini .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        &.sidebar-mini .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
         &.sidebar-mini .sidebar .sidebar-wrapper .user .info > a > span,
         &.sidebar-mini .sidebar .sidebar-wrapper > .nav li > a p,
         &.sidebar-mini .sidebar .logo a.logo-normal{
@@ -231,8 +231,8 @@
         }
 
         &.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav li > a p,
-        &.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
-        &.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        &.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+        &.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
         &.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info > a > span,
         &.sidebar-mini .sidebar:hover .logo a.logo-normal{
             -webkit-transform:  translate3d(0,0,0);

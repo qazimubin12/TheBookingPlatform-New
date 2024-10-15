@@ -19,7 +19,7 @@
 
                             <input type="number" class="form-control" style="width:40px;margin-left:10px;float:left;" value="@item.ServiceCategory.DisplayOrder" onchange="ChangeOrder('@item.ServiceCategory.ID', this.value)" />
 
-                            <a role="button" data-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_@item.ServiceCategory.ID" aria-expanded="true" aria-controls="Service_@item.ServiceCategory.ID">
+                            <a role="button" data-bs-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_@item.ServiceCategory.ID" aria-expanded="true" aria-controls="Service_@item.ServiceCategory.ID">
 
                                 <h4 class="panel-title text-center">
                                     @item.ServiceCategory.Name
@@ -82,11 +82,11 @@
                                                             <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
                                                             @if (service.IsActive)
                                                             {
-                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
                                                             }
                                                             else
                                                             {
-                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">done</i>RESTORE</button>
+                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-success btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">RESTORE</button>
 
                                                             }
                                                             <a href="@Url.Action("Duplicate", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> DUPLICATE</a>
@@ -143,7 +143,7 @@
                                                         <td class="text-center">
 
                                                             <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
-                                                            <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                            <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
                                                             <a href="@Url.Action("Duplicate", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> DUPLICATE</a>
                                                         </td>
                                                     </tr>
@@ -183,7 +183,7 @@
                     <div class="panel-heading" role="tab" id="headingOne">
 
                         <input type="number" class="form-control" style="width:40px;margin-left:10px;float:left;" value="@(Model.DeletedServices.Services.Select(x=>x.DisplayOrder).Max()+1)" onchange="ChangeOrder('0', this.value)" />
-                        <a role="button" data-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_0" aria-expanded="true" aria-controls="Service_0">
+                        <a role="button" data-bs-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_0" aria-expanded="true" aria-controls="Service_0">
                             <h4 class="panel-title text-center">
                                 DELETED
 
@@ -248,11 +248,11 @@
                                             <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
                                             @if (service.IsActive)
                                             {
-                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal">DEACTIVATE</button>
+                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">DEACTIVATE</button>
                                             }
                                             else
                                             {
-                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal">RESTORE</button>
+                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">RESTORE</button>
 
                                             }
                                             <a href="@Url.Action("Duplicate", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> DUPLICATE</a>

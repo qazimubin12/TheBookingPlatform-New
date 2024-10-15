@@ -19,7 +19,7 @@
 
                     <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
                     <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded" ><i class="fas fa-redo-alt mr-1"></i> Reset</button>
-                    <button data-href="@Url.Action("Action", "Category")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-toggle="modal" data-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
+                    <button data-href="@Url.Action("Action", "Category")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
 
                 </div>
             </form>
@@ -54,8 +54,8 @@
                                         <td class="text-center">@item.Name</td>
                                         <td class="text-center">
 
-                                            <button data-href="@Url.Action("Action", "Category", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
-                                            <button data-href="@Url.Action("Delete", "Category", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                            <button data-href="@Url.Action("Action", "Category", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
+                                            <button data-href="@Url.Action("Delete", "Category", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
 
                                         </td>
                                     </tr>

@@ -15,16 +15,25 @@
         font-weight: 400;
     }
 
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
     .checkbox label {
         cursor: pointer;
         padding-left: 0;
         color: black;
+
     }
 </style>
 <form id="actionForm">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
+
                 @if (Model.ID != 0)
                 {
                     <h4 class="card-title">
@@ -37,19 +46,20 @@
                         Create Franchise Request
                     </h4>
                 }
-            </div>
 
 
-            <div class="card-content">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Enter Company Code</label>
-                            <input type="text" class="form-control" name="CompanyCode" id="CompanyCode" />
-                            <input type="hidden" class="form-control" name="ID" id="ID" value="@Model.ID" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Enter Company Code</label>
+                                <input type="text" class="form-control" name="CompanyCode" id="CompanyCode" />
+                                <input type="hidden" class="form-control" name="ID" id="ID" value="@Model.ID" />
+                            </div>
                         </div>
-                        
-                    </div>
+
+                        </div>
                     <div class="col-md-6">
                         <span class="text-danger" id="errorDiv"></span>
                         <button class="btn btn-primary btn-sm" type="button" id="ValidateCompanyCodeBtn">
@@ -62,16 +72,18 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
+
                             <label>Select User</label>
-                            <select class="form-control" name="UserID" id="UserID">
+                            <select class="form-control choices__input" name="UserID" id="UserID">
                             </select>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
+
                             <label>Select User from your Company</label>
-                            <select class="form-control" name="MappedToUserID" id="MappedToUserID">
+                            <select class="form-control choices__input" name="MappedToUserID" id="MappedToUserID">
                                 @foreach (var item in Model.Users)
                                 {
                                     if (item.Id == Model.MappedToUserID)
@@ -89,24 +101,24 @@
                     </div>
                 </div>
 
-                    @if (Model.ID == 0)
-                    {
+                @if (Model.ID == 0)
+                {
 
 
-                        <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SEND REQUEST</button>
-                    }
-                    else
-                    {
-                        <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+                    <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SEND REQUEST</button>
+                }
+                else
+                {
+                    <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
 
-                    }
-                    <a href="@Url.Action("Index","EmployeeRequest")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+                }
+                <a href="@Url.Action("Index","EmployeeRequest")" class="btn btn-secondary  btn-rounded">CLOSE</a>
 
             </div>
-
-
-            
         </div>
+
+
+
     </div>
 </form>
 <div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">

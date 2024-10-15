@@ -19,53 +19,66 @@
         padding-left: 0;
         color: black;
     }
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
 </style>
 <form id="actionForm">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
+
                 @if (Model.ID != 0)
                 {
-                    <h4 class="card-title">
+                    <h2 class="card-title">
                         Edit Product
-                    </h4>
+                    </h2>
                 }
                 else
                 {
-                    <h4 class="card-title">
+                    <h2 class="card-title">
                         Create Product
-                    </h4>
+                    </h2>
                 }
-            </div>
 
 
-            <div class="card-content">
                 <div style="display:flex;align-items:end;" class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label>
-                                Product Name
-                            </label>
-                            <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                            <div class="input-group input-group-dynamic">
+                                <label>
+                                    Product Name
+                                </label>
+                                <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
-                                Sales Price
-                            </label>
-                            <input type="text" value="@Model.SalesPrice" class="form-control" name="SalesPrice" />
+
+                            <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    Sales Price
+                                </label>
+                                <input type="text" value="@Model.SalesPrice" class="form-control" name="SalesPrice" />
+                            </div>
                         </div>
                     </div>
 
 
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
-                                Cost Price
-                            </label>
-                            <input type="text" value="@Model.CostPrice" class="form-control" name="CostPrice" />
+
+                            <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    Cost Price
+                                </label>
+                                <input type="text" value="@Model.CostPrice" class="form-control" name="CostPrice" />
+                            </div>
                         </div>
                     </div>
 
@@ -74,50 +87,59 @@
 
 
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label>
-                                EAN Code
-                            </label>
-                            <input type="text" value="@Model.EANCode" class="form-control" name="EANCode" />
+
+                            <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    EAN Code
+                                </label>
+                                <input type="text" value="@Model.EANCode" class="form-control" name="EANCode" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-3">
-                        <div style="margin-top:2px;" class="form-group">
-                            <label>
-                                VAT
-                            </label>
-                            <select id="VAT" class="selectpicker" name="VAT" data-style="select-with-transition" title="Choose Vat" data-size="100">
-                                @foreach (var item in Model.Vats)
-                                {
-                                    if (item.Name.Trim().ToLower() == "no vat")
+                            <div style="margin-top:2px;" class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    VAT
+                                </label>
+                                <select id="VAT" class="choices__input" name="VAT" data-style="select-with-transition" title="Choose Vat" data-size="100">
+                                    @foreach (var item in Model.Vats)
                                     {
-                                        <option value="@item.Name">@item.Name</option>
-                                    }
-                                    else
-                                    {
-                                        if (item.Name == Model.VAT)
+                                        if (item.Name.Trim().ToLower() == "no vat")
                                         {
-                                            <option selected value="@item.Name">@item.Name (@item.Percentage %)</option>
+                                            <option value="@item.Name">@item.Name</option>
                                         }
                                         else
                                         {
-                                            <option value="@item.Name">@item.Name (@item.Percentage %)</option>
+                                            if (item.Name == Model.VAT)
+                                            {
+                                                <option selected value="@item.Name">@item.Name (@item.Percentage %)</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Name">@item.Name (@item.Percentage %)</option>
 
+                                            }
                                         }
                                     }
-                                }
-                            </select>
+                                </select>
 
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label>
-                                Part Number
-                            </label>
-                            <input type="text" value="@Model.PartNumber" class="form-control" name="PartNumber" />
+
+                            <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Part Number
+                                </label>
+                                <input type="text" value="@Model.PartNumber" class="form-control" name="PartNumber" />
+                            </div>
                         </div>
                     </div>
 
@@ -130,50 +152,56 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div style="margin-top:2px;" class="form-group">
-                            <label>
-                                Category
-                            </label>
-                            <select id="CategoryID" class="selectpicker" name="CategoryID" data-style="select-with-transition" title="Choose Category" data-size="100">
-                                @foreach (var item in Model.Categories)
-                                {
-                                    if (item.ID == Model.CategoryID)
-                                    {
-                                        <option selected value="@item.ID">@item.Name</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@item.ID">@item.Name</option>
 
-                                    }
-                                }
-                            </select>
+                            <div style="margin-top:2px;" class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    Category
+                                </label>
+                                <select id="CategoryID" class="choices__input" name="CategoryID" data-style="select-with-transition" title="Choose Category" data-size="100">
+                                    @foreach (var item in Model.Categories)
+                                    {
+                                        if (item.ID == Model.CategoryID)
+                                        {
+                                            <option selected value="@item.ID">@item.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.ID">@item.Name</option>
 
+                                        }
+                                    }
+                                </select>
+
+                            </div>
                         </div>
                     </div>
 
 
 
                     <div class="col-md-6">
-                        <div style="margin-top:2px;" class="form-group">
-                            <label>
-                                Supplier
-                            </label>
-                            <select id="SupplierID" class="selectpicker" name="SupplierID" data-style="select-with-transition" title="Choose Supplier" data-size="100">
-                                @foreach (var item in Model.Suppliers)
-                                {
-                                    if (item.ID == Model.SupplierID)
-                                    {
-                                        <option selected value="@item.ID">@item.Name</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@item.ID">@item.Name</option>
 
-                                    }
-                                }
-                            </select>
+                            <div style="margin-top:2px;" class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    Supplier
+                                </label>
+                                <select id="SupplierID" class="choices__input" name="SupplierID" data-style="select-with-transition" title="Choose Supplier" data-size="100">
+                                    @foreach (var item in Model.Suppliers)
+                                    {
+                                        if (item.ID == Model.SupplierID)
+                                        {
+                                            <option selected value="@item.ID">@item.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.ID">@item.Name</option>
 
+                                        }
+                                    }
+                                </select>
+
+                            </div>
                         </div>
                     </div>
 
@@ -183,15 +211,15 @@
                 <div class="row">
 
                     <div class="col-md-12">
-                        <div class="checkbox form-horizontal-checkbox">
+                        <div class="form-check">
                             <label>
                                 @if (Model.ManageStockOrder == true)
                                 {
-                                    <input type="checkbox" checked name="ManageStockOrderCB" id="ManageStockOrderCB">
+                                    <input type="checkbox" checked name="ManageStockOrderCB" class="form-check-input" id="ManageStockOrderCB">
                                 }
                                 else
                                 {
-                                    <input type="checkbox" name="ManageStockOrderCB" id="ManageStockOrderCB">
+                                    <input type="checkbox" name="ManageStockOrderCB" class="form-check-input" id="ManageStockOrderCB">
 
                                 }
                                 Manage Stock Order
@@ -205,29 +233,38 @@
                 <div id="ManageStockRow" class="row">
 
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
-                                Min Stock
-                            </label>
-                            <input type="text" value="@Model.MinStock" class="form-control" name="MinStock" />
+
+                            <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    Min Stock
+                                </label>
+                                <input type="text" value="@Model.MinStock" class="form-control" name="MinStock" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
-                                Max Stock
-                            </label>
-                            <input type="text" value="@Model.MaxStock" class="form-control" name="MaxStock" />
+
+                            <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    Max Stock
+                                </label>
+                                <input type="text" value="@Model.MaxStock" class="form-control" name="MaxStock" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
-                                Current Stock
-                            </label>
-                            <input type="text" value="@Model.CurrentStock" class="form-control" name="CurrentStock" />
+
+                            <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+                                <label>
+                                    Current Stock
+                                </label>
+                                <input type="text" value="@Model.CurrentStock" class="form-control" name="CurrentStock" />
+                            </div>
                         </div>
                     </div>
 
@@ -237,14 +274,15 @@
 
 
 
-            </div>
 
 
-            <div class="col-md-12">
-                <button id="ActionBtn" type="button" class="btn btn-primary btn-rounded">SAVE</button>
-                <a href="@Url.Action("Index","Product")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+                <div class="col-md-12 my-3">
+                    <button id="ActionBtn" type="button" class="btn btn-primary btn-rounded">SAVE</button>
+                    <a href="@Url.Action("Index","Product")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+                </div>
             </div>
         </div>
+
     </div>
 </form>
 <div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">

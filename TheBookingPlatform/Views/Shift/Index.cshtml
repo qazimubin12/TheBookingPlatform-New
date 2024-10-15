@@ -26,6 +26,10 @@
         align-items: center;
     }
 
+    .bg-primary {
+        background-color: #337ab7 !important;
+        color:white;
+    }
 
 
     .bg-info {
@@ -53,6 +57,7 @@
         align-items: center;
     }
 
+
     .bg-danger {
         background-color: purple;
         color: white;
@@ -65,14 +70,12 @@
 
 <div id="MainTimeTableView" class="row">
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">
+        <div class="card-body">
+            <h2 class="card-title">
                 TimeTable
-            </h3>
-        </div>
-        <div class="card-content">
+            </h2>
             <div class="row">
-                <div style="display:flex;justify-content:center;">
+                <div class="col-md-12" style="display:flex;justify-content:center;">
                     <button id="PrevBtn" type="button" class="btn btn-primary btn-sm">
                         <i class="fa fa-arrow-left"></i>
                     </button>
@@ -99,9 +102,9 @@
                     <button id="nextBtn" type="button" class="btn btn-primary btn-sm">
                         <i class="fa fa-arrow-right"></i>
                     </button>
-
                 </div>
-                <div class="row" style="display:flex;justify-content:center;">
+
+                <div style="display:flex;justify-content:center;">
                     <button onclick="window.location.href='@Url.Action("Index","Shift")'" class="btn btn-primary btn-info btn-sm btn-round">Today</button>
                 </div>
 
@@ -132,10 +135,10 @@
                         @foreach (var date in Model.weekDates)
                         {
                             bool AddedShift = false;
-                            if(date.Day == 8 && empSchedule.Employee.ID == 37)
-                    {
+                            if (date.Day == 8 && empSchedule.Employee.ID == 37)
+                            {
 
-                    }
+                            }
                             if (listofData.Where(x => x.Date.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && x.EmployeeID == empSchedule.Employee.ID).Count() == 0)
                             {
                                 var shiftsWithinRange = empSchedule.Shifts.Where(s => s.Shift.Date.DayOfWeek.ToString() == date.DayOfWeek.ToString()).ToList();
@@ -157,9 +160,9 @@
                                                         {
                                                             if (shiftExceptionShift.ShiftID == shift.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && shiftExceptionShift.IsNotWorking == true)
                                                             {
-                                                            <td class="text-center ">
-                                                                <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-toggle="modal" data-target="#actionModal">BLOCKED</span>
-                                                            </td>
+                                                                <td class="text-center ">
+                                                                    <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">BLOCKED</span>
+                                                                </td>
                                                                 exceptionFound = true;
                                                                 AddedShift = true;
                                                                 listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
@@ -168,9 +171,9 @@
                                                             }
                                                             else if ((shiftExceptionShift.ShiftID == shift.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && shiftExceptionShift.IsNotWorking == false))
                                                             {
-                                                            <td class="text-center shift-cell" data-start-time="@shiftExceptionShift.StartTime" data-end-time="@shiftExceptionShift.EndTime">
-                                                                <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-toggle="modal" data-target="#actionModal">@shiftExceptionShift.StartTime - @shiftExceptionShift.EndTime</span>
-                                                            </td>
+                                                                <td class="text-center shift-cell" data-start-time="@shiftExceptionShift.StartTime" data-end-time="@shiftExceptionShift.EndTime">
+                                                                    <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">@shiftExceptionShift.StartTime - @shiftExceptionShift.EndTime</span>
+                                                                </td>
                                                                 exceptionFound = true;
                                                                 AddedShift = true;
                                                                 listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
@@ -182,9 +185,9 @@
                                                         if (!exceptionFound)
                                                         {
                                                             // Display the default span if no exception is found
-                                                        <td class="text-center shift-cell" data-start-time="@shift.Shift.StartTime" data-end-time="@shift.Shift.EndTime">
-                                                            <span data-href="@Url.Action("Action", "Shift")" data-id="@shift.Shift.ID" style="" class="bg-primary data-btn bg-primary_shift" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-toggle="modal" data-target="#actionModal">@shift.Shift.StartTime - @shift.Shift.EndTime</span>
-                                                        </td>
+                                                            <td class="text-center shift-cell" data-start-time="@shift.Shift.StartTime" data-end-time="@shift.Shift.EndTime">
+                                                                <span data-href="@Url.Action("Action", "Shift")" data-id="@shift.Shift.ID" style="" class="bg-primary data-btn bg-primary_shift" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">@shift.Shift.StartTime - @shift.Shift.EndTime</span>
+                                                            </td>
                                                             AddedShift = true;
                                                             listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
 
@@ -199,9 +202,9 @@
                                                     {
                                                         if (shift.Shift.Day == date.DayOfWeek.ToString() && shift.Shift.Date <= date)
                                                         {
-                                                        <td class="text-center shift-cell" data-start-time="@shift.Shift.StartTime" data-end-time="@shift.Shift.EndTime">
-                                                            <span data-href="@Url.Action("Action", "Shift")" data-id="@shift.Shift.ID" class="bg-primary bg-primary_shift data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-toggle="modal" data-target="#actionModal">@shift.Shift.StartTime - @shift.Shift.EndTime</span>
-                                                        </td>
+                                                            <td class="text-center shift-cell" data-start-time="@shift.Shift.StartTime" data-end-time="@shift.Shift.EndTime">
+                                                                <span data-href="@Url.Action("Action", "Shift")" data-id="@shift.Shift.ID" class="bg-primary bg-primary_shift data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">@shift.Shift.StartTime - @shift.Shift.EndTime</span>
+                                                            </td>
                                                             AddedShift = true;
                                                             listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
                                                             break;
@@ -213,9 +216,9 @@
                                                 else
                                                 {
 
-                                                <td class="text-center ">
-                                                    <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-toggle="modal" data-target="#actionModal"><i class="fa fa-plus"></i></span>
-                                                </td>
+                                                    <td class="text-center ">
+                                                        <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fa fa-plus"></i></span>
+                                                    </td>
                                                     AddedShift = true;
                                                     listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
 
@@ -230,11 +233,11 @@
                                             {
                                                 if (shift.Shift.IsRecurring && shift.RecurShift != null && DateTime.Parse(shift.RecurShift.RecurEndDate) >= date)
                                                 {
-                                                <td class="text-center shift-cell" data-start-time="@shift.Shift.StartTime" data-end-time="@shift.Shift.EndTime">
-                                                    @* Access and display details from ShiftModel (e.g., StartTime, EndTime) *@
-                                                    <span data-href="@Url.Action("Action", "Shift")" data-id="@shift.Shift.ID" class="bg-primary data-btn bg-primary_shift" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-toggle="modal" data-target="#actionModal">@shift.Shift.StartTime - @shift.Shift.EndTime</span>
+                                                    <td class="text-center shift-cell" data-start-time="@shift.Shift.StartTime" data-end-time="@shift.Shift.EndTime">
+                                                        @* Access and display details from ShiftModel (e.g., StartTime, EndTime) *@
+                                                        <span data-href="@Url.Action("Action", "Shift")" data-id="@shift.Shift.ID" class="bg-primary data-btn bg-primary_shift" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">@shift.Shift.StartTime - @shift.Shift.EndTime</span>
 
-                                                </td>
+                                                    </td>
                                                     AddedShift = true;
                                                     listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
 
@@ -256,15 +259,15 @@
                                                                 {
                                                                     if (shiftExceptionShift.IsNotWorking)
                                                                     {
-                                                                    <td class="text-center">
-                                                                        <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-toggle="modal" data-target="#actionModal">BLOCKED</span>
-                                                                    </td>
+                                                                        <td class="text-center">
+                                                                            <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">BLOCKED</span>
+                                                                        </td>
                                                                     }
                                                                     else
                                                                     {
-                                                                    <td class="text-center shift-cell" data-start-time="@shiftExceptionShift.StartTime" data-end-time="@shiftExceptionShift.EndTime">
-                                                                        <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-toggle="modal" data-target="#actionModal">@shiftExceptionShift.StartTime - @shiftExceptionShift.EndTime</span>
-                                                                    </td>
+                                                                        <td class="text-center shift-cell" data-start-time="@shiftExceptionShift.StartTime" data-end-time="@shiftExceptionShift.EndTime">
+                                                                            <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">@shiftExceptionShift.StartTime - @shiftExceptionShift.EndTime</span>
+                                                                        </td>
                                                                         AddedShift = true;
 
                                                                     }
@@ -275,9 +278,9 @@
                                                                 }
                                                                 else
                                                                 {
-                                                                <td class="text-center">
-                                                                    <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-toggle="modal" data-target="#actionModal"><i class="fa fa-plus"></i></span>
-                                                                </td>
+                                                                    <td class="text-center">
+                                                                        <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fa fa-plus"></i></span>
+                                                                    </td>
                                                                     AddedShift = true;
                                                                     listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
 
@@ -286,10 +289,10 @@
                                                             }
                                                             if (!exceptionFound)
                                                             {
-                                                            <td class="text-center">
+                                                                <td class="text-center">
 
-                                                                <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-toggle="modal" data-target="#actionModal"><i class="fa fa-plus"></i></span>
-                                                            </td>
+                                                                    <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fa fa-plus"></i></span>
+                                                                </td>
                                                                 AddedShift = true;
                                                                 listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
 
@@ -310,9 +313,9 @@
                                                     {
                                                         if (shift.Shift.Date.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd"))
                                                         {
-                                                        <td class="text-center shift-cell" data-start-time="@shift.Shift.StartTime" data-end-time="@shift.Shift.EndTime">
-                                                            <span data-href="@Url.Action("Action", "Shift")" data-id="@shift.Shift.ID" class="bg-primary bg-primary_shift data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-toggle="modal" data-target="#actionModal">@shift.Shift.StartTime - @shift.Shift.EndTime</span>
-                                                        </td>
+                                                            <td class="text-center shift-cell" data-start-time="@shift.Shift.StartTime" data-end-time="@shift.Shift.EndTime">
+                                                                <span data-href="@Url.Action("Action", "Shift")" data-id="@shift.Shift.ID" class="bg-primary bg-primary_shift data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">@shift.Shift.StartTime - @shift.Shift.EndTime</span>
+                                                            </td>
                                                             AddedShift = true;
                                                             listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
 
@@ -321,9 +324,9 @@
                                                         }
                                                         else
                                                         {
-                                                        <td class="text-center">
-                                                            <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-toggle="modal" data-target="#actionModal"><i class="fa fa-plus"></i></span>
-                                                        </td>
+                                                            <td class="text-center">
+                                                                <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fa fa-plus"></i></span>
+                                                            </td>
                                                             AddedShift = true;
                                                             listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
                                                             break;
@@ -344,9 +347,9 @@
                                 }
                                 else
                                 {
-                                <td class="text-center ">
-                                    <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-toggle="modal" data-target="#actionModal"><i class="fa fa-plus"></i></span>
-                                </td>
+                                    <td class="text-center ">
+                                        <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fa fa-plus"></i></span>
+                                    </td>
                                     AddedShift = true;
                                     listofData.Add(new TheBookingPlatform.ViewModels.ShiftDetail { Date = date, EmployeeID = empSchedule.Employee.ID });
 
@@ -356,9 +359,9 @@
 
                                 if (AddedShift == false)
                                 {
-                                <td class="text-center ">
-                                    <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-toggle="modal" data-target="#actionModal"><i class="fa fa-plus"></i></span>
-                                </td>
+                                    <td class="text-center ">
+                                        <span data-href="@Url.Action("Action", "Shift")" style="display:block;" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" class="bg-info addShift data-btn" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fa fa-plus"></i></span>
+                                    </td>
                                 }
                             }
                         }

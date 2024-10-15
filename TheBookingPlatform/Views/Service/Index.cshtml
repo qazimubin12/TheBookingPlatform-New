@@ -7,49 +7,45 @@
 </style>
 <div class="card">
     <div class="card-body">
-        <div class="card-header">
-            <h4 class="card-title">Service</h4>
-        </div>
+        <h4 class="card-title">Service</h4>
 
-        <div class="card-content">
-            <form>
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <select class="form-control" id="SelectedOption">
-                                <option value="All Services">All Services</option>
-                                <option selected value="Active Services">Active Services</option>
-                                <option value="Non Acitve Services">Non Active Services</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
-                        <div class="form-group">
-
-                            @Html.ValidationSummary("", new { @class = "text-danger" })
-
-                            <button class="btn btn-outline-primary btn-sm btn-rounded" type="submit"><i class="fas fa-search mr-1"></i> Search</button>
-                            <a class="btn btn-outline-secondary btn-sm btn-rounded" href="@Url.Action("Index", "Service")"><i class="fas fa-redo-alt mr-1"></i> Reset</a>
-                            <a href="@Url.Action("Action", "Service")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
-                            <a href="@Url.Action("Export", "Service")" class="btn btn-outline-success btn-sm btn-rounded"> EXPORT</a>
-
-                        </div>
+        <form>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <select class="form-control choices__input" id="SelectedOption">
+                            <option value="All Services">All Services</option>
+                            <option selected value="Active Services">Active Services</option>
+                            <option value="Non Acitve Services">Non Active Services</option>
+                        </select>
                     </div>
                 </div>
+                <div class="col-md-9">
+                    <div class="input-group input-group-dynamic">
+                        <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                    </div>
+                    <div class="form-group">
+
+                        @Html.ValidationSummary("", new { @class = "text-danger" })
+
+                        <button class="btn btn-outline-primary btn-sm btn-rounded" type="submit"><i class="fas fa-search mr-1"></i> Search</button>
+                        <a class="btn btn-outline-secondary btn-sm btn-rounded" href="@Url.Action("Index", "Service")"><i class="fas fa-redo-alt mr-1"></i> Reset</a>
+                        <a href="@Url.Action("Action", "Service")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+                        <a href="@Url.Action("Export", "Service")" class="btn btn-outline-success btn-sm btn-rounded"> EXPORT</a>
+
+                    </div>
+                </div>
+            </div>
 
 
-            </form>
-        </div>
+        </form>
+
+
+        @{
+            Html.RenderPartial("_Listing", Model);
+        }
     </div>
 
-    <div class="row">
-        <div class="col col-lg-12">
-            @{
-                Html.RenderPartial("_Listing", Model);
-            }
-        </div>
-    </div>
 
 </div>
 <div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">

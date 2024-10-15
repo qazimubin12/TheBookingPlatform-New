@@ -26,7 +26,7 @@
         </div>
         <div class="modal-footer">
             <button id="ActionBtn" type="button" class="btn btn-primary" ><i class="fas fa-save mr-1"></i> SAVE</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
         </div>
     </div>
 }
@@ -89,7 +89,7 @@
 			if(response.success)
             {
                 alert("File Saved");
-                $(".btn-secondary[data-dismiss='modal']").click();
+                $(".btn-secondary[data-bs-dismiss='modal']").click();
 
 
 			}

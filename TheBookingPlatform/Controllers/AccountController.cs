@@ -204,6 +204,24 @@ namespace TheBookingPlatform.Controllers
                                 }
                             }
                         }
+                        else
+                        {
+                            var claims = await UserManager.GetClaimsAsync(user.Id);
+                            if (!claims.Any(c => c.Type == "InTrial" && c.Value != ""))
+                            {
+                                if (user.IsInTrialPeriod)
+                                {
+                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
+
+                                }
+                                else
+                                {
+                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
+
+                                }
+                            }
+                            claims = await UserManager.GetClaimsAsync(user.Id);
+                        }
                         Session["ID"] = user.Id;
                         var log = new History();
                         log.Business = user.Company;
@@ -322,6 +340,24 @@ namespace TheBookingPlatform.Controllers
                             }
                             claims = await UserManager.GetClaimsAsync(user.Id);
 
+                        }
+                        else
+                        {
+                            var claims = await UserManager.GetClaimsAsync(user.Id);
+                            if (!claims.Any(c => c.Type == "InTrial" && c.Value != ""))
+                            {
+                                if (user.IsInTrialPeriod)
+                                {
+                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
+
+                                }
+                                else
+                                {
+                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
+
+                                }
+                            }
+                            claims = await UserManager.GetClaimsAsync(user.Id);
                         }
                         Session["ID"] = user.Id;
                         var log = new History();

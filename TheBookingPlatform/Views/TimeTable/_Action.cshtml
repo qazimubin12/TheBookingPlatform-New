@@ -128,7 +128,7 @@
                                             <td class="text-center">
                                                 <div class="form-group" style="display:flex !important;justify-content:center;" id="@(day)TypeDiv">
                                                     <label></label>
-                                                    <select class="form-control" name="@(day)Type">
+                                                    <select class="form-control choices__input" name="@(day)Type">
 
                                                         <option value="Weekly">Weekly</option>
                                                         <option value="Bi-Weekly">Bi-Weekly</option>
@@ -151,7 +151,7 @@
                                             </td>
                                             <td class="text-center">
                                                 <div class="form-group" style="display:grid !important;justify-content:center;" id="@(day)RepeatEndROW">
-                                                    <select name="@(day)RepeatEnd" id="@(day)RepeatEnd" class="form-control">
+                                                    <select name="@(day)RepeatEnd" id="@(day)RepeatEnd" class="form-control choices__input">
 
                                                         <option value="Never">Never</option>
                                                         <option value="Custom Date">Custom Date</option>
@@ -293,7 +293,7 @@
                                 <td class="text-center">
                                     <div class="form-group" style="display:flex !important;justify-content:center;" id="@(day)TypeDiv">
                                         <label></label>
-                                        <select class="form-control" name="@(day)Type">
+                                        <select class="form-control choices__input" name="@(day)Type">
                                             @if (item != null)
                                             {
                                                 <option value="Weekly" @(item.Type == "Weekly" ? "selected" : "")>Weekly</option>
@@ -338,7 +338,7 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="form-group" style="display:grid !important;justify-content:center;" id="@(day)RepeatEndROW">
-                                        <select name="@(day)RepeatEnd" id="@(day)RepeatEnd" class="form-control">
+                                        <select name="@(day)RepeatEnd" id="@(day)RepeatEnd" class="form-control choices__input">
                                             @if (item != null)
                                             {
                                                 if (item.RepeatEnd == "Never")
@@ -405,7 +405,7 @@
             {
                 <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
             }
-            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
         </div>
     </div>
 }
@@ -549,7 +549,7 @@
 			if(response.success)
             {
                 hideLoadingSpinner();
-                $(".btn-secondary[data-dismiss='modal']").click();
+                $(".btn-secondary[data-bs-dismiss='modal']").click();
                 window.location.href = '@Url.Action("Index","TimeTable")';
 			}
             else {

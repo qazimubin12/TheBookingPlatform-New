@@ -3,7 +3,7 @@
     ViewBag.Title = "Index";
 }
 
-<div style="padding-left:0px;padding-right:0px;" class="col-md-12">
+<div style="padding-left:0px;padding-right:0px;" >
     @if (Model.Histories != null)
     {
         <div class="card">
@@ -62,18 +62,19 @@
 </div>
 
 
-<script>
-    $(document).ready(function () {
-        $('#datatables').DataTable({
-            "pagingType": "full_numbers",
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            responsive: true,
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Search records",
-            }
+<script> 
+    $('#datatables').DataTable({
+        "pagingType": "full_numbers",
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        responsive: true,
+        language: {
+            search: "_INPUT_",
+            searchPlaceholder: "Search records",
+        }
 
-        });
+    });
+    $(document).ready(function () {
+       
 
         $(document).on('click', '.data-btn', function () {
             $.ajax({

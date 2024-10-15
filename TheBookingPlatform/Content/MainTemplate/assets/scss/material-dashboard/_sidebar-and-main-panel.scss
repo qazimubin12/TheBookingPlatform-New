@@ -38,7 +38,7 @@
 
         > .nav,
         .user .info{
-            [data-toggle="collapse"] ~ div > ul > li > a{
+            [data-bs-toggle="collapse"] ~ div > ul > li > a{
                 span{
                     display: inline-block;
                     @extend .animation-transition-general;
@@ -118,13 +118,13 @@
             }
 
             &:hover > a,
-            &.active > [data-toggle="collapse"]{
+            &.active > [data-bs-toggle="collapse"]{
                 background-color: rgba(200, 200, 200, 0.2);
                 color: $black-color;
                 box-shadow: none;
             }
 
-            &.active > [data-toggle="collapse"]{
+            &.active > [data-bs-toggle="collapse"]{
                 i{
                     color: #a9afbb;
                 }
@@ -373,7 +373,7 @@
 
         .nav{
             li:hover:not(.active) > a,
-            li.active > [data-toggle="collapse"]{
+            li.active > [data-bs-toggle="collapse"]{
                 background-color: rgba(255, 255, 255, 0.1);
             }
         }
@@ -489,8 +489,8 @@
             }
 
             .sidebar-wrapper{
-                > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
-                .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+                > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+                .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
                 .user .info > a > span,
                 > .nav li > a p{
                     @include transform-translate-x(-25px);
@@ -513,8 +513,8 @@
                 width: 260px;
 
                 > .nav li > a p,
-                > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
-                .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+                > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
+                .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal,
                 .user .info > a > span{
                     @include transform-translate-x(0px);
                     opacity: 1;

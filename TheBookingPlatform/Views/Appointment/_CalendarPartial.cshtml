@@ -132,13 +132,15 @@
 
     .employee-specialization {
         font-size: 0.6em;
+        width: auto;
         color: grey;
         float: left;
-        margin-top: -7px;
-        padding-left: 5px;
+        margin-top: 15px;
+        display:none;
+        padding-left: 0px;
         padding-top: 0px;
-        padding-right: 20px;
     }
+
 
     .custom-modal-dialog {
         width: 90%; /* Adjust the width as needed */
@@ -309,13 +311,17 @@
             transform: translate(-50%, -50%) rotate(360deg);
         }
     }
+    .modal-backdrop.show {
+        opacity: var(--bs-backdrop-opacity);
+        z-index:54;
+    }
 </style>
 
 <input type="hidden" id="IntervalFinal" />
 <div style="background-color:white; padding:10px;border-radius:10px;" id="fullCalendar"></div>
 
-<div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog custom-modal-dialog" role="document">
+<div class="modal  fade center" id="actionModal" style="z-index:56;" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl custom-modal-dialog" role="document">
     </div>
 </div>
 
@@ -408,7 +414,7 @@
 
         var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-        var calendarHeight = windowHeight-50; // Adjust the height as needed for other elements on the page
+        var calendarHeight = windowHeight-70; // Adjust the height as needed for other elements on the page
         d = today.getDate();
         var calendarWidth = windowWidth - 10; // Adjust the width as needed
         var parsedDate = new Date();
@@ -429,7 +435,7 @@
             
             initialView: 'resourceTimeGridDay',
             nowIndicator: 'true',
-            timeZone: clientTimeZoneNameToBeUsed, //NEED TO COMMENT THIS
+            //timeZone: clientTimeZoneNameToBeUsed, //NEED TO COMMENT THIS
             scrollTime: '09:00',
             dayMinWidth: 150,
             stickyFooterScrollbar: true,

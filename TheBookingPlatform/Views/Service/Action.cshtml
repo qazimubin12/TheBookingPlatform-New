@@ -4,6 +4,12 @@
 }
 
 <style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
     .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
         padding: 10px 8px;
         vertical-align: middle;
@@ -22,60 +28,62 @@
         color: black;
     }
 </style>
-<form id="actionForm">
+<form id="actionForm" class="row">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
+        <div class="card mb-2">
+            <div class="card-body">
                 @if (Model.ID != 0)
                 {
-                    <h4 class="card-title">
+                    <h2 class="card-title">
                         Edit Service
-                    </h4>
+                    </h2>
                 }
                 else
                 {
-                    <h4 class="card-title">
+                    <h2 class="card-title">
                         Create Service
-                    </h4>
+                    </h2>
                 }
-            </div>
-
-
-            <div class="card-content">
                 <div style="display:flex;align-items:end;" class="row">
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
-                                Service Name
-                            </label>
-                            <input type="hidden" name="ID" value="@Model.ID" id="ID" /> 
-                            <input oninput="ClearBorder()" type="text" id="Name" value="@Model.Name" class="form-control" name="Name" />
+                        <div class="input-group input-group-dynamic">
+
+                            <div class="form-group">
+                                <label>
+                                    Service Name
+                                </label>
+                                <input type="hidden" name="ID" value="@Model.ID" id="ID" />
+                                <input oninput="ClearBorder()" type="text" id="Name" value="@Model.Name" class="form-control" name="Name" />
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-5">
                         <div id="CategoryPicker" style="margin-top:2px;" class="form-group">
-                            <label>
-                                Category
-                            </label>
-                            <select onchange="ClearBorder()" id="Category" class="selectpicker" name="Category" data-style="select-with-transition" title="Choose Category" data-size="100">
-                                @foreach (var item in Model.ServiceCategories)
-                                {
-                                    if (item.Name == Model.Category)
-                                    {
-                                        <option data-id="@item.ID" selected value="@item.Name">@item.Name</option>
+                            <div class="input-group input-group-dynamic">
 
-                                    }
-                                    else
+                                <label>
+                                    Category
+                                </label>
+                                <select onchange="ClearBorder()" id="Category" class="choices__input" name="Category" data-style="select-with-transition" title="Choose Category" data-size="100">
+                                    @foreach (var item in Model.ServiceCategories)
                                     {
-                                        <option data-id="@item.ID" value="@item.Name">@item.Name</option>
-                                    }
-                                }
-                            </select>
+                                        if (item.Name == Model.Category)
+                                        {
+                                            <option data-id="@item.ID" selected value="@item.Name">@item.Name</option>
 
+                                        }
+                                        else
+                                        {
+                                            <option data-id="@item.ID" value="@item.Name">@item.Name</option>
+                                        }
+                                    }
+                                </select>
+
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <button data-href="@Url.Action("ActionCategory", "Service")" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal">ADD MORE +</button>
+                        <button data-href="@Url.Action("ActionCategory", "Service")" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">ADD MORE +</button>
                     </div>
                 </div>
 
@@ -83,65 +91,74 @@
 
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
-                                Price
-                            </label>
-                            <input type="text" value="@Model.Price" class="form-control" name="Price" />
+                        <div class="input-group input-group-dynamic">
+
+                            <div class="form-group">
+                                <label>
+                                    Price
+                                </label>
+                                <input type="text" value="@Model.Price" class="form-control" name="Price" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
-                        <div style="margin-top:2px;" class="form-group">
-                            <label>
-                                VAT
-                            </label>
-                            <select id="Vat" class="selectpicker" name="Vat" data-style="select-with-transition" title="Choose Vat" data-size="100">
-                                @foreach (var item in Model.Vats)
-                                {
-                                    if (item.Name.Trim().ToLower() == "no vat")
-                                    {
-                                        <option selected value="@item.Name">@item.Name</option>
-                                    }
-                                    else
-                                    {
-                                        if (item.Name == Model.VAT)
-                                        {
-                                            <option selected value="@item.Name">@item.Name (@item.Percentage %)</option>
+                        <div class="input-group input-group-dynamic">
 
+                            <div style="margin-top:2px;" class="form-group">
+                                <label>
+                                    VAT
+                                </label>
+                                <select id="Vat" class="choices__input" name="Vat" data-style="select-with-transition" title="Choose Vat" data-size="100">
+                                    @foreach (var item in Model.Vats)
+                                    {
+                                        if (item.Name.Trim().ToLower() == "no vat")
+                                        {
+                                            <option selected value="@item.Name">@item.Name</option>
                                         }
                                         else
                                         {
-                                            <option value="@item.Name">@item.Name (@item.Percentage %)</option>
+                                            if (item.Name == Model.VAT)
+                                            {
+                                                <option selected value="@item.Name">@item.Name (@item.Percentage %)</option>
 
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Name">@item.Name (@item.Percentage %)</option>
+
+                                            }
                                         }
                                     }
-                                }
-                            </select>
+                                </select>
 
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label>
-                                Buffer Time
-                            </label>
-                            <input type="text" class="form-control time-input" value="@Model.BufferTime" id="BufferTime" name="BufferTime" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Buffer Time
+                                </label>
+                                <input type="text" class="form-control time-input" value="@Model.BufferTime" id="BufferTime" name="BufferTime" />
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="checkbox form-horizontal-checkbox">
+                        <div class="form-check" style=" padding-left: 0em;">
                             <label>
                                 @if (Model.DoesRequiredProcessing == true)
                                 {
-                                    <input type="checkbox" checked name="DoesRequiredProcessingCB" id="DoesRequiredProcessingCB">
+                                    <input type="checkbox" class="form-check-input" checked name="DoesRequiredProcessingCB" id="DoesRequiredProcessingCB">
                                 }
                                 else
                                 {
-                                    <input type="checkbox" name="DoesRequiredProcessingCB" id="DoesRequiredProcessingCB">
+                                    <input type="checkbox" class="form-check-input" name="DoesRequiredProcessingCB" id="DoesRequiredProcessingCB">
 
                                 }
                                 This service requires processing time
@@ -153,65 +170,82 @@
 
                 <div id="NotRequiredProcessingRow">
                     <div class="form-group">
-                        <label>
-                            Duration
-                        </label>
-                        <input type="text" class="form-control time-input" id="Duration" name="Duration" value="@Model.Duration" />
-                    </div>
-                </div>
-            </div>
-            <div style="display:none;" id="RequiredProcessingRow">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>
-                            Setup
-                        </label>
-                        <input type="text" value="@Model.Setup" id="Setup" class="form-control time-input" name="Setup" />
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>
-                            Processing
-                        </label>
-                        <input type="text" value="@Model.Processing" id="Processing" class="form-control time-input" name="Processing" />
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label>
-                            Finish
-                        </label>
-                        <input type="text" class="form-control time-input" id="Finish" value="@Model.Finish" name="Finish" />
-                    </div>
-                </div>
+                        <div class="input-group input-group-dynamic">
 
+                            <label>
+                                Duration
+                            </label>
+                            <input type="text" class="form-control time-input" id="Duration" name="Duration" value="@Model.Duration" />
+                        </div>
+                    </div>
+                </div>
+                <div style="display:none;" id="RequiredProcessingRow">
+                    <div class="col-md-4">
+                        <div class="input-group input-group-dynamic">
+
+                            <div class="form-group">
+                                <label>
+                                    Setup
+                                </label>
+                                <input type="text" value="@Model.Setup" id="Setup" class="form-control time-input" name="Setup" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group input-group-dynamic">
+
+                            <div class="form-group">
+                                <label>
+                                    Processing
+                                </label>
+                                <input type="text" value="@Model.Processing" id="Processing" class="form-control time-input" name="Processing" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group input-group-dynamic">
+
+                            <div class="form-group">
+                                <label>
+                                    Finish
+                                </label>
+                                <input type="text" class="form-control time-input" id="Finish" value="@Model.Finish" name="Finish" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+
+
+
+
+
+
+
+
         </div>
-
-
+   
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
                 <h4 class="card-title">Resources Details</h4>
-            </div>
-            <div class="card-content">
+  
 
                 <h4 class="card-header-text">Employees</h4>
-                <button data-href="@Url.Action("ActionEmployee", "Service")" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal">ADD MORE +</button>
-                <table id="EmployeeTable" class="table table-striped">
+                <button data-href="@Url.Action("ActionEmployee", "Service")" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">ADD MORE +</button>
+                <table id="EmployeeTable" class="table">
                     <thead>
                         <tr>
-                            <th style="width:0px;">
-                                <div class="checkbox form-horizontal-checkbox">
+                            <td style="width:0px;">
+                                <div class="form-check">
                                     <label>
-                                        <input type="checkbox" id="selectAllEmployee">
+                                        <input class="form-check-input" type="checkbox" id="selectAllEmployee">
                                     </label>
                                 </div>
-                            </th>
-                            <th style=" display: flex; margin-top: 10px; ">
+                            </td>
+                            <th >
                                 <label for="selectAllEmployee">All Employees</label>
                                 <i style="cursor:pointer;" id="ArrowKeyEmployee" class="material-icons">keyboard_arrow_down</i>
-
                             </th>
                         </tr>
                     </thead>
@@ -222,16 +256,16 @@
 
                             <tr>
                                 <td>
-                                    <div class="checkbox form-horizontal-checkbox">
+                                    <div class="form-check">
                                         <label>
                                             @if (!string.IsNullOrWhiteSpace(Model.ServiceEmployee) && Model.ServiceEmployee.Split(',').Contains(item.ID.ToString()))
                                             {
-                                                <input type="checkbox" data-id="@item.ID" checked value="@item.Name" class="employee-checkbox" id="Emp_@item.ID">
+                                                <input type="checkbox" data-id="@item.ID" checked value="@item.Name" class="employee-checkbox form-check-input" id="Emp_@item.ID">
                                             }
 
                                             else
                                             {
-                                                <input type="checkbox" data-id="@item.ID" value="@item.Name" class="employee-checkbox" id="Emp_@item.ID">
+                                                <input type="checkbox" data-id="@item.ID" value="@item.Name" class="employee-checkbox form-check-input" id="Emp_@item.ID">
 
                                             }
                                         </label>
@@ -246,45 +280,41 @@
 
                     </tbody>
                 </table>
-               
-                    <input hidden type="text" id="employeeNames" name="Employee" placeholder="Selected employees...">
-               
+
+                <input hidden type="text" id="employeeNames" name="Employee" placeholder="Selected employees...">
+
 
             </div>
         </div>
-
-
-
-
-
+    
     </div>
-
+    
     <div class="col-md-4">
         <div style="display:flex;">
 
-            <h4 style="margin-right:10px;" class="card-title"><button style=" padding: 5px 30px;" type="button" class="btn btn-sm btn-block btn-round btn-primary" id="ShowTools">Needs Tools?</button></h4>
-            <h4 class="card-title"><button type="button" style=" padding: 5px 30px;" class="btn btn-sm btn-round btn-block btn-primary" id="ShowRooms">Needs Room?</button></h4>
+            <h4 style="margin-right:10px;" class="card-title mb-2"><button style=" padding: 5px 30px;" type="button" class="btn btn-sm btn-block btn-round btn-primary" id="ShowTools">Needs Tools?</button></h4>
+            <h4 class="card-title mb-2"><button type="button" style=" padding: 5px 30px;" class="btn btn-sm btn-round btn-block btn-primary" id="ShowRooms">Needs Room?</button></h4>
 
         </div>
-        <h4 class="card-title"><button type="button" style="margin-top:-20px;" class="btn btn-sm btn-block btn-round btn-primary" id="ShowDescription">Needs Description?</button></h4>
+        <h4 class="card-title mb-2"><button type="button" style="margin-top:-20px;" class="btn btn-sm btn-block btn-round btn-primary" id="ShowDescription">Needs Description?</button></h4>
 
 
 
 
 
-        <div @if (Model.Tool == "" || Model.Tool == null) { <text> style="display:none;" </text> }id="ToolsCard" class="card">
-            <div class="card-content">
+        <div @if (Model.Tool == "" || Model.Tool == null) { <text> style="display:none;" </text> } id="ToolsCard" class="card mb-2">
+            <div class="card-body">
 
-                <h4 class="card-header-text">Tools</h4>
+                <h4 class="card-title">Tools</h4>
                 <i style="cursor:pointer;float:right" id="CloseToolsCard" onclick="ToggleToolsCard()" class="material-icons">close</i>
-                <button data-href="@Url.Action("ActionResource", "Service", new {Type = "Tool"})" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal">ADD MORE +</button>
+                <button data-href="@Url.Action("ActionResource", "Service", new {Type = "Tool"})" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">ADD MORE +</button>
                 <table id="ToolsTable" class="table table-striped">
                     <thead>
                         <tr>
                             <th style="width:0px;">
-                                <div class="checkbox form-horizontal-checkbox">
+                                <div class="form-check">
                                     <label>
-                                        <input type="checkbox" id="selectAllTool">
+                                        <input type="checkbox" class="form-check-input" id="selectAllTool">
                                     </label>
                                 </div>
                             </th>
@@ -330,19 +360,19 @@
 
 
 
-        <div @if (Model.Room == "" || Model.Room == null) { <text> style="display:none;" </text> } id="RoomsCard" class="card">
-            <div class="card-content">
+        <div @if (Model.Room == "" || Model.Room == null) { <text> style="display:none;" </text> } id="RoomsCard" class="card mb-2">
+            <div class="card-body">
 
-                <h4 class="card-header-text">Rooms</h4>
+                <h4 class="card-title">Rooms</h4>
                 <i style="cursor:pointer;float:right" id="CloseRoomsCard" onclick="ToggleRoomsCard()" class="material-icons">close</i>
-                <button data-href="@Url.Action("ActionResource", "Service", new {Type = "Room"})" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-toggle="modal" data-target="#actionModal">ADD MORE +</button>
-                <table id="RoomsTable" class="table table-striped">
+                <button data-href="@Url.Action("ActionResource", "Service", new {Type = "Room"})" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">ADD MORE +</button>
+                <table id="RoomsTable" class="table">
                     <thead>
                         <tr>
                             <th style="width:0px;">
-                                <div class="checkbox form-horizontal-checkbox">
+                                <div class="form-check">
                                     <label>
-                                        <input type="checkbox" id="selectAllRoom">
+                                        <input type="checkbox" class="form-check-input" id="selectAllRoom">
                                     </label>
                                 </div>
                             </th>
@@ -353,21 +383,21 @@
                             </th>
                         </tr>
                     </thead>
-                    
+
                     <tbody @if (Model.Room == "" || Model.Room == null) { <text> style="display:none;" </text> }>
                         @foreach (var item in Model.Rooms)
                         {
                             <tr>
                                 <td>
-                                    <div class="checkbox form-horizontal-checkbox">
+                                    <div class="form-check">
                                         <label>
                                             @if (!string.IsNullOrWhiteSpace(Model.Room) && Model.Rooms.Any(x => Model.Room.Split(',').Any(e => e.ToLower().Trim() == x.Name.ToLower().Trim())))
                                             {
-                                                <input type="checkbox" checked value="@item.Name" class="room-checkbox" id="Room_@item.ID">
+                                                <input type="checkbox" checked value="@item.Name" class="room-checkbox form-check-input" id="Room_@item.ID">
                                             }
                                             else
                                             {
-                                                <input type="checkbox" value="@item.Name" class="room-checkbox" id="Room_@item.ID">
+                                                <input type="checkbox" value="@item.Name" class="room-checkbox form-check-input" id="Room_@item.ID">
 
                                             }
                                         </label>
@@ -386,37 +416,37 @@
 
             </div>
         </div>
-        <div @if (Model.Notes == "" || Model.Notes == null) { <text> style="display:none;" </text> }id="DescriptionCard" class="card">
-            <div class="card-content">
+        <div @if (Model.Notes == "" || Model.Notes == null) { <text> style="display:none;" </text> } id="DescriptionCard" class="card mb-2">
+            <div class="card-body">
                 <i style="cursor:pointer;float:right" id="CloseNotes" onclick="ToggleDescriptionCard()" class="material-icons">close</i>
-                <h4 class="card-header-text">Notes</h4>
-                <input type="text" class="form-control" value="@Model.Notes" name="Notes" id="Notes" />
+                <h4 class="card-title">Notes</h4>
+                <div class="input-group input-group-dynamic">
+                    <input type="text" class="form-control" value="@Model.Notes" name="Notes" id="Notes" />
+                </div>
             </div>
 
         </div>
 
         <div class="card">
-            <div class="card-content">
-                <div class="col-md-12">
-                    <div class="checkbox form-horizontal-checkbox">
-                        <label>
-                            @if (Model.CanBookOnline == true)
-                            {
+            <div class="card-body">
+                <div class="form-check">
+                    <label>
+                        @if (Model.CanBookOnline == true)
+                        {
 
 
-                                <input type="checkbox" checked onchange="SetCanBookOnlineValue()" name="CanBookOnlineCB" id="CanBookOnlineCB">
-                            }
-                            else
-                            {
-                                <input type="checkbox" onchange="SetCanBookOnlineValue()" name="CanBookOnlineCB" id="CanBookOnlineCB">
+                            <input type="checkbox" checked onchange="SetCanBookOnlineValue()" name="CanBookOnlineCB" class="form-check-input" id="CanBookOnlineCB">
+                        }
+                        else
+                        {
+                            <input type="checkbox" onchange="SetCanBookOnlineValue()" name="CanBookOnlineCB" class="form-check-input" id="CanBookOnlineCB">
 
-                            }
-                            This service can be booked online
-                        </label>
+                        }
+                        This service can be booked online
+                    </label>
 
-                        <input type="hidden" name="CanBookOnline" id="CanBookOnline" />
+                    <input type="hidden" name="CanBookOnline" id="CanBookOnline" />
 
-                    </div>
 
                 </div>
 

@@ -7,33 +7,27 @@
 </style>
 <div class="card">
     <div class="card-body">
-        <div class="card-header">
-            <h4 class="card-title">Vats </h4>
-        </div>
+        <h2 class="card-title">Vats </h2>
 
-        <div class="card-content">
-            <form>
+        <form>
 
-                <div class="form-group">
+            <div class="form-group">
 
-                    <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
-                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                @Html.ValidationSummary("", new { @class = "text-danger" })
 
-                    <button class="btn btn-outline-primary btn-sm btn-rounded" type="submit"><i class="fas fa-search mr-1"></i> Search</button>
-                    <a class="btn btn-outline-secondary btn-sm btn-rounded" href="@Url.Action("Index", "Vat")"><i class="fas fa-redo-alt mr-1"></i> Reset</a>
-                    <button data-href="@Url.Action("Action", "Vat")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-toggle="modal" data-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
+                <button class="btn btn-outline-primary btn-sm btn-rounded" type="submit"><i class="fas fa-search mr-1"></i> Search</button>
+                <a class="btn btn-outline-secondary btn-sm btn-rounded" href="@Url.Action("Index", "Vat")"><i class="fas fa-redo-alt mr-1"></i> Reset</a>
+                <button data-href="@Url.Action("Action", "Vat")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
 
-                </div>
-            </form>
-        </div>
-    </div>
+            </div>
+        </form>
 
-    <div class="row">
-        <div class="col col-lg-12">
-            @{
-                Html.RenderPartial("_Listing", Model);
-            }
-        </div>
+
+        @{
+            Html.RenderPartial("_Listing", Model);
+        }
+
     </div>
 
 </div>

@@ -74,8 +74,8 @@
                             .attr('data-href', '@Url.Action("Delete", "OpeningHour")' + '?ID=' + item.ID)
                             .attr('type', 'button')
                             .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
-                            .attr('data-toggle', 'modal')
-                            .attr('data-target', '#actionModal')
+                            .attr('data-bs-toggle', 'modal')
+                            .attr('data-bs-target', '#actionModal')
                             .html('<i class="mdi mdi-delete"></i> DELETE');
 
                         actionColumn.append(editLink);

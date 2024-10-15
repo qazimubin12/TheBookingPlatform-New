@@ -6,31 +6,23 @@
 </style>
 <div class="card">
     <div class="card-body">
-        <div class="card-header">
-            <h4 class="card-title">Customers </h4>
-        </div>
+        <h2 class="card-title">Customers </h2>
 
-        <div class="card-content">
-            <form>
-                <div class="row" style="display:flex;margin:0px;">
-                    <a href="@Url.Action("Index","Customer")" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</a>
-                    <a style="padding:10px;" href="@Url.Action("Action", "Customer")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
-                    <button data-href="@Url.Action("Import", "Customer")" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>IMPORT</button>
-                    <button type="button" id="exportBtn" class="btn btn-outline-success btn-sm btn-rounded"> EXPORT</button>
-                    <input style="margin-left:50px;" type="text" class="form-control" readonly value="Customers: @Model.Customers.Count()" />
-                </div>
-            </form>
-        </div>
-    </div>
+        <form>
+                <a href="@Url.Action("Index","Customer")" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</a>
+                <a style="padding:10px;" href="@Url.Action("Action", "Customer")" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+                <button data-href="@Url.Action("Import", "Customer")" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>IMPORT</button>
+                <button type="button" id="exportBtn" class="btn btn-outline-success btn-sm btn-rounded"> EXPORT</button>
+                <input style="margin-left:50px;" type="text" class="form-control" readonly value="Customers: @Model.Customers.Count()" />
+        </form>
 
-    <div class="row">
-        <div class="col col-lg-12">
+        <div class="row">
+
             <div class="col-lg-12 grid-margin stretch-card">
                 @if (Model.Customers != null)
                 {
-                    <div class="card">
 
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="height:600vh;" >
                             <table id="CustomersTable" class="table table-striped">
                                 <thead>
                                     <tr>
@@ -64,7 +56,7 @@
                                             @if (item.IsBlocked)
                                             {
                                                 <td class="text-center">
-                                                    <select class="form-control" onchange="ChangeBlockStatus('@item.ID')">
+                                                    <select class="form-control choices__input" onchange="ChangeBlockStatus('@item.ID')">
                                                         <option value="True" selected>Yes</option>
                                                         <option value="False">No</option>
                                                     </select>
@@ -74,7 +66,7 @@
                                             else
                                             {
                                                 <td class="text-center">
-                                                    <select class="form-control" onchange="ChangeBlockStatus('@item.ID')">
+                                                    <select class="form-control choices__input" onchange="ChangeBlockStatus('@item.ID')">
                                                         <option value="True">Yes</option>
                                                         <option selected value="False">No</option>
                                                     </select>
@@ -85,7 +77,7 @@
                                             <td class="text-center">
 
                                                 <a href="@Url.Action("Action", "Customer", new { ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
-                                                <button data-href="@Url.Action("Delete", "Customer", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                <button data-href="@Url.Action("Delete", "Customer", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
 
                                             </td>
                                         </tr>
@@ -93,7 +85,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
                 }
                 else
                 {

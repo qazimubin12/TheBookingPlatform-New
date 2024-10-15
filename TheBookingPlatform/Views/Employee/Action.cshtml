@@ -2,11 +2,18 @@
 @model TheBookingPlatform.ViewModels.EmployeeActionViewModel
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
-
+<style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+</style>
 @if (Model != null)
 {
     <div class="card">
-        <div class="card-content">
+        <div class="card-body">
             <h2 class="card-title">
                 @if (Model.ID != 0)
                 {
@@ -23,14 +30,16 @@
                     <div class="col-md-6">
                         <input type="hidden" name="ID" value="@Model.ID" />
                         <div class="form-group">
-                            <label>Employee Name</label>
-                            <input class="form-control" name="Name" placeholder="Enter Name." value="@Model.Name">
+                            <div class="input-group input-group-dynamic">
+                                <label>Employee Name</label>
+                                <input class="form-control" name="Name" placeholder="Enter Name." value="@Model.Name">
+                            </div>
                         </div>
 
 
                         <div class="form-group">
                             <label>Gender</label>
-                            <select id="Gender" class="form-control" name="Gender">
+                            <select id="Gender" class="form-control choices__input" name="Gender">
                                 @if (Model.Gender == "Male")
                                 {
                                     <option value="Male" selected>Male</option>
@@ -65,54 +74,59 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                Specialization
-                            </label>
-                            <input type="text" class="form-control" name="Specialization" value="@Model.Specialization" placeholder="Enter Specialization" />
-                        </div>
+                            <div class="input-group input-group-dynamic">
+                                <label>
+                                    Specialization
+                                </label>
+                                <input type="text" class="form-control" name="Specialization" value="@Model.Specialization" placeholder="Enter Specialization" />
+                            </div>
+                            </div>
 
-                        <div class="form-group">
-                            <label>
-                                Link Employee to User
-                            </label>
-                            <select class="form-control" name="LinkedEmployee" id="LinkedEmployee">
-                                <option value="">----Select-----</option>
-                                @foreach (var item in Model.Users)
-                                {
-                                    if (Model.LinkedEmployee == item.Id)
+                            <div class="form-group">
+                                <label>
+                                    Link Employee to User
+                                </label>
+                                <select class="form-control choices__input" name="LinkedEmployee" id="LinkedEmployee">
+                                    <option value="">----Select-----</option>
+                                    @foreach (var item in Model.Users)
                                     {
-                                        <option selected value="@item.Id">@item.Name</option>
+                                        if (Model.LinkedEmployee == item.Id)
+                                        {
+                                            <option selected value="@item.Id">@item.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+                                    <label>Description</label>
+                                    <textarea name="Description" rows="3" class="col-md-12">@Model.Description</textarea>
+
+                                </div>
+                            </div>
+                                <div style="margin-top:50px;cursor:pointer;" class="form-group">
+                                    <label>Choose Image (Click on Image to Change)</label>
+                                    @if (Model.Photo == "" || Model.Photo == null)
+                                    {
+                                        <img id="MainThumb" style="width:150px;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
                                     }
                                     else
                                     {
-                                        <option value="@item.Id">@item.Name</option>
+                                        <img id="MainThumb" style="width:150px;" src="@Model.Photo" alt="...">
 
                                     }
-                                }
-                            </select>
-                        </div>
 
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea name="Description" rows="3" class="col-md-12">@Model.Description</textarea>
-                        </div>
-                        <div style="margin-top:50px;cursor:pointer;" class="form-group">
-                            <label>Choose Image (Click on Image to Change)</label>
-                            @if (Model.Photo == "" || Model.Photo == null)
-                            {
-                                <img id="MainThumb" style="width:150px;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
-                            }
-                            else
-                            {
-                                <img id="MainThumb" style="width:150px;" src="@Model.Photo" alt="...">
+                                    <input value="@Model.Photo" type="hidden" name="Photo" id="Photo" />
+                                    <input type="file" id="PhotoUpload" accept="image/*" />
 
-                            }
-
-                            <input value="@Model.Photo" type="hidden" name="Photo" id="Photo" />
-                            <input type="file" id="PhotoUpload" accept="image/*" />
-
-                        </div>
-                    </div>
+                                </div>
+                            </div>
                     @if (Model.ID == 0)
                     {
                         if (Model.DisableRegister)
@@ -153,7 +167,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="cropModalLabel">Crop Image</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -163,7 +177,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" id="cropButton" class="btn btn-primary">Crop</button>
             </div>
         </div>

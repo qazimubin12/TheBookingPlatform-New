@@ -22,52 +22,62 @@
         padding-left: 0;
         color: black;
     }
+
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
 </style>
 <form id="actionForm">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
                 @if (Model.ID != 0)
                 {
-                    <h4 class="card-title">
-                        Edit LoyaltyCard
-                    </h4>
+                    <h2 class="card-title">
+                        Edit Loyalty Card
+                    </h2>
                 }
                 else
                 {
                     <h4 class="card-title">
-                        Create LoyaltyCard
+                        Create Loyalty Card
                     </h4>
                 }
-            </div>
 
 
-            <div class="card-content">
                 <div style="display:flex;align-items:end;" class="row">
                     <div class="col-md-6">
                         <input type="hidden" id="ID" value="@Model.ID" />
                         <div class="form-group">
-                            <label>
-                                Card Name
-                            </label>
-                            <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                            <div class="input-group input-group-dynamic">
+                                <label>
+                                    Card Name
+                                </label>
+                                <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                               Days in Expiry
-                            </label>
-                            @if (Model.ID == 0)
-                            {
-                                <input type="number" value="30" class="form-control" name="Days" />
-                            }
-                            else
-                            {
-                                <input type="number" value="@Model.Days" class="form-control" name="Days" />
+                            <div class="input-group input-group-dynamic">
 
-                            }
+                                <label>
+                                    Days in Expiry
+                                </label>
+                                @if (Model.ID == 0)
+                                {
+                                    <input type="number" value="30" class="form-control" name="Days" />
+                                }
+                                else
+                                {
+                                    <input type="number" value="@Model.Days" class="form-control" name="Days" />
+
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,48 +85,53 @@
                 <div class="row">
 
                     <div class="col-md-12">
-                        <div class="checkbox form-horizontal-checkbox">
-                            <label>
-                                @if (Model.IsActive == true)
-                                {
-                                    <input type="checkbox" checked name="IsActiveCB" id="IsActiveCB">
-                                }
-                                else
-                                {
-                                    <input type="checkbox" name="IsActiveCB" id="IsActiveCB">
+                        <div class="input-group input-group-dynamic">
 
-                                }
-                                Is Active?
-                            </label>
-                            <input type="hidden" name="IsActive" id="IsActive" />
+                            <div class="form-check">
+                                <label>
+                                    @if (Model.IsActive == true)
+                                    {
+                                        <input type="checkbox" class="form-check-input" checked name="IsActiveCB" id="IsActiveCB">
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" class="form-check-input" name="IsActiveCB" id="IsActiveCB">
+
+                                    }
+                                    Is Active?
+                                </label>
+                                <input type="hidden" name="IsActive" id="IsActive" />
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="card">
-                        <div class="card-content">
+                        <div class="card-body">
                             <h4 class="card-title">Add Promotion</h4>
                             <div id="CheckBoxList" class="col-md-12">
-                                <input type="text" id="serviceSearch" placeholder="Search services" class="form-control">
+                                <div class="input-group input-group-dynamic">
+
+                                    <input type="text" id="serviceSearch" placeholder="Search services" class="form-control">
+                                </div>
                                 <div class="form-group col-md-6">
                                     <label>Add Service</label><br />
-                                    <div class="checkbox form-horizontal-checkbox" id="parentCheckbox">
+                                    <div class="form-check" id="parentCheckbox">
                                         <label>
-                                            <input class="serviceCB" type="checkbox" />
+                                            <input class="serviceCB form-check-input" type="checkbox" />
                                             Select All
                                         </label>
                                     </div>
-                                    <hr />
                                     @foreach (var item in Model.Services)
                                     {
                                         if (Model.ID != 0)
                                         {
                                             if (!Model.AlreadyIncludedServices.Contains(item.ID))
                                             {
-                                                <div class="checkbox form-horizontal-checkbox service-item">
+                                                <div class="form-check service-item">
                                                     <label>
-                                                        <input class="serviceCB" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
+                                                        <input class="serviceCB form-check-input" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
                                                         @item.Name
                                                     </label>
                                                 </div>
@@ -124,9 +139,9 @@
                                         }
                                         else
                                         {
-                                            <div class="checkbox form-horizontal-checkbox service-item">
+                                            <div class="form-check service-item">
                                                 <label>
-                                                    <input class="serviceCB" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
+                                                    <input class="serviceCB form-check-input" type="checkbox" data-id="@item.ID" data-name="@item.Name" value="@item.ID" />
                                                     @item.Name
                                                 </label>
                                             </div>
@@ -135,16 +150,20 @@
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    <label>Add Percentage</label>
-                                    <input type="text" class="form-control" id="Percentage" autocomplete="off" list="PercentageList" />
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>Add Percentage</label>
+                                        <input type="text" class="form-control" id="Percentage" autocomplete="off" list="PercentageList" />
+                                    </div>
                                 </div>
                             </div>
-                            <button class="btn btn-sm btn-info" type="button" id="AddBtn">Add Promotion</button>
+                            <button class="btn btn-sm btn-info my-4" type="button" id="AddBtn">Add Promotion</button>
                         </div>
 
                     </div>
                 </div>
-                <div class="row" id="PromotionsRow">
+                <br />
+                <div class="row my-3" id="PromotionsRow">
                     @if (Model.ID != 0)
                     {
                         foreach (var item in Model.LoyaltyCardPromotions)
@@ -152,7 +171,7 @@
                             ServiceIdAlreadyIncluded = "";
                             <div class="col-md-4">
                                 <div class="card">
-                                    <div class="card-content">
+                                    <div class="card-body">
                                         <h4 class="card-title">
                                             @item.Percentage % (Promotions)
                                         </h4>
@@ -187,18 +206,18 @@
                                 </div>
                             </div>
 
-                                                        if (FinalServiceInclude == "")
-                                                        {
-                                                            FinalServiceInclude = String.Join("|", SubMainService);
-                                                        }
-                                                        else
-                                                        {
-                                                            FinalServiceInclude = String.Join("|", FinalServiceInclude, SubMainService);
+                            if (FinalServiceInclude == "")
+                            {
+                                FinalServiceInclude = String.Join("|", SubMainService);
+                            }
+                            else
+                            {
+                                FinalServiceInclude = String.Join("|", FinalServiceInclude, SubMainService);
 
-                                                        }
-                                                    }
+                            }
+                        }
 
-                                                }
+                    }
                 </div>
                 <input name="ServiceListAlready" id="ServiceListAlready" class="ServiceListAlready form-control" readonly value="@FinalServiceInclude" type="hidden" />
 
@@ -206,23 +225,24 @@
 
 
 
+
+
+                <div class="col-md-12">
+                    @if (Model.ID == 0)
+                    {
+
+
+                        <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SAVE</button>
+                    }
+                    else
+                    {
+                        <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+
+                    }
+                    <a href="@Url.Action("Index","LoyaltyCard")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+                </div>
             </div>
 
-
-            <div class="col-md-12">
-                @if (Model.ID == 0)
-                {
-
-
-                    <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SAVE</button>
-                }
-                else
-                {
-                    <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
-
-                }
-                <a href="@Url.Action("Index","LoyaltyCard")" class="btn btn-secondary  btn-rounded">CLOSE</a>
-            </div>
         </div>
     </div>
 </form>
@@ -327,119 +347,124 @@
             });
 
 
-            // Check if a card with the same percentage exists
-            var cardExists = false;
-            var serviceInUse = false;
+            if (percentage != "" && selectedServices.length > 0) {
+                // Check if a card with the same percentage exists
+                var cardExists = false;
+                var serviceInUse = false;
 
-            $("#PromotionsRow .card").each(function () {
+                $("#PromotionsRow .card").each(function () {
 
 
-                var cardPercentage = $(this).find(".card-title").text().trim();
-                if (cardPercentage === percentage + " % (Promotions)") {
-                    cardExists = true;
-                    var cardServicesList = $(this).find(".list-group");
-                    selectedServices.forEach(function (serviceId) {
-                        if (cardServicesList.find("li[data-id='" + serviceId + "']").length) {
-                            serviceInUse = true;
-                            alert("Service is already in use");
-                            return false; // Exit the loop early, as we found a service in use
-                        } else {
-                            if (!cardServicesList.find("li[data-id='" + serviceId + "']").length) {
-                                cardServicesList.append("<li class='list-group-item' data-id='" + serviceId + "'>" + $("input[data-id='" + serviceId + "']").data("name") + "</li>");
-                                var existingServiceList = $("#ServiceListAlready").val();
-                                if (existingServiceList) {
-                                    // Split the existingServiceList by "_"
-                                    var parts = existingServiceList.split("_");
-                                    // Get the first part (existing services)
-                                    var existingServices = parts[0];
-                                    // Create an array to store the updated service IDs
-                                    var updatedServiceIds = existingServices.split(",");
+                    var cardPercentage = $(this).find(".card-title").text().trim();
+                    if (cardPercentage === percentage + " % (Promotions)") {
+                        cardExists = true;
+                        var cardServicesList = $(this).find(".list-group");
+                        selectedServices.forEach(function (serviceId) {
+                            if (cardServicesList.find("li[data-id='" + serviceId + "']").length) {
+                                serviceInUse = true;
+                                alert("Service is already in use");
+                                return false; // Exit the loop early, as we found a service in use
+                            } else {
+                                if (!cardServicesList.find("li[data-id='" + serviceId + "']").length) {
+                                    cardServicesList.append("<li class='list-group-item' data-id='" + serviceId + "'>" + $("input[data-id='" + serviceId + "']").data("name") + "</li>");
+                                    var existingServiceList = $("#ServiceListAlready").val();
+                                    if (existingServiceList) {
+                                        // Split the existingServiceList by "_"
+                                        var parts = existingServiceList.split("_");
+                                        // Get the first part (existing services)
+                                        var existingServices = parts[0];
+                                        // Create an array to store the updated service IDs
+                                        var updatedServiceIds = existingServices.split(",");
 
-                                    // Add the current serviceId to the array
-                                    updatedServiceIds.push(serviceId);
+                                        // Add the current serviceId to the array
+                                        updatedServiceIds.push(serviceId);
 
-                                    // Join the updated serviceIds with ","
-                                    var updatedServiceList = updatedServiceIds.join(",");
-                                    // Join the updated service list with "_"
-                                    $("#ServiceListAlready").val(updatedServiceList + "_" + parts[1]);
-                                }
-                                else {
-                                    $("#ServiceListAlready").val(serviceId + "_" + percentage + " %");
+                                        // Join the updated serviceIds with ","
+                                        var updatedServiceList = updatedServiceIds.join(",");
+                                        // Join the updated service list with "_"
+                                        $("#ServiceListAlready").val(updatedServiceList + "_" + parts[1]);
+                                    }
+                                    else {
+                                        $("#ServiceListAlready").val(serviceId + "_" + percentage + " %");
+                                    }
                                 }
                             }
+                        });
+
+                        // Update the ServiceListAlready input field
+
+
+                    }
+
+                });
+
+                // If no card with the same percentage exists, create a new card
+                if (!cardExists) {
+                    var newCard = "<div class='col-md-4'><div class='card'><div class='card-body'><h4 class='card-title'>" + percentage + " % (Promotions)</h4><ol class='list-group'>";
+                    var servicesToAdd = []; // To store services that are not already in use
+                    selectedServices.forEach(function (serviceId) {
+                        var $existingServiceItem = $("#PromotionsRow .list-group-item[data-id='" + serviceId + "']");
+                        if ($existingServiceItem.length === 0) {
+                            // Service is not in use in any card, add it to the new card
+                            newCard += "<li class='list-group-item' data-id='" + serviceId + "'>" + $("input[data-id='" + serviceId + "']").data("name") + "</li>";
+                            servicesToAdd.push(serviceId);
+
+
+
+                        } else {
+                            alert("Service is used already");
+                            return;
+
                         }
                     });
+                    newCard += "</ol><button type='button' class='btn btn-sm btn-danger btn-rounded delete-card'>Delete</button></div></div></div>";
+                    $("#PromotionsRow").append(newCard);
+                    if (servicesToAdd.length > 0) {
+                        // Update the ServiceListAlready input field only with the services that were added
+                        var existingServiceList = $("#ServiceListAlready").val();
 
-                    // Update the ServiceListAlready input field
+                        if (existingServiceList) {
 
+                            // Split the existingServiceList by "_"
+                            var parts = existingServiceList.split("_");
 
-                }
+                            // Get the first part (existing services)
+                            var existingServices = parts[0];
 
-            });
+                            if (parts[1].trim().replace("%", "") == percentage) {
+                                // Join the existing services with ","
+                                var updatedServiceList = existingServices + "," + servicesToAdd.join(",");
 
-            // If no card with the same percentage exists, create a new card
-            if (!cardExists) {
-                var newCard = "<div class='col-md-4'><div class='card'><div class='card-content'><h4 class='card-title'>" + percentage + " % (Promotions)</h4><ol class='list-group'>";
-                var servicesToAdd = []; // To store services that are not already in use
-                selectedServices.forEach(function (serviceId) {
-                    var $existingServiceItem = $("#PromotionsRow .list-group-item[data-id='" + serviceId + "']");
-                    if ($existingServiceItem.length === 0) {
-                        // Service is not in use in any card, add it to the new card
-                        newCard += "<li class='list-group-item' data-id='" + serviceId + "'>" + $("input[data-id='" + serviceId + "']").data("name") + "</li>";
-                        servicesToAdd.push(serviceId);
+                                // Join the updated service list with "_"
+                                $("#ServiceListAlready").val(updatedServiceList + "_" + parts[1]);
+                            } else {
 
-
-
-                    } else {
-                        alert("Service is used already");
-                        return;
-
-                    }
-                });
-                newCard += "</ol><button type='button' class='btn btn-sm btn-danger btn-rounded delete-card'>Delete</button></div></div></div>";
-                $("#PromotionsRow").append(newCard);
-                if (servicesToAdd.length > 0) {
-                    // Update the ServiceListAlready input field only with the services that were added
-                    var existingServiceList = $("#ServiceListAlready").val();
-
-                    if (existingServiceList) {
-
-                        // Split the existingServiceList by "_"
-                        var parts = existingServiceList.split("_");
-
-                        // Get the first part (existing services)
-                        var existingServices = parts[0];
-
-                        if (parts[1].trim().replace("%", "") == percentage) {
-                            // Join the existing services with ","
-                            var updatedServiceList = existingServices + "," + servicesToAdd.join(",");
-
-                            // Join the updated service list with "_"
-                            $("#ServiceListAlready").val(updatedServiceList + "_" + parts[1]);
+                                $("#ServiceListAlready").val(existingServiceList + "|" + servicesToAdd + "_" + percentage + " %");
+                            }
                         } else {
-
-                            $("#ServiceListAlready").val(existingServiceList + "|" + servicesToAdd + "_" + percentage + " %");
+                            $("#ServiceListAlready").val(servicesToAdd.join(",") + "_" + percentage + " %");
                         }
-                    } else {
-                        $("#ServiceListAlready").val(servicesToAdd.join(",") + "_" + percentage + " %");
+
                     }
 
+                    $(".delete-card").click(function () {
+                        var card = $(this).closest('.card');
+                        var percentage = card.find('.card-title').text().split(' ')[0]; // Extract the percentage from the card title
+                        card.parent().remove();
+
+                        var currentServiceList = $("#ServiceListAlready").val();
+
+                        var updatedServiceList = currentServiceList.replace(percentage + " %", "").trim();
+                        $("#ServiceListAlready").val(updatedServiceList);
+
+                    });
                 }
 
-                $(".delete-card").click(function () {
-                    var card = $(this).closest('.card');
-                    var percentage = card.find('.card-title').text().split(' ')[0]; // Extract the percentage from the card title
-                    card.parent().remove();
-
-                    var currentServiceList = $("#ServiceListAlready").val();
-                    
-                    var updatedServiceList = currentServiceList.replace(percentage + " %", "").trim();
-                    $("#ServiceListAlready").val(updatedServiceList);
-
-                });
+                uncheckAllCheckboxes();
+            } else {
+                alert("Kindly select any one of the services, and input percentage to add Promotion");
+                return;
             }
-
-            uncheckAllCheckboxes();
         });
     });
 

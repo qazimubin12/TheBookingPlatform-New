@@ -8,16 +8,24 @@
 <link rel="stylesheet" href="~/Content/build/css/demo.css" />
 <link href="~/Content/TBPContent/autocomplete/content/styles.css" rel="stylesheet" />
 <script type="text/javascript" src="~/Content/TBPContent/autocomplete/src/jquery.autocomplete.js"></script>
-
-<script src="~/Content/MainTemplate/assets/js/bootstrap-datetimepicker.js"></script>
-
 <style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
 
     .modal-content .modal-body {
         padding-top: 10px;
         padding-right: 10px;
         padding-bottom: 10px;
         padding-left: 10px;
+    }
+
+    .btn-danger {
+        width: 20px;
+        margin: 20px;
     }
 
     .autocomplete-suggestions {
@@ -142,6 +150,10 @@
         justify-content: center;
     }
 
+    .nav.nav-pills .nav-link.active {
+        animation: 0.2s ease;
+        background: darkgrey;
+    }
 
     .close-button {
         background-color: transparent;
@@ -162,25 +174,22 @@
         <div style="width: 100%;">
 
             <input type="hidden" id="SelectedOption" />
-            <div class="nav-center">
-                <ul class="nav nav-pills nav-pills-primary nav-pills-icons" role="tablist">
-
-                    <li class="active">
-                        <a href="#schedule-1" role="tab" data-toggle="tab">
-                            <i class="material-icons">event</i>
+            <div class="nav-wrapper position-relative end-0 mb-2">
+                <ul class="nav nav-pills nav-fill p-1" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#schedule-1" role="tab" aria-controls="profile" aria-selected="true">
                             Appointment
                         </a>
                     </li>
-                    <li>
-                        <a href="#description-1" role="tab" data-toggle="tab">
-                            <i class="material-icons">warning</i>
+
+                    <li class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 " data-bs-toggle="tab" href="#description-1" role="tab" aria-controls="profile" aria-selected="false">
                             Absense
                         </a>
                     </li>
-
-
                 </ul>
             </div>
+
 
             <div class="tab-content">
                 <div class="tab-pane active" id="schedule-1">
@@ -188,11 +197,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div style="margin:0px;" class="card">
-                                    <div class="card-content">
+                                    <div class="card-body">
 
-                                        <h4 class="card-title">
+                                        <h2 class="card-title">
                                             Create Appointment
-                                        </h4>
+                                        </h2>
 
                                         <input type="hidden" name="Service" id="ConcatenatedServices" />
                                         <input type="hidden" autocomplete="off" name="ServiceDuration" id="ServiceDuration" />
@@ -205,78 +214,95 @@
 
                                             <div class="row" id="ServiceRow_0">
                                                 <div class="col-md-6">
+                                                    <div class="input-group input-group-dynamic">
 
-                                                    <div class="form-group">
-                                                        <label>Select Services</label>
-                                                        <input class="form-control serviceid-input" id="ServiceID" type="hidden" name="ServiceID" />
-                                                        <input class="form-control serviceprice-input" id="ServicePrice" type="hidden" name="ServicePrice" />
-                                                        <input class="form-control autocomplete" type="text" name="ServiceNames" id="Service" />
+                                                        <div class="form-group">
+                                                            <label>Select Services</label>
+                                                            <input class="form-control serviceid-input" id="ServiceID" type="hidden" name="ServiceID" />
+                                                            <input class="form-control serviceprice-input" id="ServicePrice" type="hidden" name="ServicePrice" />
+                                                            <input class="form-control autocomplete" type="text" name="ServiceNames" id="Service" />
+                                                        </div>
+
                                                     </div>
-
                                                 </div>
-                                                <button class="btn btn-danger btn-sm" type="button" onclick="removeService(0)">X</button>
                                                 <div class="col-md-2">
 
+                                                    <div class="input-group input-group-dynamic">
 
-                                                    <div class="form-group">
-                                                        <label>Duration</label>
-                                                        <input type="text" id="Duration" autocomplete="off" name="ServiceDurationInput" class="form-control duration-input">
+                                                        <div class="form-group">
+                                                            <label>Duration</label>
+                                                            <input type="text" id="Duration" autocomplete="off" name="ServiceDurationInput" class="form-control duration-input">
+                                                        </div>
                                                     </div>
 
                                                 </div>
                                                 <div id="DiscountPanel" class="col-md-2">
 
+                                                    <div class="input-group input-group-dynamic">
 
-                                                    <div class="form-group">
-                                                        <label style="white-space:nowrap">Discount %</label>
-                                                        <input type="text" id="Duration" name="ServiceDiscountInput" value="0" class="form-control discount-input">
+                                                        <div class="form-group">
+                                                            <label style="white-space:nowrap">Discount %</label>
+                                                            <input type="text" id="Duration" name="ServiceDiscountInput" value="0" class="form-control discount-input">
+                                                        </div>
                                                     </div>
 
                                                 </div>
+                                                <button class="btn btn-danger btn-sm" type="button" onclick="removeService(0)">X</button>
+
                                             </div>
 
 
                                         </div>
-                                        <button id="AddMoreBtn" class="btn btn-primary btn-sm" type="button">Add More</button>
+                                        <button id="AddMoreBtn" class="btn btn-primary btn-sm my-2" type="button">Add More</button>
 
 
                                         <div class="row">
                                             <div id="DepositPanel" class="col-md-12">
-                                                <div class="form-group col-md-6">
-                                                    <label>Deposit Amount</label>
-                                                    <input disabled class="form-control" type="number" name="Deposit" id="Deposit" />
-                                                </div>
-                                                <div class="form-group col-md-6">
-                                                    <label>Deposit Method</label>
-                                                    <select disabled name="DepositMethod" id="DepositMethod" class="form-control">
-                                                        <option value="Pin">Pin</option>
-                                                        <option value="Cash">Cash</option>
-                                                        <option value="Card">Card</option>
-                                                        <option value="Online">Online</option>
-                                                        <option value="GiftCard">GiftCard</option>
+                                                <div class="row">
+                                                    <div class="form-group col-md-6">
+                                                        <div class="input-group input-group-dynamic">
+                                                            <label>Deposit Amount</label>
+                                                            <input disabled class="form-control" type="number" name="Deposit" id="Deposit" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label>Deposit Method</label>
+                                                        <select disabled name="DepositMethod" id="DepositMethod" class="form-control choices__input">
+                                                            <option value="Pin">Pin</option>
+                                                            <option value="Cash">Cash</option>
+                                                            <option value="Card">Card</option>
+                                                            <option value="Online">Online</option>
+                                                            <option value="GiftCard">GiftCard</option>
 
 
-                                                    </select>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12">
+                                            <div class="row">
 
                                                 <div class="form-group col-md-6">
-                                                    <label>
-                                                        Select Date
-                                                    </label>
+                                                    <div class="input-group input-group-dynamic">
 
-                                                    <input type="date" id="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
+                                                        <label>
+                                                            Select Date
+                                                        </label>
 
+                                                        <input type="date" id="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
+
+                                                    </div>
                                                 </div>
                                                 <div class="form-group col-md-6">
-                                                    <label>
-                                                        Select Time
-                                                    </label>
+                                                    <div class="input-group input-group-dynamic">
 
-                                                    <input type="text" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
+                                                        <label>
+                                                            Select Time
+                                                        </label>
+
+                                                        <input type="time" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
 
 
+                                                    </div>
                                                 </div>
 
 
@@ -287,7 +313,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label>Select Employee</label>
-                                                <select onchange="CheckIfEmployeeProvideTheService()" class="form-control" name="EmployeeID" id="EmployeeID">
+                                                <select onchange="CheckIfEmployeeProvideTheService()" class="form-control choices__input" name="EmployeeID" id="EmployeeID">
                                                     <option value="0">---Select----</option>
                                                     @foreach (var item in Model.EmployeesForAction)
                                                     {
@@ -306,11 +332,11 @@
                                         </div>
 
                                         <div class="row">
-                                           
+
                                             <div class="col-md-6">
-                                                <div class="checkbox form-horizontal-checkbox">
+                                                <div class="form-check">
                                                     <label>
-                                                        <input type="checkbox" name="IsWaitingListCB" id="IsWaitingListCB">
+                                                        <input type="checkbox" class="form-check-input" name="IsWaitingListCB" id="IsWaitingListCB">
                                                         Waiting List?
                                                     </label>
                                                     <input type="hidden" name="IsWaitingList" id="IsWaitingList" />
@@ -319,19 +345,27 @@
 
                                         </div>
 
-                                    </div>
 
-                                    
-                                    <div class="col-md-12">
-                                        <label>Note</label>
-                                        <textarea rows="3" class="form-control" id="Notes" name="Notes"></textarea>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label>Select Color</label>
 
-                                            <input class="form-control" type="color" name="Color" value="#D28D00" id="Color" />
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <div class="input-group input-group-dynamic">
 
+                                                    <label>Note</label>
+                                                    <textarea rows="3" class="form-control" id="Notes" name="Notes"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <div class="input-group input-group-dynamic">
+
+                                                    <label>Select Color</label>
+
+                                                    <input class="form-control" type="color" name="Color" value="#D28D00" id="Color" />
+
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -340,33 +374,40 @@
                             </div>
                             <div class="col-md-5">
                                 <div style="margin:0px;" class="card">
-                                    <div class="card-content">
+                                    <div class="card-body">
 
                                         <button id="createCustomerBtn" class="btn btn-primary" type="button" style="display: none;">Create New Customer</button>
                                         <div style="display:none;" id="CreateCustomerPanel">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label>
-                                                            First Name
-                                                        </label>
-                                                        <input type="text" placeholder="Enter First Name." class="form-control" id="FirstName" name="FirstName" />
+                                                    <div class="input-group input-group-dynamic">
+
+                                                        <div class="form-group">
+                                                            <label>
+                                                                First Name
+                                                            </label>
+                                                            <input type="text" placeholder="Enter First Name." class="form-control" id="FirstName" name="FirstName" />
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label>
-                                                            Last Name
-                                                        </label>
-                                                        <input type="text" placeholder="Enter Last Name." class="form-control" id="LastName" name="LastName" />
+                                                    <div class="input-group input-group-dynamic">
+
+                                                        <div class="form-group">
+                                                            <label>
+                                                                Last Name
+                                                            </label>
+                                                            <input type="text" placeholder="Enter Last Name." class="form-control" id="LastName" name="LastName" />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
+                                                <div class="input-group input-group-dynamic">
+
+                                                    <div class="form-group col-md-12">
                                                         <label>
                                                             Email Address
                                                         </label>
@@ -375,12 +416,15 @@
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group">
-                                                        <label class="col-md-12">
-                                                            Mobile Number
-                                                        </label>
-                                                        <input maxlength="14" type="text" placeholder="Enter Mobile Number." id="MobileNumber" class="form-control col-md-12" name="MobileNumber" />
-                                                        <span id="phoneNumberError" class="text-danger"></span>
+                                                        <div class="input-group input-group-dynamic">
 
+                                                            <label class="col-md-12">
+                                                                Mobile Number
+                                                            </label>
+                                                            <input maxlength="14" type="text" placeholder="Enter Mobile Number." id="MobileNumber" class="form-control col-md-12" name="MobileNumber" />
+                                                            <span id="phoneNumberError" class="text-danger"></span>
+
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -390,7 +434,9 @@
                                         <hr />
                                         <div id="CustomerPanel">
                                             <h4 class="card-title">Search Customer</h4>
-                                            <input class="form-control autocompleteCustomers" type="text" name="Customer" id="Customer" />
+                                            <div class="input-group input-group-dynamic">
+                                                <input class="form-control autocompleteCustomers" type="text" name="Customer" id="Customer" />
+                                            </div>
                                             <div id="MainCustomerSelectedContainer" class="">
 
                                             </div>
@@ -398,34 +444,34 @@
                                     </div>
 
 
-                                    <hr />
-                                    <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
-                                        <div class="card-content">
-                                            <h4 class="card-title">Appointment Summary</h4>
-                                            <hr />
-                                            <div class="col-md-6">
-                                                <label>Date and Time</label>
-                                                <h4>
-                                                    <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
-                                                </h4>
-                                            </div>
-
-                                            <div id="TotalCostPanel" class="col-md-6">
-                                                <label>Total Cost</label>
-                                                <h4 id="TotalCost" name="TotalCost">
-                                                    @Model.Company.Currency 0.00
-                                                </h4>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-
-                                    <button type="button" id="actionButton" class="btn btn-primary btn-block btn-rounded">Create Appointment</button>
-                                    <span id="validationText" class="text-danger"></span><br />
-                                    <span id="validationTextForEmployeeService" class="text-danger"></span>
 
                                 </div>
+                                <div id="AppointmentSummaryCard" style="margin:0px;" class="card mt-5 mb-5">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Appointment Summary</h4>
+                                        <hr />
+                                        <div class="col-md-6">
+                                            <label>Date and Time</label>
+                                            <h4>
+                                                <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
+                                            </h4>
+                                        </div>
+
+                                        <div id="TotalCostPanel" class="col-md-6">
+                                            <label>Total Cost</label>
+                                            <h4 id="TotalCost" name="TotalCost">
+                                                @Model.Company.Currency 0.00
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                                <button type="button" id="actionButton" class="btn btn-primary btn-block btn-rounded">Create Appointment</button>
+                                <span id="validationText" class="text-danger"></span><br />
+                                <span id="validationTextForEmployeeService" class="text-danger"></span>
+
                             </div>
 
 
@@ -442,7 +488,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div style="margin:0px;" class="card">
-                                    <div class="card-content">
+                                    <div class="card-body">
 
                                         <h4 class="card-title">
                                             Create Event
@@ -453,24 +499,29 @@
 
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>Select Event</label>
-                                                        <select class="form-control" name="Service" id="ServiceAB">
-                                                            @foreach (var item in Model.AbsenseServices)
-                                                            {
-                                                                <option data-duration="@item.Duration" value="@item.ID">@item.Name</option>
-                                                            }
-                                                        </select>
+                                                        <div class="input-group input-group-dynamic">
+                                                            <label>Select Event</label>
+                                                            <select class="form-control choices__input" name="Service" id="ServiceAB">
+                                                                @foreach (var item in Model.AbsenseServices)
+                                                                {
+                                                                    <option data-duration="@item.Duration" value="@item.ID">@item.Name</option>
+                                                                }
+                                                            </select>
+                                                        </div>
                                                     </div>
 
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>
-                                                            Select Date
-                                                        </label>
-                                                        <input type="date" id="DateAB" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
-                                                    </div>
+                                                        <div class="input-group input-group-dynamic">
 
+                                                            <label>
+                                                                Select Date
+                                                            </label>
+                                                            <input type="date" id="DateAB" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
+                                                        </div>
+
+                                                    </div>
                                                 </div>
 
                                             </div>
@@ -482,23 +533,29 @@
 
 
                                             <div class="form-group col-md-6">
-                                                <label>
-                                                    From Time
-                                                </label>
+                                                <div class="input-group input-group-dynamic">
 
-                                                <input type="text" id="TimeABFrom" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")">
+                                                    <label>
+                                                        From Time
+                                                    </label>
+
+                                                    <input type="time" id="TimeABFrom" class="form-control datepicker" value="@Model.Time.ToString("HH:mm")">
 
 
+                                                </div>
                                             </div>
 
                                             <div class="form-group col-md-6">
-                                                <label>
-                                                    To Time
-                                                </label>
+                                                <div class="input-group input-group-dynamic">
 
-                                                <input type="text" id="TimeABTo" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="">
+                                                    <label>
+                                                        To Time
+                                                    </label>
+
+                                                    <input type="time" id="TimeABTo" class="form-control datepicker" value="@Model.Time.ToString("HH:mm")" name="">
 
 
+                                                </div>
                                             </div>
 
                                             @*<input type="hidden" name=""*@
@@ -508,79 +565,89 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>Select Employee</label>
-                                                <select onchange="CheckIfEmployeeProvideTheService()" class="form-control" name="EmployeeID" id="EmployeeIDAB">
-                                                    <option value="0">---Select----</option>
-                                                    @foreach (var item in Model.EmployeesForAction)
-                                                    {
-                                                        if (item.ID == Model.EmployeeID)
-                                                        {
-                                                            <option selected value="@item.ID">@item.Name</option>
-                                                        }
-                                                        else
-                                                        {
-                                                            <option value="@item.ID">@item.Name</option>
+                                                <div class="input-group input-group-dynamic">
 
+                                                    <label>Select Employee</label>
+                                                    <select onchange="CheckIfEmployeeProvideTheService()" class="form-control" name="EmployeeID" id="EmployeeIDAB">
+                                                        <option value="0">---Select----</option>
+                                                        @foreach (var item in Model.EmployeesForAction)
+                                                        {
+                                                            if (item.ID == Model.EmployeeID)
+                                                            {
+                                                                <option selected value="@item.ID">@item.Name</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@item.ID">@item.Name</option>
+
+                                                            }
                                                         }
-                                                    }
-                                                </select>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <div class="checkbox form-horizontal-checkbox">
+                                                <div class="form-check">
                                                     <label>
-                                                        <input type="checkbox" name="IsRepeatCB" id="IsRepeatCB">
+                                                        <input type="checkbox" class="form-check-input" name="IsRepeatCB" id="IsRepeatCB">
                                                         Repeat
                                                     </label>
                                                     <input type="hidden" name="IsRepeat" id="IsRepeat" />
                                                 </div>
                                             </div>
                                             <div id="AllEmployeePanel" class="col-md-6">
-                                                <div class="checkbox form-horizontal-checkbox">
+                                                <div class="form-check">
                                                     <label>
-                                                        <input type="checkbox" name="AllEmployeesCB" id="AllEmployeesCB">
+                                                        <input type="checkbox"  class="form-check-input"  name="AllEmployeesCB" id="AllEmployeesCB">
                                                         All Employees
                                                     </label>
-                                                    <input type="hidden" name="AllEmployees" id="AllEmployees" />
+                                                    <input type="hidden"name="AllEmployees" id="AllEmployees" />
                                                 </div>
                                             </div>
                                         </div>
                                         <div id="RepeatRow">
                                             <div style="display:inline;">
                                                 <div class="form-group col-md-6">
-                                                    <label>Frequency</label>
+                                                    <div class="input-group input-group-dynamic">
 
-                                                    <select class="form-control" id="Frequency" name="Frequency">
-                                                        <option value="Every Week">Every Week</option>
-                                                        <option value="Every Day">Every Day</option>
-                                                        <option value="Every Month">Every Month</option>
-                                                    </select>
+                                                        <label>Frequency</label>
+
+                                                        <select class="form-control choices__input" id="Frequency" name="Frequency">
+                                                            <option value="Every Week">Every Week</option>
+                                                            <option value="Every Day">Every Day</option>
+                                                            <option value="Every Month">Every Month</option>
+                                                        </select>
 
 
+                                                    </div>
                                                 </div>
 
                                                 <div id="WeekRow">
                                                     <div class="form-group col-md-6">
-                                                        <label>Every</label>
-                                                        <select class="form-control" id="Every" name="EveryWeek">
-                                                            @for (int i = 1; i <= 48; i++)
-                                                            {
-                                                                if (i == 1)
-                                                                {
-                                                                    <option selected value="@i Week">@i Week </option>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <option  value="@i Weeks"> @i Weeks </option>
-                                                                }
-                                                            }
+                                                        <div class="input-group input-group-dynamic">
 
-                                                        </select>
+                                                            <label>Every</label>
+                                                            <select class="form-control choices__input" id="Every" name="EveryWeek">
+                                                                @for (int i = 1; i <= 48; i++)
+                                                                {
+                                                                    if (i == 1)
+                                                                    {
+                                                                        <option selected value="@i Week">@i Week </option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@i Weeks"> @i Weeks </option>
+                                                                    }
+                                                                }
+
+                                                            </select>
+                                                        </div>
                                                     </div>
 
                                                     <div class="form-group col-md-12">
+
                                                         <label>On</label><br />
                                                         @foreach (var day in new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" })
                                                         {
@@ -590,32 +657,12 @@
 
                                                     </div>
 
-                                                    @*<div class="form-group col-md-12">
-                                                        <label>Ends</label><br />
-                                                        <select name="EndsWeek" id="EndWeek" class="form-control">
-                                                            <option value="Never">Never</option>
-                                                            <option value="Specific Date">On a Specific Date</option>
-                                                            <option selected value="NumberOfTimes">After a Number of Times</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div id="OnADateRowWeek" class="form-group col-md-12">
-                                                        <label>Ends Date</label><br />
-
-                                                        <input type="date" name="EndsDateWeek" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="EndDate">
-                                                    </div>
-
-
-                                                    <div id="OnTimeRowWeek" class="form-group col-md-12">
-                                                        <label>Times</label><br />
-                                                        <input type="number" name="EndsNumberOfTimesWeek" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="NumberOfTimes">
-                                                    </div>*@
 
                                                 </div>
                                                 <div id="DayRow">
                                                     <div class="form-group col-md-6">
                                                         <label>Every</label>
-                                                        <select class="form-control" id="Every" name="EveryDay">
+                                                        <select class="form-control choices__input" id="Every" name="EveryDay">
                                                             @for (int i = 1; i <= 30; i++)
                                                             {
                                                                 if (i == 1)
@@ -631,33 +678,13 @@
                                                         </select>
                                                     </div>
 
-                                                    @*<div class="form-group col-md-12">
-                                                        <label>Ends</label><br />
-                                                        <select name="EndsDay" id="EndDay" class="form-control">
-
-                                                            <option value="Never">Never</option>
-                                                            <option value="Specific Date">On a Specific Date</option>
-                                                            <option selected value="NumberOfTimes">After a Number of Times</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div id="OnADateRowDay" class="form-group col-md-12">
-                                                        <label>Ends Date</label><br />
-                                                        <input type="date" name="EndsDateDay" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="EndDate">
-                                                    </div>
-
-
-                                                    <div id="OnTimeRowDay" class="form-group col-md-12">
-                                                        <label>Times</label><br />
-                                                        <input type="number" name="EndsNumberOfTimesDay" class="form-control" id="NumberOfTimes">
-                                                    </div>*@
 
 
                                                 </div>
                                                 <div id="MonthRow">
                                                     <div class="form-group col-md-6">
                                                         <label>Every</label>
-                                                        <select class="form-control" id="Every" name="EveryMonth">
+                                                        <select class="form-control choices__input" id="Every" name="EveryMonth">
                                                             @for (int i = 1; i <= 12; i++)
                                                             {
                                                                 if (i == 1)
@@ -675,7 +702,7 @@
 
                                                     <div class="form-group col-md-12">
                                                         <label>On The</label><br />
-                                                        <select class="form-control" id="OnThe" name="On">
+                                                        <select class="form-control choices__input" id="OnThe" name="On">
 
                                                             <option value="23rd">23rd</option>
                                                             <option value="4th Saturday">4th Saturday</option>
@@ -683,43 +710,30 @@
 
                                                     </div>
 
-                                                    @*<div class="form-group col-md-12">
-                                                        <label>Ends</label><br />
 
-                                                        <select name="EndsMonth" id="EndMonth" class="form-control">
-                                                            <option value="Never">Never</option>
-                                                            <option value="Specific Date">On a Specific Date</option>
-                                                            <option selected value="NumberOfTimes">After a Number of Times</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div id="OnADateRowMonth" class="form-group col-md-12">
-                                                        <label>Ends Date</label><br />
-                                                        <input type="date" name="EndsDateMonth" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="EndDate">
-                                                    </div>
-
-
-                                                    <div id="OnTimeRowMonth" class="form-group col-md-12">
-                                                        <label>Times</label><br />
-                                                        <input type="number" name="EndsNumberOfTimesMonth" class="form-control" id="NumberOfTimes">
-                                                    </div>*@
                                                 </div>
                                             </div>
                                         </div>
 
-                                    </div>
 
 
-                                    <div class="col-md-12">
-                                        <label>Note</label>
-                                        <textarea rows="3" class="form-control" id="NotesAB" name="Notes"></textarea>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label>Select Color</label>
+                                        <div class="col-md-12">
+                                            <div class="input-group input-group-dynamic">
 
-                                            <input class="form-control" type="color" name="Color" value="#D28D00" id="ColorAB" />
+                                                <label>Note</label>
+                                                <textarea rows="3" class="form-control" id="NotesAB" name="Notes"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="input-group input-group-dynamic">
 
+                                                <div class="form-group">
+                                                    <label>Select Color</label>
+
+                                                    <input class="form-control" type="color" name="Color" value="#D28D00" id="ColorAB" />
+
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -727,29 +741,26 @@
 
                             </div>
                             <div class="col-md-5">
-                                <div style="margin:0px;" class="card">
-                                    <hr />
-                                    <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
-                                        <div class="card-content">
-                                            <h4 class="card-title">Event Summary</h4>
-                                            <hr />
-                                            <div class="col-md-6">
-                                                <label>Date and Time</label>
-                                                <h4>
-                                                    <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
-                                                </h4>
-                                            </div>
-
-
+                                <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Event Summary</h4>
+                                        <hr />
+                                        <div class="col-md-6">
+                                            <label>Date and Time</label>
+                                            <h4>
+                                                <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
+                                            </h4>
                                         </div>
+
+
                                     </div>
-
-
-                                    <button type="button" id="ABactionButton" class="btn btn-primary btn-block btn-rounded">Create Event</button>
-                                    <span id="validationTextAB" class="text-danger"></span><br />
-                                    <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
-
                                 </div>
+
+
+                                <button type="button" id="ABactionButton" class="btn btn-primary btn-block my-2 btn-rounded">Create Event</button>
+                                <span id="validationTextAB" class="text-danger"></span><br />
+                                <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+
                             </div>
 
 
@@ -771,6 +782,7 @@
 
 
 <script src="~/Content/build/js/intlTelInput.js"></script>
+
 
 <script>
 
@@ -843,7 +855,6 @@
                         <input class="form-control autocomplete" type="text" name="ServiceNames" id="${serviceId}"   />
                     </div>
                 </div>
-                <button class="btn btn-danger btn-sm" type="button" onclick="removeService(${serviceCount})">X</button>
 
                 <div class="col-md-2">
                     <div class="form-group">
@@ -858,6 +869,7 @@
                         <input type="text" id="${discountId}" value='0' name='ServiceDiscountInput'  class="form-control discount-input">
                     </div>
                 </div>
+                    <button class="btn btn-danger btn-sm" type="button" onclick="removeService(${serviceCount})">X</button>
 
             `;
 
@@ -888,30 +900,12 @@
         CheckIsAllEmployee();
 
 
-        $('.timepicker').datetimepicker({
-            //          format: 'H:mm',    // use this format if you want the 24hours timepicker
-            format: 'H:mm',    // use this format if you want the 12hours timepicker with AM/PM toggle
-            icons: {
-                time: "fa fa-clock-o",
-                date: "fa fa-calendar",
-                up: "fa fa-chevron-up",
-                down: "fa fa-chevron-down",
-                previous: 'fa fa-chevron-left',
-                next: 'fa fa-chevron-right',
-                today: 'fa fa-screenshot',
-                clear: 'fa fa-trash',
-                close: 'fa fa-remove'
-            }
-        }).on('dp.change', function (e) {
-            // This function will be called whenever the time is changed
-            var selectedTime = $(".timepicker").val();
-            var timeWithAMPM = formatTimeWithAMPM(selectedTime);
+        $(".timepicker").on("change", function () {
             $("#TimeToBeSet").text(timeWithAMPM);
             CheckAvailability();
-
-            // You can add any additional logic you need here
         });
 
+      
 
 
         $('#FirstName').on('input', function () {
@@ -1052,7 +1046,7 @@
     $("input[name='ServiceDiscountInput']").on("change", function () {
         updateTotal();
     });
-    $('.nav-pills a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    $('.nav-pills a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         var activeTab = $(e.target).attr('href');
         $("#SelectedOption").val(activeTab);
     //    AdjustTheControls();
@@ -1158,7 +1152,7 @@
         var concatenatedServiceValues = serviceValues.join(', ');
         var Services = concatenatedServiceValues;
         var EmployeeID = $("#EmployeeID").val();
-       
+
         if (EmployeeID != "" && $("#SelectedOption").val() != "#description-1") {
             $.ajax({
                 url: '@Url.Action("CheckEmployeeService", "Appointment")',
@@ -1814,7 +1808,20 @@
 
     });
 
+    $(document).ready(function () {
+        var elements = document.getElementsByClassName('choices__input');
 
+        // Check if there are any elements found
+        if (elements.length > 0) {
+            // Loop through each element and initialize Choices for it
+            for (var i = 0; i < elements.length; i++) {
+                const example = new Choices(elements[i], {
+                    searchEnabled: false,
+                    itemSelectText: ''
+                });
+            }
+        }
+    });
     $("#Time").on("change", function () {
 
         var selectedTime = $(this).val();
@@ -2097,7 +2104,7 @@
         var IsRepeat = $("#IsRepeat").val();
         var Frequency = $("#Frequency").val();
         var Every = $("#Every").val();
-        
+
         //if End on Number of Times
         var NumberOfTimes = $("#NumberOfTimes").val();
 

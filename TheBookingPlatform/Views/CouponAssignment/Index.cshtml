@@ -7,98 +7,87 @@
 
 <div class="card">
     <div class="card-body">
-        <div class="card-header">
-            <h4 class="card-title">Coupon Assignments </h4>
-        </div>
+        <h2 class="card-title">Coupon Assignments </h2>
 
-        <div class="card-content">
-            <form>
-                <div class="row" style="display:flex;margin:0px;">
-                    <a style="padding:10px;"   href="@Url.Action("Index","Coupon")" class="btn btn-primary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Back to Coupons</a>
-                    <a style="padding:10px;"  href="@Url.Action("Action", "CouponAssignment")" class="btn btn-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+        <form>
+            <a style="padding:10px;" href="@Url.Action("Index","Coupon")" class="btn btn-primary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Back to Coupons</a>
+            <a style="padding:10px;" href="@Url.Action("Action", "CouponAssignment")" class="btn btn-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+        </form>
+
+
+        <div class="col-lg-12 grid-margin stretch-card">
+            @if (Model.CouponAssignments != null)
+            {
+
+                <div class="table-responsive">
+                    <table id="CustomersTable" class="table table-striped">
+                        <thead>
+                            <tr>
+
+                                <th class="text-center">
+                                    Coupon Name
+                                </th>
+
+                                <th class="text-center">
+                                    Customer Name
+                                </th>
+                                <th class="text-center">
+                                    Customer Email
+                                </th>
+                                <th class="text-center">
+                                    Assigned Date
+                                </th>
+                                <th class="text-center">
+                                    Used
+                                </th>
+                                <th class="text-center">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CouponAssignments.Where(x => x.CouponAssignment.Used > 0))
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        @item.Coupon.CouponName
+                                    </td>
+
+                                    <td class="text-center">
+                                        @item.Customer.FirstName @item.Customer.LastName
+                                    </td>
+                                    <td class="text-center">
+                                        @item.Customer.Email
+                                    </td>
+                                    <td class="text-center">
+                                        @item.CouponAssignment.AssignedDate.ToString("yyyy-MM-dd")
+                                    </td>
+                                    <td class="text-center">
+                                        @item.CouponAssignment.Used
+                                    </td>
+                                    <td class="text-center">
+
+                                        <a href="@Url.Action("Action", "CouponAssignment", new { ID = item.CouponAssignment.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                        <button data-href="@Url.Action("Delete", "CouponAssignment", new { ID = item.CouponAssignment.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            </form>
+            }
+            else
+            {
+
+                <div class="alert alert-warning col-md-12" role="alert">
+                    Sorry! No records exist.
+                </div>
+            }
         </div>
     </div>
-
-    <div class="row">
-        <div class="col col-lg-12">
-            <div class="col-lg-12 grid-margin stretch-card">
-                @if (Model.CouponAssignments != null)
-                {
-                    <div class="card">
-
-                        <div class="table-responsive">
-                            <table id="CustomersTable" class="table table-striped">
-                                <thead>
-                                    <tr>
-
-                                        <th class="text-center">
-                                            Coupon Name
-                                        </th>
-                                      
-                                        <th class="text-center">
-                                            Customer Name
-                                        </th>
-                                        <th class="text-center">
-                                            Customer Email
-                                        </th>
-                                        <th class="text-center">
-                                            Assigned Date
-                                        </th>
-                                        <th class="text-center">
-                                            Used
-                                        </th>
-                                        <th class="text-center">
-                                            Action
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.CouponAssignments.Where(x=>x.CouponAssignment.Used > 0))
-                                    {
-                                        <tr>
-                                            <td class="text-center">
-                                                @item.Coupon.CouponName
-                                            </td>
-                                        
-                                            <td class="text-center">
-                                                @item.Customer.FirstName @item.Customer.LastName
-                                            </td>
-                                            <td class="text-center">
-                                                @item.Customer.Email
-                                            </td>
-                                            <td class="text-center">
-                                                @item.CouponAssignment.AssignedDate.ToString("yyyy-MM-dd")
-                                            </td>
-                                            <td class="text-center">
-                                                @item.CouponAssignment.Used
-                                            </td>
-                                            <td class="text-center">
-
-                                                <a href="@Url.Action("Action", "CouponAssignment", new { ID = item.CouponAssignment.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
-                                                <button data-href="@Url.Action("Delete", "CouponAssignment", new { ID = item.CouponAssignment.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
-
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                }
-                else
-                {
-
-                    <div class="alert alert-warning col-md-12" role="alert">
-                        Sorry! No records exist.
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
 </div>
+
 
 <div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -106,7 +95,7 @@
 </div>
 <script>
 
-  
+
 
     $(document).ready(function () {
         $('#CustomersTable').DataTable({

@@ -16,54 +16,67 @@
         padding: 0px 20px;
         position: relative;
     }
+    .material-icons {
+        color: white;
+        font-size: xx-large;
+    }
+    .boxyy {
+        padding-left: 5px;
+        cursor: pointer;
+        padding-bottom: 5px;
+    }
 
     .card .nav-pills, .card .tab-content {
         margin-top: 0px;
     }
 </style>
-<div class="card">
-    <div class="card-content text-center">
-        <div class="table-responsive">
-            @*<span class="text-center">Choose Option</span>*@
-            <div class="nav-center">
-                <input type="hidden" id="Selected" value="@Model.Selected" />
-                <ul class="nav nav-pills nav-pills-warning nav-pills-icons" role="tablist">
+<div class="card mb-2">
+    <div class="card-body text-center">
 
-                    <li>
-                        <a id="Products" href="#description-1" role="tab" data-toggle="tab">
-                            <i class="material-icons">inventory_2</i>
-                            Products
-                        </a>
-                    </li>
-                    <li>
-                        <a id="Categories" href="#schedule-1" role="tab" data-toggle="tab">
-                            <i class="material-icons">category</i>
-                            Categories
-                        </a>
-                    </li>
-                    <li>
-                        <a id="Suppliers" href="#tasks-1" role="tab" data-toggle="tab">
-                            <i class="material-icons">
-                                sensor_occupied
-                            </i>
-                            Suppliers
-                        </a>
-                    </li>
-                    <li>
-                        <a id="StockOrders" href="#tasks-2" role="tab" data-toggle="tab">
-                            <i class="material-icons">warehouse</i>
-                            Stock Orders
-                        </a>
-                    </li>
-                </ul>
+        @*<span class="text-center">Choose Option</span>*@
+        <div class="nav-center">
+            <input type="hidden" id="Selected" value="@Model.Selected" />
+            <div class="row d-flex" style="gap: 10px;">
+                <div id="Products" class="boxyy bg-gradient-dark shadow-dark border-radius-lg py-2 pe-1 d-flex align-items-center text-center col-md-auto" style="flex: 1 0 15%;">
+                    <a id="Products" href="#description-1" role="tab" data-bs-toggle="tab" class="mx-auto my-3">
+                        <i class="material-icons">inventory_2</i>
+                        <h6 class="text-white font-weight-normal">Products </h6>
+                    </a>
+                </div>
+
+                <div id="Categories" class="boxyy bg-gradient-dark shadow-dark border-radius-lg py-2 pe-1 d-flex align-items-center text-center col-md-auto" style="flex: 1 0 15%;">
+                    <a id="Categories" href="#schedule-1" role="tab" data-bs-toggle="tab" class="mx-auto my-3">
+                        <i class="material-icons">category</i>
+                        <h6 class="text-white font-weight-normal">Categories </h6>
+                    </a>
+                </div>
+
+
+                <div id="Suppliers" class="boxyy bg-gradient-dark shadow-dark border-radius-lg py-2 pe-1 d-flex align-items-center text-center col-md-auto" style="flex: 1 0 15%;">
+                    <a id="Suppliers" href="#tasks-1" role="tab" data-bs-toggle="tab" class="mx-auto my-3">
+                        <i class="material-icons">sensor_occupied</i>
+                        <h6 class="text-white font-weight-normal">Suppliers </h6>
+                    </a>
+                </div>
+
+
+                <div id="StockOrders" class="boxyy bg-gradient-dark shadow-dark border-radius-lg py-2 pe-1 d-flex align-items-center text-center col-md-auto" style="flex: 1 0 15%;">
+                    <a id="StockOrders" href="#tasks-2" role="tab" data-bs-toggle="tab" class="mx-auto my-3">
+                        <i class="material-icons">warehouse</i>
+                        <h6 class="text-white font-weight-normal">Stock Orders </h6>
+                    </a>
+                </div>
+
+
+
             </div>
         </div>
-
-
-
-
-
     </div>
+
+
+
+
+
 </div>
 <div style="display:none;" id="loader"><img style="width:150px;" src="~/Content/TBPContent/Loader.gif" /></div>
 
@@ -199,15 +212,15 @@
                     // Create table data cells
                     var editButton = $('<button>')
                         .addClass('data-btn btn btn-sm btn-rounded btn-info btn-icon-text')
-                        .attr('data-toggle', 'modal')
-                        .attr('data-target', '#actionModal')
+                        .attr('data-bs-toggle', 'modal')
+                        .attr('data-bs-target', '#actionModal')
                         .attr('data-id', item.ID) // Store the item ID as a data attribute
                         .html('<i class="mdi mdi-pencil"></i> EDIT');
 
                     var deleteButton = $('<button>')
                         .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
-                        .attr('data-toggle', 'modal')
-                        .attr('data-target', '#actionModal')
+                        .attr('data-bs-toggle', 'modal')
+                        .attr('data-bs-target', '#actionModal')
                         .attr('data-id', item.ID) // Store the item ID as a data attribute
                         .html('<i class="mdi mdi-delete"></i> DELETE');
 
@@ -257,8 +270,8 @@
                             .attr('data-href', '@Url.Action("Delete", "Product")' + '?ID=' + item.ID)
                             .attr('type', 'button')
                             .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
-                            .attr('data-toggle', 'modal')
-                            .attr('data-target', '#actionModal')
+                            .attr('data-bs-toggle', 'modal')
+                            .attr('data-bs-target', '#actionModal')
                             .html('<i class="mdi mdi-delete"></i> DELETE');
 
                         actionColumn.append(editLink);
@@ -310,8 +323,8 @@
                             .attr('data-href', '@Url.Action("Delete", "Supplier")' + '?ID=' + item.Supplier.ID)
                             .attr('type', 'button')
                             .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
-                            .attr('data-toggle', 'modal')
-                            .attr('data-target', '#actionModal')
+                            .attr('data-bs-toggle', 'modal')
+                            .attr('data-bs-target', '#actionModal')
                             .html('<i class="mdi mdi-delete"></i> DELETE');
 
                         actionColumn.append(editLink);
@@ -396,8 +409,8 @@
                         .attr('data-href', '@Url.Action("Delete", "StockOrder")' + '?ID=' + item.ID)
                         .attr('type', 'button')
                         .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
-                        .attr('data-toggle', 'modal')
-                        .attr('data-target', '#actionModal')
+                        .attr('data-bs-toggle', 'modal')
+                        .attr('data-bs-target', '#actionModal')
                         .html('<i class="mdi mdi-delete"></i> DELETE');
 
                     actionColumn.append(editLink);

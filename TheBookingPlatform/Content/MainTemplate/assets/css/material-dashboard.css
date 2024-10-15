@@ -5761,11 +5761,11 @@ h2.title {
             box-shadow: none;
         }
 
-        .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a span, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a span {
+        .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a span, .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a span {
             display: inline-block;
         }
 
-        .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal {
+        .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal {
             margin: 0;
             position: relative;
             transform: translateX(0px);
@@ -5774,7 +5774,7 @@ h2.title {
             display: block;
         }
 
-        .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini {
+        .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-mini, .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-mini {
             text-transform: uppercase;
             width: 30px;
             margin-right: 15px;
@@ -5785,7 +5785,7 @@ h2.title {
             display: inherit;
         }
 
-        .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a i, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a i {
+        .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a i, .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a i {
             font-size: 17px;
             line-height: 20px;
             width: 26px;
@@ -5833,13 +5833,13 @@ h2.title {
             margin: 0 15px;
         }
 
-        .sidebar .nav li:hover > a, .sidebar .nav li.active > [data-toggle="collapse"] {
+        .sidebar .nav li:hover > a, .sidebar .nav li.active > [data-bs-toggle="collapse"] {
             background-color: rgba(200, 200, 200, 0.2);
             color: #3C4858;
             box-shadow: none;
         }
 
-            .sidebar .nav li.active > [data-toggle="collapse"] i {
+            .sidebar .nav li.active > [data-bs-toggle="collapse"] i {
                 color: #a9afbb;
             }
 
@@ -6042,11 +6042,11 @@ h2.title {
         color: rgba(255, 255, 255, 0.8);
     }
 
-    .sidebar[data-background-color="black"] .nav li.active > [data-toggle="collapse"], .sidebar[data-background-color="black"] .nav li:hover > [data-toggle="collapse"] {
+    .sidebar[data-background-color="black"] .nav li.active > [data-bs-toggle="collapse"], .sidebar[data-background-color="black"] .nav li:hover > [data-bs-toggle="collapse"] {
         color: #FFFFFF;
     }
 
-        .sidebar[data-background-color="black"] .nav li.active > [data-toggle="collapse"] i, .sidebar[data-background-color="black"] .nav li:hover > [data-toggle="collapse"] i {
+        .sidebar[data-background-color="black"] .nav li.active > [data-bs-toggle="collapse"] i, .sidebar[data-background-color="black"] .nav li:hover > [data-bs-toggle="collapse"] i {
             color: rgba(255, 255, 255, 0.8);
         }
 
@@ -6098,13 +6098,13 @@ h2.title {
         box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(255, 255, 255, 0.4);
     }
 
-    .sidebar[data-active-color="white"] .nav li.active > a:not([data-toggle="collapse"]) {
+    .sidebar[data-active-color="white"] .nav li.active > a:not([data-bs-toggle="collapse"]) {
         color: #3C4858;
         opacity: 1;
         box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(60, 72, 88, 0.4);
     }
 
-        .sidebar[data-active-color="white"] .nav li.active > a:not([data-toggle="collapse"]) i {
+        .sidebar[data-active-color="white"] .nav li.active > a:not([data-bs-toggle="collapse"]) i {
             color: rgba(60, 72, 88, 0.8);
         }
 
@@ -6116,11 +6116,11 @@ h2.title {
         color: rgba(255, 255, 255, 0.8);
     }
 
-    .sidebar[data-background-color="red"] .nav li.active > [data-toggle="collapse"], .sidebar[data-background-color="red"] .nav li:hover > [data-toggle="collapse"] {
+    .sidebar[data-background-color="red"] .nav li.active > [data-bs-toggle="collapse"], .sidebar[data-background-color="red"] .nav li:hover > [data-bs-toggle="collapse"] {
         color: #FFFFFF;
     }
 
-        .sidebar[data-background-color="red"] .nav li.active > [data-toggle="collapse"] i, .sidebar[data-background-color="red"] .nav li:hover > [data-toggle="collapse"] i {
+        .sidebar[data-background-color="red"] .nav li.active > [data-bs-toggle="collapse"] i, .sidebar[data-background-color="red"] .nav li:hover > [data-bs-toggle="collapse"] i {
             color: rgba(255, 255, 255, 0.8);
         }
 
@@ -6141,7 +6141,7 @@ h2.title {
         background-color: rgba(255, 255, 255, 0.3);
     }
 
-    .sidebar[data-background-color="red"] .nav li:hover:not(.active) > a, .sidebar[data-background-color="red"] .nav li.active > [data-toggle="collapse"] {
+    .sidebar[data-background-color="red"] .nav li:hover:not(.active) > a, .sidebar[data-background-color="red"] .nav li.active > [data-bs-toggle="collapse"] {
         background-color: rgba(255, 255, 255, 0.1);
     }
 
@@ -6246,7 +6246,7 @@ h2.title {
             transform: translate3d(-25px, 0, 0);
         }
 
-        .sidebar-mini .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar-mini .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar-mini .sidebar .sidebar-wrapper .user .info > a > span, .sidebar-mini .sidebar .sidebar-wrapper > .nav li > a p {
+        .sidebar-mini .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar-mini .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar-mini .sidebar .sidebar-wrapper .user .info > a > span, .sidebar-mini .sidebar .sidebar-wrapper > .nav li > a p {
             -webkit-transform: translate3d(-25px, 0, 0);
             -moz-transform: translate3d(-25px, 0, 0);
             -o-transform: translate3d(-25px, 0, 0);
@@ -6272,7 +6272,7 @@ h2.title {
                 width: 220px;
             }
 
-                .sidebar-mini .sidebar:hover .sidebar-wrapper > .nav li > a p, .sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar-mini .sidebar:hover .sidebar-wrapper .user .info > a > span {
+                .sidebar-mini .sidebar:hover .sidebar-wrapper > .nav li > a p, .sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar-mini .sidebar:hover .sidebar-wrapper .user .info > a > span {
                     -webkit-transform: translate3d(0px, 0, 0);
                     -moz-transform: translate3d(0px, 0, 0);
                     -o-transform: translate3d(0px, 0, 0);
@@ -6974,7 +6974,7 @@ a {
         vertical-align: middle;
     }
 
-    a[data-toggle="collapse"][aria-expanded="true"] .caret, .dropdown.open .caret, .dropup.open .caret, .btn-group.bootstrap-select.open .caret {
+    a[data-bs-toggle="collapse"][aria-expanded="true"] .caret, .dropdown.open .caret, .dropup.open .caret, .btn-group.bootstrap-select.open .caret {
         filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
         -webkit-transform: rotate(180deg);
         -ms-transform: rotate(180deg);
@@ -6990,7 +6990,7 @@ a {
 }
 
 /*           Animations              */
-.animation-transition-general, .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a span, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a span, .sidebar .nav p, .sidebar .logo a.logo-mini, .sidebar .logo a.logo-normal, .sidebar .user .photo, .sidebar .user a, .sidebar .user .info > a > span, .login-page .card-login, .lock-page .card-profile {
+.animation-transition-general, .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a span, .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a span, .sidebar .nav p, .sidebar .logo a.logo-mini, .sidebar .logo a.logo-normal, .sidebar .user .photo, .sidebar .user a, .sidebar .user .info > a > span, .login-page .card-login, .lock-page .card-profile {
     -webkit-transition: all 300ms linear;
     -moz-transition: all 300ms linear;
     -o-transition: all 300ms linear;
@@ -11452,7 +11452,7 @@ footer {
         right: auto;
     }
 
-    .rtl-active .sidebar .sidebar-wrapper .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini, .rtl-active .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini, .rtl-active .bootstrap-navbar .sidebar-wrapper .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini, .rtl-active .bootstrap-navbar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini {
+    .rtl-active .sidebar .sidebar-wrapper .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-mini, .rtl-active .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-mini, .rtl-active .bootstrap-navbar .sidebar-wrapper .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-mini, .rtl-active .bootstrap-navbar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-mini {
         float: right;
         margin-left: 15px;
         margin-right: 0;
@@ -11573,7 +11573,7 @@ footer {
     }
 
 @media (max-width: 991px) {
-    .rtl-active .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal {
+    .rtl-active .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal {
         text-align: right;
     }
 }
@@ -11593,11 +11593,11 @@ footer {
         margin: 0;
     }
 
-    .rtl-active.sidebar-mini .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper .user .info > a > span, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper > .nav li > a p {
+    .rtl-active.sidebar-mini .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper .user .info > a > span, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper > .nav li > a p {
         position: relative;
     }
 
-    .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav li > a p, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info > a > span, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper .user .info > a > span, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper > .nav li > a p, .rtl-active.sidebar-mini .sidebar .logo a.logo-normal {
+    .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav li > a p, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info > a > span, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper .user .info > a > span, .rtl-active.sidebar-mini .sidebar .sidebar-wrapper > .nav li > a p, .rtl-active.sidebar-mini .sidebar .logo a.logo-normal {
         -webkit-transform: translateX(25px);
         -moz-transform: translateX(25px);
         -o-transform: translateX(25px);
@@ -11605,7 +11605,7 @@ footer {
         transform: translateX(25px);
     }
 
-    .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav li > a p, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info > a > span, .rtl-active.sidebar-mini .sidebar:hover .logo a.logo-normal {
+    .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav li > a p, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper > .nav [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info [data-bs-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .rtl-active.sidebar-mini .sidebar:hover .sidebar-wrapper .user .info > a > span, .rtl-active.sidebar-mini .sidebar:hover .logo a.logo-normal {
         -webkit-transform: translate3d(0, 0, 0);
         -moz-transform: translate3d(0, 0, 0);
         -o-transform: translate3d(0, 0, 0);

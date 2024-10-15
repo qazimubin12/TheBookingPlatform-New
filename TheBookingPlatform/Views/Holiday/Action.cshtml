@@ -1,32 +1,41 @@
 ﻿@model TheBookingPlatform.ViewModels.HolidayActionViewModel
 
+<style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+</style>
 @if (Model != null)
 {
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">
-                @if (Model.ID != 0)
-                {
-                    <span>Edit Holiday </span>
-                }
-                else
-                {
-                    <span>Create Holiday </span>
-                }
-            </h5>
+    <div class="card">
+        <div class="card-body">
+            @if (Model.ID != 0)
+            {
+                <h2 class="card-title">Edit Holiday </h2>
+            }
+            else
+            {
+                <h2 class="card-title">Create Holiday </h2>
+            }
 
-        </div>
-        <div class="modal-body">
-            <form id="actionForm">
-                <div class="row">
-                    <div class="col-md-12">
-                        <input type="hidden" name="ID" value="@Model.ID" />
+        <form id="actionForm">
+            <input type="hidden" name="ID" value="@Model.ID" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group input-group-dynamic">
                         <div class="form-group">
                             <label>Holiday Name</label>
                             <input class="form-control" name="Name" placeholder="Enter Name." value="@Model.Name">
                         </div>
                     </div>
-                    <div class="col-md-12">
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group input-group-dynamic">
+
                         <div class="form-group">
                             <label>Date</label>
                             @if (Model.ID == 0)
@@ -40,26 +49,28 @@
                             }
                         </div>
                     </div>
-
                 </div>
-            </form>
+
+            </div>
+        </form>
 
 
             <div class="errorDiv">
 
             </div>
+            <div style=" display: flex; align-items: baseline; justify-content: end; " class="modal-footer">
+                @if (Model.ID != 0)
+                {
+                    <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Update</button>
+                }
+                else
+                {
+                    <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
+                }
+                <a href="@Url.Action("Index","Holiday")" class="btn btn-secondary"><i class="fas fa-times mr-1"></i> Close</a>
+            </div>
         </div>
-        <div style=" display: flex; align-items: baseline; justify-content: end; " class="modal-footer">
-            @if (Model.ID != 0)
-            {
-                <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Update</button>
-            }
-            else
-            {
-                <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
-            }
-            <a href="@Url.Action("Index","Holiday")" class="btn btn-secondary"><i class="fas fa-times mr-1"></i> Close</a>
-        </div>
+
     </div>
 
 }
@@ -77,7 +88,7 @@
 			if(response.success)
             {
                 window.location.href = '@Url.Action("Index", "Holiday")';
-                $(".btn-secondary[data-dismiss='modal']").click();
+                $(".btn-secondary[data-bs-dismiss='modal']").click();
             }
 			else {
 				$(".errorDiv").html(response.Message);

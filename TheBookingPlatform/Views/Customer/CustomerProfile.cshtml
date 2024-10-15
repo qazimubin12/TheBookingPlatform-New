@@ -11,13 +11,13 @@
         </div>
         <div class="card-content">
             <ul class="nav nav-pills nav-pills-success">
-                <li class="active"><a href="#pill1" data-toggle="tab">Customer</a></li>
-                <li><a href="#pill2" data-toggle="tab">Appointments</a></li>
-                <li><a href="#pill3" data-toggle="tab">History</a></li>
-                <li><a href="#pill4" data-toggle="tab">Statistics</a></li>
-                <li><a href="#pill5" data-toggle="tab">Sent Messages</a></li>
-                <li><a href="#pill6" data-toggle="tab">Loyalty</a></li>
-                <li><a href="#pill7" data-toggle="tab">Files</a></li>
+                <li class="active"><a href="#pill1" data-bs-toggle="tab">Customer</a></li>
+                <li><a href="#pill2" data-bs-toggle="tab">Appointments</a></li>
+                <li><a href="#pill3" data-bs-toggle="tab">History</a></li>
+                <li><a href="#pill4" data-bs-toggle="tab">Statistics</a></li>
+                <li><a href="#pill5" data-bs-toggle="tab">Sent Messages</a></li>
+                <li><a href="#pill6" data-bs-toggle="tab">Loyalty</a></li>
+                <li><a href="#pill7" data-bs-toggle="tab">Files</a></li>
 
             </ul>
             <div class="tab-content">
@@ -525,7 +525,7 @@
                     <div class="row">
                         @if (Model.Customer != null)
                         {
-                            <button data-href="@Url.Action("UploadFile", "Appointment", new { CustomerID = Model.Customer.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal">UPLOAD NEW</button>
+                            <button data-href="@Url.Action("UploadFile", "Appointment", new { CustomerID = Model.Customer.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">UPLOAD NEW</button>
                         }
                     </div>
                     <table class="table table-striped">
@@ -561,8 +561,8 @@
                                     <td>@item.UploadedBy</td>
                                     <td>@item.DateTime</td>
                                     <td>
-                                        <button data-href="@Url.Action("UploadFile", "Appointment", new {CustomerID= item.CustomerID, ID = item.ID })" type="button" class="data-btn  btn btn-sm btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
-                                        <button data-href="@Url.Action("DeleteFile", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-danger btn-sm btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                        <button data-href="@Url.Action("UploadFile", "Appointment", new {CustomerID= item.CustomerID, ID = item.ID })" type="button" class="data-btn  btn btn-sm btn-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
+                                        <button data-href="@Url.Action("DeleteFile", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-danger btn-sm btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
 
                                     </td>
                                 </tr>

@@ -1,5 +1,20 @@
 ﻿@model TheBookingPlatform.ViewModels.UserActionModel
 
+<style>
+  /*  .form-control{
+        margin-left:10px !important;
+    }*/
+    /*.input-group {
+        display: flex;
+        align-items: baseline;
+    }*/
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+</style>
 @if (Model != null)
 {
     <div class="modal-content">
@@ -19,67 +34,69 @@
         <div class="modal-body">
             <form id="actionForm">
                 <input type="hidden" name="ID" value="@Model.ID" />
-                <div class="form-group">
+                <div class="form-group input-group input-group-dynamic">
                     <label>Full Name</label>
+
                     <input class="form-control common-field" id="Name" name="Name" placeholder="Enter Full Name." value="@Model.Name">
                 </div>
-                <div class="form-group">
+                <div class="form-group input-group input-group-dynamic">
                     <label>Email</label>
                     <input class="form-control common-field" id="Email" name="Email" placeholder="Enter Email." value="@Model.Email">
                 </div>
 
                 @if (User.IsInRole("Super Admin"))
                 {
-                <div class="form-group">
-                    <label>Company</label>
-                    <select class="form-control" name="Company" id="Company">
-                        @foreach (var item in Model.Companies)
-                        {
-                            if (item.Business == Model.Company)
+
+                    <div class="form-group input-group input-group-dynamic">
+                        <label>Company</label>
+                        <select class="form-control choices__input" name="Company" id="Company">
+                            @foreach (var item in Model.Companies)
                             {
-                                <option selected value="@item.Business">@item.Business</option>
+                                if (item.Business == Model.Company)
+                                {
+                                    <option selected value="@item.Business">@item.Business</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Business">@item.Business</option>
+                                }
                             }
-                            else
-                            {
-                                <option  value="@item.Business">@item.Business</option>
-                            }
-                        }
-                    </select>
-                </div>
+                        </select>
+                    </div>
                 }
 
                 @if (Model.LoggedInOwnerID != "")
                 {
                     if (Model.LoggedInOwnerID != Model.ID)
                     {
-                <div class="form-group">
-                    <label>Role</label>
-                    <select name="Role" class="form-control">
-                        @foreach (var item in Model.Roles)
-                        {
-                            if (item.Name != "Super Admin")
-                            {
-                                if (item.Name == Model.Role)
+                        <div class="form-group input-group input-group-dynamic">
+                            <label>Role</label>
+                            <select name="Role" class="form-control choices__input">
+                                @foreach (var item in Model.Roles)
                                 {
-                                    <option selected value="@item.Id">@item.Name</option>
+                                    if (item.Name != "Super Admin")
+                                    {
+                                        if (item.Name == Model.Role)
+                                        {
+                                            <option selected value="@item.Id">@item.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+
+                                        }
+                                    }
                                 }
-                                else
-                                {
-                                    <option value="@item.Id">@item.Name</option>
-
-                                }
-                            }
-                        }
 
 
-                    </select>
-                </div>
+                            </select>
+                        </div>
                     }
                 }
 
-                <div class="form-group">
+                <div class="form-group input-group input-group-dynamic">
                     <label>Interval Calendar</label>
-                    <select name="IntervalCalendar" id="IntervalCalendar" class="form-control">
+                    <select name="IntervalCalendar" id="IntervalCalendar" class="form-control choices__input">
                         @if (Model.IntervalCalendar == 15)
                         {
                             <option selected value="15">15 Mins</option>
@@ -107,12 +124,12 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group input-group input-group-dynamic">
                     <label>Contact</label>
                     <input class="form-control common-field" id="Contact" name="Contact" placeholder="Enter Contact." value="@Model.Contact">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group input-group input-group-dynamic">
                     <label>Password</label>
                     <input class="form-control common-field" id="Password" name="Password" type="password" placeholder="Enter Password." value="@Model.Password">
                 </div>
@@ -133,7 +150,7 @@
             {
                 <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
             }
-            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
         </div>
     </div>
 }
@@ -141,6 +158,18 @@
 <script>
 
     $(document).ready(function () {
+        var elements = document.getElementsByClassName('choices__input');
+
+        // Check if there are any elements found
+        if (elements.length > 0) {
+            // Loop through each element and initialize Choices for it
+            for (var i = 0; i < elements.length; i++) {
+                const example = new Choices(elements[i], {
+                    searchEnabled: false,
+                    itemSelectText: ''
+                });
+            }
+        }
         $(".common-field").on("input", function () {
             var name = $("#Name").val().trim();
             var email = $("#Email").val().trim();

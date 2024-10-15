@@ -20,16 +20,24 @@
         padding-left: 0;
         color: black;
     }
+
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
 </style>
 <form id="actionForm">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
+
                 @if (Model.ID != 0)
                 {
-                    <h4 class="card-title">
+                    <h2 class="card-title">
                         Edit Gift Card
-                    </h4>
+                    </h2>
                 }
                 else
                 {
@@ -37,45 +45,48 @@
                         Create Gift Card
                     </h4>
                 }
-            </div>
 
 
-            <div class="card-content">
                 <div style="display:flex;align-items:end;" class="row">
                     <div class="col-md-6">
                         <input type="hidden" id="ID" value="@Model.ID" />
                         <div class="form-group">
-                            <label>
-                                Card Name
-                            </label>
-                            <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                            <div class="input-group input-group-dynamic">
+                                <label>
+                                    Card Name
+                                </label>
+                                <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                Card Code
-                            </label>
-                            <input type="text" value="@Model.Code" class="form-control" name="Code" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Card Code
+                                </label>
+                                <input type="text" value="@Model.Code" class="form-control" name="Code" />
 
 
+                            </div>
+                            </div>
                         </div>
-                    </div>
                 </div>
 
                 <div style="display:flex;vertical-align:middle;" class="row">
 
                     <div class="col-md-6">
-                        <div class="checkbox form-horizontal-checkbox">
+                        <div class="form-check">
                             <label>
                                 @if (Model.IsActive == true)
                                 {
-                                    <input type="checkbox" checked name="IsActiveCB" id="IsActiveCB">
+                                    <input type="checkbox" class="form-check-input" checked name="IsActiveCB" id="IsActiveCB">
                                 }
                                 else
                                 {
-                                    <input type="checkbox" name="IsActiveCB" id="IsActiveCB">
+                                    <input type="checkbox" class="form-check-input" name="IsActiveCB" id="IsActiveCB">
 
                                 }
                                 <br />
@@ -88,47 +99,56 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                Gift Card Amounts (separated by comma)
-                            </label>
-                            <input type="text" value="@Model.GiftCardAmount" class="form-control" name="GiftCardAmount" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Gift Card Amounts (separated by comma)
+                                </label>
+                                <input type="text" value="@Model.GiftCardAmount" class="form-control" name="GiftCardAmount" />
 
 
+                            </div>
+                            </div>
                         </div>
-                    </div>
 
 
                 </div>
 
-                
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Expiry in Days</label>
-                            <input type="number" id="Days" class="form-control" name="Days" value="@Model.Days" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Expiry in Days</label>
+                                <input type="number" id="Days" class="form-control" name="Days" value="@Model.Days" />
+                            </div>
+                            </div>
                         </div>
-                    </div>
                     <div class="col-md-6">
                         <div class="form-group container">
-                            <label>Choose Image (Click on Image to Change)</label>
-                            <br />
-                            @if (Model.GiftCardImage == "" || Model.GiftCardImage == null)
-                            {
-                                <img id="MainThumb" style="width:150px;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
-                            }
-                            else
-                            {
-                                <img id="MainThumb" style="width:150px;" src="@Model.GiftCardImage" alt="...">
+                            <div class="input-group input-group-dynamic">
 
-                            }
+                                <label>Choose Image (Click on Image to Change)</label>
+                                <br />
+                                @if (Model.GiftCardImage == "" || Model.GiftCardImage == null)
+                                {
+                                    <img id="MainThumb" style="width:150px;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                                }
+                                else
+                                {
+                                    <img id="MainThumb" style="width:150px;" src="@Model.GiftCardImage" alt="...">
 
-                            <input value="@Model.GiftCardImage" type="hidden" name="GiftCardImage" id="GiftCardImage" />
-                            <input style="width:180px;" type="file" id="PhotoUpload" accept="image/*" />
+                                }
 
+                                <input value="@Model.GiftCardImage" type="hidden" name="GiftCardImage" id="GiftCardImage" />
+                                <input style="width:180px;" type="file" id="PhotoUpload" accept="image/*" />
+
+                            </div>
+                            </div>
                         </div>
-                    </div>
 
-                   
+
                 </div>
                 <div class="col-md-12">
                     @if (Model.ID == 0)
@@ -148,7 +168,7 @@
             </div>
 
 
-            
+
         </div>
     </div>
 </form>

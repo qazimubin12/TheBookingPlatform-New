@@ -40,7 +40,7 @@
                                 @if (item.isClosed == true)
                                 {
                                     <td class="text-center">
-                                        <select class="form-control" id="AllowOnlineBooking" onchange="ChangeIsClosedStatus('@item.ID')">
+                                        <select class="form-control choices__input" id="AllowOnlineBooking" onchange="ChangeIsClosedStatus('@item.ID')">
                                             <option value="True" selected>Yes</option>
                                             <option value="False">No</option>
                                         </select>
@@ -50,7 +50,7 @@
                                 else
                                 {
                                     <td class="text-center">
-                                        <select class="form-control" id="AllowOnlineBooking" onchange="ChangeIsClosedStatus('@item.ID')">
+                                        <select class="form-control choices__input" id="AllowOnlineBooking" onchange="ChangeIsClosedStatus('@item.ID')">
                                             <option value="True">Yes</option>
                                             <option selected value="False">No</option>
                                         </select>
@@ -61,7 +61,7 @@
                                 <td style="display:flex;" class="text-center">
 
                                     <a title="Edit" href="@Url.Action("Action", "OpeningHour", new { ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
-                                    <button title="Delete" data-href="@Url.Action("Delete", "OpeningHour", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+                                    <button title="Delete" data-href="@Url.Action("Delete", "OpeningHour", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="material-icons">delete</i></button>
 
                                 </td>
                             </tr>
@@ -89,6 +89,21 @@
             .done(function (response) {
                 $("#actionModal .modal-dialog").html(response);
             });
+    });
+
+    $(document).ready(function () {
+        var elements = document.getElementsByClassName('choices__input');
+
+        // Check if there are any elements found
+        if (elements.length > 0) {
+            // Loop through each element and initialize Choices for it
+            for (var i = 0; i < elements.length; i++) {
+                const example = new Choices(elements[i], {
+                    searchEnabled: false,
+                    itemSelectText: ''
+                });
+            }
+        }
     });
 </script>
 

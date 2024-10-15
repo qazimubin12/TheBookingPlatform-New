@@ -14,65 +14,66 @@
         width: 200px;
     }
 </style>
-@if (Model.SignedInUser.Role != "Super Admin")
-{
-    var LastPaymentDate = DateTime.Parse(Model.SignedInUser.LastPaymentDate);
-    var RemainderDays = (LastPaymentDate.AddMonths(1).Date - DateTime.Now.Date).Days;
-    <div class="alert alert-primary">
-        <span>You have @RemainderDays days till your package subscription ends</span>
-    </div>
-}
-<h3>Dashboard - Welcome @Model.SignedInUser.Name  - (@Model.SignedInUser.Company)</h3>
-<hr />
+<div class="container">
+    @if (Model.SignedInUser.Role != "Super Admin")
+    {
+        var LastPaymentDate = DateTime.Parse(Model.SignedInUser.LastPaymentDate);
+        var RemainderDays = (LastPaymentDate.AddMonths(1).Date - DateTime.Now.Date).Days;
+        <div class="alert alert-primary">
+            <span class="text-white">You have @RemainderDays days till your package subscription ends</span>
+        </div>
+    }
+    <h3>Dashboard - Welcome @Model.SignedInUser.Name  - (@Model.SignedInUser.Company)</h3>
+    <hr />
 
-@if (Model.Company != null)
-{
-    if (Model.OpeningHours.Count() > 7)
+    @if (Model.Company != null)
     {
-        <div class="alert alert-danger">
+        if (Model.OpeningHours.Count() > 7)
+        {
+            <div class="alert alert-danger">
 
-            <span>Go To Opening Hours > Create Opening Hours for Entire Week (Check is closed if you are closed on that day)</span>
-        </div>
-    }
-    if (Model.Company.CountryName == null)
-    {
-        <div class="alert alert-info">
-            <span> Go To Settings > Select Country Name</span>
-        </div>
-    }
-    if (Model.Company.Currency == null)
-    {
-        <div class="alert alert-info">
-            <span>Go To Settings > Select Currency </span>
-        </div>
-    }
-    if (Model.Company.CancellationTime == null)
-    {
-        <div class="alert alert-info">
-            <span>Go To Settings > Select Cancellation Time </span>
-        </div>
-    }
-    if (Model.Company.Deposit == 0)
-    {
-        <div class="alert alert-danger">
-            <span>Go To Settings > Enter your Deposit %</span>
-        </div>
-    }
-    if (Model.Company.APIKEY == null)
-    {
-        <div class="alert alert-danger">
-            <span> Go To Settings > Enter your Stripe API Key  </span>
-        </div>
-    }
-    if (Model.Company.PUBLISHEDKEY == null)
-    {
-        <div class="alert alert-danger">
-            <span>Go To Settings > Enter your Stripe Published Key</span>
-        </div>
-    }
+                <span class="text-white">Go To Opening Hours > Create Opening Hours for Entire Week (Check is closed if you are closed on that day)</span>
+            </div>
+        }
+        if (Model.Company.CountryName == null)
+        {
+            <div class="alert alert-info">
+                <span class="text-white"> Go To Settings > Select Country Name</span>
+            </div>
+        }
+        if (Model.Company.Currency == null)
+        {
+            <div class="alert alert-info">
+                <span class="text-white">Go To Settings > Select Currency </span>
+            </div>
+        }
+        if (Model.Company.CancellationTime == null)
+        {
+            <div class="alert alert-info">
+                <span class="text-white">Go To Settings > Select Cancellation Time </span>
+            </div>
+        }
+        if (Model.Company.Deposit == 0)
+        {
+            <div class="alert alert-danger">
+                <span class="text-white">Go To Settings > Enter your Deposit %</span>
+            </div>
+        }
+        if (Model.Company.APIKEY == null)
+        {
+            <div class="alert alert-danger">
+                <span class="text-white"> Go To Settings > Enter your Stripe API Key  </span>
+            </div>
+        }
+        if (Model.Company.PUBLISHEDKEY == null)
+        {
+            <div class="alert alert-danger">
+                <span class="text-white">Go To Settings > Enter your Stripe Published Key</span>
+            </div>
+        }
 
-}
-
+    }
+</div>
 
 <div class="modal fade" id="actionModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

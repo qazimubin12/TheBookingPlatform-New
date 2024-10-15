@@ -44,7 +44,7 @@
                                     <td class="text-center">@item.Company.Address</td>
                                     <td class="text-center">@item.Company.ContactEmail</td>
                                     <td class="text-center">
-                                        <select class="form-control">
+                                        <select class="form-control choices__input">
                                             @foreach (var emp in item.EmployeesLinked)
                                             {
                                                 <option value="@emp">@emp</option>
@@ -54,7 +54,7 @@
                                     <td class="text-center">
 
                                         <a href="@Url.Action("Action", "Company", new { ID = item.Company.ID })"  class="btn btn-sm btn-rounded btn-info btn-icon-text" ><i class="mdi mdi-pencil"></i> EDIT</a>
-                                        <button data-href="@Url.Action("Delete", "Company", new { ID = item.Company.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                        <button data-href="@Url.Action("Delete", "Company", new { ID = item.Company.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
 
                                     </td>
                                 </tr>

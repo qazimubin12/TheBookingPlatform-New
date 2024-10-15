@@ -1,5 +1,12 @@
 ﻿@model TheBookingPlatform.ViewModels.ServiceCategoriesActionViewModel
-
+<style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+</style>
 @if (Model != null)
 {
     <div class="modal-content">
@@ -19,9 +26,11 @@
         <div class="modal-body">
             <form id="actionForm">
                 <input type="hidden" name="ID" value="@Model.ID" />
-                <div class="form-group">
-                    <label>Service Category Name</label>
-                    <input class="form-control" name="Name" placeholder="Enter Name." value="@Model.Name">
+                <div class="form-group col-md-12">
+                    <div class="input-group input-group-dynamic">
+                        <label>Service Category Name</label>
+                        <input class="form-control" name="Name" placeholder="Enter Name." value="@Model.Name">
+                    </div>
                 </div>
 
             </form>
@@ -39,7 +48,7 @@
             {
                 <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
             }
-            <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
         </div>
     </div>
 }

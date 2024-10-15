@@ -334,10 +334,11 @@ namespace TheBookingPlatform.Controllers
             foreach (var item in Products)
             {
                 var Category = CategoryServices.Instance.GetCategory(item.CategoryID);
+
                 ProductListModel.Add(new ProductModel
                 {
                     ID = item.ID,
-                    Category = Category.Name,
+                    Category = Category != null ?  Category.Name : "--",
                     CurrentStock = item.CurrentStock,
                     ManageStockOrder = item.ManageStockOrder,
                     Name = item.Name,

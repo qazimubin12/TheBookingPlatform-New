@@ -204,8 +204,8 @@
                             <tr>
                                 <th>Description</th>
                                 <th>Quantity</th>
-                                <th>Unit Price (€)</th>
-                                <th>Amount (€)</th>
+                                <th>Unit Price (£)</th>
+                                <th>Amount (£)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -214,15 +214,15 @@
                                 <tr>
                                     <td>@item.Service</td>
                                     <td>@item.Duration</td>
-                                    <td>€ @item.Price</td>
+                                    <td>£ @item.Price</td>
                                     @if (item.Amount == "0.00" || item.Amount == "0")
                                     {
-                                        <td>€ @(float.Parse(item.Duration) * float.Parse(item.Price)) </td>
+                                        <td>£ @(float.Parse(item.Duration) * float.Parse(item.Price)) </td>
 
                                     }
                                     else
                                     {
-                                        <td>€ @item.Amount </td>
+                                        <td>£ @item.Amount </td>
                                     }
 
                                 </tr>
@@ -245,10 +245,10 @@
                                 </td>
                                 <td>
                                     <p>
-                                        <strong> € @TotalAmount </strong>
+                                        <strong> £ @TotalAmount </strong>
                                     </p>
                                     <p>
-                                        <strong> € @VAT</strong>
+                                        <strong> £ @VAT</strong>
                                     </p>
 
                                 </td>
@@ -257,7 +257,7 @@
                                 <td></td>
                                 <td></td>
                                 <td class="text-right"><h2><strong>Total: </strong></h2></td>
-                                <td class="text-left"><h2><strong>€ @TotalAmountwithVAT</strong></h2></td>
+                                <td class="text-left"><h2><strong>£ @TotalAmountwithVAT</strong></h2></td>
                             </tr>
                         </tbody>
                     </table>

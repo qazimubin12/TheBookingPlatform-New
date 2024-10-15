@@ -24,7 +24,8 @@
 <form id="actionForm">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
+
                 @if (Model.ID != 0)
                 {
                     <h4 class="card-title">
@@ -37,18 +38,18 @@
                         Create Employee Request
                     </h4>
                 }
-            </div>
 
 
-            <div class="card-content">
-                <div class="row">
+                <div class="row mb-4">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Enter Company Code</label>
-                            <input type="text" class="form-control" name="CompanyCode" id="CompanyCode" />
-                            <input type="hidden" class="form-control" name="ID" id="ID" value="@Model.ID" />
+                        <div class="input-group input-group-dynamic">
+                            <div class="col-md-12">
+                                <label>Enter Company Code</label>
+                                <input type="text" class="form-control" name="CompanyCode" id="CompanyCode" />
+                                <input type="hidden" class="form-control" name="ID" id="ID" value="@Model.ID" />
+                            </div>
                         </div>
-                        
+
                     </div>
                     <div class="col-md-6">
                         <span class="text-danger" id="errorDiv"></span>
@@ -62,30 +63,34 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Select Employee</label>
-                            <select class="form-control" name="EmployeeID" id="EmployeeID">
-                            </select>
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Select Employee</label>
+                                <select class="form-control choices__input" name="EmployeeID" id="EmployeeID">
+                                </select>
+                            </div>
                         </div>
                     </div>
+
                 </div>
 
-                    @if (Model.ID == 0)
-                    {
+                @if (Model.ID == 0)
+                {
 
 
-                        <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SEND REQUEST</button>
-                    }
-                    else
-                    {
-                        <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+                    <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SEND REQUEST</button>
+                }
+                else
+                {
+                    <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
 
-                    }
-                    <a href="@Url.Action("Index","EmployeeRequest")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+                }
+                <a href="@Url.Action("Index","EmployeeRequest")" class="btn btn-secondary  btn-rounded">CLOSE</a>
 
             </div>
 
 
-            
+
         </div>
     </div>
 </form>

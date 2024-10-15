@@ -86,7 +86,7 @@
 
     .quantity-container {
         display: flex;
-        align-items: center;
+        align-items: baseline;
     }
 
     .quantity-input {
@@ -102,7 +102,8 @@
 <form id="actionForm">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
+
                 @if (Model.ID != 0)
                 {
                     <h4 class="card-title">
@@ -115,10 +116,8 @@
                         Create Stock Order
                     </h4>
                 }
-            </div>
 
 
-            <div class="card-content">
                 <div id="SupplierCardsContent">
                     @if (Model.ID != 0)
                     {
@@ -166,7 +165,7 @@
 
                     <h5>Select Products for the Supplier: <span style="font-weight:bold;" id="SupplierName"></span></h5>
                     <div class="row">
-                        <div style="max-height:400px;" class="col-md-6">
+                        <div style="max-height:400px;" class="col-md-5">
                             <input type="text" id="SearchProducts" class="form-control" placeholder="Search" />
                             @if (Model.ProductInCart != null)
                             {
@@ -186,8 +185,8 @@
                                 </tbody>
                             </table>
                         </div>
-                        <h6>Your Order</h6>
                         <div id="MainCart" style="max-height:400px;" class="col-md-6">
+                            <h6 style="width:auto;">Your Order</h6>
 
                             @if (Model.ProductInCart == null || Model.ProductInCart.Count() == 0)
                             {
@@ -230,41 +229,41 @@
                                 </table>
                             }
                         </div>
-                      
+
                     </div>
                 </div>
-
-            </div>
-
-
-            <div id="ActionButtons" style="display:none; float:right;" class="col-md-12">
-                @if (Model.ID != 0)
-                {
-                    <button id="ActionBtnSaveDraft" type="button" class="btn btn-sm btn-round btn-light btn-rounded">UPDATE DRAFT</button>
-                }
-                else
-                {
-                    <button id="ActionBtnSaveDraft" type="button" class="btn btn-sm btn-round btn-light btn-rounded">SAVE DRAFT</button>
-
-                }
-                <button  id="ActionBtnPlaceOrder" type="button" class="btn btn-sm btn-round btn-primary btn-rounded">PLACE ORDER</button>
-
-                <a href="@Url.Action("Index", "Product", new {Selected="Stock Order"})" class="btn btn-sm btn-round btn-danger  btn-rounded">CLOSE</a>
-                <div style="float:right;" class="grandTotal">
+                <div id="ActionButtons" style="display:none; float:right;" class="col-md-12">
                     @if (Model.ID != 0)
                     {
-                        <h3 style="font-weight:bold;">Grand Total: <span id="GrandTotal">@Model.GrandTotal</span></h3>
-                        <input type="hidden" name="GrandTotal" value="@Model.GrandTotal" id="MainGrandTotal" />
-
+                        <button id="ActionBtnSaveDraft" type="button" class="btn btn-sm btn-round btn-light btn-rounded">UPDATE DRAFT</button>
                     }
                     else
                     {
-                        <h3 style="font-weight:bold;">Grand Total: <span id="GrandTotal">0.00</span></h3>
-                        <input type="hidden" name="GrandTotal" id="MainGrandTotal" />
-                    }
+                        <button id="ActionBtnSaveDraft" type="button" class="btn btn-sm btn-round btn-light btn-rounded">SAVE DRAFT</button>
 
+                    }
+                    <button id="ActionBtnPlaceOrder" type="button" class="btn btn-sm btn-round btn-primary btn-rounded">PLACE ORDER</button>
+
+                    <a href="@Url.Action("Index", "Product", new {Selected="Stock Order"})" class="btn btn-sm btn-round btn-danger  btn-rounded">CLOSE</a>
+                    <div style="float:right;" class="grandTotal">
+                        @if (Model.ID != 0)
+                        {
+                            <h3 style="font-weight:bold;">Grand Total: <span id="GrandTotal">@Model.GrandTotal</span></h3>
+                            <input type="hidden" name="GrandTotal" value="@Model.GrandTotal" id="MainGrandTotal" />
+
+                        }
+                        else
+                        {
+                            <h3 style="font-weight:bold;">Grand Total: <span id="GrandTotal">0.00</span></h3>
+                            <input type="hidden" name="GrandTotal" id="MainGrandTotal" />
+                        }
+
+                    </div>
                 </div>
             </div>
+
+
+            
         </div>
     </div>
 </form>
@@ -568,7 +567,7 @@
 
                 if (!tableCreated) {
                     // Create the table structure for the first product
-                    var newTable = '<table style="    padding: 5px 8px;" id="productsTable" class="table table-hover table-striped">' +
+                    var newTable = '<table style="    padding: 5px 8px;" id="productsTable" class="table table-hover ">' +
                         '<thead>' +
                         '<tr>' +
                         '<th>Name</th>' +
@@ -584,6 +583,8 @@
                         '</table>';
 
                     mainCartDiv.empty();
+                    var heading = "<h6 style='width:auto;'>Your Order </h2>";
+                    mainCartDiv.append(heading);
                     mainCartDiv.append(newTable);
                     tableCreated = true;
                     GetGrandTotal();

@@ -152,9 +152,18 @@ namespace TheBookingPlatform.Controllers
         [HttpGet]
         public JsonResult GetEndTime(DateTime StartTime, string Duration)
         {
-            var duration = Duration.Replace("mins", "").Replace("Mins", "");
-            var endtime = StartTime.AddMinutes(int.Parse(duration));
-            return Json(new { success = true, EndTime = endtime.ToString("HH:mm") }, JsonRequestBehavior.AllowGet);
+            if (Duration != null)
+            {
+                var duration = Duration.Replace("mins", "").Replace("Mins", "");
+                var endtime = StartTime.AddMinutes(int.Parse(duration));
+
+                return Json(new { success = true, EndTime = endtime.ToString("HH:mm") }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false}, JsonRequestBehavior.AllowGet);
+
+            }
         }
 
         static bool IsDateInRange(DateTime dateToCheck, DateTime startDate)
@@ -194,35 +203,42 @@ namespace TheBookingPlatform.Controllers
         public JsonResult CheckEmployeeService(string Services, int EmployeeID)
         {
             var employee = EmployeeServices.Instance.GetEmployee(EmployeeID);
+            if(Services != "") { 
             var finalIDsInt = Services.Split(',').Select(int.Parse).ToList();
             var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == employee.Business).FirstOrDefault();
-            if (EmployeeID != 0)
-            {
-                var employeeServices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(employee.Business, EmployeeID);
-
-                var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
-                foreach (var item in employeerequests)
+                if (EmployeeID != 0)
                 {
-                    if (item.Accepted)
+                    var employeeServices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(employee.Business, EmployeeID);
+
+                    var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
+                    foreach (var item in employeerequests)
                     {
-                        var employeeSefvices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(item.Business, EmployeeID);
-                        employeeServices.AddRange(employeeSefvices);
+                        if (item.Accepted)
+                        {
+                            var employeeSefvices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(item.Business, EmployeeID);
+                            employeeServices.AddRange(employeeSefvices);
+                        }
                     }
-                }
-                var employeeIDs = employeeServices
-                .Where(es => finalIDsInt.Contains(es.ServiceID))
-                .GroupBy(es => es.EmployeeID)
-                .Where(grp => grp.Select(g => g.ServiceID).Distinct().Count() == finalIDsInt.Count)
-                .Select(grp => grp.Key)
-                .ToList();
+                    var employeeIDs = employeeServices
+                    .Where(es => finalIDsInt.Contains(es.ServiceID))
+                    .GroupBy(es => es.EmployeeID)
+                    .Where(grp => grp.Select(g => g.ServiceID).Distinct().Count() == finalIDsInt.Count)
+                    .Select(grp => grp.Key)
+                    .ToList();
 
-                if (employeeIDs.Contains(EmployeeID))
-                {
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    if (employeeIDs.Contains(EmployeeID))
+                    {
+                        return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new { success = false, Message = "Beautician does not provide one or more selected services" }, JsonRequestBehavior.AllowGet);
+
+                    }
                 }
                 else
                 {
-                    return Json(new { success = false, Message = "Beautician does not provide one or more selected services" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false}, JsonRequestBehavior.AllowGet);
 
                 }
             }

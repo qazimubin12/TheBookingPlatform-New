@@ -48,38 +48,44 @@
 
                             <ul class="main-topics list-group col-md-12">
                                 <li class="list-group-item">
-                                    <label style="margin-left:20px;">
-                                        <input class="main-service-checkbox" name="AllServiceCategories" type="checkbox" />
-                                        Select All
-                                    </label>
+                                    <div class="form-check">
+                                        <label style="margin-left:20px;">
+                                            <input class="form-check-input main-service-checkbox" name="AllServiceCategories" type="checkbox" />
+                                            Select All
+                                        </label>
+                                    </div>
                                 </li>
                                 @foreach (var item in Model.Services)
                                 {
                                     <li class="list-group-item">
-                                        <label>
-                                            <span class="toggle-btn"></span>
-                                            <input onchange="FillData()" class="main-service-checkbox" name="ServiceCheckBox" type="checkbox" />
-                                            @item.ServiceCategory.Name
-                                        </label>
+                                        <div class="form-check">
+                                            <label>
+                                                <span class="toggle-btn"></span>
+                                                <input onchange="FillData()" class="form-check-input main-service-checkbox" name="ServiceCheckBox" type="checkbox" />
+                                                @item.ServiceCategory.Name
+                                            </label>
+                                        </div>
                                         <ul class="services list-group">
                                             @foreach (var servic in item.Services)
                                             {
                                                 <li class="list-group-item" data-service-id="@servic.ID" data-service-name="@servic.Name">
-                                                    <label>
-                                                        @if (Model.ServiceData != null)
-                                                        {
-                                                            if (Model.ServiceData.Split('_').ToList().Contains(servic.ID.ToString()))
+                                                    <div class="form-check">
+                                                        <label>
+                                                            @if (Model.ServiceData != null)
                                                             {
-                                                                <input checked onchange="FillData()" class="service-checkbox" type="checkbox" />
-                                                            }
-                                                            else
-                                                            {
-                                                                <input onchange="FillData()" class="service-checkbox" type="checkbox" />
+                                                                if (Model.ServiceData.Split('_').ToList().Contains(servic.ID.ToString()))
+                                                                {
+                                                                    <input checked onchange="FillData()" class="form-check-input service-checkbox" type="checkbox" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input onchange="FillData()" class="form-check-input service-checkbox" type="checkbox" />
 
+                                                                }
                                                             }
-                                                        }
-                                                        @servic.Name
-                                                    </label>
+                                                            @servic.Name
+                                                        </label>
+                                                    </div>
                                                 </li>
                                             }
                                         </ul>
@@ -87,7 +93,7 @@
                                 }
                             </ul>
                         </div>
-                        <button id="ActionBtn" type="button" class="btn btn-primary">SAVE</button>
+                        <button id="ActionBtn" type="button" class="btn btn-primary my-2">SAVE</button>
                     </div>
 
 
@@ -120,9 +126,11 @@
     $(document).ready(function () {
         FillData();
         $(".toggle-btn").click(function (e) {
+            debugger
             e.preventDefault();
             $(this).toggleClass("rotate");
-            $(this).parent().siblings(".services").slideToggle();
+            var parent = $(this).parent().parent();
+            parent.siblings(".services").slideToggle();
         });
 
         $(".main-service-checkbox").each(function () {

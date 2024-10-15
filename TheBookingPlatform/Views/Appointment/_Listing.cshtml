@@ -3,15 +3,13 @@
     ViewBag.Title = "Index";
 }
 
-<div class="row">
 
     <div class="col-lg-12 grid-margin stretch-card">
         @if (Model.Appointments != null)
         {
-            <div class="card">
 
                 <div class="table-responsive">
-                    <table id="datatables" class="table table-striped">
+                    <table id="datatables" class="table">
                         <thead>
                             <tr>
 
@@ -82,7 +80,7 @@
                                     <td class="text-center">
 
                                         <a href="@Url.Action("Action", "Appointment", new { ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
-                                        <button title="Delete" data-href="@Url.Action("Delete", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+                                        <button title="Delete" data-href="@Url.Action("Delete", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="material-icons">delete</i></button>
 
                                     </td>
                                 </tr>
@@ -90,7 +88,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
         }
         else
         {
@@ -100,7 +97,6 @@
             </div>
         }
     </div>
-</div>
 
 <script>
 

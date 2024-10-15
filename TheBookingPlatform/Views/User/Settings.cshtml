@@ -30,6 +30,16 @@
 
 
 <style>
+    .boxyy{
+        padding-left:5px;
+        cursor:pointer;
+        padding-bottom:5px;
+    }
+
+    .material-icons{
+        color:white;
+        font-size:xx-large;
+    }
     #loader {
         display: none;
         position: fixed;
@@ -51,239 +61,265 @@
     }
 </style>
 <div class="card">
-    <div class="card-content text-center">
-        <span class="text-center">Choose Option</span>
-        <input type="hidden" value="@Model.Selected" id="Selected" />
-        <div class="nav-center">
-            <ul class="nav nav-pills nav-pills-warning nav-pills-icons" role="tablist">
+    <div class="card-body">
+        <div class=" text-center">
+            <span class="text-center">Choose Option</span>
+            <input type="hidden" value="@Model.Selected" id="Selected" />
+            <div class="nav-center">
 
-                @if (User.IsInRole("Admin"))
-                {
-                    if (inTrial == "No")
-                    {
-                        if (package.Split(',').Contains("Employees"))
+                <div class="nav-wrapper position-relative end-0 mb-2">
+                    <ul class="nav nav-pills nav-fill p-1" role="tablist">
+
+
+
+                        @if (User.IsInRole("Admin"))
                         {
-                            <li>
-                                <a id="Employees" href="#tasks-1" role="tab" data-toggle="tab">
-                                    <i class="material-icons">person</i>
-                                    Employees
+                            if (inTrial == "No")
+                            {
+                                if (package.Split(',').Contains("Employees"))
+                                {
+
+
+                                    <li id="Employees" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="true">
+                                            Emloyees
+                                        </a>
+                                    </li>
+
+
+                                }
+                                if (package.Split(',').Contains("Reviews"))
+                                {
+
+
+                                    <li id="Reviews" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
+                                            Reviews
+                                        </a>
+                                    </li>
+
+
+
+
+                                }
+
+                                if (package.Split(',').Contains("Logs"))
+                                {
+
+                                    <li id="Logs" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#logs-2" role="tab" aria-controls="logs" aria-selected="false">
+                                            Logs
+                                        </a>
+                                    </li>
+
+                                }
+
+
+                                if (package.Split(',').Contains("Price Changes"))
+                                {
+                                    <li id="PriceChange" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pricechanges-2" role="tab" aria-controls="price-change" aria-selected="false">
+                                            Price Changes
+                                        </a>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+
+                                <li id="Employees" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="true">
+                                        Emloyees
+                                    </a>
+                                </li>
+
+                                <li id="Reviews" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
+                                        Reviews
+                                    </a>
+                                </li>
+
+
+                                <li id="Logs" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#logs-2" role="tab" aria-controls="logs" aria-selected="false">
+                                        Logs
+                                    </a>
+                                </li>
+
+
+                                <li id="PriceChange" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pricechanges-2" role="tab" aria-controls="price-change" aria-selected="false">
+                                        Price Changes
+                                    </a>
+                                </li>
+
+
+                            }
+                        }
+                        else
+                        {
+                            <li id="Company" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#company-1" role="tab" aria-controls="company" aria-selected="true">
+                                    Company
                                 </a>
                             </li>
+
+
+                            if (inTrial == "No")
+                            {
+                                if (package.Split(',').Contains("Services"))
+                                {
+
+
+                                    <li id="Services" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#services-1" role="tab" aria-controls="services" aria-selected="false">
+                                            Services
+                                        </a>
+                                    </li>
+
+                                }
+                                if (package.Split(',').Contains("Employees"))
+                                {
+                                    <li id="Employees" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="false">
+                                            Emloyees
+                                        </a>
+                                    </li>
+
+                                }
+                                if (package.Split(',').Contains("Reviews"))
+                                {
+
+                                    <li id="Reviews" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
+                                            Reviews
+                                        </a>
+                                    </li>
+
+
+
+                                }
+                                if (package.Split(',').Contains("Logs"))
+                                {
+                                    <li id="Logs" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#logs-2" role="tab" aria-controls="logs" aria-selected="false">
+                                            Logs
+                                        </a>
+                                    </li>
+
+                                }
+                                if (package.Split(',').Contains("Rebook Reminders"))
+                                {
+
+                                    <li id="RebookReminders" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#rebookreminders-2" role="tab" aria-controls="rebook-reminders" aria-selected="false">
+                                            Rebook Reminders
+                                        </a>
+                                    </li>
+
+                                }
+                                if (package.Split(',').Contains("Email Template"))
+                                {
+
+                                    <li id="EmailTemplate" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#emailtemplate-2" role="tab" aria-controls="email-template" aria-selected="false">
+                                            Email Template
+                                        </a>
+                                    </li>
+
+                                }
+                                if (package.Split(',').Contains("Opening Hours"))
+                                {
+
+
+                                    <li id="OpeningHours" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#openinghours-2" role="tab" aria-controls="opening-hours" aria-selected="false">
+                                            Opening Hours
+                                        </a>
+                                    </li>
+
+
+
+                                }
+                                if (package.Split(',').Contains("Price Changes"))
+                                {
+                                    <li id="PriceChange" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pricechanges-2" role="tab" aria-controls="price-change" aria-selected="false">
+                                            Price Changes
+                                        </a>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li id="Services" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#services-1" role="tab" aria-controls="services" aria-selected="false">
+                                        Services
+                                    </a>
+                                </li>
+
+
+                                <li id="Employees" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="false">
+                                        Emloyees
+                                    </a>
+                                </li>
+
+                                <li id="Reviews" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
+                                        Reviews
+                                    </a>
+                                </li>
+
+
+
+
+
+                                <li id="Logs" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#logs-2" role="tab" aria-controls="logs" aria-selected="false">
+                                        Logs
+                                    </a>
+                                </li>
+
+                                <li id="RebookReminders" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#rebookreminders-2" role="tab" aria-controls="rebook-reminders" aria-selected="false">
+                                        Rebook Reminders
+                                    </a>
+                                </li>
+
+                                <li id="EmailTemplate" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#emailtemplate-2" role="tab" aria-controls="email-template" aria-selected="false">
+                                        Email Template
+                                    </a>
+                                </li>
+
+
+
+                                <li id="OpeningHours" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#openinghours-2" role="tab" aria-controls="opening-hours" aria-selected="false">
+                                        Opening Hours
+                                    </a>
+                                </li>
+
+
+
+                                <li id="PriceChange" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pricechanges-2" role="tab" aria-controls="price-change" aria-selected="false">
+                                        Price Changes
+                                    </a>
+                                </li>
+
+                            }
                         }
-                        if (package.Split(',').Contains("Reviews"))
-                        {
-                            <li>
-                                <a id="Reviews" href="#tasks-1" role="tab" data-toggle="tab">
-                                    <i class="material-icons">reviews</i>
-                                    Reviews
-                                </a>
-                            </li>
-                        }
-
-                        if (package.Split(',').Contains("Logs"))
-                        {
-                            <li>
-                                <a id="Logs" href="#tasks-2" role="tab" data-toggle="tab">
-                                    <i class="material-icons">summarize</i>
-                                    Logs
-                                </a>
-                            </li>
-                        }
 
 
-                        if (package.Split(',').Contains("Price Changes"))
-                        {
-                            <li>
-                                <a id="PriceChange" href="#tasks-2" role="tab" data-toggle="tab">
-                                    <i class="material-icons">discount</i>
-                                    Price Changes
-                                </a>
-                            </li>
-                        }
-                    }
-                    else
-                    {
+                    </ul>
+                </div>
 
-                        <li>
-                            <a id="Employees" href="#tasks-1" role="tab" data-toggle="tab">
-                                <i class="material-icons">person</i>
-                                Employees
-                            </a>
-                        </li>
+                   
+                </div>
 
-                        <li>
-                            <a id="Reviews" href="#tasks-1" role="tab" data-toggle="tab">
-                                <i class="material-icons">reviews</i>
-                                Reviews
-                            </a>
-                        </li>
-
-                        <li>
-                            <a id="Logs" href="#tasks-2" role="tab" data-toggle="tab">
-                                <i class="material-icons">summarize</i>
-                                Logs
-                            </a>
-                        </li>
-
-                        <li>
-                            <a id="PriceChange" href="#tasks-2" role="tab" data-toggle="tab">
-                                <i class="material-icons">discount</i>
-                                Price Changes
-                            </a>
-                        </li>
-
-                    }
-                }
-                else
-                {
-
-                    <li>
-                        <a id="Company" href="#description-1" role="tab" data-toggle="tab">
-                            <i class="material-icons">apartment</i>
-                            Company
-                        </a>
-                    </li>
-                    if (inTrial == "No")
-                    {
-                        if (package.Split(',').Contains("Services"))
-                        {
-                            <li>
-                                <a id="Services" href="#schedule-1" role="tab" data-toggle="tab">
-                                    <i class="material-icons">apps</i>
-                                    Services
-                                </a>
-                            </li>
-                        }
-                        if (package.Split(',').Contains("Employees"))
-                        {
-                            <li>
-                                <a id="Employees" href="#tasks-1" role="tab" data-toggle="tab">
-                                    <i class="material-icons">person</i>
-                                    Employees
-                                </a>
-                            </li>
-                        }
-                        if (package.Split(',').Contains("Reviews"))
-                        {
-                            <li>
-                                <a id="Reviews" href="#tasks-1" role="tab" data-toggle="tab">
-                                    <i class="material-icons">reviews</i>
-                                    Reviews
-                                </a>
-                            </li>
-                        }
-                        if (package.Split(',').Contains("Logs"))
-                        {
-                            <li>
-                                <a id="Logs" href="#tasks-2" role="tab" data-toggle="tab">
-                                    <i class="material-icons">summarize</i>
-                                    Logs
-                                </a>
-                            </li>
-                        }
-                        if (package.Split(',').Contains("Rebook Reminders"))
-                        {
-                            <li>
-                                <a id="RebookReminders" href="#tasks-2" role="tab" data-toggle="tab">
-                                    <i class="material-icons">notifications</i>
-                                    Rebook Reminders
-                                </a>
-                            </li>
-                        }
-                        if (package.Split(',').Contains("Email Template"))
-                        {
-                            <li>
-                                <a id="EmailTemplate" href="#tasks-2" role="tab" data-toggle="tab">
-                                    <i class="material-icons">email</i>
-                                    Email Template
-                                </a>
-                            </li>
-                        }
-                        if (package.Split(',').Contains("Opening Hours"))
-                        {
-                            <li>
-                                <a id="OpeningHours" href="#tasks-2" role="tab" data-toggle="tab">
-                                    <i class="material-icons">schedule</i>
-                                    Opening Hours
-                                </a>
-                            </li>
-                        }
-                        if (package.Split(',').Contains("Price Changes"))
-                        {
-                            <li>
-                                <a id="PriceChange" href="#tasks-2" role="tab" data-toggle="tab">
-                                    <i class="material-icons">discount</i>
-                                    Price Changes
-                                </a>
-                            </li>
-                        }
-                    }
-                    else
-                    {
-
-                        <li>
-                            <a id="Services" href="#schedule-1" role="tab" data-toggle="tab">
-                                <i class="material-icons">apps</i>
-                                Services
-                            </a>
-
-                        </li>
-                        <li>
-                            <a id="Employees" href="#tasks-1" role="tab" data-toggle="tab">
-                                <i class="material-icons">person</i>
-                                Employees
-                            </a>
-                        </li>
-
-                        <li>
-                            <a id="Reviews" href="#tasks-1" role="tab" data-toggle="tab">
-                                <i class="material-icons">reviews</i>
-                                Reviews
-                            </a>
-                        </li>
-
-                        <li>
-                            <a id="Logs" href="#tasks-2" role="tab" data-toggle="tab">
-                                <i class="material-icons">summarize</i>
-                                Logs
-                            </a>
-                        </li>
-
-                        <li>
-                            <a id="RebookReminders" href="#tasks-2" role="tab" data-toggle="tab">
-                                <i class="material-icons">notifications</i>
-                                Rebook Reminders
-                            </a>
-                        </li>
-
-                        <li>
-                            <a id="EmailTemplate" href="#tasks-2" role="tab" data-toggle="tab">
-                                <i class="material-icons">email</i>
-                                Email Template
-                            </a>
-                        </li>
-
-                        <li>
-                            <a id="OpeningHours" href="#tasks-2" role="tab" data-toggle="tab">
-                                <i class="material-icons">schedule</i>
-                                Opening Hours
-                            </a>
-                        </li>
-
-                        <li>
-                            <a id="PriceChange" href="#tasks-2" role="tab" data-toggle="tab">
-                                <i class="material-icons">discount</i>
-                                Price Changes
-                            </a>
-                        </li>
-
-                    }
-                }
-
-            </ul>
-        </div>
-
-
+            </div>
 
 
 
@@ -292,8 +328,8 @@
 </div>
 
 <div style="display:none;" id="loader"><img style="width:150px;" src="~/Content/TBPContent/Loader.gif" /></div>
-
-<div id="ActionPanel">
+<hr />
+<div id="ActionPanel" class="max-height-vh-100">
 </div>
 
 <div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
@@ -362,6 +398,7 @@
 
     $("#PriceChange").click(function () {
         showLoadingSpinner();
+        
         $.ajax({
             url: '@Url.Action("PriceChange", "Home")', // Replace with your controller and action names
             type: 'GET',

@@ -5,6 +5,15 @@
         display: none;
     }
 
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
+
+
     div.dataTables_wrapper div.dataTables_filter input {
         margin-left: 0.5em;
         display: flex;
@@ -33,8 +42,8 @@
 </style>
 <div class="row">
     <div class="card">
-        <div class="card-content">
-            <h4 class="card-title">Issue Loyalty Card</h4>
+        <div class="card-body">
+            <h2 class="card-title">Issue Loyalty Card</h2>
             <h4 style="display:none;" class="card-title" id="SelectedCustomer"></h4>
             <button style="display:none;" class="btn btn-sm btn-danger" id="BackButton">Change Customer</button>
             <div id="CustomerTable" class="material-datatables">
@@ -102,25 +111,35 @@
 
 <div id="myModal" class="modal">
     <div class="modal-content">
-        <button class="close-button btn btn-danger btn-sm btn-round" id="closeModal" style="padding-top: 0px;padding-left: 10px;float:right;padding-right: 10px;padding-bottom: 0px;font-size: large;">&times;</button>
+        <div class="col-md-12">
+            <button class="close-button btn btn-danger btn-sm btn-round" id="closeModal" style="padding-top: 0px;padding-left: 10px;float:right;padding-right: 10px;padding-bottom: 0px;font-size: large;">&times;</button>
+        </div>
         <h2>Assign Card</h2>
         <input type="hidden" class="form-control" id="Customer" value="@Model.Customer" name="Customer">
         <input type="hidden" class="form-control" id="LoyaltyCardIDModal">
         <div class="form-group">
-            <label>
-                Card Number
-            </label>
-            <input type="text" class="form-control" name="CardNumber" id="CardNumber" />
+            <div class="input-group input-group-dynamic">
+
+                <label>
+                    Card Number
+                </label>
+                <input type="text" class="form-control" name="CardNumber" id="CardNumber" />
+            </div>
         </div>
         <div class="form-group">
-            <label>
-              Initial Cash Back
-            </label>
-            <input type="text" class="form-control" name="CashBack" id="CashBack" value="0" />
-        </div>
+            <div class="input-group input-group-dynamic">
 
-        <button class="btn btn-sm btn-primary btn-round" type="button" id="generateNumberBtn">Generate New Number</button>
-        <button class="btn btn-sm btn-success btn-round" type="button" id="actionButton">Issue Card</button>
+                <label>
+                    Initial Cash Back
+                </label>
+                <input type="text" class="form-control" name="CashBack" id="CashBack" value="0" />
+            </div>
+        </div>
+        
+        <div class="col-md-12 my-5">
+            <button class="btn btn-sm btn-primary btn-round" type="button" id="generateNumberBtn">Generate New Number</button>
+            <button class="btn btn-sm btn-success btn-round" type="button" id="actionButton">Issue Card</button>
+        </div>
     </div>
 </div>
 

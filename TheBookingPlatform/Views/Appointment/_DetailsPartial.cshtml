@@ -27,9 +27,22 @@
         background: #fff;
         margin-bottom: 0px;
     }
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
 
     .tab-pane .table tbody > tr > td:first-child {
         width: 200px;
+    }
+
+    .nav.nav-pills .nav-link.active {
+        background: white;
+        animation: 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
     }
 
     .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
@@ -38,295 +51,340 @@
     }
 </style>
 <div class="card">
-    <div class="card-header">
-        <h4 class="card-title">Customer Details</h4>
-    </div>
-    <div class="card-content">
-        <ul style="margin-bottom:20px;" class="nav nav-pills nav-pills-success">
-            <li class="active"><a href="#pill1" data-toggle="tab">Customer</a></li>
-            <li><a href="#pill2" data-toggle="tab">Appointments</a></li>
-            <li><a href="#pill3" data-toggle="tab">History</a></li>
-            <li><a href="#pill4" data-toggle="tab">Statistics</a></li>
-            <li><a href="#pill5" data-toggle="tab">Sent Messages</a></li>
-            <li><a href="#pill6" data-toggle="tab">Loyalty</a></li>
-            <li><a href="#pill7" data-toggle="tab">Files</a></li>
+    <div class="card-body">
+        <h2 class="card-title">Customer Details</h2>
 
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane active" id="pill1">
-                @if (Model.Customer == null)
-                {
-                    <div class="row">
+        <div class="nav-wrapper position-relative end-0 mb-2">
+           
+            <ul class="nav nav-pills nav-fill p-1" role="tablist">
 
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label>
-                                    Customer Name
-                                </label>
-                                <input type="text" class="form-control" name="Customer" value="Walk In" />
+                <li class="nav-item ">
+                    <a href="#pill1" data-bs-toggle="tab" class="nav-link mb-0 px-0 py-1 active" role="tab" aria-controls="profile" aria-selected="true">
+                        Customer
+                    </a>
 
-                            </div>
-                        </div>
-                    </div>
+                <li class="nav-item">
+                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pill2" role="tab" aria-controls="dashboard" aria-selected="false">
+                        Appointments
+                    </a>
+                </li>
 
-                }
-                else
-                {
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>
-                                    Customer Name
-                                </label>
-                                <input type="text" class="form-control" name="Customer" value="@Model.Customer.FirstName @Model.Customer.LastName" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>
-                                    Customer Email
-                                </label>
-                                <input type="text" class="form-control" name="Email" value="@Model.Customer.Email" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>
-                                    Customer Mobile Number
-                                </label>
-                                <input type="text" class="form-control" name="MobileNumber" value="@Model.Customer.MobileNumber" />
-                            </div>
-                        </div>
-                       
-                    </div>
+                <li class="nav-item">
+                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pill3" role="tab" aria-controls="dashboard" aria-selected="false">
+                        History
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pill4" role="tab" aria-controls="dashboard" aria-selected="false">
+                        Statistics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pill5" role="tab" aria-controls="dashboard" aria-selected="false">
+                        Sent Messages
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pill6" role="tab" aria-controls="dashboard" aria-selected="false">
+                        Loyalty
+                    </a>
+                </li> 
+                <li class="nav-item">
+                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pill7" role="tab" aria-controls="dashboard" aria-selected="false">
+                        Files
+                    </a>
+                </li>
 
-
-                }
-            </div>
-            <div class="tab-pane" id="pill2">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center">
-                                Employee
-                            </th>
-                            <th class="text-center">
-                                Service
-                            </th>
-                            <th class="text-center">
-                                Date
-                            </th>
-                            <th>
-                                Action
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.TotalAppointmentsCustomer)
-                        {
-                            <tr>
-                                <td class="text-center">@item.EmployeeName</td>
-                                <td class="text-center">
-                                    <table style="border: none; background-color: transparent;  " class="table table-borderless">
-                                        @foreach (var listofservice in item.Services)
-                                        {
-                                            <tr>
-                                                @if (listofservice.Discount == 0)
-                                                {
-                                                    <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price  </td>
-                                                }
-                                                else
-                                                {
-                                                    <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price (Discount: @listofservice.Discount %) </td>
-                                                }
-                                            </tr>
-                                        }
-                                    </table>
-
-                                </td>
-                                <td class="text-center">@item.Date.ToString("yyyy-MM-dd") @item.Time.ToString("H:mm") - @item.AppointmentEndTime.ToString("H:mm")</td>
-                                <td>
-                                    @if (item.Status == "Paid")
-                                    {
-
-
-                                        <button onclick="window.location.href='@Url.Action("Invoice", "Appointment", new {ID = item.ID})'" class="btn btn-primary btn-round btn-sm" type="button">VIEW  </button>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-primary btn-round btn-sm" onclick="window.location.href='@Url.Action("Action", "Appointment", new {ID=item.ID})'" type="button">EDIT APPOINTMENT</button>
-
-                                    }
-                                </td>
-                            </tr>
-                        }
-
-                    </tbody>
-                </table>
-            </div>
-            <div class="tab-pane" id="pill3">
-                <table class="table table-striped">
-                    @if (Model.Histories != null)
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="pill1">
+                    @if (Model.Customer == null)
                     {
-                        foreach (var item in Model.Histories)
-                        {
-                            <tr>
-                                <td>◉ @item.Note  - @item.Date.ToString("yyyy-MM-dd HH:mm")</td>
-                            </tr>
-                        }
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="input-group input-group-dynamic">
+                                        <label>
+                                            Customer Name
+                                        </label>
+                                        <input type="text" class="form-control" name="Customer" value="Walk In" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     }
-                </table>
-            </div>
-            <div class="tab-pane" id="pill4">
-                <h4>Coming Soon</h4>
-
-            </div>
-            <div class="tab-pane" id="pill5">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>
-                                Date
-                            </th>
-                            <th>
-                                Type
-                            </th>
-                            <th>
-                                Subject
-                            </th>
-                            <th>
-                                Status
-                            </th>
-                            <th>
-                                Channel
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Messages != null)
-                        {
-                            foreach (var item in Model.Messages)
-                            {
-                                <tr>
-                                    <td>@item.Date</td>
-                                    <td>@item.Type</td>
-                                    <td>@item.Subject</td>
-                                    <td>@item.Status</td>
-                                    <td>@item.Channel</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-
-            </div>
-            <div class="tab-pane" id="pill6">
-                <h4>Loyalty Card Assigned</h4>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center">
-                                Card Name
-                            </th>
-                            <th class="text-center">
-                                Customer Name
-                            </th>
-                            <th class="text-center">
-                                Mobile Number
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.LoyaltyCardAssignments != null)
-                        {
-                            foreach (var item in Model.LoyaltyCardAssignments)
-                            {
-                                <tr>
-                                    <td class="text-center">@item.LoyaltyCardName</td>
-                                    <td class="text-center">@item.Customer.FirstName @item.Customer.LastName</td>
-                                    <td class="text-center">@item.Customer.MobileNumber</td>
-
-                                </tr>
-                            }
-                        }
-
-                    </tbody>
-                </table>
-
-
-                <hr />
-
-                <h4>Loyalty Card History</h4>
-                <table class="table table-striped">
-                 
-                    <tbody>
-                        @if (Model.LoyaltyCardHistories != null)
-                        {
-                            foreach (var item in Model.LoyaltyCardHistories)
-                            {
-                                <tr>
-                                    <td class="text-center">◉ @item.Note  - @item.Date.ToString("yyyy-MM-dd")</td>
-
-                                </tr>
-                            }
-                        }
-
-                    </tbody>
-                </table>
-            </div>
-            <div class="tab-pane" id="pill7">
-                <div class="row">
-                    @if (Model.Customer != null)
+                    else
                     {
-                        <button data-href="@Url.Action("UploadFile", "Appointment", new { CustomerID = Model.Customer.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal">UPLOAD NEW</button>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>
+                                            Customer Name
+                                        </label>
+                                        <input type="text" class="form-control" name="Customer" value="@Model.Customer.FirstName @Model.Customer.LastName" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>
+                                            Customer Email
+                                        </label>
+                                        <input type="text" class="form-control" name="Email" value="@Model.Customer.Email" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>
+                                            Customer Mobile Number
+                                        </label>
+                                        <input type="text" class="form-control" name="MobileNumber" value="@Model.Customer.MobileNumber" />
+                                    </div>
+                                    </div>
+                                </div>
+
+                        </div>
+
+
                     }
                 </div>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>
-                                File
-                            </th>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Size
-                            </th>
-                            <th>
-                                Uploaded By
-                            </th>
-                            <th>
-                                Date and Time
-                            </th>
-                            <th>
-                                Action
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Files != null)
-                        {
-                            foreach (var item in Model.Files)
+                <div class="tab-pane" id="pill2">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Employee
+                                </th>
+                                <th class="text-center">
+                                    Service
+                                </th>
+                                <th class="text-center">
+                                    Date
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.TotalAppointmentsCustomer)
                             {
                                 <tr>
-                                    <td><a class="btn btn-primary btn-sm btn-round" target="_blank" href="@item.URL">OPEN</a></td>
-                                    <td>@item.Name</td>
-                                    <td>@item.Size</td>
-                                    <td>@item.UploadedBy</td>
-                                    <td>@item.DateTime</td>
-                                    <td>
-                                        <button data-href="@Url.Action("UploadFile", "Appointment", new { CustomerID = item.CustomerID, ID = item.ID })" type="button" class="data-btn  btn btn-sm btn-info btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
-                                        <button data-href="@Url.Action("DeleteFile", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-danger btn-sm btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                    <td class="text-center">@item.EmployeeName</td>
+                                    <td class="text-center">
+                                        <table style="border: none; background-color: transparent;  " class="table table-borderless">
+                                            @foreach (var listofservice in item.Services)
+                                            {
+                                                <tr>
+                                                    @if (listofservice.Discount == 0)
+                                                    {
+                                                        <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price  </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price (Discount: @listofservice.Discount %) </td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </table>
 
+                                    </td>
+                                    <td class="text-center">@item.Date.ToString("yyyy-MM-dd") @item.Time.ToString("H:mm") - @item.AppointmentEndTime.ToString("H:mm")</td>
+                                    <td>
+                                        @if (item.Status == "Paid")
+                                        {
+
+
+                                            <button onclick="window.location.href='@Url.Action("Invoice", "Appointment", new {ID = item.ID})'" class="btn btn-primary btn-round btn-sm" type="button">VIEW  </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-primary btn-round btn-sm" onclick="window.location.href='@Url.Action("Action", "Appointment", new {ID=item.ID})'" type="button">EDIT APPOINTMENT</button>
+
+                                        }
                                     </td>
                                 </tr>
                             }
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane" id="pill3">
+                    <table class="table">
+                        @if (Model.Histories != null)
+                        {
+                            foreach (var item in Model.Histories)
+                            {
+                                <tr>
+                                    <td>◉ @item.Note  - @item.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                                </tr>
+                            }
                         }
-                    </tbody>
-                </table>
+                    </table>
+                </div>
+                <div class="tab-pane" id="pill4">
+                    <h4>Coming Soon</h4>
+
+                </div>
+                <div class="tab-pane" id="pill5">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Subject
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                                <th>
+                                    Channel
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Messages != null)
+                            {
+                                foreach (var item in Model.Messages)
+                                {
+                                    <tr>
+                                        <td>@item.Date</td>
+                                        <td>@item.Type</td>
+                                        <td>@item.Subject</td>
+                                        <td>@item.Status</td>
+                                        <td>@item.Channel</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="tab-pane" id="pill6">
+                    <h4>Loyalty Card Assigned</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Card Name
+                                </th>
+                                <th class="text-center">
+                                    Customer Name
+                                </th>
+                                <th class="text-center">
+                                    Mobile Number
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.LoyaltyCardAssignments != null)
+                            {
+                                foreach (var item in Model.LoyaltyCardAssignments)
+                                {
+                                    <tr>
+                                        <td class="text-center">@item.LoyaltyCardName</td>
+                                        <td class="text-center">@item.Customer.FirstName @item.Customer.LastName</td>
+                                        <td class="text-center">@item.Customer.MobileNumber</td>
+
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+
+
+                    <hr />
+
+                    <h4>Loyalty Card History</h4>
+                    <table class="table">
+
+                        <tbody>
+                            @if (Model.LoyaltyCardHistories != null)
+                            {
+                                foreach (var item in Model.LoyaltyCardHistories)
+                                {
+                                    <tr>
+                                        <td class="text-center">◉ @item.Note  - @item.Date.ToString("yyyy-MM-dd")</td>
+
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane" id="pill7">
+                    <div class="col-md-12">
+                        @if (Model.Customer != null)
+                        {
+                            <button data-href="@Url.Action("UploadFile", "Appointment", new { CustomerID = Model.Customer.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">UPLOAD NEW</button>
+                        }
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    File
+                                </th>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Size
+                                </th>
+                                <th>
+                                    Uploaded By
+                                </th>
+                                <th>
+                                    Date and Time
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Files != null)
+                            {
+                                foreach (var item in Model.Files)
+                                {
+                                    <tr>
+                                        <td><a class="btn btn-primary btn-sm btn-round" target="_blank" href="@item.URL">OPEN</a></td>
+                                        <td>@item.Name</td>
+                                        <td>@item.Size</td>
+                                        <td>@item.UploadedBy</td>
+                                        <td>@item.DateTime</td>
+                                        <td>
+                                            <button data-href="@Url.Action("UploadFile", "Appointment", new { CustomerID = item.CustomerID, ID = item.ID })" type="button" class="data-btn  btn btn-sm btn-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
+                                            <button data-href="@Url.Action("DeleteFile", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-danger btn-sm btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
+        
+        
     </div>
 </div>
 
@@ -334,14 +392,14 @@
 
 
 
-<div class="card">
-    <div class="card-header">
-        Service Details
-    </div>
-    <div class="card-content">
+<div class="card my-3">
+    <div class="card-body">
+        <h2  class="card-title">
+            Service Details
+        </h2>
         <div class="row">
             <div class="table-responsive col-md-12">
-                <table class="table table-striped">
+                <table class="table">
                     <thead>
                         <tr>
                             <th class="text-center">
@@ -433,16 +491,16 @@
 </div>
 
 
-<div class="card">
-    <div class="card-header">
-        Appointment Actions
-    </div>
-    <div class="card-content">
+<div class="card my-3">
+    <div class="card-body">
+        <h2 class="card-title">
+            Appointment Actions
+        </h2>
         @if (Model.Services.Any(x => x.Service == "Break"))
         {
 
             <button type="button" onclick="window.location.href='@Url.Action("Action", "Appointment", new { ID = Model.Appointment.ID })'" class="btn btn-round btn-info">EDIT APPOINTMENT</button>
-            <button title="Delete" data-href="@Url.Action("DeleteNew", "Appointment", new { ID = Model.Appointment.ID })" type="button" class="data-btn btn  btn-round btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i>DELETE APPOINTMENT</button>
+            <button title="Delete" data-href="@Url.Action("DeleteNew", "Appointment", new { ID = Model.Appointment.ID })" type="button" class="data-btn btn  btn-round btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="material-icons">delete</i>DELETE APPOINTMENT</button>
         }
         else
         {
@@ -461,7 +519,7 @@
                 }
             }
             <button type="button" onclick="window.location.href='@Url.Action("Action", "Appointment", new { ID = Model.Appointment.ID })'" class="btn btn-round btn-info">EDIT APPOINTMENT</button>
-            <button title="Delete" data-href="@Url.Action("DeleteNew", "Appointment", new { ID = Model.Appointment.ID })" type="button" class="data-btn btn  btn-round btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i>DELETE APPOINTMENT</button>
+            <button title="Delete" data-href="@Url.Action("DeleteNew", "Appointment", new { ID = Model.Appointment.ID })" type="button" class="data-btn btn  btn-round btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="material-icons">delete</i>DELETE APPOINTMENT</button>
             if (Model.Appointment.CustomerID != 0)
             {
                 <button type="button" class="btn btn-secondary btn-round" onclick="window.location.href='@Url.Action("Issue", "LoyaltyCard", new { CustomerID = Model.Appointment.CustomerID })'">ISSUE LOYALTY CARD</button>

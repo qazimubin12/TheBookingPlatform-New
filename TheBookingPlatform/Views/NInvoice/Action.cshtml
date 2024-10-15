@@ -12,7 +12,12 @@
         color: black;
         font-weight: 400;
     }
-
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
     .checkbox label {
         cursor: pointer;
         padding-left: 0;
@@ -45,141 +50,183 @@
                         <!-- Customer Information -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Customer Name</label>
-                                <input type="text" class="form-control" name="CustomerName" value="@Model.CustomerName" placeholder="Enter customer name" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Customer Name</label>
+                                    <input type="text" class="form-control" name="CustomerName" value="@Model.CustomerName" placeholder="Enter customer name" />
+                                </div>
                             </div>
-                        </div>
+                            </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Customer Email</label>
-                                <input type="email" class="form-control" name="CustomerEmail" value="@Model.CustomerEmail" placeholder="Enter customer email" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Customer Email</label>
+                                    <input type="email" class="form-control" name="CustomerEmail" value="@Model.CustomerEmail" placeholder="Enter customer email" />
+                                </div>
+                                </div>
                             </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Customer Phone</label>
-                                <input type="text" class="form-control" name="CustomerPhone" value="@Model.CustomerPhone" placeholder="Enter customer phone" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Customer Phone</label>
+                                    <input type="text" class="form-control" name="CustomerPhone" value="@Model.CustomerPhone" placeholder="Enter customer phone" />
+                                </div>
                             </div>
-                        </div>
+                            </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Customer Address</label>
-                                <input type="text" class="form-control" name="CustomerAddress" value="@Model.CustomerAddress" placeholder="Enter customer address" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Customer Address</label>
+                                    <input type="text" class="form-control" name="CustomerAddress" value="@Model.CustomerAddress" placeholder="Enter customer address" />
+                                </div>
                             </div>
-                        </div>
+                            </div>
 
                         <!-- Company Information -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Company Logo</label>
-                                <br />
-                                @if (Model.CompanyLogo == "" || Model.CompanyLogo == null)
-                                {
-                                    <img id="MainThumb" style="width:150px;cursor:pointer;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
-                                }
-                                else
-                                {
-                                    <img id="MainThumb" style="width:150px;cursor:pointer;" src="@Model.CompanyLogo" alt="...">
+                                <div class="input-group input-group-dynamic">
 
-                                }
+                                    <label>Company Logo</label>
+                                    <br />
+                                    @if (Model.CompanyLogo == "" || Model.CompanyLogo == null)
+                                    {
+                                        <img id="MainThumb" style="width:150px;cursor:pointer;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                                    }
+                                    else
+                                    {
+                                        <img id="MainThumb" style="width:150px;cursor:pointer;" src="@Model.CompanyLogo" alt="...">
 
-                                <input value="@Model.CompanyLogo" type="hidden" name="CompanyLogo" id="CompanyLogo" />
-                                <input style=" width: 150px; " type="file" id="CompanyLogoUpload" accept="image/*" />
+                                    }
+
+                                    <input value="@Model.CompanyLogo" type="hidden" name="CompanyLogo" id="CompanyLogo" />
+                                    <input style=" width: 150px; " type="file" id="CompanyLogoUpload" accept="image/*" />
 
 
+                                </div>
+                                </div>
                             </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Company Name</label>
-                                <input type="text" class="form-control" name="CompanyName" value="@Model.CompanyName" placeholder="Enter company name" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Company Name</label>
+                                    <input type="text" class="form-control" name="CompanyName" value="@Model.CompanyName" placeholder="Enter company name" />
+                                </div>
+                                </div>
                             </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Company Email</label>
-                                <input type="email" class="form-control" name="CompanyEmail" value="@Model.CompanyEmail" placeholder="Enter company email" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Company Email</label>
+                                    <input type="email" class="form-control" name="CompanyEmail" value="@Model.CompanyEmail" placeholder="Enter company email" />
+                                </div>
+                                </div>
                             </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Company Phone</label>
-                                <input type="text" class="form-control" name="CompanyPhone" value="@Model.CompanyPhone" placeholder="Enter company phone" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Company Phone</label>
+                                    <input type="text" class="form-control" name="CompanyPhone" value="@Model.CompanyPhone" placeholder="Enter company phone" />
+                                </div>
                             </div>
-                        </div>
+                            </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Company Address</label>
-                                <input type="text" class="form-control" name="CompanyAddress" value="@Model.CompanyAddress" placeholder="Enter company address" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Company Address</label>
+                                    <input type="text" class="form-control" name="CompanyAddress" value="@Model.CompanyAddress" placeholder="Enter company address" />
+                                </div>
                             </div>
-                        </div>
+                            </div>
 
                         <!-- Date and Invoice Details -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Issue Date</label>
-                                @if (Model.ID != 0)
-                                {
-                                    <input type="date" class="form-control" name="IssueDate" id="IssueDate" value="@Model.IssueDate.ToString("yyyy-MM-dd")" />
+                                <div class="input-group input-group-dynamic">
 
-                                }
-                                else
-                                {
-                                    <input type="date" class="form-control" name="IssueDate" id="IssueDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <label>Issue Date</label>
+                                    @if (Model.ID != 0)
+                                    {
+                                        <input type="date" class="form-control" name="IssueDate" id="IssueDate" value="@Model.IssueDate.ToString("yyyy-MM-dd")" />
 
-                                }
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" name="IssueDate" id="IssueDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+                                    }
+                                </div>
+                                </div>
                             </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Due Date</label>
-                                @if (Model.ID != 0)
-                                {
-                                    <input type="date" class="form-control" name="DueDate" id="DueDate" value="@Model.DueDate.ToString("yyyy-MM-dd")" />
+                                <div class="input-group input-group-dynamic">
 
-                                }
-                                else
-                                {
-                                    <input type="date" class="form-control" name="DueDate" id="DueDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <label>Due Date</label>
+                                    @if (Model.ID != 0)
+                                    {
+                                        <input type="date" class="form-control" name="DueDate" id="DueDate" value="@Model.DueDate.ToString("yyyy-MM-dd")" />
 
-                                }
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" name="DueDate" id="DueDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+                                    }
+                                </div>
                             </div>
-                        </div>
+                            </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Invoice No</label>
-                                <input type="text" class="form-control" readonly value="@Model.InvoiceNo" name="InvoiceNo" id="InvoiceNo" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Invoice No</label>
+                                    <input type="text" class="form-control" readonly value="@Model.InvoiceNo" name="InvoiceNo" id="InvoiceNo" />
+                                </div>
                             </div>
-                        </div>
+                            </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Remarks</label>
-                                <input type="text" class="form-control"  value="@Model.Remarks" name="Remarks" id="Remarks" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Remarks</label>
+                                    <input type="text" class="form-control" value="@Model.Remarks" name="Remarks" id="Remarks" />
+                                </div>
+                                </div>
                             </div>
-                        </div>
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Payment Method</label>
-                                <input type="text" class="form-control"  value="Transfer" name="PaymentMethod" id="PaymentMethod" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Payment Method</label>
+                                    <input type="text" class="form-control" value="Transfer" name="PaymentMethod" id="PaymentMethod" />
+                                </div>
+                                </div>
                             </div>
-                        </div>
 
 
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>VAT</label>
-                                <select class="form-control" name="VAT" id="VAT">
+                                <select class="form-control choices__input" name="VAT" id="VAT">
                                     @foreach (var item in Model.Vats)
                                     {
                                         <option value="@item.ID" @(Model.VAT == item.ID ? "selected" : "")>@item.Name (@item.Percentage)</option>
@@ -194,7 +241,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-striped table-bordered mt-4">
+                                <table class="table d mt-4">
                                     <thead class="thead-dark">
                                         <tr>
                                             <th>Description</th>
@@ -210,12 +257,31 @@
                                             foreach (var item in Model.Items)
                                             {
                                                 <tr class="productRow">
-                                                    <td><input value="@item.Service" type="text" class="form-control description" /></td>
-                                                    <td><input value="@item.Duration" type="number" class="form-control quantity" /></td>
-                                                    <td><input value="@item.Price" type="number" class="form-control unitPrice" /></td>
-                                                    <td><input value="@item.Amount" type="number" class="form-control Amount" readonly /></td>
-                                                    <td><button class="btn btn-danger btn-sm removeRowBtn" type="button"><i class="fa fa-trash"></i></button></td>
+                                                    <td>
+                                                        <div class="input-group input-group-dynamic">
+                                                            <input value="@item.Service" type="text" class="form-control description" />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group input-group-dynamic">
+                                                            <input value="@item.Duration" type="number" class="form-control quantity" />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group input-group-dynamic">
+                                                            <input value="@item.Price" type="number" class="form-control unitPrice" />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group input-group-dynamic">
+                                                            <input value="@item.Amount" type="number" class="form-control Amount" readonly />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-sm removeRowBtn" type="button"><i class="fa fa-trash"></i></button>
+                                                    </td>
                                                 </tr>
+
                                             }
                                         }
                                     </tbody>
@@ -330,12 +396,31 @@
         }
         $('.addRowBtn').on('click', function () {
             var newRow = `<tr class="productRow">
-                        <td><input type="text" class="form-control description" /></td>
-                        <td><input type="number" class="form-control quantity" /></td>
-                        <td><input type="number" class="form-control unitPrice" /></td>
-                        <td><input type="number" class="form-control Amount" /></td>
-                        <td><button class="btn btn-danger btn-sm removeRowBtn" type="button"><i class="fa fa-trash"></i></button></td>
-                      </tr>`;
+    <td>
+        <div class="input-group input-group-dynamic">
+            <input value="" type="text" class="form-control description" />
+        </div>
+    </td>
+    <td>
+        <div class="input-group input-group-dynamic">
+            <input value="" type="number" class="form-control quantity" />
+        </div>
+    </td>
+    <td>
+        <div class="input-group input-group-dynamic">
+            <input value="" type="number" class="form-control unitPrice" />
+        </div>
+    </td>
+    <td>
+        <div class="input-group input-group-dynamic">
+            <input value="" type="number" class="form-control Amount" readonly />
+        </div>
+    </td>
+    <td>
+        <button class="btn btn-danger btn-sm removeRowBtn" type="button"><i class="fa fa-trash"></i></button>
+    </td>
+</tr>
+`;
             $('#ServiceTable').append(newRow);
 
         });

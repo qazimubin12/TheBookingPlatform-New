@@ -58,6 +58,13 @@
         border-radius: 5px; /* Rounded corners for the thumb */
     }
 
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
     /* Define the scrollbar thumb on hover */
     #Notess:-webkit-scrollbar-thumb:hover {
         background-color: #666; /* Color of the thumb on hover */
@@ -128,14 +135,14 @@
 </style>
 <div class="row">
     <div class="card">
-        <div class="card-content">
-            <h4 class="card-title">Assignemt Gift Card</h4>
+        <div class="card-body">
+            <h2 class="card-title">Assignemt Gift Card</h2>
             <form id="actionForm">
                 <div class="row">
                     <div class="form-group col-md-6">
                         <input type="hidden" id="ID" name="ID" value="@Model.ID" />
                         <label>Select Gift Card</label>
-                        <select class="form-control" name="GiftCardID" id="GiftCardID">
+                        <select class="form-control choices__input" name="GiftCardID" id="GiftCardID">
                             @foreach (var item in Model.GiftCards)
                             {
                                 if (Model.GiftCardID == item.ID)
@@ -153,94 +160,86 @@
 
 
                     <div class="form-group col-md-6">
-                        <label>Select Customer</label>
-                        <input class="form-control autocompleteCustomers" type="text" name="Customer" id="Customer" />
-                        <div id="MainCustomerSelectedContainer" class="">
-                            @if (Model.CustomerID != 0)
+                        <div class="input-group input-group-dynamic">
+
+                            <label>Select Customer</label>
+                            <input class="form-control autocompleteCustomers" type="text" name="Customer" id="Customer" />
+                            <div id="MainCustomerSelectedContainer" class="">
+                                @if (Model.CustomerID != 0)
+                                {
+                                    <table class="table table-hovered">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width:70px;" class="suggestion-initial">
+                                                    <div class="circular-box">@Model.Customer.FirstName.ToString()[0] @Model.Customer.LastName.ToString()[0]</div>
+                                                </td>
+                                                <td class="suggestion-details">
+                                                    <input type="hidden" name="CustomerID" id="CustomerID" value="@Model.Customer.ID" class="customer-id">
+                                                    <div class="customer-name">@Model.Customer.FirstName @Model.Customer.LastName </div>
+                                                    <div class="customer-email">  @Model.Customer.Email  </div>
+                                                    <div class="customer-mobile"> @Model.Customer.MobileNumber </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <div class="input-group input-group-dynamic">
+
+                            <label>Assigned Date</label>
+                            @if (Model.ID == 0)
                             {
-                                <table class="table table-hovered">
-                                    <tbody>
-                                        <tr>
-                                            <td style="width:70px;" class="suggestion-initial">
-                                                <div class="circular-box">@Model.Customer.FirstName.ToString()[0] @Model.Customer.LastName.ToString()[0]</div>
-                                            </td>
-                                            <td class="suggestion-details">
-                                                <input type="hidden" name="CustomerID" id="CustomerID" value="@Model.Customer.ID" class="customer-id">
-                                                <div class="customer-name">@Model.Customer.FirstName @Model.Customer.LastName </div>
-                                                <div class="customer-email">  @Model.Customer.Email  </div>
-                                                <div class="customer-mobile"> @Model.Customer.MobileNumber </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <input type="date" id="AssignedDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="AssignedDate">
+
+                            }
+                            else
+                            {
+                                <input type="date" id="AssignedDate" class="form-control" value="@Model.AssignedDate.ToString("yyyy-MM-dd")" name="AssignedDate">
                             }
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
+
                     <div class="form-group col-md-4">
-                        <label>Assigned Date</label>
-                        @if (Model.ID == 0)
-                        {
-                            <input type="date" id="AssignedDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="AssignedDate">
+                        <div class="input-group input-group-dynamic">
 
-                        }
-                        else
-                        {
-                            <input type="date" id="AssignedDate" class="form-control" value="@Model.AssignedDate.ToString("yyyy-MM-dd")" name="AssignedDate">
-                        }
+                            <label>Assigned Amount Online</label>
+                            @if (Model.ID != 0)
+                            {
+                                <input type="text" disabled id="AssignedAmount" class="form-control" value="@Model.AssignedAmount" name="AssignedAmount">
+                            }
+                            else
+                            {
+                                <input type="text" disabled id="AssignedAmount" class="form-control" value="@Model.AssignedAmount" name="AssignedAmount">
+
+                            }
+
+                        </div>
                     </div>
 
 
                     <div class="form-group col-md-4">
-                        <label>Assigned Amount Online</label>
-                        @if (Model.ID != 0)
-                        {
-                            <input type="text" disabled id="AssignedAmount" class="form-control" value="@Model.AssignedAmount" name="AssignedAmount">
-                        }
-                        else
-                        {
-                            <input type="text" disabled id="AssignedAmount" class="form-control" value="@Model.AssignedAmount" name="AssignedAmount">
+                        <div class="input-group input-group-dynamic">
 
-                        }
+                            <label>Balance</label>
+                            <input type="text" id="Balance" class="form-control" value="@Model.Balance" name="Balance">
 
-                    </div>
-
-
-                    <div class="form-group col-md-4">
-                        <label>Balance</label>
-                        <input type="text" id="Balance" class="form-control" value="@Model.Balance" name="Balance">
-
+                        </div>
                     </div>
 
 
 
-                </div>
-                @*<hr />
-                <div class="form-group col-md-6">
-                    <label>First Name</label>
-                    <input type="text" id="FirstName" class="form-control" readonly name="FirstName">
 
                 </div>
-                <div class="form-group col-md-6">
-                    <label>Last Name</label>
-                    <input type="text" id="LastName" class="form-control" readonly  name="LastName">
-
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Email</label>
-                    <input type="text" id="Email" class="form-control" readonly name="Email">
-
-                </div>
-                <div class="form-group col-md-6">
-                    <label>MobileNumber</label>
-                    <input type="text" id="MobileNumber" class="form-control" readonly name="MobileNumber">
-
-                </div>*@
 
 
             </form>
+            <br />
+
             @if (Model.ID == 0)
             {
                 <button type="button" id="actionButton" class="btn btn-primary btn-round">

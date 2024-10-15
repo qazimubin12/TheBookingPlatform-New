@@ -27,256 +27,201 @@
         }
     }
 }
+
+<style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
+    textarea{
+        border:solid 0.5px black;
+        border-radius:10px;
+    }
+</style>
 <form id="MainCompanyRegisterForm">
-    <div class="card">
-        <div class="card-header">
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-body">
             <h4 class="card-title">
                 Company Details
             </h4>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
+            <div class="row">
+                <div class="col-md-4 ">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
                             <input type="hidden" name="ID" value="@Model.Company.ID" id="ID" />
-                            <label>
+                            <label class="w-100">
                                 Business Name
                             </label>
                             <input value="@Model.Company.Business" class="form-control" placeholder="Enter Business Name..." type="text" name="Business" required />
                         </div>
                     </div>
+                </div>
 
 
-                    <div class="col-md-8">
-                        <div class="form-group">
-                            <label>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+                            <label class="w-100">
                                 Business Address
                             </label>
                             <input value="@Model.Company.Address" class="form-control" placeholder="Enter Business Address..." type="text" name="Address" />
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
+                            <label class="w-100">
                                 Postal Code
                             </label>
                             <input class="form-control" value="@Model.Company.PostalCode" placeholder="Enter Postal Code..." type="text" name="PostalCode" />
                         </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
+                            <label class="w-100">
                                 City
                             </label>
                             <input class="form-control" value="@Model.Company.City" placeholder="Enter City..." type="text" name="City" />
                         </div>
+                        </div>
 
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
+                            <label class="w-100">
                                 Phone Number
                             </label>
                             <input class="form-control" value="@Model.Company.PhoneNumber" id="PhoneNumber" placeholder="Enter Phone Number..." type="text" name="PhoneNumber" required />
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <legend>Logo</legend>
-                            <span>Click on the Picture to change</span>
-                            @if (Model.Company.Logo == "")
-                            {
-                                <img id="MainThumb" style="width:150px;" src="~/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
-                            }
-                            else
-                            {
-                                <img id="MainThumb" style="width:150px;" src="@Model.Company.Logo" alt="...">
-
-                            }
-
-                            <input value="@Model.Company.Logo" type="hidden" name="Logo" id="Logo" />
-                            <input type="file" id="LogoUpload" accept="image/*" />
-
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Select Country</label>
-                            <select class="form-control" name="CountryName" id="CountryName">
-                                @foreach (var item in Model.Countries)
-                                {
-                                    if (item == Model.Company.CountryName)
-                                    {
-                                        <option value="@item" selected>@item</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@item">@item</option>
-
-                                    }
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Select Currency</label>
-                            <select class="form-control" name="Currency" id="Currency">
-                                @foreach (var item in Model.Currencies)
-                                {
-                                    if (Model.Company.Currency == item.Abbreviation)
-                                    {
-                                        <option selected value="@item.Abbreviation">@item.Name @item.Symbol</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@item.Abbreviation">@item.Name @item.Symbol</option>
-
-                                    }
-                                }
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Invoice Footer Line</label>
-                            <textarea class="form-control" name="InvoiceLine" id="InvoiceLine">@Model.Company.InvoiceLine</textarea>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Booking Link Message</label>
-                            <textarea class="form-control" name="BookingLinkInfo" id="BookingLinkInfo">@Model.Company.BookingLinkInfo</textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    @if (inTrial == "No")
-                    {
-                        if (package.Split(',').Contains("Company Other Settings"))
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <legend>Logo</legend>
+                        <span>Click on the Picture to change</span>
+                        @if (Model.Company.Logo == "" || Model.Company.Logo == null)
                         {
+                            <img id="MainThumb" style="width:150px;" src="~/Content/TBPContent/placeholder.png" alt="...">
+                        }
+                        else
+                        {
+                            <img id="MainThumb" style="width:150px;" src="@Model.Company.Logo" alt="...">
 
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Enter Deposit Percentage </label>
+                        }
+
+                        <input value="@Model.Company.Logo" type="hidden" name="Logo" id="Logo" />
+                        <input type="file" id="LogoUpload" accept="image/*" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Select Country</label>
+                        <select class="form-control choices__input" name="CountryName" id="CountryName">
+                            @foreach (var item in Model.Countries)
+                            {
+                                if (item == Model.Company.CountryName)
+                                {
+                                    <option value="@item" selected>@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Select Currency</label>
+                        <select class="form-control choices__input" name="Currency" id="Currency">
+                            @foreach (var item in Model.Currencies)
+                            {
+                                if (Model.Company.Currency == item.Abbreviation)
+                                {
+                                    <option selected value="@item.Abbreviation">@item.Name @item.Symbol</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Abbreviation">@item.Name @item.Symbol</option>
+
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Footer Line</label>
+                        <textarea name="InvoiceLine" id="InvoiceLine">@Model.Company.InvoiceLine</textarea>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Booking Link Message</label>
+                        <textarea  name="BookingLinkInfo" id="BookingLinkInfo">@Model.Company.BookingLinkInfo</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                @if (inTrial == "No")
+                {
+                    if (package.Split(',').Contains("Company Other Settings"))
+                    {
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label class="w-100">
+                                        Enter Deposit Percentage
+                                    </label>
                                     <input type="number" class="form-control" name="Deposit" value="@Model.Company.Deposit" id="Deposit" />
                                 </div>
                             </div>
+                        </div>
 
 
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Enter Newsletter Interval Days </label>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label class="w-100">
+                                        Enter Newsletter Interval Days
+                                    </label>
                                     <input type="number" class="form-control" name="NewsLetterWeekInterval" value="@Model.Company.NewsLetterWeekInterval" id="NewsLetterWeekInterval" />
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Cancellation/Rescedule Time</label>
-                                    <select class="form-control" name="CancellationTime" id="CancellationTime">
 
-                                        @if (Model.Company.CancellationTime == "1 Hour")
-                                        {
-
-                                            <option selected value="1 Hour">1 Hour</option>
-                                            <option value="3 Hours">3 Hours</option>
-                                            <option value="5 Hours">5 Hours</option>
-                                            <option value="24 Hours">24 Hours</option>
-                                            <option value="48 Hours">48 Hours</option>
-                                        }
-                                        else if (Model.Company.CancellationTime == "3 Hours")
-                                        {
-                                            <option value="1 Hour">1 Hour</option>
-                                            <option selected value="3 Hours">3 Hours</option>
-                                            <option value="5 Hours">5 Hour</option>
-                                            <option value="24 Hours">24 Hours</option>
-                                            <option value="48 Hours">48 Hours</option>
-
-                                        }
-                                        else if (Model.Company.CancellationTime == "5 Hours")
-                                        {
-                                            <option value="1 Hour">1 Hour</option>
-                                            <option value="3 Hours">3 Hours</option>
-                                            <option selected value="5 Hours">5 Hours</option>
-                                            <option value="24 Hours">24 Hours</option>
-                                            <option value="48 Hours">48 Hours</option>
-                                        }
-                                        else if (Model.Company.CancellationTime == "24 Hours")
-                                        {
-
-                                            <option value="1 Hour">1 Hour</option>
-                                            <option value="3 Hours">3 Hours</option>
-                                            <option value="5 Hours">5 Hours</option>
-                                            <option selected value="24 Hours">24 Hours</option>
-                                            <option value="48 Hours">48 Hours</option>
-                                        }
-                                        else if (Model.Company.CancellationTime == "48 Hours")
-                                        {
-
-
-                                            <option value="1 Hour">1 Hour</option>
-                                            <option value="3 Hours">3 Hours</option>
-                                            <option value="5 Hours">5 Hours</option>
-                                            <option value="24 Hours">24 Hours</option>
-                                            <option selected value="48 Hours">48 Hours</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="1 Hour">1 Hour</option>
-                                            <option value="3 Hours">3 Hours</option>
-                                            <option value="5 Hours">5 Hours</option>
-                                            <option selected value="24 Hours">24 Hours</option>
-                                            <option value="48 Hours">48 Hours</option>
-                                        }
-
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Enter Referral Percentage </label>
-                                    <input type="number" class="form-control" name="ReferralPercentage" value="@Model.Company.ReferralPercentage" id="ReferralPercentage" />
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Company Code</label>
-                                    <input class="form-control" type="text" readonly name="CompanyCode" id="CompanyCode" value="@Model.Company.CompanyCode" />
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Enter Deposit Percentage </label>
-                                <input type="number" class="form-control" name="Deposit" value="@Model.Company.Deposit" id="Deposit" />
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Enter Newsletter Interval Days </label>
-                                <input type="number" class="form-control" name="NewsLetterWeekInterval" value="@Model.Company.NewsLetterWeekInterval" id="NewsLetterWeekInterval" />
-                            </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Cancellation Time</label>
-                                <select class="form-control" name="CancellationTime" id="CancellationTime">
+                                <label>Cancellation/Rescedule Time</label>
+                                <select class="form-control choices__input" name="CancellationTime" id="CancellationTime">
 
                                     @if (Model.Company.CancellationTime == "1 Hour")
                                     {
@@ -337,140 +282,266 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Enter Referral Percentage </label>
-                                <input type="number" class="form-control" name="ReferralPercentage" value="@Model.Company.ReferralPercentage" id="ReferralPercentage" />
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Enter Referral Percentage </label>
+                                    <input type="number" class="form-control" name="ReferralPercentage" value="@Model.Company.ReferralPercentage" id="ReferralPercentage" />
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Company Code</label>
+                                    <input class="form-control" type="text" readonly name="CompanyCode" id="CompanyCode" value="@Model.Company.CompanyCode" />
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                }
+                else
+                {
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Enter Deposit Percentage </label>
+                                <input type="number" class="form-control" name="Deposit" value="@Model.Company.Deposit" id="Deposit" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Enter Newsletter Interval Days </label>
+                                <input type="number" class="form-control" name="NewsLetterWeekInterval" value="@Model.Company.NewsLetterWeekInterval" id="NewsLetterWeekInterval" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Cancellation Time</label>
+                            <select class="form-control choices__input" name="CancellationTime" id="CancellationTime">
+
+                                @if (Model.Company.CancellationTime == "1 Hour")
+                                {
+
+                                    <option selected value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hours</option>
+                                    <option value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+                                }
+                                else if (Model.Company.CancellationTime == "3 Hours")
+                                {
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option selected value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hour</option>
+                                    <option value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+
+                                }
+                                else if (Model.Company.CancellationTime == "5 Hours")
+                                {
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option selected value="5 Hours">5 Hours</option>
+                                    <option value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+                                }
+                                else if (Model.Company.CancellationTime == "24 Hours")
+                                {
+
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hours</option>
+                                    <option selected value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+                                }
+                                else if (Model.Company.CancellationTime == "48 Hours")
+                                {
+
+
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hours</option>
+                                    <option value="24 Hours">24 Hours</option>
+                                    <option selected value="48 Hours">48 Hours</option>
+                                }
+                                else
+                                {
+                                    <option value="1 Hour">1 Hour</option>
+                                    <option value="3 Hours">3 Hours</option>
+                                    <option value="5 Hours">5 Hours</option>
+                                    <option selected value="24 Hours">24 Hours</option>
+                                    <option value="48 Hours">48 Hours</option>
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Enter Referral Percentage </label>
+                                <input type="number" class="form-control" name="ReferralPercentage" value="@Model.Company.ReferralPercentage" id="ReferralPercentage" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
                                 <label>Company Code</label>
                                 <input class="form-control" type="text" readonly name="CompanyCode" id="CompanyCode" value="@Model.Company.CompanyCode" />
                             </div>
                         </div>
-                    }
-
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label>Select Timezone</label>
-                            <select class="form-control" name="TimeZone" id="TimeZone">
-                                @foreach (var item in Model.TimeZones)
-                                {
-                                    if (item.Trim() == Model.Company.TimeZone.Trim())
-                                    {
-                                        <option selected value="@item">@item</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@item">@item</option>
-
-                                    }
-                                }
-                            </select>
-                        </div>
                     </div>
-                    @if (inTrial == "No")
+
+                }
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Select Timezone</label>
+                        <select class="form-control choices__input" name="TimeZone" id="TimeZone">
+                            @foreach (var item in Model.TimeZones)
+                            {
+                                if (item.Trim() == Model.Company.TimeZone.Trim())
+                                {
+                                    <option selected value="@item">@item</option>
+                                }
+                                else
+                                {
+                                    <option value="@item">@item</option>
+
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                @if (inTrial == "No")
+                {
+                    if (package.Split(',').Contains("Company Other Settings"))
                     {
-                        if (package.Split(',').Contains("Company Other Settings"))
-                        {
-                            <div class="col-md-12">
+                        <div class="col-md-12">
+                            <div class="input-group input-group-dynamic">
                                 <label>Select Status for PayRoll (Comma Separated, Use Only These <span class="bg-success">"Pending" "No Show" "Paid"</span>)</label>
                                 <input type="text" value="@Model.Company.StatusForPayroll" name="StatusForPayroll" id="StatusForPayroll" class="form-control" />
                             </div>
-                        }
-
+                        </div>
                     }
-                    else
-                    {
-                        <div class="col-md-12">
+
+                }
+                else
+                {
+                    <div class="col-md-12">
+                        <div class="input-group input-group-dynamic">
+
                             <label>Select Status for PayRoll (Comma Separated, Use Only These <span class="bg-success">"Pending" "No Show" "Paid"</span>)</label>
                             <input type="text" value="@Model.Company.StatusForPayroll" name="StatusForPayroll" id="StatusForPayroll" class="form-control" />
                         </div>
-                    }
-                    @if (inTrial == "No")
-                    {
-                        <div class="form-group col-md-6">
-                            @if (package.Split(',').Contains("Company Other Settings"))
-                            {
-                                <a class="btn btn-primary btn-round" href="@Url.Action("PriceList", "Booking", new { businessName = Model.Company.Business })">
-                                    PRICE LIST
-                                </a>
-                                <a class="btn btn-success btn-round" href="@Url.Action("AboutCompany", "Booking", new { businessName = Model.Company.Business })">
-                                    ABOUT COMPANY
-                                </a>
-                                if (Model.GiftCard != null)
-                                {
-                                    <a class="btn btn-secondary btn-round" href="@Url.Action("Index", "OnlineGiftCard", new { businessName = Model.Company.Business })">
-                                        GIFT CARD LINK
-                                    </a>
-                                }
-                            }
-
-                            <a class="btn btn-primary btn-round" href="@Url.Action("Welcome", "Booking", new {businessName = Model.Company.Business})">
-                                BOOKING LINK
-                            </a>
-
-                            @*<input type="text" class="form-control" value="@Model.BookingLink" readonly />*@
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="form-group col-md-6">
-
+                    </div>
+                }
+                <br />
+                <hr />
+                @if (inTrial == "No")
+                {
+                    <div class="form-group col-md-6">
+                        @if (package.Split(',').Contains("Company Other Settings"))
+                        {
                             <a class="btn btn-primary btn-round" href="@Url.Action("PriceList", "Booking", new { businessName = Model.Company.Business })">
                                 PRICE LIST
                             </a>
                             <a class="btn btn-success btn-round" href="@Url.Action("AboutCompany", "Booking", new { businessName = Model.Company.Business })">
                                 ABOUT COMPANY
                             </a>
-                            @if (Model.GiftCard != null)
+                            if (Model.GiftCard != null)
                             {
                                 <a class="btn btn-secondary btn-round" href="@Url.Action("Index", "OnlineGiftCard", new { businessName = Model.Company.Business })">
                                     GIFT CARD LINK
                                 </a>
                             }
+                        }
 
+                        <a class="btn btn-primary btn-round" href="@Url.Action("Welcome", "Booking", new {businessName = Model.Company.Business})">
+                            BOOKING LINK
+                        </a>
 
-                            <a class="btn btn-primary btn-round" href="@Url.Action("Welcome", "Booking", new {businessName = Model.Company.Business})">
-                                BOOKING LINK
+                        @*<input type="text" class="form-control" value="@Model.BookingLink" readonly />*@
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group col-md-6">
+
+                        <a class="btn btn-primary btn-round" href="@Url.Action("PriceList", "Booking", new { businessName = Model.Company.Business })">
+                            PRICE LIST
+                        </a>
+                        <a class="btn btn-success btn-round" href="@Url.Action("AboutCompany", "Booking", new { businessName = Model.Company.Business })">
+                            ABOUT COMPANY
+                        </a>
+                        @if (Model.GiftCard != null)
+                        {
+                            <a class="btn btn-secondary btn-round" href="@Url.Action("Index", "OnlineGiftCard", new { businessName = Model.Company.Business })">
+                                GIFT CARD LINK
                             </a>
+                        }
 
-                            @*<input type="text" class="form-control" value="@Model.BookingLink" readonly />*@
-                        </div>
-                    }
 
-                </div>
+                        <a class="btn btn-primary btn-round" href="@Url.Action("Welcome", "Booking", new {businessName = Model.Company.Business})">
+                            BOOKING LINK
+                        </a>
+
+                        @*<input type="text" class="form-control" value="@Model.BookingLink" readonly />*@
+                    </div>
+                }
 
             </div>
+
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-body">
             <h4 class="card-title">
                 Email Details
             </h4>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
                             <label>
                                 Notification Email
                             </label>
                             <input class="form-control" value="@Model.Company.NotificationEmail" placeholder="Enter Notification Email..." type="email" name="NotificationEmail" required />
                         </div>
                     </div>
+                </div>
 
 
-                    <div class="col-md-4">
-                        <div class="form-group">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
                             <label>
                                 Contact Email
                             </label>
                             <input class="form-control" value="@Model.Company.ContactEmail" placeholder="Enter Contact Email..." type="email" name="ContactEmail" required />
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
                             <label>
                                 Billing Email
                             </label>
@@ -478,48 +549,52 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-
             </div>
+
+
+
+
+
+
         </div>
     </div>
     @if (inTrial == "No")
     {
         if (package.Split(',').Contains("Stripe"))
         {
-            <div class="card">
-                <div class="card-header">
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-body">
+
                     <h4 class="card-title">
                         Stripe Details
                     </h4>
-                    <div class="card-body">
-                        <div class="row">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label>Enable Integration</label>
+                            <select class="form-control choices__input" name="PaymentMethodIntegration" id="PaymentMethodIntegration">
+                                @if (Model.Company.PaymentMethodIntegration)
+                                {
+                                    <option selected value="true">Yes</option>
+                                    <option value="false">No</option>
+                                }
+                                else
+                                {
+                                    <option value="true">Yes</option>
+                                    <option selected value="false">No</option>
+                                }
+                            </select>
+                        </div>
                             <div class="form-group col-md-4">
-                                <label>Enable Integration</label>
-                                <select class="form-control" name="PaymentMethodIntegration" id="PaymentMethodIntegration">
-                                    @if (Model.Company.PaymentMethodIntegration)
-                                    {
-                                        <option selected value="true">Yes</option>
-                                        <option value="false">No</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="true">Yes</option>
-                                        <option selected value="false">No</option>
-                                    }
-                                </select>
-                            </div>
-                            <div id="PaymentIntegrationBOX">
-                                <div class="form-group col-md-4">
+                                <div class="input-group input-group-dynamic">
+
                                     <label>Enter API/Secret Key</label>
                                     <input type="text" class="form-control" name="APIKEY" value="@Model.Company.APIKEY" id="APIKEY" />
 
                                 </div>
-                                <div class="form-group col-md-4">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <div class="input-group input-group-dynamic">
+
                                     <label>Enter PUBLISH Key</label>
                                     <input type="text" class="form-control" name="PUBLISHEDKEY" value="@Model.Company.PUBLISHEDKEY" id="PUBLISHEDKEY" />
 
@@ -528,75 +603,77 @@
 
 
 
-                        </div>
-
-
-
-
-
 
                     </div>
+
+
+
+
+
+
                 </div>
             </div>
         }
     }
     else
     {
-      
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">
-                        Stripe Details
-                    </h4>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="form-group col-md-4">
-                                <label>Enable Integration</label>
-                                <select class="form-control" name="PaymentMethodIntegration" id="PaymentMethodIntegration">
-                                    @if (Model.Company.PaymentMethodIntegration)
-                                    {
-                                        <option selected value="true">Yes</option>
-                                        <option value="false">No</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="true">Yes</option>
-                                        <option selected value="false">No</option>
-                                    }
-                                </select>
-                            </div>
-                            <div id="PaymentIntegrationBOX">
-                                <div class="form-group col-md-4">
-                                    <label>Enter API/Secret Key</label>
-                                    <input type="text" class="form-control" name="APIKEY" value="@Model.Company.APIKEY" id="APIKEY" />
 
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label>Enter PUBLISH Key</label>
-                                    <input type="text" class="form-control" name="PUBLISHEDKEY" value="@Model.Company.PUBLISHEDKEY" id="PUBLISHEDKEY" />
+<div class="card" style="margin-bott">
+    <div class="card-body">
+        <h4 class="card-title">
+            Stripe Details
+        </h4>
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label>Enable Integration</label>
+                <select class="form-control choices__input" name="PaymentMethodIntegration" id="PaymentMethodIntegration">
+                    @if (Model.Company.PaymentMethodIntegration)
+                    {
+                        <option selected value="true">Yes</option>
+                        <option value="false">No</option>
+                    }
+                    else
+                    {
+                        <option value="true">Yes</option>
+                        <option selected value="false">No</option>
+                    }
+                </select>
+            </div>
+                <div class="form-group col-md-4">
+                    <div class="input-group input-group-dynamic">
 
-                                </div>
-                            </div>
-
-
-
-                        </div>
-
-
-
-
-
+                        <label>Enter API/Secret Key</label>
+                        <input type="text" class="form-control" name="APIKEY" value="@Model.Company.APIKEY" id="APIKEY" />
 
                     </div>
                 </div>
-            </div>
-        
+                <div class="form-group col-md-4">
+                    <div class="input-group input-group-dynamic">
+
+                        <label>Enter PUBLISH Key</label>
+                        <input type="text" class="form-control" name="PUBLISHEDKEY" value="@Model.Company.PUBLISHEDKEY" id="PUBLISHEDKEY" />
+
+                    </div>
+                </div>
+
+
+
+        </div>
+
+
+
+
+
+
+    </div>
+</div>
+
     }
 
 </form>
 
 
-<button id="ActionBtn" class="btn btn-primary btn-round">
+<button id="ActionBtn" class="btn btn-primary btn-round my-2">
     <i class="material-icons">edit</i>
     UPDATE
     <div class="ripple-container"></div>
@@ -624,6 +701,18 @@
 
 
     $(document).ready(function () {
+        var elements = document.getElementsByClassName('choices__input');
+
+        // Check if there are any elements found
+        if (elements.length > 0) {
+            // Loop through each element and initialize Choices for it
+            for (var i = 0; i < elements.length; i++) {
+                const example = new Choices(elements[i], {
+                    searchEnabled: false,
+                    itemSelectText: ''
+                });
+            }
+        }
     });
     function showFieldsError(fieldNames) {
         var message = 'These are the required fields:\n' + fieldNames.join(', ');

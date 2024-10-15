@@ -92,7 +92,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Select Country</label>
-                            <select class="form-control" name="CountryName" id="CountryName">
+                            <select class="form-control choices__input" name="CountryName" id="CountryName">
                                 @foreach (var item in Model.Countries)
                                 {
                                     if (item == Model.CountryName)
@@ -135,7 +135,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Cancellation Time</label>
-                            <select class="form-control" name="CancellationTime" id="CancellationTime">
+                            <select class="form-control choices__input" name="CancellationTime" id="CancellationTime">
 
                                 @if (Model.CancellationTime == "1 Hour")
                                 {
@@ -239,7 +239,7 @@
                 <div class="row">
                     <div class="form-group col-md-4">
                         <label>Enable Integration</label>
-                        <select class="form-control" onchange="PaymentIntegrationChange()" name="PaymentMethodIntegration" id="PaymentMethodIntegration">
+                        <select class="form-control choices__input" onchange="PaymentIntegrationChange()" name="PaymentMethodIntegration" id="PaymentMethodIntegration">
                             @if (Model.PaymentMethodIntegration)
                             {
                                 <option selected value="true">Yes</option>

@@ -50,14 +50,20 @@
         margin-bottom: -5px;
         border: none;
     }
+
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
 </style>
 <div class="card">
-    <div class="card-header">
-        <h4 class="card-title">
+    <div class="card-body">
+        <h2 class="card-title">
             Checkout
-        </h4>
-    </div>
-    <div class="card-content">
+        </h2>
         <div class="row">
             <input type="hidden" id="ServicesData" value="@String.Join(",",Model.Services.Select(x=>x.ID).ToList())" />
             @if (Model.Appointment.Status != "Paid")
@@ -66,34 +72,34 @@
                     <h4>Payment Method</h4>
                     <ul id="ListOfThings" class="list-group">
                         <li class="list-group-item">
-                            <button id="Pin" class="btn btn-block btn-primary" type="button">
+                            <button style="white-space:nowrap;" id="Pin" class="btn btn-block btn-primary" type="button">
                                 <i class="material-icons">password</i>  Pin
                             </button>
                         </li>
                         <li class="list-group-item">
-                            <button id="Cash" class="btn btn-block btn-primary" type="button">
+                            <button style="white-space:nowrap;" id="Cash" class="btn btn-block btn-primary" type="button">
                                 <i class="material-icons">payments</i>  Cash
                             </button>
                         </li>
                         <li class="list-group-item">
-                            <button id="Card" class="btn btn-block btn-primary" type="button">
+                            <button style="white-space:nowrap;" id="Card" class="btn btn-block btn-primary" type="button">
                                 <i class="material-icons">credit_card</i>  Card
                             </button>
                         </li>
 
 
                         <li class="list-group-item">
-                            <button id="Gift Card" class="btn btn-block btn-primary" type="button">
+                            <button style="white-space:nowrap;" id="Gift Card" class="btn btn-block btn-primary" type="button">
                                 <i class="material-icons">redeem</i>  Gift Card
                             </button>
                         </li>
                         <li class="list-group-item">
-                            <button id="Referral" class="btn btn-block btn-primary" type="button">
+                            <button style="white-space:nowrap;" id="Referral" class="btn btn-block btn-primary" type="button">
                                 <i class="material-icons">card_membership</i>  Rererral
                             </button>
                         </li>
                         <li class="list-group-item">
-                            <button id="Loyalty Card" class="btn btn-block btn-primary" type="button">
+                            <button style="white-space:nowrap;"  id="Loyalty Card" class="btn btn-block btn-primary" type="button">
                                 <i class="material-icons">redeem</i>  Loyalty
                             </button>
                         </li>
@@ -102,28 +108,33 @@
             }
             <div class="col-md-10">
                 <div class="form-group">
-                    <label>Payment Method</label>
-                    @if (Model.Appointment.Status == "Paid")
-                    {
-                        <input style=" background-color: blueviolet; color:white; " class="form-control" value="@Model.Appointment.Status" name="PaymentMethod" id="PaymentMethod" readonly />
+                    <div class="input-group input-group-dynamic">
+                        <label>Payment Method</label>
+                        @if (Model.Appointment.Status == "Paid")
+                        {
+                            <input style=" background-color: blueviolet; color:white; " class="form-control" value="@Model.Appointment.Status" name="PaymentMethod" id="PaymentMethod" readonly />
 
-                    }
-                    else
-                    {
-                        <input class="form-control" name="PaymentMethod" id="PaymentMethod" readonly />
-                    }
+                        }
+                        else
+                        {
+                            <input class="form-control" name="PaymentMethod" id="PaymentMethod" readonly />
+                        }
+                    </div>
                 </div>
                 <input type="hidden" id="CHECKCARDS" />
                 <div style="display:none;" id="GiftCardRow" class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Gift Card Code</label>
-                            <input type="text" class="form-control" name="GiftCardCode" id="GiftCardCode" placeholder="Enter Gift Card Code" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Gift Card Code</label>
+                                <input type="text" class="form-control" name="GiftCardCode" id="GiftCardCode" placeholder="Enter Gift Card Code" />
+                            </div>
                         </div>
                         <button class="btn btn-primary" type="button" id="CheckGiftCardBtn">CHECK GIFT CARD</button>
                     </div>
                     <div class="col-md-6">
-                        <table class="table table-striped">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>
@@ -157,7 +168,7 @@
 
                 <div style="display:none;" id="ReferralCardRow" class="row">
                     <div class="col-md-6">
-                        <table class="table table-striped">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>
@@ -195,13 +206,16 @@
                 <div style="display:none;" id="LoyaltyCardRow" class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Loyalty Card Number</label>
-                            <input type="text" class="form-control" name="LoyaltyCardCode" id="LoyaltyCardCode" placeholder="Enter Loyalty Card Number" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Loyalty Card Number</label>
+                                <input type="text" class="form-control" name="LoyaltyCardCode" id="LoyaltyCardCode" placeholder="Enter Loyalty Card Number" />
+                            </div>
                         </div>
                         <button class="btn btn-primary" type="button" id="CheckLoyaltyCardBtn">CHECK LOYALTY CARD</button>
                     </div>
                     <div class="col-md-6">
-                        <table class="table table-striped">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>
@@ -233,22 +247,25 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Customer</label>
-                    @if (Model.Customer != null)
-                    {
-                        <input hidden id="CustomerID" value="@Model.Customer.ID" />
-                        <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
-                        <input hidden id="EmployeeID" value="@Model.Employee.ID" />
-                        <input class="form-control" name="Customer" id="Customer" value="@Model.Customer.FirstName @Model.Customer.LastName" readonly />
-                    }
-                    else
-                    {
-                        <input hidden id="CustomerID" value="0" />
-                        <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
-                        <input hidden id="EmployeeID" value="@Model.Employee.ID" />
-                        <input class="form-control" name="Customer" id="Customer" value="Walk In" readonly />
-                    }
-                    <input type="hidden" id="Notes" />
+                    <div class="input-group input-group-dynamic">
+
+                        <label>Customer</label>
+                        @if (Model.Customer != null)
+                        {
+                            <input hidden id="CustomerID" value="@Model.Customer.ID" />
+                            <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
+                            <input hidden id="EmployeeID" value="@Model.Employee.ID" />
+                            <input class="form-control" name="Customer" id="Customer" value="@Model.Customer.FirstName @Model.Customer.LastName" readonly />
+                        }
+                        else
+                        {
+                            <input hidden id="CustomerID" value="0" />
+                            <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
+                            <input hidden id="EmployeeID" value="@Model.Employee.ID" />
+                            <input class="form-control" name="Customer" id="Customer" value="Walk In" readonly />
+                        }
+                        <input type="hidden" id="Notes" />
+                    </div>
                 </div>
                 <table class="table table-condensed">
                     <thead>
@@ -279,10 +296,10 @@
                                 @*<td>
 
 
-                                        <button class="btndelete btn btn-danger btn-sm btn-round">
-                                            <i class="material-icons">delete</i> Delete
-                                        </button>
-                                    </td>*@
+                                    <button class="btndelete btn btn-danger btn-sm btn-round">
+                                        <i class="material-icons">delete</i> Delete
+                                    </button>
+                                </td>*@
 
                             </tr>
                         }
@@ -316,34 +333,35 @@
                     }
                 }
 
-            <div style="display: flex; align-items: center; justify-content: center;" class="row">
-                @if (Model.Coupon != null)
-                {
-                    <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@BeforePrice</span> <span id="Total"> @TotalOfServicesMinusDiscount</span></h4>
+                <div style="display: flex; align-items: center; justify-content: center;" class="row">
+                    @if (Model.Coupon != null)
+                    {
+                        <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@BeforePrice</span> <span id="Total"> @TotalOfServicesMinusDiscount</span></h4>
 
-                }
-                else
-                {
-                    <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@TotalOfServicesMinusDiscount</span></h4>
+                    }
+                    else
+                    {
+                        <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@TotalOfServicesMinusDiscount</span></h4>
 
-                }
-                <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@TotalOfServicesMinusDiscount</span></h4>
+                    }
+                    <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@TotalOfServicesMinusDiscount</span></h4>
 
-                @if (Model.Appointment.Status == "Paid")
-                {
+                    @if (Model.Appointment.Status == "Paid")
+                    {
 
+                        <div class="col-md-12">
+                            <a style=" margin: 30px;" id="InvoiceView" href='@Url.Action("Invoice", "Appointment", new {ID=Model.Appointment.ID})' target="_blank" class="btn btn-success  btn-round">VIEW INVOICE</a>
+                            <button style=" margin: 30px;" type="button" id="SendInvoiceBtn" class="btn btn-info  btn-round">SEND INVOICE TO CUSTOMER</button>
+                            <button style=" margin: 30px;" id="Rebook" onclick="window.location.href='@Url.Action("Calendar", "Appointment")'" class="btn btn-primary  btn-round">REBOOK</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <button style=" margin: 30px; " id="PayButton" class="btn btn-success  btn-round">PAY</button>
+                        <span class="text-danger" id="Error"></span>
 
-                    <a style=" margin: 30px;" id="InvoiceView" href='@Url.Action("Invoice", "Appointment", new {ID=Model.Appointment.ID})' target="_blank" class="btn btn-success  btn-round">VIEW INVOICE</a>
-                    <button style=" margin: 30px;" type="button" id="SendInvoiceBtn" class="btn btn-info  btn-round">SEND INVOICE TO CUSTOMER</button>
-                    <button style=" margin: 30px;" id="Rebook" onclick="window.location.href='@Url.Action("Calendar", "Appointment")'" class="btn btn-primary  btn-round">REBOOK</button>
-                }
-                else
-                {
-                    <button style=" margin: 30px; " id="PayButton" class="btn btn-success  btn-round">PAY</button>
-                    <span class="text-danger" id="Error"></span>
-
-                }
-            </div>
+                    }
+                </div>
             </div>
 
 
@@ -359,7 +377,7 @@
     //    // Loop through each element with the class "price-data"
     //    //$('.price-data').each(function () {
     //    //    // Extract the text content and remove the '$' sign
-    //    //    const priceText = $(this).text().trim().replace('€', '');
+    //    //    const priceText = $(this).text().trim().replace('£', '');
 
     //    //    // Parse the text as a float and add it to the totalSum
     //    //    const priceFloat = parseFloat(priceText);

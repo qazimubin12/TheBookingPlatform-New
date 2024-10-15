@@ -20,9 +20,11 @@
 
             <form id="actionFormNew">
                 <input type="hidden" name="ID" value="@Model.ID" />
-                <div class="form-group">
-                    <label>Service Category Name</label>
-                    <input class="form-control" name="Name" id="Name" placeholder="Enter Name." value="@Model.Name">
+                <div class="input-group input-group-dynamic">
+                    <div class="form-group">
+                        <label>Service Category Name</label>
+                        <input class="form-control" name="Name" id="Name" placeholder="Enter Name." value="@Model.Name">
+                    </div>
                 </div>
 
             </form>
@@ -40,7 +42,7 @@
             {
                 <button id="actionButton" type="button" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
             }
-            <button id="CloseBtn" type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
+            <button id="CloseBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times mr-1"></i> Close</button>
         </div>
     </div>
 }
@@ -58,7 +60,7 @@
                 .done(function (response) {
                     if (response.success) {
                         RepopulateCategories();       
-                        $(".btn-secondary[data-dismiss='modal']").click();
+                        $(".btn-secondary[data-bs-dismiss='modal']").click();
 
                     }
                     else {

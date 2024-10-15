@@ -6,63 +6,63 @@
     }
 </style>
 <div class="card">
-   
-    <div class="row">
-        <div class="col col-lg-12">
+    <div class="card-body">
+        <h2 class="card-title">
+            Invoices
+        </h2>
+        <a class="btn btn-primary" href="@Url.Action("Action","NInvoice")">CREATE</a>
+        <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
                 @if (Model.NInvoices != null)
                 {
-                    <div class="card">
-                        <a class="btn btn-primary" href="@Url.Action("Action","NInvoice")">CREATE</a>
 
-                        <div class="table-responsive">
-                            <table id="InvoicesTABLE" class="table table-striped">
-                                <thead>
+                    <div class="table-responsive">
+                        <table id="InvoicesTABLE" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        Company
+                                    </th>
+                                    <th class="text-center">
+                                        Customer
+                                    </th>
+                                    <th class="text-center">
+                                        Invoice No
+                                    </th>
+
+                                    <th class="text-center">
+                                        Due Date
+                                    </th>
+                                    <th class="text-center">
+                                        Payment Method
+                                    </th>
+
+                                    <th class="text-center">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.NInvoices)
+                                {
                                     <tr>
-                                        <th class="text-center">
-                                            Company
-                                        </th>
-                                        <th class="text-center">
-                                            Customer
-                                        </th>
-                                        <th class="text-center">
-                                            Invoice No
-                                        </th>
+                                        <td class="text-center">@item.NInvoice.CompanyName</td>
+                                        <td class="text-center">@item.NInvoice.CustomerName</td>
+                                        <td class="text-center">@item.NInvoice.InvoiceNo</td>
+                                        <td class="text-center">@item.NInvoice.DueDate.ToString("yyyy-MM-dd")</td>
+                                        <td class="text-center">@item.NInvoice.PaymentMethod</td>
+                                        <td class="text-center">
 
-                                        <th class="text-center">
-                                            Due Date
-                                        </th>
-                                        <th class="text-center">
-                                            Payment Method
-                                        </th>
+                                            <a href="@Url.Action("Action", "NInvoice", new { ID = item.NInvoice.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                            <a href="@Url.Action("View", "NInvoice", new { ID = item.NInvoice.ID })" class="btn btn-sm btn-rounded btn-primary btn-icon-text"><i class="mdi mdi-eye"></i> VIEW</a>
 
-                                        <th class="text-center">
-                                            Action
-                                        </th>
+                                            <button data-href="@Url.Action("Delete", "NInvoice", new { ID = item.NInvoice.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.NInvoices)
-                                    {
-                                        <tr>
-                                            <td class="text-center">@item.NInvoice.CompanyName</td>
-                                            <td class="text-center">@item.NInvoice.CustomerName</td>
-                                            <td class="text-center">@item.NInvoice.InvoiceNo</td>
-                                            <td class="text-center">@item.NInvoice.DueDate.ToString("yyyy-MM-dd")</td>
-                                            <td class="text-center">@item.NInvoice.PaymentMethod</td>
-                                            <td class="text-center">
-
-                                                <a href="@Url.Action("Action", "NInvoice", new { ID = item.NInvoice.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
-                                                <a href="@Url.Action("View", "NInvoice", new { ID = item.NInvoice.ID })" class="btn btn-sm btn-rounded btn-primary btn-icon-text"><i class="mdi mdi-eye"></i> VIEW</a>
-
-                                                <button data-href="@Url.Action("Delete", "NInvoice", new { ID = item.NInvoice.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
-
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 }
                 else
@@ -75,6 +75,8 @@
             </div>
         </div>
     </div>
+
+    
 
 </div>
 <div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">

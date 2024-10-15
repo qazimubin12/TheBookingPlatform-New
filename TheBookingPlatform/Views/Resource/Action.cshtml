@@ -27,7 +27,7 @@
 
                     <div class="form-group">
                         <label>Type</label>
-                        <select class="form-control" name="Type" id="Type">
+                        <select class="form-control choices__input" name="Type" id="Type">
                             @if (Model.Type == "Room")
                             {
                                 <option value="Room" selected>Room</option>
@@ -43,7 +43,7 @@
 
                     <div class="form-group">
                         <label>Availability</label>
-                        <select class="form-control" name="Availability" id="Availability">
+                        <select class="form-control choices__input" name="Availability" id="Availability">
                             @if (Model.Availability == "Occupied")
                             {
                                 <option value="Available">Available</option>

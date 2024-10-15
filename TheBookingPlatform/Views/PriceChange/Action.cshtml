@@ -6,6 +6,14 @@
 
 
 <style>
+
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
     .autocomplete-suggestions {
         box-sizing: border-box;
         border-radius: 5px;
@@ -147,31 +155,30 @@
 
 <form id="ActionForm">
     <div class="row">
-        <div class="col-md-12">
-            <div style="margin:0px;" class="card">
-                <div class="card-content">
-                    @if (Model.ID == 0)
-                    {
-                        <h4 class="card-title">
-                            Create Price Change
-                        </h4>
-                    }
-                    else
-                    {
-                        <h4 class="card-title">
-                            Edit Price Change
-                        </h4>
-                    }
+        <div style="margin:0px;" class="card">
+            <div class="card-body">
+                @if (Model.ID == 0)
+                {
+                    <h4 class="card-title">
+                        Create Price Change
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Edit Price Change
+                    </h4>
+                }
 
-                    <input type="hidden" value="@Model.Days" name="Days" id="Days" />
-                    <input type="hidden" value="@Model.ID" name="ID" id="ID" />
+                <input type="hidden" value="@Model.Days" name="Days" id="Days" />
+                <input type="hidden" value="@Model.ID" name="ID" id="ID" />
 
-
+                <div class="row">
                     <div class="col-md-6">
 
                         <div class="form-group">
                             <label>Type of Change</label>
-                            <select class="form-control" name="TypeOfChange">
+                            <select class="form-control choices__input" name="TypeOfChange">
                                 @if (Model.TypeOfChange == "Discount")
                                 {
                                     <option selected value="Discount">Discount</option>
@@ -199,113 +206,125 @@
 
 
                         <div class="form-group">
-                            <label>Percentage</label>
-                            <input type="text" id="Percentage" value="@Model.Percentage" name="Percentage" class="form-control">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Percentage</label>
+                                <input type="text" id="Percentage" value="@Model.Percentage" name="Percentage" class="form-control">
+                            </div>
                         </div>
 
                     </div>
 
 
-
-                    <div class="row">
-
-
-                        <div class="col-md-12">
-
-                            <div class="form-group col-md-6">
-                                <label>
-                                    Select Date
-                                </label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="StartDate">
-
-                                }
-                                else
-                                {
-                                    <input type="date" id="Date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" name="StartDate">
-                                }
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label>
-                                    Select Time
-                                </label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input type="time" id="StartTime" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="StartTime">
-
-                                }
-                                else
-                                {
-                                    <input type="time" id="StartTime" class="form-control timepicker" value="@Model.StartTime.ToString("HH:mm")" name="StartTime">
-                                }
-                            </div>
+                </div>
+                <div class="row">
 
 
 
-                        </div>
+                    <div class="form-group col-md-6">
+                        <div class="input-group input-group-dynamic">
 
-                        <div class="col-md-12">
-
-                            <div class="form-group col-md-6">
-                                <label>
-                                    End Date
-                                </label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="EndDate">
-
-                                }
-                                else
-                                {
-                                    <input type="date" id="Date" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" name="EndDate">
-                                }
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label>
-                                    Select Time
-                                </label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input type="time" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" name="EndTime">
-
-                                }
-                                else
-                                {
-                                    <input type="time" id="EndTime" class="form-control" value="@Model.EndTime.ToString("HH:mm")" name="EndTime">
-                                }
-                            </div>
-
-
-
-                        </div>
-                    </div>
-
-                    <div class="checkbox form-horizontal-checkbox">
-                        <label>
-                            @if (Model.Repeat == true)
+                            <label>
+                                Select Date
+                            </label>
+                            @if (Model.ID == 0)
                             {
-                                <input type="checkbox" onchange="CheckIsRepeatRow()" checked name="Repeat" id="Repeat">
+                                <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="StartDate">
+
                             }
                             else
                             {
-                                <input type="checkbox" onchange="CheckIsRepeatRow()" name="Repeat" id="Repeat">
+                                <input type="date" id="Date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" name="StartDate">
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="input-group input-group-dynamic">
+
+                            <label>
+                                Select Time
+                            </label>
+                            @if (Model.ID == 0)
+                            {
+                                <input type="time" id="StartTime" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="StartTime">
 
                             }
-                            Repeat Price Change
-                        </label>
-                        @if (Model.ID == 0)
+                            else
+                            {
+                                <input type="time" id="StartTime" class="form-control timepicker" value="@Model.StartTime.ToString("HH:mm")" name="StartTime">
+                            }
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+                <div class="row">
+
+                    <div class="form-group col-md-6">
+                        <div class="input-group input-group-dynamic">
+
+                            <label>
+                                End Date
+                            </label>
+                            @if (Model.ID == 0)
+                            {
+                                <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="EndDate">
+
+                            }
+                            else
+                            {
+                                <input type="date" id="Date" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" name="EndDate">
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <div class="input-group input-group-dynamic">
+
+                            <label>
+                                Select Time
+                            </label>
+                            @if (Model.ID == 0)
+                            {
+                                <input type="time" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" name="EndTime">
+
+                            }
+                            else
+                            {
+                                <input type="time" id="EndTime" class="form-control" value="@Model.EndTime.ToString("HH:mm")" name="EndTime">
+                            }
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+                <div class="checkbox form-check">
+                    <label>
+                        @if (Model.Repeat == true)
                         {
-
-
-                            <input type="hidden" name="Repeat" id="Repeat" />
+                            <input type="checkbox" onchange="CheckIsRepeatRow()" class="form-check-input" checked name="Repeat" id="Repeat">
                         }
                         else
                         {
-                            <input value="@Model.Repeat" type="hidden" name="Repeat" id="Repeat" />
+                            <input type="checkbox" onchange="CheckIsRepeatRow()" class="form-check-input" name="Repeat" id="Repeat">
 
                         }
-                    </div>
+                        Repeat Price Change
+                    </label>
+                    @if (Model.ID == 0)
+                    {
+
+
+                        <input type="hidden" name="Repeat" id="Repeat" />
+                    }
+                    else
+                    {
+                        <input value="@Model.Repeat" type="hidden" name="Repeat" id="Repeat" />
+
+                    }
                 </div>
 
                 <div id="RepeatRow">
@@ -314,7 +333,7 @@
                             <label>Frequency</label>
                             @if (Model.ID == 0)
                             {
-                                <select class="form-control" id="Frequency" name="Frequency">
+                                <select class="form-control choices__input" id="Frequency" name="Frequency">
                                     <option value="Every Week">Every Week</option>
                                     <option value="Every Day">Every Day</option>
                                     <option value="Every Month">Every Month</option>
@@ -324,7 +343,7 @@
                             {
                                 if (Model.Frequency == "Every Week")
                                 {
-                                    <select class="form-control" id="Frequency" name="Frequency">
+                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
                                         <option selected value="Every Week">Every Week</option>
                                         <option value="Every Day">Every Day</option>
                                         <option value="Every Month">Every Month</option>
@@ -332,7 +351,7 @@
                                 }
                                 else if (Model.Frequency == "Every Day")
                                 {
-                                    <select class="form-control" id="Frequency" name="Frequency">
+                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
                                         <option value="Every Week">Every Week</option>
                                         <option selected value="Every Day">Every Day</option>
                                         <option value="Every Month">Every Month</option>
@@ -340,7 +359,7 @@
                                 }
                                 else if (Model.Frequency == "Every Month")
                                 {
-                                    <select class="form-control" id="Frequency" name="Frequency">
+                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
                                         <option value="Every Week">Every Week</option>
                                         <option value="Every Day">Every Day</option>
                                         <option selected value="Every Month">Every Month</option>
@@ -352,7 +371,7 @@
                         <div id="WeekRow">
                             <div class="form-group col-md-6">
                                 <label>Every</label>
-                                <select class="form-control" id="Every" name="EveryWeek">
+                                <select class="form-control choices__input" id="Every" name="EveryWeek">
                                     @for (int i = 1; i <= 12; i++)
                                     {
                                         if (Model.EveryWeek == "1 Week")
@@ -429,7 +448,7 @@
                             <div class="form-group col-md-12">
                                 <label>Ends</label><br />
 
-                                <select name="EndsWeek" id="EndWeek" class="form-control">
+                                <select name="EndsWeek" id="EndWeek" class="form-control choices__input">
                                     @if (Model.EndsWeek == "Never")
                                     {
                                         <option selected value="Never">Never</option>
@@ -452,22 +471,28 @@
                             </div>
 
                             <div id="OnADateRowWeek" class="form-group col-md-12">
-                                <label>Ends Date</label><br />
+                                <div class="input-group input-group-dynamic">
 
-                                <input type="date" name="EndsDateWeek" value="@Model.EndsDateWeek" class="form-control" id="EndDate">
+                                    <label>Ends Date</label>
+
+                                    <input type="date" name="EndsDateWeek" value="@Model.EndsDateWeek" class="form-control" id="EndDate">
+                                </div>
                             </div>
 
 
                             <div id="OnTimeRowWeek" class="form-group col-md-12">
-                                <label>Times</label><br />
-                                <input type="number" name="EndsNumberOfTimesWeek" value="@Model.EndsNumberOfTimesWeek" class="form-control" id="NumberOfTimes">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Times</label>
+                                    <input type="number" name="EndsNumberOfTimesWeek" value="@Model.EndsNumberOfTimesWeek" class="form-control" id="NumberOfTimes">
+                                </div>
                             </div>
 
                         </div>
                         <div id="DayRow">
                             <div class="form-group col-md-6">
                                 <label>Every</label>
-                                <select class="form-control" id="Every" name="EveryDay">
+                                <select class="form-control choices__input" id="Every" name="EveryDay">
                                     @for (int i = 1; i <= 27; i++)
                                     {
                                         if (Model.EveryDay == "1 Day")
@@ -513,7 +538,7 @@
                             <div class="form-group col-md-12">
                                 <label>Ends</label><br />
 
-                                <select name="EndsDay" id="EndDay" class="form-control">
+                                <select name="EndsDay" id="EndDay" class="form-control choices__input">
                                     @if (Model.EndsDay == "Never")
                                     {
                                         <option selected value="Never">Never</option>
@@ -536,14 +561,20 @@
                             </div>
 
                             <div id="OnADateRowDay" class="form-group col-md-12">
-                                <label>Ends Date</label><br />
-                                <input type="date" name="EndsDateDay" value="@Model.EndsDateDay" class="form-control" id="EndDate">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Ends Date</label>
+                                    <input type="date" name="EndsDateDay" value="@Model.EndsDateDay" class="form-control" id="EndDate">
+                                </div>
                             </div>
 
 
                             <div id="OnTimeRowDay" class="form-group col-md-12">
-                                <label>Times</label><br />
-                                <input type="number" name="EndsNumberOfTimesDay" value="@Model.EndsNumberOfTimesDay" class="form-control" id="NumberOfTimes">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Times</label>
+                                    <input type="number" name="EndsNumberOfTimesDay" value="@Model.EndsNumberOfTimesDay" class="form-control" id="NumberOfTimes">
+                                </div>
                             </div>
 
 
@@ -551,7 +582,7 @@
                         <div id="MonthRow">
                             <div class="form-group col-md-6">
                                 <label>Every</label>
-                                <select class="form-control" id="Every" name="EveryMonth">
+                                <select class="form-control choices__input" id="Every" name="EveryMonth">
                                     @for (int i = 1; i <= 12; i++)
                                     {
                                         if (Model.EveryMonth == "1 Month")
@@ -594,7 +625,7 @@
 
                             <div class="form-group col-md-12">
                                 <label>On The</label><br />
-                                <select class="form-control" id="OnThe" name="On">
+                                <select class="form-control choices__input" id="OnThe" name="On">
 
                                     <option value="23rd">23rd</option>
                                     <option value="4th Saturday">4th Saturday</option>
@@ -605,7 +636,7 @@
                             <div class="form-group col-md-12">
                                 <label>Ends</label><br />
 
-                                <select name="EndsMonth" id="EndMonth" class="form-control">
+                                <select name="EndsMonth" id="EndMonth" class="form-control choices__input">
                                     @if (Model.EndsMonth == "Never")
                                     {
                                         <option selected value="Never">Never</option>
@@ -628,40 +659,49 @@
                             </div>
 
                             <div id="OnADateRowMonth" class="form-group col-md-12">
-                                <label>Ends Date</label><br />
-                                <input type="date" name="EndsDateMonth" class="form-control" value="@Model.EndsDateMonth" id="EndDate">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Ends Date</label>
+                                    <input type="date" name="EndsDateMonth" class="form-control" value="@Model.EndsDateMonth" id="EndDate">
+                                </div>
                             </div>
 
 
                             <div id="OnTimeRowMonth" class="form-group col-md-12">
-                                <label>Times</label><br />
-                                <input type="number" name="EndsNumberOfTimesMonth" value="@Model.EndsNumberOfTimesMonth" class="form-control" id="NumberOfTimes">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Times</label><br />
+                                    <input type="number" name="EndsNumberOfTimesMonth" value="@Model.EndsNumberOfTimesMonth" class="form-control" id="NumberOfTimes">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12">
-
-
-                    @if (Model.ID == 0)
-                    {
-                        <button type="button" id="actionButton" class="btn btn-primary btn-rounded">Create PriceChange</button>
-                    }
-                    else
-                    {
-                        <button type="button" id="actionButton" class="btn btn-secondary btn-rounded">Edit PriceChange</button>
-
-                    }
-                    <a href="@Url.Action("Settings", "User", new {Selected="Price Change"})" class="btn btn-secondary  btn-rounded">CANCEL</a>
-
-                    <span id="validationText" class="text-danger"></span>
-                </div>
             </div>
+        </div>
+
+        <br />
+        <div class="col-md-12 my-4">
+
+
+            @if (Model.ID == 0)
+            {
+                <button type="button" id="actionButton" class="btn btn-primary btn-rounded">Create PriceChange</button>
+            }
+            else
+            {
+                <button type="button" id="actionButton" class="btn btn-secondary btn-rounded">Edit PriceChange</button>
+
+            }
+            <a href="@Url.Action("Settings", "User", new {Selected="Price Change"})" class="btn btn-secondary  btn-rounded">CANCEL</a>
+
+            <span id="validationText" class="text-danger"></span>
+        </div>
+    </div>
             
         </div>
        
 
-    </div>
     
 
 

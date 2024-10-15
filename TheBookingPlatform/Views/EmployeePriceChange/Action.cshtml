@@ -169,7 +169,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Type of Change</label>
-                            <select class="form-control" name="EmployeeID">
+                            <select class="form-control choices__input" name="EmployeeID">
                                 @foreach (var item in Model.Employees)
                                 {
                                     if (Model.EmployeeID == item.ID)
@@ -188,7 +188,7 @@
 
                         <div class="form-group">
                             <label>Type of Change</label>
-                            <select class="form-control" name="TypeOfChange">
+                            <select class="form-control choices__input" name="TypeOfChange">
                                 @if (Model.TypeOfChange == "Discount")
                                 {
                                     <option selected value="Discount">Discount</option>
@@ -331,7 +331,7 @@
                             <label>Frequency</label>
                             @if (Model.ID == 0)
                             {
-                                <select class="form-control" id="Frequency" name="Frequency">
+                                <select class="form-control choices__input" id="Frequency" name="Frequency">
                                     <option value="Every Week">Every Week</option>
                                     <option value="Every Day">Every Day</option>
                                     <option value="Every Month">Every Month</option>
@@ -341,7 +341,7 @@
                             {
                                 if (Model.Frequency == "Every Week")
                                 {
-                                    <select class="form-control" id="Frequency" name="Frequency">
+                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
                                         <option selected value="Every Week">Every Week</option>
                                         <option value="Every Day">Every Day</option>
                                         <option value="Every Month">Every Month</option>
@@ -349,7 +349,7 @@
                                 }
                                 else if (Model.Frequency == "Every Day")
                                 {
-                                    <select class="form-control" id="Frequency" name="Frequency">
+                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
                                         <option value="Every Week">Every Week</option>
                                         <option selected value="Every Day">Every Day</option>
                                         <option value="Every Month">Every Month</option>
@@ -357,7 +357,7 @@
                                 }
                                 else if (Model.Frequency == "Every Month")
                                 {
-                                    <select class="form-control" id="Frequency" name="Frequency">
+                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
                                         <option value="Every Week">Every Week</option>
                                         <option value="Every Day">Every Day</option>
                                         <option selected value="Every Month">Every Month</option>
@@ -369,7 +369,7 @@
                         <div id="WeekRow">
                             <div class="form-group col-md-6">
                                 <label>Every</label>
-                                <select class="form-control" id="Every" name="EveryWeek">
+                                <select class="form-control choices__input" id="Every" name="EveryWeek">
                                     @for (int i = 1; i <= 12; i++)
                                     {
                                         if (Model.EveryWeek == "1 Week")
@@ -446,7 +446,7 @@
                             <div class="form-group col-md-12">
                                 <label>Ends</label><br />
 
-                                <select name="EndsWeek" id="EndWeek" class="form-control">
+                                <select name="EndsWeek" id="EndWeek" class="form-control choices__input">
                                     @if (Model.EndsWeek == "Never")
                                     {
                                         <option selected value="Never">Never</option>
@@ -484,7 +484,7 @@
                         <div id="DayRow">
                             <div class="form-group col-md-6">
                                 <label>Every</label>
-                                <select class="form-control" id="Every" name="EveryDay">
+                                <select class="form-control choices__input" id="Every" name="EveryDay">
                                     @for (int i = 1; i <= 27; i++)
                                     {
                                         if (Model.EveryDay == "1 Day")
@@ -530,7 +530,7 @@
                             <div class="form-group col-md-12">
                                 <label>Ends</label><br />
 
-                                <select name="EndsDay" id="EndDay" class="form-control">
+                                <select name="EndsDay" id="EndDay" class="form-control choices__input">
                                     @if (Model.EndsDay == "Never")
                                     {
                                         <option selected value="Never">Never</option>
@@ -568,7 +568,7 @@
                         <div id="MonthRow">
                             <div class="form-group col-md-6">
                                 <label>Every</label>
-                                <select class="form-control" id="Every" name="EveryMonth">
+                                <select class="form-control choices__input" id="Every" name="EveryMonth">
                                     @for (int i = 1; i <= 12; i++)
                                     {
                                         if (Model.EveryMonth == "1 Month")
@@ -611,7 +611,7 @@
 
                             <div class="form-group col-md-12">
                                 <label>On The</label><br />
-                                <select class="form-control" id="OnThe" name="On">
+                                <select class="form-control choices__input" id="OnThe" name="On">
 
                                     <option value="23rd">23rd</option>
                                     <option value="4th Saturday">4th Saturday</option>
@@ -622,7 +622,7 @@
                             <div class="form-group col-md-12">
                                 <label>Ends</label><br />
 
-                                <select name="EndsMonth" id="EndMonth" class="form-control">
+                                <select name="EndsMonth" id="EndMonth" class="form-control choices__input">
                                     @if (Model.EndsMonth == "Never")
                                     {
                                         <option selected value="Never">Never</option>

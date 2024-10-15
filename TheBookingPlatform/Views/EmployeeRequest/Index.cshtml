@@ -137,58 +137,72 @@
 </style>
 
 <div class="card">
-    <div class="card-header">
+    <div class="card-body">
         <h4 class="card-title">Integrations</h4>
-    </div>
-    <div class="card-content">
         <div class="row">
-            <div class="col-md-3">
-                @if (inTrial == "No")
-                {
-                    <ul class="nav nav-pills nav-pills-rose nav-stacked">
-                        @if (packageList.Contains("Employee Requests"))
-                        {
-                            <li class="@(activeTab == "Employee Requests" ? "active" : "")">
-                                <a href="#tab1" data-toggle="tab">Employee Request</a>
+            <div class="col-md-12">
+                <div class="nav-wrapper position-relative end-0 mb-2">
+                    @if (inTrial == "No")
+                    {
+                        <ul class="nav nav-pills nav-fill p-1" role="tablist">
+                            @if (packageList.Contains("Employee Requests"))
+                            {
+                                <li class="nav-item @(activeTab == "Employee Requests" ? "active" : "")">
+                                    <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#tab1" role="tab" aria-controls="profile" aria-selected="true">
+                                        Employee Request
+                                    </a>
+                                </li>
+                            }
+                            @if (packageList.Contains("Franchise Requests"))
+                            {
+                                <li class="nav-item @(activeTab == "Franchise Requests" ? "active" : "")">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="dashboard" aria-selected="false">
+                                        Franchise Request
+                                    </a>
+                                </li>
+                            }
+                            @if (packageList.Contains("Google Calendar Integration"))
+                            {
+                                <li class="nav-item @(activeTab == "Google Calendar Integration" ? "active" : "")">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="dashboard" aria-selected="false">
+                                        Third Party
+                                    </a>
+                                </li>
+                            }
+
+
+                        </ul>
+                    }
+                    else
+                    {
+                        <ul class="nav nav-pills nav-fill p-1" role="tablist">
+
+                            <li class="nav-item @(activeTab == "Employee Requests" ? "active" : "")">
+                                <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#tab1" role="tab" aria-controls="profile" aria-selected="true">
+                                    Employee Request
+                                </a>
                             </li>
-                        }
-                        @if (packageList.Contains("Franchise Requests"))
-                        {
-                            <li class="@(activeTab == "Franchise Requests" ? "active" : "")">
-                                <a href="#tab2" data-toggle="tab">Franchise</a>
+
+                            <li class="nav-item @(activeTab == "Franchise Requests" ? "active" : "")">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="dashboard" aria-selected="false">
+                                    Franchise Request
+                                </a>
                             </li>
-                        }
-                        @if (packageList.Contains("Google Calendar Integration"))
-                        {
-                            <li class="@(activeTab == "Google Calendar Integration" ? "active" : "")">
-                                <a href="#tab3" data-toggle="tab">Third Party</a>
+
+                            <li class="nav-item @(activeTab == "Google Calendar Integration" ? "active" : "")">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="dashboard" aria-selected="false">
+                                    Third Party
+                                </a>
                             </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <ul class="nav nav-pills nav-pills-rose nav-stacked">
 
-                        <li class="active">
-                            <a href="#tab1" data-toggle="tab">Employee Request</a>
-                        </li>
-
-                        <li>
-                            <a href="#tab2" data-toggle="tab">Franchise</a>
-                        </li>
-
-                        <li>
-                            <a href="#tab3" data-toggle="tab">Third Party</a>
-                        </li>
-
-                    </ul>
-                }
-
+                        </ul>
+                    }
+                </div>
+              
             </div>
             @if (inTrial == "No")
             {
-                <div class="col-md-9">
+                <div class="col-md-12">
                     <div class="tab-content">
                         <div class="tab-pane @(activeTab == "Employee Requests" ? "active" : "")" id="tab1">
                             <div class="card">
@@ -271,7 +285,7 @@
                                                                 <td class="text-center">@item.EmployeeRequest.Accepted</td>
                                                                 <td style="display:flex;" class="text-center">
                                                                     <a title="Edit" href="@Url.Action("Action", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
-                                                                    <button title="Activate" data-href="@Url.Action("Delete", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+                                                                    <button title="Activate" data-href="@Url.Action("Delete", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="material-icons">delete</i></button>
 
                                                                 </td>
                                                             }
@@ -369,7 +383,7 @@
                                                                 <td class="text-center">@item.FranchiseRequest.Accepted</td>
                                                                 <td style="display:flex;" class="text-center">
                                                                     <a title="Edit" href="@Url.Action("Action", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
-                                                                    <button title="Activate" data-href="@Url.Action("Delete", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+                                                                    <button title="Activate" data-href="@Url.Action("Delete", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="material-icons">delete</i></button>
 
                                                                 </td>
                                                             }
@@ -386,7 +400,7 @@
                         </div>
                         <div class="tab-pane @(activeTab == "Google Calendar Integration" ? "active" : "")" id="tab3">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="card-header">
@@ -395,7 +409,7 @@
                                                     <h4>Google Calendar</h4>
 
                                                 </div>
-                                                <div class="row" style="padding:1rem;">
+                                                <div class="row">
                                                     <p>
                                                         Connect your Google account to send YBP appointments to Google Calendar.
                                                     </p>
@@ -449,9 +463,9 @@
                                                                     </button>
                                                                     if (Model.GoogleCalendarIntegration.InitialSetup == false)
                                                                     {
-                                                                    <button id="InitialSetupBtn" type="button"  class="btn btn-sm btn-secondary">
-                                                                        Load Current and Future Appointments
-                                                                    </button>
+                                                                        <button id="InitialSetupBtn" type="button" class="btn btn-sm btn-secondary">
+                                                                            Load Current and Future Appointments
+                                                                        </button>
                                                                     }
                                                                 }
                                                             </div>
@@ -491,7 +505,7 @@
             }
             else
             {
-                <div class="col-md-9">
+                <div class="col-md-12">
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab1">
                             <div class="card">
@@ -574,7 +588,7 @@
                                                                 <td class="text-center">@item.EmployeeRequest.Accepted</td>
                                                                 <td style="display:flex;" class="text-center">
                                                                     <a title="Edit" href="@Url.Action("Action", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
-                                                                    <button title="Activate" data-href="@Url.Action("Delete", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+                                                                    <button title="Activate" data-href="@Url.Action("Delete", "EmployeeRequest", new { ID = item.EmployeeRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="material-icons">delete</i></button>
 
                                                                 </td>
                                                             }
@@ -672,7 +686,7 @@
                                                                 <td class="text-center">@item.FranchiseRequest.Accepted</td>
                                                                 <td style="display:flex;" class="text-center">
                                                                     <a title="Edit" href="@Url.Action("Action", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="material-icons">edit</i></a>
-                                                                    <button title="Activate" data-href="@Url.Action("Delete", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-toggle="modal" data-target="#actionModal"><i class="material-icons">delete</i></button>
+                                                                    <button title="Activate" data-href="@Url.Action("Delete", "FranchiseRequest", new { ID = item.FranchiseRequest.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="material-icons">delete</i></button>
 
                                                                 </td>
                                                             }
@@ -689,7 +703,7 @@
                         </div>
                         <div class="tab-pane" id="tab3">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="card-header">
@@ -698,7 +712,7 @@
                                                     <h4>Google Calendar</h4>
 
                                                 </div>
-                                                <div class="row" style="padding:1rem;">
+                                                <div class="row" >
                                                     <p>
                                                         Connect your Google account to send YBP appointments to Google Calendar.
                                                     </p>
@@ -727,7 +741,7 @@
                                                     }
                                                     else
                                                     {
-                                                        
+
                                                         <div class="row">
                                                             <div class="col-md-6">
 
