@@ -2330,7 +2330,7 @@
 
                                     // Show a SweetAlert confirmation dialog
 
-                                    swal({
+                                    Swal.fire({
                                         title: "Confirm",
                                         text: "Slot is already booked. Do you want to proceed?",
                                         type: 'warning',
@@ -2342,7 +2342,7 @@
                                         buttonsStyling: false
                                     })
                                         .then((willProceed) => {
-                                            if (willProceed) {
+                                            if (willProceed.isConfirmed) {
                                                 showLoadingSpinner();
                                                 // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
                                                 $.ajax({
@@ -2405,7 +2405,7 @@
 
                     // Show a SweetAlert confirmation dialog
 
-                    swal({
+                    Swal.fire({
                         title: "Confirm",
                         text: "Slot is already booked. Do you want to proceed?",
                         type: 'warning',
@@ -2417,7 +2417,7 @@
                         buttonsStyling: false
                     })
                         .then((willProceed) => {
-                            if (willProceed) {
+                            if (willProceed.isConfirmed) {
                                 showLoadingSpinner();
                                 // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
                                 $.ajax({
@@ -3653,7 +3653,7 @@ else
                                     hideLoadingSpinner();
                                     // Show a SweetAlert confirmation dialog
 
-                                    swal({
+                                    Swal.fire({
                                         title: "Confirm",
                                         text: "Slot is already booked. Do you want to proceed?",
                                         type: 'warning',
@@ -3665,7 +3665,7 @@ else
                                         buttonsStyling: false
                                     })
                                         .then((willProceed) => {
-                                            if (willProceed) {
+                                            if (willProceed.isConfirmed) {
 
                                                 // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
                                                 $.ajax({
@@ -3729,7 +3729,7 @@ else
 
                     // Show a SweetAlert confirmation dialog
 
-                    swal({
+                    Swal.fire({
                         title: "Confirm",
                         text: "Slot is already booked. Do you want to proceed?",
                         type: 'warning',
@@ -3741,7 +3741,7 @@ else
                         buttonsStyling: false
                     })
                         .then((willProceed) => {
-                            if (willProceed) {
+                            if (willProceed.isConfirmed) {
                                 showLoadingSpinner();
                                 // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
                                 $.ajax({

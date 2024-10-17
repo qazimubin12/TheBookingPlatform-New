@@ -1,523 +1,502 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  
-
     <meta charset="utf-8" />
-    <link rel="apple-touch-icon" sizes="76x76" href="~/Content/MainTemplate/assets/img/apple-icon.png" />
-    <link rel="icon" type="image/png" href="~/Content/TBPContent/bookingplatform.png" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
-    <title>The Booking Platform</title>
-
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
-    <meta name="viewport" content="width=device-width" />
-
-    <!-- Bootstrap core CSS     -->
-    <link href="~/Content/MainTemplate/assets/css/bootstrap.min.css" rel="stylesheet" />
-
-
-
-    <!--  Material Dashboard CSS    -->
-    <link href="~/Content/MainTemplate/assets/css/material-dashboard.css?v=1.3.0" rel="stylesheet" />
-
-    <!--  CSS for Demo Purpose, don't include it in your project     -->
-    @*<link href="~/Content/MainTemplate/assets/css/demo.css" rel="stylesheet" />*@
-
-
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="~/Content/MainTemplate2/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="~/Content/TBPContent/v2color.png">
+    <title>
+        Your Booking Platform
+    </title>
     <!--     Fonts and icons     -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+    <!-- Nucleo Icons -->
+    <link href="~/Content/MainTemplate2/assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="~/Content/MainTemplate2/assets/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="~/Content/MainTemplate2/assets/css/material-dashboard.css?v=3.0.6" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 
-    <script src="~/Content/MainTemplate/assets/js/jquery.min.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    @*<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>*@
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="~/Content/MainTemplate2/assets/js/plugins/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
+    <!-- Nepcha Analytics (nepcha.com) -->
+    <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
     <style>
-        .center {
-            top: -10%;
+        .ui-datepicker table th span {
+            font-weight: 600 !important;
+            margin-left: 6px;
         }
 
-        .form-group .checkbox label, .form-group .radio label, .form-group label, .form-group .label-on-left, .form-group .label-on-right {
+        .mini-navbar #calendar-block {
+            position: absolute;
+            top: 0;
+            left: 70px
+        }
+
+        .btn.btn-sm i, .btn-group-sm > .btn i {
+            font-size: 1rem;
+        }
+
+        .loading-spinner-overlay {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 9999; /* Ensure it appears above all other content */
+            background-color: rgba(0,0,0,0.5); /* Transparent black */
+        }
+
+
+        .spinner {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .ui-datepicker {
+            width: 220px;
+            display: none;
+            padding: 0 1px 7px;
             font-size: 14px;
-            line-height: 1.428571429;
-            color: black;
-            font-weight: 400;
+            border: none
         }
 
-        .checkbox label {
+        nav.navbar-new.navbar-new-design .ui-datepicker {
+            padding: 0 1px
+        }
+
+        .ui-datepicker-prev {
+            float: left;
+            text-indent: -9999px;
+            width: 0;
+            height: 0;
+            overflow: hidden;
             cursor: pointer;
-            padding-left: 0;
+            margin-top: 4px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-right: 5px solid #dfe4ed
+        }
+
+        .ui-datepicker-next {
+            float: right;
+            text-indent: -9999px;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            cursor: pointer;
+            margin-top: 4px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid #dfe4ed
+        }
+
+
+        .menuicons {
+            height: 25px;
+        }
+
+        .ui-datepicker-next:hover {
+            background: 0 0;
+            border-left: 5px solid #fff
+        }
+
+        .ui-datepicker-prev:hover {
+            background: 0 0;
+            border-right: 5px solid #fff
+        }
+
+        .ui-datepicker-title {
+            height: 1%;
+            overflow: hidden;
+            text-align: center;
+            font-size: 14px;
+            color: #4a5054;
+            text-transform: none
+        }
+
+        .material-icons {
+            width: 30px;
+        }
+
+        .material-icons-round {
+            width: 30px;
+        }
+
+        .ui-datepicker-header {
+            overflow: hidden;
+            width: 212px;
+            margin: 0 0 6px;
+            padding: 8px 10px 10px 0;
+            background: 0 0
+        }
+
+        .ui-datepicker table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+            .ui-datepicker table th {
+                color: #a7b1c2;
+                font-weight: 600 !important;
+                padding-bottom: 5px
+            }
+
+                .ui-datepicker table th span {
+                    font-weight: 600 !important
+                }
+
+            .ui-datepicker table td {
+                text-align: center;
+                padding: 0
+            }
+
+        .ui-datepicker .ui-state-disabled {
+            color: #696e72;
+            background: 0 0
+        }
+
+        .ui-datepicker table a {
+            text-decoration: none;
+            color: white;
+            float: left;
+            height: 24px;
+            width: 24px;
+            text-align: center;
+            padding-top: 2px;
+            border: none !important;
+            text-shadow: none !important;
+            line-height: normal !important;
+            font-weight: 400 !important
+        }
+
+        .ui-datepicker table span {
+            height: 24px;
+            width: 24px;
+            border: none !important;
+            text-shadow: none !important;
+            line-height: normal !important;
+            font-weight: 400 !important;
+            float: left;
+            padding-top: 4px
+        }
+
+        #ui-datepicker-div.ui-datepicker table span {
+            background: #fff
+        }
+
+        #ui-datepicker-div.ui-datepicker .ui-state-disabled span {
+            color: #ccc
+        }
+
+        .ui-datepicker .not_work a {
+            color: #4a5054;
+            background: 0 0
+        }
+
+        .ui-datepicker .work a {
+            color: #a7b1c2;
+            background: 0 0
+        }
+
+        .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .ui-datepicker .ui-datepicker-current-day a {
+            border-radius: 20%;
+            background: #757575 !important;
+            color: #fff
+        }
+
+        .calendar-container .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .calendar-container .ui-datepicker .ui-datepicker-current-day a {
+            background: #FACA00 !important;
             color: black;
+        }
+
+        #master_cal .ui-datepicker .ui-datepicker-calendar .ui-state-hover, #master_cal .ui-datepicker .ui-datepicker-current-day a {
+            background: 0 0 !important
+        }
+
+        /*  .calendar-container .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .calendar-container .ui-datepicker .ui-datepicker-current-day a {
+            background: #000 !important
+        }*/
+
+        .ui-datepicker table a.ui-state-default {
+            background: 0 0
+        }
+
+
+
+        .ui-datepicker .ui-datepicker-today a {
+            color: #7092cc;
+            font-weight: 700 !important;
+            background: yellow;
+        }
+
+        .navbar-new.navbar-new-design .ui-datepicker .ui-datepicker-today a {
+            font-weight: 400 !important
+        }
+
+        .ui-datepicker-month, .ui-datepicker-year {
+            color: #a7b1c2;
+            font-weight: 700;
+            background: 0 0
         }
     </style>
 </head>
 
-<body>
- 
-    <div class="wrapper">
+<body class="g-sidenav-show  bg-gray-200">
+    <div id="loadingSpinner" class="loading-spinner-overlay">
+        <div class="spinner"></div>
+        <h3 id="LoaderText" style="color: white; position: absolute; left: 36%; top: 60%;"></h3>
 
-        <div class="sidebar" data-active-color="rose" data-background-color="black" data-image="/Content/MainTemplate/assets/img/sidebar-1.jpg">
-            <!--
-                Tip 1: You can change the color of active element of the sidebar using: data-active-color="purple | blue | green | orange | red | rose"
-                Tip 2: you can also add an image using data-image tag
-                Tip 3: you can change the color of the sidebar with data-background-color="white | black"
-            -->
+    </div>
+    <aside style="z-index:55;" class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+        <div class="sidenav-header">
+            <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+            <a class="navbar-brand m-0" href="https://www.yourbookingplatform.com" target="_blank">
+                <img src="~/Content/TBPContent/v2whitelogo.png" class="navbar-brand-img h-100" alt="main_logo">
+                <span class="ms-1 font-weight-bold text-white">Your Booking Platform</span>
+            </a>
+        </div>
+        <hr class="horizontal light mt-0 mb-2">
+        <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
+            <ul class="navbar-nav">
+                <li class="nav-item mb-2 mt-0">
+                    <a data-bs-toggle="collapse" href="#ProfileNav" class="nav-link text-white" aria-controls="ProfileNav" role="button" aria-expanded="false">
+                        <span style="font-size:smaller;" target="_blank" href="http://www.yourbookingplatform.com" class="simple-text logo-mini">
+                            YBP
+                        </span>
+                        <span id="TextOfUser" style="white-space:normal;" class="nav-link-text ms-2 ps-1">@User.Identity.Name</span>
+                    </a>
 
-            <div class="logo">
-                <a href="http://www.app.yourbookingplatform.com" class="simple-text logo-mini">
-                    YBP
-                </a>
-
-                <a style="font-size:small;" href="http://www.app.yourbookingplatform.com" class="simple-text logo-normal">
-                    Your Booking Platform
-                </a>
-            </div>
-
-            <div class="sidebar-wrapper">
-                <div class="user">
-                    <div class="photo">
-                        <img src="~/Content/MainTemplate/assets/img/faces/avatar.jpg" />
-                    </div>
-                    <div class="info">
-                        <a data-bs-toggle="collapse" href="#collapseExample" class="collapsed">
-                            <span>
-                                @if (User.Identity.IsAuthenticated)
-                                {
-                                    <span>
-                                        @User.Identity.Name
-                                        <b class="caret"></b>
-
-                                    </span>
-                                }
-
-                                <b class="caret"></b>
-
-                            </span>
-                        </a>
-                        <div class="clearfix"></div>
-                        <div class="collapse" id="collapseExample">
+                    <div class="collapse" id="ProfileNav" style="">
+                        <div class="collapse" id="ProfileNav" style="">
                             <ul class="nav">
-                                @*<li>
-                                        <a href="#">
-                                            <span class="sidebar-mini"> MP </span>
-                                            <span class="sidebar-normal"> My Profile </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <span class="sidebar-mini"> EP </span>
-                                            <span class="sidebar-normal"> Edit Profile </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <span class="sidebar-mini"> S </span>
-                                            <span class="sidebar-normal"> Settings </span>
-                                        </a>
-                                    </li>*@
-
-                                <li>
-                                    <a href="javascript:document.getElementById('logoutForm').submit()">
-                                        <span class="sidebar-mini"> L </span>
-                                        <span class="sidebar-normal"> Logout </span>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" style="cursor:pointer" onclick="logout()">
+                                        <span class="sidenav-mini-icon"> L </span>
+                                        <span class="sidenav-normal ms-3  ps-1"> Logout </span>
                                     </a>
                                 </li>
+
                             </ul>
+
                         </div>
+
                     </div>
-                </div>
-                @*<ul class="nav">
+                </li>
+                <hr class="horizontal light mt-0">
 
-                        <li class="active">
-                            <a href="~/Content/MainTemplate/examples/dashboard.html">
-                                <i class="material-icons">dashboard</i>
-                                <p> Dashboard </p>
-                            </a>
-                        </li>
+             
 
-                        <li>
-                            <a data-bs-toggle="collapse" href="#pagesExamples">
-                                <i class="material-icons">image</i>
-                                <p>
-                                    Pages
-                                    <b class="caret"></b>
-                                </p>
-                            </a>
-
-                            <div class="collapse" id="pagesExamples">
-                                <ul class="nav">
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/pages/pricing.html">
-                                            <span class="sidebar-mini"> P </span>
-                                            <span class="sidebar-normal"> Pricing </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/pages/rtl.html">
-                                            <span class="sidebar-mini"> RS </span>
-                                            <span class="sidebar-normal"> RTL Support </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/pages/timeline.html">
-                                            <span class="sidebar-mini"> T </span>
-                                            <span class="sidebar-normal"> Timeline </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="@Url.Action("Index","User")">
-                                            <span class="sidebar-mini"> U </span>
-                                            <span class="sidebar-normal"> Users </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/pages/register.html">
-                                            <span class="sidebar-mini"> RP </span>
-                                            <span class="sidebar-normal"> Register Page </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/pages/lock.html">
-                                            <span class="sidebar-mini"> LSP </span>
-                                            <span class="sidebar-normal"> Lock Screen Page </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/pages/user.html">
-                                            <span class="sidebar-mini"> UP </span>
-                                            <span class="sidebar-normal"> User Profile </span>
-                                        </a>
-                                    </li>
-
-
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li>
-                            <a data-bs-toggle="collapse" href="#componentsExamples">
-                                <i class="material-icons">apps</i>
-                                <p>
-                                    Components
-                                    <b class="caret"></b>
-                                </p>
-                            </a>
-
-                            <div class="collapse" id="componentsExamples">
-                                <ul class="nav">
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/components/buttons.html">
-                                            <span class="sidebar-mini"> B </span>
-                                            <span class="sidebar-normal"> Buttons </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/components/grid.html">
-                                            <span class="sidebar-mini"> GS </span>
-                                            <span class="sidebar-normal"> Grid System </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/components/panels.html">
-                                            <span class="sidebar-mini"> P </span>
-                                            <span class="sidebar-normal"> Panels </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/components/sweet-alert.html">
-                                            <span class="sidebar-mini"> SA </span>
-                                            <span class="sidebar-normal"> Sweet Alert </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/components/notifications.html">
-                                            <span class="sidebar-mini"> N </span>
-                                            <span class="sidebar-normal"> Notifications </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/components/icons.html">
-                                            <span class="sidebar-mini"> I </span>
-                                            <span class="sidebar-normal"> Icons </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/components/typography.html">
-                                            <span class="sidebar-mini"> T </span>
-                                            <span class="sidebar-normal"> Typography </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li>
-                            <a data-bs-toggle="collapse" href="#formsExamples">
-                                <i class="material-icons">content_paste</i>
-                                <p>
-                                    Forms
-                                    <b class="caret"></b>
-                                </p>
-                            </a>
-
-                            <div class="collapse" id="formsExamples">
-                                <ul class="nav">
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/forms/regular.html">
-                                            <span class="sidebar-mini"> RF </span>
-                                            <span class="sidebar-normal"> Regular Forms </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/forms/extended.html">
-                                            <span class="sidebar-mini"> EF </span>
-                                            <span class="sidebar-normal"> Extended Forms </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/forms/validation.html">
-                                            <span class="sidebar-mini"> VF </span>
-                                            <span class="sidebar-normal"> Validation Forms </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/forms/wizard.html">
-                                            <span class="sidebar-mini"> W </span>
-                                            <span class="sidebar-normal"> Wizard </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li>
-                            <a data-bs-toggle="collapse" href="#tablesExamples">
-                                <i class="material-icons">grid_on</i>
-                                <p>
-                                    Tables
-                                    <b class="caret"></b>
-                                </p>
-                            </a>
-
-                            <div class="collapse" id="tablesExamples">
-                                <ul class="nav">
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/tables/regular.html">
-                                            <span class="sidebar-mini"> RT </span>
-                                            <span class="sidebar-normal"> Regular Tables </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/tables/extended.html">
-                                            <span class="sidebar-mini"> ET </span>
-                                            <span class="sidebar-normal"> Extended Tables </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/tables/datatables.net.html">
-                                            <span class="sidebar-mini"> DT </span>
-                                            <span class="sidebar-normal"> DataTables.net </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li>
-                            <a data-bs-toggle="collapse" href="#mapsExamples">
-                                <i class="material-icons">place</i>
-                                <p>
-                                    Maps
-                                    <b class="caret"></b>
-                                </p>
-                            </a>
-
-                            <div class="collapse" id="mapsExamples">
-                                <ul class="nav">
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/maps/google.html">
-                                            <span class="sidebar-mini"> GM </span>
-                                            <span class="sidebar-normal"> Google Maps </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/maps/fullscreen.html">
-                                            <span class="sidebar-mini"> FSM </span>
-                                            <span class="sidebar-normal"> Full Screen Map </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="~/Content/MainTemplate/examples/maps/vector.html">
-                                            <span class="sidebar-mini"> VM </span>
-                                            <span class="sidebar-normal"> Vector Map </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li>
-                            <a href="~/Content/MainTemplate/examples/widgets.html">
-                                <i class="material-icons">widgets</i>
-                                <p> Widgets </p>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="~/Content/MainTemplate/examples/charts.html">
-                                <i class="material-icons">timeline</i>
-                                <p> Charts </p>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="~/Content/MainTemplate/examples/calendar.html">
-                                <i class="material-icons">date_range</i>
-                                <p> Calendar </p>
-                            </a>
-                        </li>
-
-                    </ul>*@
-            </div>
+            </ul>
         </div>
-
-
-        <div class="main-panel">
-
-            <nav class="navbar navbar-transparent navbar-absolute">
-                <div class="container-fluid">
-                    <div class="navbar-minimize">
-                        <button id="minimizeSidebar" class="btn btn-round btn-white btn-fill btn-just-icon">
-                            <i class="material-icons visible-on-sidebar-regular">more_vert</i>
-                            <i class="material-icons visible-on-sidebar-mini">view_list</i>
-                        </button>
-                    </div>
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-bs-toggle="collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" href="#"> Dashboard </a>
-                    </div>
-                    <div class="collapse navbar-collapse">
-
-
-
-
-                    </div>
+    </aside>
+    <main class="main-content position-relative  h-100 border-radius-lg ">
+        <!-- Navbar -->
+        <nav class="navbar navbar-main navbar-expand-lg position-sticky mt-4 top-1 px-0 mx-4 shadow-none border-radius-xl z-index-sticky" id="navbarBlur" data-scroll="true">
+            <div class="container-fluid py-1 px-3">
+                @*<nav aria-label="breadcrumb">
+                        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                            <li class="breadcrumb-item text-sm">
+                                <a class="opacity-3 text-dark" href="javascript:;">
+                                    <svg width="12px" height="12px" class="mb-1" viewBox="0 0 45 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                        <title>shop </title>
+                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <g transform="translate(-1716.000000, -439.000000)" fill="#252f40" fill-rule="nonzero">
+                                                <g transform="translate(1716.000000, 291.000000)">
+                                                    <g transform="translate(0.000000, 148.000000)">
+                                                        <path d="M46.7199583,10.7414583 L40.8449583,0.949791667 C40.4909749,0.360605034 39.8540131,0 39.1666667,0 L7.83333333,0 C7.1459869,0 6.50902508,0.360605034 6.15504167,0.949791667 L0.280041667,10.7414583 C0.0969176761,11.0460037 -1.23209662e-05,11.3946378 -1.23209662e-05,11.75 C-0.00758042603,16.0663731 3.48367543,19.5725301 7.80004167,19.5833333 L7.81570833,19.5833333 C9.75003686,19.5882688 11.6168794,18.8726691 13.0522917,17.5760417 C16.0171492,20.2556967 20.5292675,20.2556967 23.494125,17.5760417 C26.4604562,20.2616016 30.9794188,20.2616016 33.94575,17.5760417 C36.2421905,19.6477597 39.5441143,20.1708521 42.3684437,18.9103691 C45.1927731,17.649886 47.0084685,14.8428276 47.0000295,11.75 C47.0000295,11.3946378 46.9030823,11.0460037 46.7199583,10.7414583 Z"></path>
+                                                        <path d="M39.198,22.4912623 C37.3776246,22.4928106 35.5817531,22.0149171 33.951625,21.0951667 L33.92225,21.1107282 C31.1430221,22.6838032 27.9255001,22.9318916 24.9844167,21.7998837 C24.4750389,21.605469 23.9777983,21.3722567 23.4960833,21.1018359 L23.4745417,21.1129513 C20.6961809,22.6871153 17.4786145,22.9344611 14.5386667,21.7998837 C14.029926,21.6054643 13.533337,21.3722507 13.0522917,21.1018359 C11.4250962,22.0190609 9.63246555,22.4947009 7.81570833,22.4912623 C7.16510551,22.4842162 6.51607673,22.4173045 5.875,22.2911849 L5.875,44.7220845 C5.875,45.9498589 6.7517757,46.9451667 7.83333333,46.9451667 L19.5833333,46.9451667 L19.5833333,33.6066734 L27.4166667,33.6066734 L27.4166667,46.9451667 L39.1666667,46.9451667 C40.2482243,46.9451667 41.125,45.9498589 41.125,44.7220845 L41.125,22.2822926 C40.4887822,22.4116582 39.8442868,22.4815492 39.198,22.4912623 Z"></path>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
+                            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Analytics</li>
+                        </ol>
+                        <h6 class="font-weight-bolder mb-0">Analytics</h6>
+                    </nav>*@
+                <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
+                    <a href="javascript:;" class="nav-link text-body p-0">
+                        <div class="sidenav-toggler-inner">
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                        </div>
+                    </a>
                 </div>
-            </nav>
+                <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                    <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                        @*<div class="input-group input-group-outline">
+                                <label class="form-label">Search here</label>
+                                <input type="text" class="form-control">
+                            </div>*@
+                    </div>
+                    <ul class="navbar-nav  justify-content-end">
+                        <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                            <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                                <div class="sidenav-toggler-inner">
+                                    <i class="sidenav-toggler-line"></i>
+                                    <i class="sidenav-toggler-line"></i>
+                                    <i class="sidenav-toggler-line"></i>
+                                </div>
+                            </a>
+                        </li>
+                        @*<li class="nav-item">
+                                <a href="~/Content/MainTemplate2/pages/authentication/signin/illustration.html" class="nav-link text-body p-0 position-relative" target="_blank">
+                                    <i class="material-icons me-sm-1">
+                                        account_circle
+                                    </i>
+                                </a>
+                            </li>
 
-
-
-
-            <div class="content">
-                <div class="container-fluid">
-                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
-                    {
-                    }
-                    @RenderBody()
-
+                            <li class="nav-item px-3">
+                                <a href="javascript:;" class="nav-link text-body p-0">
+                                    <i class="material-icons fixed-plugin-button-nav cursor-pointer">
+                                        settings
+                                    </i>
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown pe-2">
+                                <a href="javascript:;" class="nav-link text-body p-0 position-relative" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-icons cursor-pointer">
+                                        notifications
+                                    </i>
+                                    <span class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
+                                        <span class="small">11</span>
+                                        <span class="visually-hidden">unread notifications</span>
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton">
+                                    <li class="mb-2">
+                                        <a class="dropdown-item border-radius-md" href="javascript:;">
+                                            <div class="d-flex align-items-center py-1">
+                                                <span class="material-icons">email</span>
+                                                <div class="ms-2">
+                                                    <h6 class="text-sm font-weight-normal my-auto">
+                                                        Check new messages
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <a class="dropdown-item border-radius-md" href="javascript:;">
+                                            <div class="d-flex align-items-center py-1">
+                                                <span class="material-icons">podcasts</span>
+                                                <div class="ms-2">
+                                                    <h6 class="text-sm font-weight-normal my-auto">
+                                                        Manage podcast session
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item border-radius-md" href="javascript:;">
+                                            <div class="d-flex align-items-center py-1">
+                                                <span class="material-icons">shopping_cart</span>
+                                                <div class="ms-2">
+                                                    <h6 class="text-sm font-weight-normal my-auto">
+                                                        Payment successfully completed
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>*@
+                    </ul>
                 </div>
             </div>
-
-
-
-
-            <footer class="footer">
+        </nav>
+        <!-- End Navbar -->
+        <div class="container-fluid py-4">
+            <form id="form"></form>
+           
+            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+            {
+            }
+            @RenderBody()
+            <footer class="footer py-4  ">
                 <div class="container-fluid">
-                    <nav class="pull-left">
 
-                    </nav>
-                    <p class="copyright pull-right">
-                        &copy;
-                        <script>document.write(new Date().getFullYear())</script>  Powered by <a href="http://www.app.yourbookingplatform.com">Your Booking Platform  </a>
-                    </p>
+                    <div class="row align-items-center justify-content-lg-between">
+                        <div class="col-lg-6 mb-lg-0 mb-4">
+                            <div class="copyright text-center text-sm text-muted text-lg-start">
+                                &copy;
+                                <script>document.write(new Date().getFullYear())</script>  Powered by <a href="https://www.yourbookingplatform.com">Your Booking Platform</a>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </footer>
-
-
         </div>
-    </div>
+    </main>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/core/popper.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/core/bootstrap.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <!--   Core JS Files   -->
+    <script src="~/Content/MainTemplate2/assets/js/plugins/smooth-scrollbar.min.js"></script>
+    <!-- Kanban scripts -->
+    <script src="~/Content/MainTemplate2/assets/js/plugins/dragula/dragula.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/jkanban/jkanban.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/chartjs.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/world.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/choices.min.js"></script>
+  
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="~/Content/MainTemplate2/assets/js/material-dashboard.js"></script>
 </body>
+
 </html>
 
 
-<!--   Core JS Files   -->
-<script src="~/Content/MainTemplate/assets/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="~/Content/MainTemplate/assets/js/material.min.js" type="text/javascript"></script>
-<script src="~/Content/MainTemplate/assets/js/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
-<script src="~/Content/MainTemplate/assets/js/sweetalert2.js"></script>
-<!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
-
-<!-- Library for adding dinamically elements -->
-<script src="~/Content/MainTemplate/assets/js/arrive.min.js" type="text/javascript"></script>
-
-<!-- Forms Validations Plugin -->
-<script src="~/Content/MainTemplate/assets/js/jquery.validate.min.js"></script>
-
-<!--  Plugin for Date Time Picker and Full Calendar Plugin-->
-<script src="~/Content/MainTemplate/assets/js/moment.min.js"></script>
-
-<!--  Charts Plugin, full documentation here: https://gionkunz.github.io/chartist-js/ -->
-<script src="~/Content/MainTemplate/assets/js/chartist.min.js"></script>
-
-<!--  Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
-<script src="~/Content/MainTemplate/assets/js/jquery.bootstrap-wizard.js"></script>
-
-<!--  Notifications Plugin, full documentation here: http://bootstrap-notify.remabledesigns.com/    -->
-<script src="~/Content/MainTemplate/assets/js/bootstrap-notify.js"></script>
-
-<!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
-<script src="~/Content/MainTemplate/assets/js/bootstrap-datetimepicker.js"></script>
-
-<!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
-<script src="~/Content/MainTemplate/assets/js/jquery-jvectormap.js"></script>
-
-<!-- Sliders Plugin, full documentation here: https://refreshless.com/nouislider/ -->
-<script src="~/Content/MainTemplate/assets/js/nouislider.min.js"></script>
-
-<!--  Google Maps Plugin    -->
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
-
-<!--  Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
-<script src="~/Content/MainTemplate/assets/js/jquery.select-bootstrap.js"></script>
-
-<!--  DataTables.net Plugin, full documentation here: https://datatables.net/    -->
-<script src="~/Content/MainTemplate/assets/js/jquery.datatables.js"></script>
-
-<!-- Sweet Alert 2 plugin, full documentation here: https://limonte.github.io/sweetalert2/ -->
-<!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
-<script src="~/Content/MainTemplate/assets/js/jasny-bootstrap.min.js"></script>
-
-<!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
-<script src="~/Content/MainTemplate/assets/js/fullcalendar.min.js"></script>
-
-<!-- Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
-<script src="~/Content/MainTemplate/assets/js/jquery.tagsinput.js"></script>
-
-<!-- Material Dashboard javascript methods -->
-<script src="~/Content/MainTemplate/assets/js/material-dashboard.js?v=1.3.0"></script>
-
-<!-- Material Dashboard DEMO methods, don't include it in your project! -->
-@*<script src="~/Content/MainTemplate/assets/js/demo.js"></script>*@
 
 
 
 
-<script type="text/javascript">
 
 
 
 
-    $(document).ready(function () {
-        $("body").mouseover(function () {
-            $("div[style='position: fixed; z-index: 999999; width: 100%; height: 55px; padding: 10px; background-color: rgba(17, 16, 16, 0.93); bottom: 0px; left: 0px; right: 0px; display: flex; align-items: center; justify-content: center; gap: 20px; color: white;']").hide();
-        });
-    });
-</script>
+
+
 
 
 

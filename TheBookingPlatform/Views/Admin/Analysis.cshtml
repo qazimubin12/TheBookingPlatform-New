@@ -2,9 +2,15 @@
 @{
     ViewBag.Title = "Analysis";
 }
-<script src="~/Content/MainTemplate/assets/js/bootstrap-datetimepicker.js"></script>
-<script src="~/Content/MainTemplate/assets/js/chartist.min.js"></script>
 
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
 <style>
     .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
         padding: 0px 2px;
@@ -18,101 +24,113 @@
 </style>
 <div class="row">
     <div class="card col-md-12">
-        <div class="card-header">
+        <div class="card-body">
             <h4 class="card-title">
                 Analysis
             </h4>
             <span id="errorText" class="text-danger">
 
             </span>
-        </div>
-        <div class="card-content">
             <form method="post">
                 <div style="align-items:end;" class="row">
                     <div class="col-md-2">
                         <div class="form-group">
-                            @*<label style="margin-bottom:15px;"  class="label-control">Start Date</label>*@
+                            <div class="input-group input-group-dynamic">
+                                @*<label style="margin-bottom:15px;"  class="label-control">Start Date</label>*@
 
-                            <input style="margin-top:15px;" type="text" name="StartDate" id="StartDate" class="form-control datepicker" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                                <input style="margin-top:15px;" type="date" name="StartDate" id="StartDate" class="form-control " value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            @*<label style="margin-bottom:15px;" class="label-control">End Date</label>*@
-                            <input style="margin-top:15px;" type="text" name="EndDate" id="EndDate" class="form-control datepicker" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                            <div class="input-group input-group-dynamic">
+
+                                @*<label style="margin-bottom:15px;" class="label-control">End Date</label>*@
+                                <input style="margin-top:15px;" type="date" name="EndDate" id="EndDate" class="form-control " value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            @*<label class="label-control">Choose Employees</label>*@
-                            <select class="selectpicker" data-style="select-with-transition" id="SelectedEmployeeIds" name="SelectedEmployeeIds" multiple title="Choose Employees" data-size="7">
-                                <option disabled>Choose Employees </option>
-                                @foreach (var item in Model.Employees)
-                                {
-                                    if (Model.SelectedEmployeeIDs != null)
+                            <div class="input-group input-group-dynamic">
+                                @*<label class="label-control">Choose Employees</label>*@
+                                <select class="form-control " id="SelectedEmployeeIds" name="SelectedEmployeeIds" multiple>
+                                    <option disabled>Choose Employees </option>
+                                    @foreach (var item in Model.Employees)
                                     {
-                                        if (Model.SelectedEmployeeIDs.Split(',').ToList().Contains(item.ID.ToString()))
+                                        if (Model.SelectedEmployeeIDs != null)
+                                        {
+                                            if (Model.SelectedEmployeeIDs.Split(',').ToList().Contains(item.ID.ToString()))
+                                            {
+                                                <option selected value="@item.ID">@item.Name </option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.ID">@item.Name </option>
+
+                                            }
+                                        }
+                                        else
                                         {
                                             <option selected value="@item.ID">@item.Name </option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@item.ID">@item.Name </option>
 
                                         }
                                     }
-                                    else
-                                    {
-                                        <option selected value="@item.ID">@item.Name </option>
-
-                                    }
-                                }
-                            </select>
+                                </select>
+                            </div>
                         </div>
+
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            @*<label class="label-control">Choose Status</label>*@
-                            <select style="margin-top:0px;" class="selectpicker" data-style="select-with-transition" name="SelectedStatuses" id="SelectedStatuses" multiple title="Choose Status" data-size="7">
-                                <option disabled> Choose Status</option>
-                                @foreach (var item in Model.Statuses)
-                                {
-                                    if (Model.Status != null)
+                            <div class="input-group input-group-dynamic">
+
+                                @*<label class="label-control">Choose Status</label>*@
+                                <select style="margin-top:0px;" class="form-control" name="SelectedStatuses" id="SelectedStatuses" multiple>
+                                    <option disabled> Choose Status</option>
+                                    @foreach (var item in Model.Statuses)
                                     {
-                                        if (Model.Status.Split(',').ToList().Contains(item))
+                                        if (Model.Status != null)
+                                        {
+                                            if (Model.Status.Split(',').ToList().Contains(item))
+                                            {
+                                                <option selected value="@item">@item </option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item">@item </option>
+
+                                            }
+                                        }
+                                        else
                                         {
                                             <option selected value="@item">@item </option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@item">@item </option>
 
                                         }
                                     }
-                                    else
-                                    {
-                                        <option selected value="@item">@item </option>
-
-                                    }
-                                }
-                            </select>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            @*<label class="label-control">Is Cancelled?</label>*@
-                            <select style="margin-top:0px;" class="selectpicker" data-style="select-with-transition" name="IsCancelled" id="IsCancelled" title="Is Cancelled" data-size="2">
-                                @if (Model.IsCancelled)
-                                {
-                                    <option value="False">False </option>
-                                    <option selected value="True">True </option>
-                                }
-                                else
-                                {
-                                    <option selected value="False">False </option>
-                                    <option value="True">True </option>
-                                }
-                            </select>
+                            <div class="input-group input-group-dynamic">
+
+                                @*<label class="label-control">Is Cancelled?</label>*@
+                                <select style="margin-top:0px;" class="form-control" name="IsCancelled" id="IsCancelled">
+                                    @if (Model.IsCancelled)
+                                    {
+                                        <option value="False">False </option>
+                                        <option selected value="True">True </option>
+                                    }
+                                    else
+                                    {
+                                        <option selected value="False">False </option>
+                                        <option value="True">True </option>
+                                    }
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -128,322 +146,414 @@
         </div>
     </div>
 
+
     <div class="card col-md-12">
-        <div class="card-header">
+        <div class="card-body">
             <h4 class="card-title">
                 Deposit Information
             </h4>
-        </div>
-        <div class="card-content">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center">
+            <div class="row" style="margin-top:20px;">
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Cash</p>
+                                <h4 class="mb-0">@Model.SumOfCashDeposit</h4>
+                            </div>
+                        </div>
 
-                            </th>
-                            <th class="text-center">
-                                Cash
-                            </th>
-                            <th class="text-center">
-                                Online
-                            </th>
-                            <th class="text-center">
-                                Pin
-                            </th>
-                            <th class="text-center">
-                                Grand Total
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center">
-                                Sum of Deposit Amount
-                            </td>
-                            <td class="text-center">
-                                @Model.SumOfCashDeposit
-                            </td>
-                            <td class="text-center">
-                                @Model.SumOfOnlineDeposit
-                            </td>
-                            <td class="text-center">
-                                @Model.SumOfPinDeposit
-                            </td>
-                            <td class="text-center">
-                                @(Model.SumOfOnlineDeposit+Model.SumOfPinDeposit+Model.SumOfCashDeposit)
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">account_balance_wallet</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Online</p>
+                                <h4 class="mb-0"> @Model.SumOfOnlineDeposit</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">credit_card</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Pin</p>
+                                <h4 class="mb-0">@Model.SumOfPinDeposit</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">attach_money</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Grand Total</p>
+                                <h4 class="mb-0">@(Model.SumOfOnlineDeposit+Model.SumOfPinDeposit+Model.SumOfCashDeposit)</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-        </div>
 
+        </div>
     </div>
 
+
+
     <div class="card col-md-12">
-        <div class="card-header">
+        <div class="card-body">
             <h4 class="card-title">
                 Service Cost Information
             </h4>
-        </div>
-        <div class="card-content">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center">
-                                Service Cost
-                            </th>
-                            <th class="text-center">
-                                Offline Discount(s)
-                            </th>
-                            <th class="text-center">
-                                Price After Discount
-                            </th>
-                            <th class="text-center">
-                                Online Discount(Price Change)
-                            </th>
-                            <th class="text-center">
-                                Employee Price Change
-                            </th>
-                            <th class="text-center">
-                                Total After Price Change(s)
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center">
-                                @Model.TotalServicePrices
-                            </td>
-                            <td class="text-center">
-                                @Model.TotalOfflineDiscount
-                            </td>
-                            <td class="text-center">
-                                @Model.TotalPriceAfterOfflineDiscount
-                            </td>
-                            <td class="text-center">
-                                @Model.TotalOnlinePriceChange
-                            </td>
-                            <td class="text-center">
-                                @Model.TotalEmployeePriceChange
-                            </td>
-                            <td class="text-center">
-                                @Model.TotalAfterPriceChange
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="row" style="margin-top:20px;">
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Service Cost</p>
+                                <h4 class="mb-0">@Model.TotalServicePrices</h4>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-warning shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Offline Discount(s)</p>
+                                <h4 class="mb-0">  @Model.TotalOfflineDiscount</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-success shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Price After Discount </p>
+                                <h4 class="mb-0">@Model.TotalPriceAfterOfflineDiscount</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Online Discount(Price Change)</p>
+                                <h4 class="mb-0">@Model.TotalOnlinePriceChange</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Employee Price Change</p>
+                                <h4 class="mb-0"> @Model.TotalEmployeePriceChange</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">  Total After Price Change(s)</p>
+                                <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
 
 
     <div class="card col-md-12">
-        <div class="card-header">
+        <div class="card-body">
             <h4 class="card-title">
                 Earnings
             </h4>
-        </div>
-        <div class="card-content">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center">
-                                Total Earned
-                            </th>
+            <div class="row" style="margin-top:20px;">
 
-                            <th class="text-center">
-                                Earned from Services
-                            </th>
-                            <th class="text-center">
-                                Earned from Products
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned</p>
+                                <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
+                            </div>
+                        </div>
 
-                            <td class="text-center">
-                                @Model.TotalAfterPriceChange
-                            </td>
-                            <td class="text-center">
-                                @Model.TotalAfterPriceChange
-                            </td>
-                            <td class="text-center">
-                                COMING SOON
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned from Services</p>
+                                <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-warning shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned from Products</p>
+                                <h6 class="mb-0">COMING SOON.</h6>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
+
         </div>
 
     </div>
 
 
 
-
-
-</div>
-<div class="row " style=" padding-left: 0px; padding-right: 0px; ">
-    <div class="col-md-6">
-        <div class="card ">
-            <div class="card-header">
-                <h4 class="card-title">
-                    Earning Over Time Period
-                </h4>
-            </div>
-            <div class="card-content">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="text-center">
-                                    Day
-                                </th>
-
-                                <th class="text-center">
-                                    Earnings
-                                </th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.DayWiseSales != null)
-                            {
-                                foreach (var item in Model.DayWiseSales)
+    <div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        Client's Revenue Trends
+                    </h4>
+                    <div class="table-responsive p-0" style="max-height:400px;overflow-y:scroll;">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Day</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Earnings</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Clients Visisted</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.DayWiseSales != null && Model.NumberOfClientsOnEachDays != null)
                                 {
-                                    <tr>
-                                        <td class="text-center">
-                                            @item.Date.ToString("yyyy-MM-dd")
-                                        </td>
-                                        <td class="text-center">
-                                            @item.DaySale
-                                        </td>
-                                    </tr>
-                                }
-                            }
+                                    var combinedData = from sale in Model.DayWiseSales
+                                                       join clients in Model.NumberOfClientsOnEachDays
+                                                       on sale.Date equals clients.Date
+                                                       select new { sale.Date, sale.DaySale, clients.NoOfClients };
 
-                        </tbody>
-                    </table>
+                                    foreach (var item in combinedData)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="mb-0 text-sm">@item.Date.ToString("yyyy-MM-dd")</span>
+                                            </td>
+                                            <td>
+                                                <p class="text-sm font-weight-normal mb-0">@item.DaySale</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-normal mb-0">@item.NoOfClients</p>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">
+                       Popular Services
+                    </h4>
+                    <div class="table-responsive p-0" style="max-height:400px;overflow-y:scroll;">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Service Name</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.serviceBookingCounts != null)
+                                {
+                                    foreach (var item in Model.serviceBookingCounts)
+                                    {
+                                        <tr>
+                                            <td class="">
+                                                @item.Key
+                                            </td>
+                                            <td class="">
+                                                @item.Value
+                                            </td>
+                                        </tr>
+
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-12">
-        <div class="card card-chart">
-            <div style=" margin-top: 0px; margin-right: 0px; margin-left: 0px; " class="card-header" data-background-color="blue">
-                <div id="simpleBarChart" class="ct-chart"></div>
-            </div>
+    
 
-        </div>
-    </div>
 </div>
 
 
-<div class="row" style=" padding-left: 0px; padding-right: 0px; ">
-    <div class="col-md-6">
-        <div class="card ">
-            <div class="card-header">
-                <h4 class="card-title">
-                    Client Visitations
-                </h4>
-            </div>
-            <div class="card-content">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="text-center">
-                                    Date
-                                </th>
 
-                                <th class="text-center">
-                                    Clients Visisted
-                                </th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.NumberOfClientsOnEachDays != null)
-                            {
-                                foreach (var item in Model.NumberOfClientsOnEachDays)
-                                {
-                                    <tr>
-                                        <td class="text-center">
-                                            @item.Date.ToString("yyyy-MM-dd")
-                                        </td>
-                                        <td class="text-center">
-                                            @item.NoOfClients
-                                        </td>
-                                    </tr>
-                                }
-                            }
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row col-md-6"></div>
-</div>
 
 <div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
     <div class="card ">
-        <div class="card-header">
+        <div class="card-body">
             <h4 class="card-title">
                 Client Visitations
             </h4>
-        </div>
-        <div class="card-content">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center">
-                                Total No Of Appointments
-                            </th>
 
-                            <th class="text-center">
-                                Checked Out Appointments
-                            </th>
-                            <th class="text-center">
-                                Pending Appointments
-                            </th>
-                            <th class="text-center">
-                                Cancelled Appointments
-                            </th>
-                            <th class="text-center">
-                                No Show Appointments
-                            </th>
+            <div class="row" style="margin-top:20px;">
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Appointments</p>
+                                <h6 class="mb-0"> @Model.TotalNoOfAppointments</h6>
+                            </div>
+                        </div>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center">
-                                @Model.TotalNoOfAppointments
-                            </td>
-                            <td class="text-center">
-                                @Model.CheckoutAppointmentsCount
-                            </td>
-                            <td class="text-center">
-                                @Model.PendingAppointmentsCount
-                            </td>
-                            <td class="text-center">
-                                @Model.CancelledAppointmentCount
-                            </td>
-                            <td class="text-center">
-                                @Model.NoShowAppointmentsCount
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-success shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Checkedout Appointments</p>
+                                <h6 class="mb-0">@Model.CheckoutAppointmentsCount</h6>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Pending Appointments</p>
+                                <h6 class="mb-0">@Model.PendingAppointmentsCount</h6>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:30px;">
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-danger shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Cancelled Appointments</p>
+                                <h6 class="mb-0">@Model.CancelledAppointmentCount</h6>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">No Show Appointments</p>
+                                <h6 class="mb-0">@Model.NoShowAppointmentsCount</h6>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -453,167 +563,193 @@
 
 <div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
     <div class="card ">
-        <div class="card-header">
+        <div class="card-body">
             <h4 class="card-title">
                 Clients Acquired And Return(s) Statistics
             </h4>
-        </div>
-        <div class="card-content">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center">
-                                New Clients
-                            </th>
 
-                            <th class="text-center">
-                                Returned Visit
-                            </th>
-                            <th class="text-center">
-                                Lost Clients
-                            </th>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body p-3 position-relative">
+                            <div class="row">
+                                <div class="col-7 text-start">
+                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">New Clients</p>
+                                    <h5 class="font-weight-bolder mb-0">
+                                        @Model.NewClients
+                                    </h5>
+                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
 
+                                </div>
+                                <div class="col-5">
+                                    <div class="dropdown text-end">
+                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center">
-                                @Model.NewClients
-                            </td>
-                            <td class="text-center">
-                                @Model.ReturnedClients
-                            </td>
-                            <td class="text-center">
-                                @Model.LostClients
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body p-3 position-relative">
+                            <div class="row">
+                                <div class="col-7 text-start">
+                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">Returned Visit</p>
+                                    <h5 class="font-weight-bolder mb-0">
+                                        @Model.ReturnedClients
+                                    </h5>
+                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                                </div>
+                                <div class="col-5">
+                                    <div class="dropdown text-end">
+                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-body p-3 position-relative">
+                            <div class="row">
+                                <div class="col-7 text-start">
+                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">Lost Clients</p>
+                                    <h5 class="font-weight-bolder mb-0">
+                                        @Model.LostClients
+                                    </h5>
+                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                                </div>
+                                <div class="col-5">
+                                    <div class="dropdown text-end">
+                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
 </div>
 
-<div class="card col-md-12">
-    <div class="card-header">
-        <h4 class="card-title">
-            Payment Methods
-        </h4>
-    </div>
-    <div class="card-content">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="text-center">
-                            Cash
-                        </th>
-                        <th class="text-center">
-                            Card
-                        </th>
-                        <th class="text-center">
-                            Pin
-                        </th>
-                        <th class="text-center">
-                            Loyalty Card
-                        </th>
-                        <th class="text-center">
-                            Gift Card
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="text-center">
-                            @Model.CheckedOutCashCount
-                        </td>
-                        <td class="text-center">
-                            @Model.CheckedOutCardCount
-                        </td>
-                        <td class="text-center">
-                            @Model.CheckedOutPinCount
-                        </td>
-                        <td class="text-center">
-                            @Model.CheckedOutLoyaltyCardCount
-                        </td>
-                        <td class="text-center">
-                            @Model.CheckedOutGiftCardCount
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">
+                Payment Methods
+            </h4>
+            <div class="row" style="margin-top:20px;">
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Cash</p>
+                                <h4 class="mb-0">
+                                    @Model.CheckedOutCashCount
+                                </h4>
+                            </div>
+                        </div>
 
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">credit_card</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Card</p>
+                                <h4 class="mb-0"> @Model.CheckedOutCardCount</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">account_balance_wallet</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Pin</p>
+                                <h4 class="mb-0">@Model.CheckedOutPinCount</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">card_membership</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Loyalty Card</p>
+                                <h4 class="mb-0">@Model.CheckedOutLoyaltyCardCount</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="card  mb-2">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">redeem</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Gift Card</p>
+                                <h4 class="mb-0">@Model.CheckedOutGiftCardCount</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 </div>
 
-<div class="card col-md-12">
-    <div class="card-header">
-        <h4 class="card-title">
-            Popular Services
-        </h4>
-    </div>
-    <div class="card-content">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="text-center">
-                            Service Name
-                        </th>
-                        <th class="text-center">
-                            Count
-                        </th>
 
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.serviceBookingCounts != null)
-                    {
-                        foreach (var item in Model.serviceBookingCounts)
-                        {
-                            <tr>
-                                <td class="text-center">
-                                    @item.Key
-                                </td>
-                                <td class="text-center">
-                                    @item.Value
-                                </td>
-                            </tr>
-
-                        }
-                    }
-
-
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-</div>
-<div class="row">
+<div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
     <div class="col-md-6">
         <div class="card ">
-            <div class="card-header">
+            <div class="card-body">
                 <h4 class="card-title">
                     Popular Services Category
                 </h4>
-            </div>
-            <div class="card-content">
-                <div class="table-responsive">
-                    <table class="table table-striped">
+
+                <div class="table-responsive p-0" style="max-height:400px;overflow-y:scroll;">
+                    <table class="table align-items-center mb-0">
                         <thead>
                             <tr>
-                                <th class="text-center">
-                                    Category Name
-                                </th>
-                                <th class="text-center">
-                                    Count
-                                </th>
-
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Category Name</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -622,10 +758,10 @@
                                 foreach (var item in Model.serviceCategoryBookingCount)
                                 {
                                     <tr>
-                                        <td class="text-center">
+                                        <td class="">
                                             @item.Key
                                         </td>
-                                        <td class="text-center">
+                                        <td class="">
                                             @item.Value
                                         </td>
                                     </tr>
@@ -637,21 +773,19 @@
                         </tbody>
                     </table>
                 </div>
+
+
             </div>
 
         </div>
     </div>
     <div class="col-md-6">
         <div class="card">
-            <div class="card-header card-header-icon" data-background-color="red">
-                <i class="material-icons">pie_chart</i>
+            <div class="card-body card-header-icon" data-background-color="red">
+                <i class="material-icons">bar_chart</i>
+                <h4 class="card-title">Service Category Bookings</h4>
+                <canvas id="chartBar" class="ct-chart"></canvas>
             </div>
-            <div class="card-content">
-                <h4 class="card-title">Pie Chart</h4>
-            </div>
-            <div id="chartPreferences" class="ct-chart"></div>
-
-
         </div>
     </div>
 </div>
@@ -659,13 +793,106 @@
 
 
 <div class="card col-md-12">
-    <div class="card-header">
+    <div class="card-body">
         <h4 class="card-title">
             Rebook Reminders
         </h4>
-    </div>
-    <div class="card-content">
-        <div class="table-responsive">
+
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body p-3 position-relative">
+                        <div class="row">
+                            <div class="col-7 text-start">
+                                <p class="text-sm mb-1 text-capitalize font-weight-bold">Rebook Email Sent</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    @Model.NoOfRebookReminderSent
+                                </h5>
+                                <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                            </div>
+                            <div class="col-5">
+                                <div class="dropdown text-end">
+                                    <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body p-3 position-relative">
+                        <div class="row">
+                            <div class="col-7 text-start">
+                                <p class="text-sm mb-1 text-capitalize font-weight-bold">Rebook Email Opened</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    @Model.NoOfRebookReminderOpened
+                                </h5>
+                                <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                            </div>
+                            <div class="col-5">
+                                <div class="dropdown text-end">
+                                    <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body p-3 position-relative">
+                        <div class="row">
+                            <div class="col-7 text-start">
+                                <p class="text-sm mb-1 text-capitalize font-weight-bold">Click On Rebook</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    @Model.NoOfRebookReminderClicked
+                                </h5>
+                                <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                            </div>
+                            <div class="col-5">
+                                <div class="dropdown text-end">
+                                    <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body p-3 position-relative">
+                        <div class="row">
+                            <div class="col-7 text-start">
+                                <p class="text-sm mb-1 text-capitalize font-weight-bold">Appointment by Rebook</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    @Model.AppointmentsByRebook
+                                </h5>
+                                <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                            </div>
+                            <div class="col-5">
+                                <div class="dropdown text-end">
+                                    <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -702,79 +929,68 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div>*@
     </div>
 
 </div>
 
 <script>
+  
     var labels = [];
-    var series = [];
-    @foreach (var item in Model.DayWiseSales)
+    var data = [];
+
+    @if (Model.serviceCategoryBookingCount != null)
     {
-        <text>
-            labels.push('@item.Date.ToString("yy-MM-dd")');
-            series.push(@item.DaySale);
-        </text>
+        foreach (var item in Model.serviceCategoryBookingCount)
+        {
+            @:labels.push("@item.Key");
+            @:data.push(@item.Value);
+        }
     }
 
-    // Creating the bar chart using Chartist.js
-    new Chartist.Bar('#simpleBarChart', {
-        labels: labels,
-        series: [series]
-    }, {
-        axisX: {
-            labelInterpolationFnc: function (value) {
-                return value;
-            }
+    // Create the bar chart
+    var ctx = document.getElementById('chartBar').getContext('2d');
+    var backgroundColors = [
+        'rgba(255, 99, 132, 1)',   // Red
+        'rgba(54, 162, 235, 1)',   // Blue
+        'rgba(255, 206, 86, 1)',   // Yellow
+        'rgba(75, 192, 192, 1)',   // Teal
+        'rgba(153, 102, 255, 1)',  // Purple
+        'rgba(255, 159, 64, 1)',   // Orange
+        'rgba(46, 204, 113, 1)',   // Green
+        'rgba(231, 76, 60, 1)',    // Dark Red
+        'rgba(52, 152, 219, 1)',   // Sky Blue
+        'rgba(241, 196, 15, 1)'    // Gold
+    ];
+    var chartBar = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Bookings',
+                data: data,
+                backgroundColor: backgroundColors.slice(0, data.length), // Use solid colors for bars
+                borderColor: backgroundColors.slice(0, data.length), // Same color for the border
+                borderWidth: 1
+            }]
         },
-        height: '250px'
-
-    });
-   @{
-    // Initialize arrays for labels and series
-    var labels = new List<string>();
-    var series = new List<int>();
-
-    // Populate arrays using Razor syntax
-    foreach (var item in Model.serviceCategoryBookingCount)
-    {
-        labels.Add(item.Key);
-        series.Add(item.Value);
-    }
-
-    // Convert arrays to JavaScript arrays
-    var jsLabels = Json.Encode(labels);
-    var jsSeries = Json.Encode(series);
-}
-
-    var dataPreferences = {
-        labels: @Html.Raw(jsLabels),
-        series: @Html.Raw(jsSeries)
-    };
-
-    var optionsPreferences = {
-        height: '230px'
-    };
-
-    new Chartist.Pie('#chartPreferences', dataPreferences, optionsPreferences);
-    $('.datepicker').datetimepicker({
-        format: 'YYYY/MM/DD',
-        icons: {
-            time: "fa fa-clock-o",
-            date: "fa fa-calendar",
-            up: "fa fa-chevron-up",
-            down: "fa fa-chevron-down",
-            previous: 'fa fa-chevron-left',
-            next: 'fa fa-chevron-right',
-            today: 'fa fa-screenshot',
-            clear: 'fa fa-trash',
-            close: 'fa fa-remove'
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
-
     $(document).ready(function () {
         updateSubmitButtonState();
+
+
+        $("#SelectedStatuses").select2({
+
+        });
+        $("#SelectedEmployeeIds").select2({
+        });
 
         $("#SelectedStatuses, #SelectedEmployeeIds").change(function () {
             updateSubmitButtonState();
@@ -834,7 +1050,6 @@
         $('#EndDate').val('@DateTime.Now.ToString("yyyy-MM-dd")');
 
         // Clear Selected Employees dropdown
-        $('.selectpicker').selectpicker('val', []);
 
         // Set IsCancelled dropdown to its default value
 

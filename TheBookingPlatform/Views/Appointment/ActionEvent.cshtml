@@ -8,6 +8,13 @@
 <script src="~/Content/MainTemplate/assets/js/bootstrap-datetimepicker.js"></script>
 
 <style>
+
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
     .autocomplete-suggestions {
         box-sizing: border-box;
         border-radius: 5px;
@@ -162,176 +169,183 @@
 
 
 <div class="row">
-    <div class="modal-content">
-        <div class="modal-body">
-            <div style="width: 100%;">
 
-                <form id="AbsenceForm">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div style="margin:0px;" class="card">
-                                <div class="card-content">
+    <form id="AbsenceForm">
+        <div class="row">
+            <div class="col-md-6">
+                <div style="margin:0px;" class="card">
+                    <div class="card-body">
 
-                                    <h4 class="card-title">
-                                        Update Event
-                                    </h4>
-                                    <div id="MainAbsenseContainer">
+                        <h2 class="card-title">
+                            Update Event
+                        </h2>
+                        <div id="MainAbsenseContainer">
 
-                                        <div class="row" id="AbsenseServiceRow_0">
-                                            <input type="hidden" id="IDAB" name="ID" value="@Model.ID" />
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label>Select Event</label>
-                                                    <select class="form-control choices__input" name="Service" id="ServiceAB">
-                                                        @foreach (var item in Model.AbsenseServices)
-                                                        {
-                                                            if (Model.Service == item.ID.ToString())
-                                                            {
-                                                                <option selected data-duration="@item.Duration" value="@item.ID">
-                                                                    @item.Name
-                                                                </option>
-                                                            }
-                                                            else
-                                                            {
-                                                                <option data-duration="@item.Duration" value="@item.ID">
-                                                                    @item.Name
-                                                                </option>
-                                                            }
-                                                        }
-                                                    </select>
-                                                </div>
-
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label>
-                                                        Select Date
-                                                    </label>
-
-                                                    <input type="date" id="DateAB" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-
-                                    </div>
-
-                                    <div class="row">
-
-                                        <div class="form-group col-md-6">
-                                            <label>
-                                                Start Time
-                                            </label>
-
-                                            <input type="text" id="StartTimeAB" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
-
-
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label>
-                                                End Time
-                                            </label>
-
-                                            <input type="text" id="EndTimeAB" class="form-control timepicker" value="@Model.EndTime.ToString("HH:mm")" name="Time">
-
-
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label>Select Employee</label>
-                                            <select onchange="CheckIfEmployeeProvideTheService()" class="form-control" name="EmployeeID" id="EmployeeIDAB">
-                                                <option value="0">---Select----</option>
-                                                @foreach (var item in Model.Employees)
-                                                {
-                                                    if (item.ID == Model.EmployeeID)
-                                                    {
-                                                        <option selected value="@item.ID">@item.Name</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="@item.ID">@item.Name</option>
-
-                                                    }
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div id="AllEmployeePanel" class="col-md-6">
-                                            <div class="checkbox form-horizontal-checkbox">
-                                                <label>
-                                                    <input type="checkbox" name="AllEmployeesCB" id="AllEmployeesCB">
-                                                    All Employees
-                                                </label>
-                                                <input type="hidden" name="AllEmployees" id="AllEmployees" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-
-                                <div class="col-md-12">
-                                    <label>Note</label>
-                                    <textarea rows="3" class="form-control" id="NotesAB" name="Notes">@Model.Notes</textarea>
-                                </div>
-                                <div class="col-md-12">
+                            <div class="row" id="AbsenseServiceRow_0">
+                                <input type="hidden" id="IDAB" name="ID" value="@Model.ID" />
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Select Color</label>
-
-                                        <input class="form-control" type="color" name="Color" value="#D28D00" id="ColorAB" />
-
+                                        <label>Select Event</label>
+                                        <select class="form-control" name="Service" id="ServiceAB">
+                                            @foreach (var item in Model.AbsenseServices)
+                                            {
+                                                if (Model.Service == item.ID.ToString())
+                                                {
+                                                    <option selected data-duration="@item.Duration" value="@item.ID">
+                                                        @item.Name
+                                                    </option>
+                                                }
+                                                else
+                                                {
+                                                    <option data-duration="@item.Duration" value="@item.ID">
+                                                        @item.Name
+                                                    </option>
+                                                }
+                                            }
+                                        </select>
                                     </div>
+
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="input-group input-group-dynamic">
+                                            <label>
+                                                Select Date
+                                            </label>
 
-                            </div>
-
-                        </div>
-                        <div class="col-md-5">
-                            <div style="margin:0px;" class="card">
-                                <hr />
-                                <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
-                                    <div class="card-content">
-                                        <h4 class="card-title">Event Summary</h4>
-                                        <hr />
-                                        <div class="col-md-6">
-                                            <label>Date and Time</label>
-                                            <h4>
-                                                <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
-                                            </h4>
+                                            <input type="date" id="DateAB" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
                                         </div>
-
-
                                     </div>
+
                                 </div>
 
+                            </div>
 
-                                <button type="button" id="ABactionButton" class="btn btn-primary btn-block btn-rounded">Update Event</button>
-                                <span id="validationTextAB" class="text-danger"></span><br />
-                                <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
 
+                        </div>
+
+                        <div class="row">
+
+                            <div class="form-group col-md-6">
+                                <div class="input-group input-group-dynamic">
+                                    <label>
+                                        Start Time
+                                    </label>
+
+                                    <input type="text" id="StartTimeAB" class="form-control" value="@Model.Time.ToString("HH:mm")" name="Time">
+                                </div>
+
+                            </div>
+                            <div class="form-group col-md-6">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>
+                                        End Time
+                                    </label>
+
+                                    <input type="text" id="EndTimeAB" class="form-control" value="@Model.EndTime.ToString("HH:mm")" name="Time">
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Select Employee</label>
+                                <select onchange="CheckIfEmployeeProvideTheService()" class="form-control choices__input" name="EmployeeID" id="EmployeeIDAB">
+                                    <option value="0">---Select----</option>
+                                    @foreach (var item in Model.Employees)
+                                    {
+                                        if (item.ID == Model.EmployeeID)
+                                        {
+                                            <option selected value="@item.ID">@item.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.ID">@item.Name</option>
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div id="AllEmployeePanel" class="col-md-6">
+                                <div class="form-check">
+                                    <label>
+                                        <input type="checkbox" class="form-check-input" name="AllEmployeesCB" id="AllEmployeesCB">
+                                        All Employees
+                                    </label>
+                                    <input type="hidden" name="AllEmployees" id="AllEmployees" />
+                                </div>
                             </div>
                         </div>
 
 
+
+                        <div class="col-md-12">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Note</label>
+                                <textarea rows="3" class="form-control" id="NotesAB" name="Notes">@Model.Notes</textarea>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Select Color</label>
+
+                                    <input class="form-control" type="color" name="Color" value="#D28D00" id="ColorAB" />
+
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
-                </form>
+                </div>
+
 
             </div>
+            <div class="col-md-5">
+                <div style="margin:0px;" class="card">
+                    <hr />
+                    <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
+                        <div class="card-body">
+                            <h2 class="card-title">Event Summary</h2>
+                            <hr />
+                            <div class="col-md-6">
+                                <label>Date and Time</label>
+                                <h4>
+                                    <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
+                                </h4>
+                            </div>
+
+
+                        </div>
+
+
+                        <button type="button" id="ABactionButton" class="btn btn-primary btn-block btn-rounded">Update Event</button>
+                        <span id="validationTextAB" class="text-danger"></span><br />
+                        <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+
+                    </div>
+
+                </div>
+            </div>
+
+
 
         </div>
-
-        <!-- Set content width to 100% -->
-        <!-- Your content goes here -->
-
-    </div>
+    </form>
 
 </div>
+
+
+<!-- Set content width to 100% -->
+<!-- Your content goes here -->
 
 
 
@@ -365,24 +379,26 @@
     });
 
     $("#ServiceAB").on("change", function () {
+        var selectedOption = $(this).find(':selected');
+
+        var duration = selectedOption.data("duration")
         $("#ServiceDurationAB").val(duration);
-        if ($("#ID").val() == "0") {
-            var selectedOption = $(this).find(':selected');
-            var StartTime = $("#StartTimeAB").val();
-            var Duration = selectedOption.data("duration");
-            $.ajax({
-                url: '@Url.Action("GetEndTime", "Appointment")',
-                type: 'GET',
-                data: { StartTime: StartTime, Duration: Duration },
-                success: function (data) {
-                    $("#EndTimeAB").val(data.EndTime);
-                },
-                error: function (error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
-    })
+        var StartTime = $("#StartTimeAB").val();
+        var Duration = duration;
+        $.ajax({
+            url: '@Url.Action("GetEndTime", "Appointment")',
+            type: 'GET',
+            data: { StartTime: StartTime, Duration: Duration },
+            success: function (data) {
+                
+                $("#EndTimeAB").val(data.EndTime);
+            },
+            error: function (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+
+    });
 
     function CheckABDurationInput() {
         var selectedOption = $("#ServiceAB").find(':selected');

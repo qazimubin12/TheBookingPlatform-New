@@ -263,13 +263,16 @@ namespace TheBookingPlatform.Controllers
         {
             var Email = Convert.ToString(Session["RegisteredEmail"]);
             var Password = Convert.ToString(Session["RegisteredPAKKITA"]);
-            if (Email != "" && Password != "")
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+            if (LoggedInUser.Company == null)
             {
 
+
                 CompanyActionViewModel model = new CompanyActionViewModel();
-                model.Email = Email;
-                model.PAKKIDA = Password;
+                model.Email = LoggedInUser.Email;
+                model.PAKKIDA = LoggedInUser.Password;
                 return View("RegisterCompany", "_InitialLayout", model);
+
             }
             else
             {

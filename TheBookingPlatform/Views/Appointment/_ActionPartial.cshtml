@@ -501,7 +501,7 @@
                                                     <div class="form-group">
                                                         <div class="input-group input-group-dynamic">
                                                             <label>Select Event</label>
-                                                            <select class="form-control choices__input" name="Service" id="ServiceAB">
+                                                            <select class="form-control" name="Service" id="ServiceAB">
                                                                 @foreach (var item in Model.AbsenseServices)
                                                                 {
                                                                     <option data-duration="@item.Duration" value="@item.ID">@item.Name</option>
@@ -939,6 +939,7 @@
             type: 'GET',
             data: { StartTime: StartTime, Duration: Duration },
             success: function (data) {
+                debugger
                 $("#TimeABTo").val(data.EndTime);
             },
             error: function (error) {
@@ -1928,7 +1929,7 @@
 
                                 // Show a SweetAlert confirmation dialog
 
-                                swal({
+                                Swal.fire({
                                     title: "Confirm",
                                     text: "Slot is already booked. Do you want to proceed?",
                                     type: 'warning',
@@ -1940,7 +1941,7 @@
                                     buttonsStyling: false
                                 })
                                     .then((willProceed) => {
-                                        if (willProceed) {
+                                        if (willProceed.isConfirmed) {
                                             showLoadingSpinner();
                                             // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
                                             $.ajax({
@@ -2012,7 +2013,7 @@
 
                     // Show a SweetAlert confirmation dialog
 
-                    swal({
+                    Swal.fire({
                         title: "Confirm",
                         text: "Slot is already booked. Do you want to proceed?",
                         type: 'warning',
@@ -2024,7 +2025,7 @@
                         buttonsStyling: false
                     })
                         .then((willProceed) => {
-                            if (willProceed) {
+                            if (willProceed.isConfirmed) {
                                 showLoadingSpinner();
                                 // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
                                 $.ajax({

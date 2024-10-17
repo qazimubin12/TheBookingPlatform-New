@@ -349,7 +349,7 @@ else
     }
 
     function showSuccessAlert() {
-        swal({
+        Swal.fire({
             icon: 'success',
             title: 'Image Uploaded Successfully!',
             showConfirmButton: true
@@ -357,7 +357,7 @@ else
     }
 
     function showFormSubmitted() {
-        swal({
+        Swal.fire({
             icon: 'success',
             title: 'Company Registered Successfully! ',
             text: 'Redirecting you to the company page',
@@ -367,7 +367,7 @@ else
     function showFieldsError(fieldNames) {
         var message = 'These are the required fields:\n' + fieldNames.join(', ');
 
-        swal({
+        Swal.fire({
             icon: 'error',
             title: 'Required Fields Missing',
             text: message,

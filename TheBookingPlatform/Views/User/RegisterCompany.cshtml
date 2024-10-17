@@ -3,6 +3,14 @@
     ViewBag.Title = "RegisterCompany";
 }
 <head>
+    <style>
+        label {
+            width: 100%;
+            margin-left: 0px;
+            margin-bottom: 0px;
+            margin-top: 10px;
+        }
+    </style>
     <!-- Google Tag Manager -->
     <script>
         (function (w, d, s, l, i) {
@@ -28,24 +36,27 @@
         <input class="form-control" type="hidden" id="Email" name="Email" value="@Model.Email" />
         <input class="form-control" type="hidden" id="PAKKIDA" name="PAKKIDA" value="@Model.PAKKIDA" />
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">
+            <div class="card-body">
+                <h2 class="card-title">
                     Company Details
-                </h4>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
+                </h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
                                 <label>
                                     Business Name
                                 </label>
                                 <input class="form-control" placeholder="Enter Business Name..." id="Business" type="text" name="Business" required />
                             </div>
                         </div>
+                    </div>
 
 
-                        <div class="col-md-8">
-                            <div class="form-group">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
                                 <label>
                                     Business Address
                                 </label>
@@ -53,27 +64,36 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
                                 <label>
                                     Postal Code
                                 </label>
                                 <input class="form-control" placeholder="Enter Postal Code..." type="text" name="PostalCode" />
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
                                 <label>
                                     City
                                 </label>
                                 <input class="form-control" placeholder="Enter City..." type="text" name="City" />
                             </div>
-
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
+
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
                                 <label>
                                     Phone Number
                                 </label>
@@ -81,63 +101,74 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="row" style="display:none;">
+                <div class="row" style="display:none;">
+                    <div class="col-md-4">
                         <div class="col-md-4">
-                            <div class="col-md-4">
-                                <div class="form-group">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+
                                     <label>Enter Newsletter Interval Weeks </label>
                                     <input type="number" class="form-control" name="NewsLetterWeekInterval" value="0" id="NewsLetterWeekInterval" />
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <legend>Logo</legend>
-                                <img id="MainThumb" style="width:150px;" src="~/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <legend>Logo</legend>
+                            <img id="MainThumb" style="width:150px;" src="~/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
 
-                                <input type="hidden" name="Logo" id="Logo" />
-                                <input type="file" id="LogoUpload" accept="image/*" />
+                            <input type="hidden" name="Logo" id="Logo" />
+                            <input type="file" id="LogoUpload" accept="image/*" />
 
-                            </div>
                         </div>
                     </div>
-
-
                 </div>
+
+
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">
+        <div class="card my-4">
+            <div class="card-body">
+                <h2 class="card-title">
                     Email Details
-                </h4>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
+                </h2>
+                <div class="row">
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
                                 <label>
                                     Notification Email
                                 </label>
                                 <input class="form-control" placeholder="Enter Notification Email..." type="email" name="NotificationEmail" required />
                             </div>
                         </div>
+                    </div>
 
 
-                        <div class="col-md-4">
-                            <div class="form-group">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
                                 <label>
                                     Contact Email
                                 </label>
                                 <input class="form-control" placeholder="Enter Contact Email..." type="email" name="ContactEmail" required />
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
                                 <label>
                                     Billing Email
                                 </label>
@@ -145,13 +176,13 @@
                             </div>
                         </div>
                     </div>
-
-
-
-
-
-
                 </div>
+
+
+
+
+
+
             </div>
         </div>
     </form>
@@ -166,7 +197,7 @@
 
 <script>
     function showSuccessAlert() {
-        swal({
+        Swal.fire({
             icon: 'success',
             title: 'Image Uploaded Successfully!',
             showConfirmButton: true,
@@ -175,7 +206,7 @@
     }
 
     function showFormSubmitted() {
-        swal({
+        Swal.fire({
             icon: 'success',
             title: 'Company Registered Successfully! ',
             text: 'Redirecting you to the company page',
@@ -186,7 +217,7 @@
     function showFieldsError(fieldNames) {
         var message = 'These are the required fields:\n' + fieldNames.join(', ');
 
-        swal({
+        Swal.fire({
             icon: 'error',
             title: 'Required Fields Missing',
             text: message,

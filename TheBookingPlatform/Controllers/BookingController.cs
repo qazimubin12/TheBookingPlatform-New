@@ -1834,7 +1834,7 @@ namespace TheBookingPlatform.Controllers
                             var history = new History();
                             history.Date = DateTime.Now;
                             history.Note = response.Content;
-                            history.Business = appointment.Business;
+                            history.Business = "Error";
                             HistoryServices.Instance.SaveHistory(history);
                         }
                     }
@@ -1844,7 +1844,7 @@ namespace TheBookingPlatform.Controllers
                         var history = new History();
                         history.Date = DateTime.Now;
                         history.Note = ex.Message;
-                        history.Business = appointment.Business;
+                        history.Business = "Error";
                         HistoryServices.Instance.SaveHistory(history);
                     }
 
@@ -1963,7 +1963,7 @@ namespace TheBookingPlatform.Controllers
                         var history = new History();
                         history.Date = DateTime.Now;
                         history.Note = response.Content;
-                        history.Business = appointment.Business;
+                        history.Business = "Error";
                         HistoryServices.Instance.SaveHistory(history);
                     }
                 }
@@ -1973,7 +1973,7 @@ namespace TheBookingPlatform.Controllers
                     var history = new History();
                     history.Date = DateTime.Now;
                     history.Note = ex.Message;
-                    history.Business = appointment.Business;
+                    history.Business = "Error";
                     HistoryServices.Instance.SaveHistory(history);
                 }
 
@@ -3865,7 +3865,7 @@ namespace TheBookingPlatform.Controllers
             {
                 var history = new History();
                 history.Note = "Error" + response.Content;
-                history.Business = appointment.Business;
+                history.Business = "Error";
                 history.Date = DateTime.Now;
                 HistoryServices.Instance.SaveHistory(history);
                 return "Error" + response.Content;

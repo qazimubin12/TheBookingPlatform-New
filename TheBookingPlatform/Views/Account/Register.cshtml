@@ -339,122 +339,95 @@
 
 
 <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        const nameInput = document.getElementById('Name');
-        const contactInput = document.getElementById('Contact');
-        const emailInput = document.getElementById('Email');
-        const passwordInput = document.getElementById('Password');
-        const confirmPasswordInput = document.getElementById('ConfirmPassword');
-        const submitButton = document.getElementById('SubmitButton');
-        const errorMessage = document.getElementById('error-message');
-        const re = new RegExp("^[^\\s" + String.fromCharCode(64) + "]+[^\\s" + String.fromCharCode(64) + "]+\\.[^\\s]+$");
+    $(document).ready(function () {
+        const $nameInput = $('#Name');
+        const $contactInput = $('#Contact');
+        
+        const $passwordInput = $('#Password');
+        const $confirmPasswordInput = $('#ConfirmPassword');
+        const $submitButton = $('#SubmitButton');
+        const $errorMessage = $('#error-message');
+        const emailRegex = /^[^\s\x40]+[^\s\x40]+\.[^\s]+$/;
 
-        function validateEmail(email) {
-            return re.test(email);
+        function showError(message) {
+            $errorMessage.text(message);
+        }
+
+        function clearError() {
+            $errorMessage.text('');
+        }
+
+  
+        function setInputError($input, isValid, errorMessage) {
+            if (isValid) {
+                $input.css('border', '');
+            } else {
+                $input.css('border', 'solid 1px red');
+                showError(errorMessage);
+            }
         }
 
         function validateForm() {
             let valid = true;
-            errorMessage.textContent = '';  // Clear any existing error message
+            clearError();
 
-            // Check if Name is not empty
-            if (nameInput.value.trim() === '') {
-                nameInput.style.border = 'solid 1px red';
-                valid = false;
-                errorMessage.textContent = 'Please enter your name.';
-            } else {
-                nameInput.style.border = '';
-            }
+            // Validate Name
+            setInputError($nameInput, $nameInput.val().trim() !== '', 'Please enter your name.');
+            valid &= $nameInput.val().trim() !== '';
 
-            // Check if Contact is not empty
-            if (contactInput.value.trim() === '') {
-                contactInput.style.border = 'solid 1px red';
-                valid = false;
-                errorMessage.textContent = 'Please enter your contact number.';
-            } else {
-                contactInput.style.border = '';
-            }
+            // Validate Contact
+            setInputError($contactInput, $contactInput.val().trim() !== '', 'Please enter your contact number.');
+            valid &= $contactInput.val().trim() !== '';
 
-            // Validate Email
-            if (!validateEmail(emailInput.value)) {
-                emailInput.style.border = 'solid 1px red';
-                valid = false;
-                errorMessage.textContent = 'Please enter a valid email address.';
-            } else {
-                emailInput.style.border = '';
-            }
+            //// Validate Email
+            //const emailValid = validateEmail($emailInput.val());
+            //setInputError($emailInput, emailValid, 'Please enter a valid email address.');
+            //valid &= emailValid;
 
             // Validate Password length
-            if (passwordInput.value.length < 8) {
-                passwordInput.style.border = 'solid 1px red';
-                valid = false;
-                errorMessage.textContent = 'Password must be at least 8 characters long.';
-            } else {
-                passwordInput.style.border = '';
-            }
+            const passwordValid = $passwordInput.val().length >= 8;
+            setInputError($passwordInput, passwordValid, 'Password must be at least 8 characters long.');
+            valid &= passwordValid;
 
-            // Check if Confirm Password matches Password
-            if (passwordInput.value !== confirmPasswordInput.value) {
-                confirmPasswordInput.style.border = 'solid 1px red';
-                valid = false;
-                errorMessage.textContent = 'Passwords do not match.';
-            } else {
-                confirmPasswordInput.style.border = '';
-            }
+            // Validate Confirm Password matches Password
+            const passwordsMatch = $passwordInput.val() === $confirmPasswordInput.val();
+            setInputError($confirmPasswordInput, passwordsMatch, 'Passwords do not match.');
+            valid &= passwordsMatch;
 
-            submitButton.disabled = !valid;  // Disable submit button if form is invalid
+            $submitButton.prop('disabled', !valid);  // Enable/disable submit button
             return valid;
         }
-        // Add event listeners for input changes
-        nameInput.addEventListener('input', validateForm);
-        contactInput.addEventListener('input', validateForm);
-        emailInput.addEventListener('input', validateForm);
-        passwordInput.addEventListener('input', validateForm);
-        confirmPasswordInput.addEventListener('input', validateForm);
-    });
-    $(document).ready(function () {
-        const emailInput = $('#Email');
-        const submitButton = $('#SubmitButton');
-        const errorMessage = $('#error-message');
 
-        emailInput.on('blur', function () { // Trigger when email input loses focus
-            const email = emailInput.val().trim();
-
+        function checkEmailAvailability() {
+            const email = $emailInput.val().trim();
             if (email.length > 0) {
-                $.ajax({
-                    url: '/User/CheckEmail', // Adjust the URL to your controller action
-                    type: 'POST',
-                    data: {
-                        email: email,
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                    },
-                    success: function (response) {
-                        if (response.exists) { // Assuming the response contains { exists: true }
-                            emailInput.css('border', 'solid 1px red');
-                            errorMessage.text('This email is already registered.');
-                            submitButton.prop('disabled', true);
-                        } else {
-                            emailInput.css('border', '');
-                            errorMessage.text('');
-                            validateForm(); // Revalidate the form to ensure other fields are valid
-                        }
-                    },
-                    error: function () {
-                        errorMessage.text('Error checking email. Please try again.');
-                        submitButton.prop('disabled', true);
+                $.post('/User/CheckEmail', {
+                    email: email,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                }).done(function (response) {
+                    if (response.exists) {
+                        setInputError($emailInput, false, 'This email is already registered.');
+                        $submitButton.prop('disabled', true);
+                    } else {
+                        setInputError($emailInput, true, '');
+                        validateForm(); // Revalidate the form after email check
                     }
+                }).fail(function () {
+                    showError('Error checking email. Please try again.');
+                    $submitButton.prop('disabled', true);
                 });
             }
-        });
-
-        function validateForm() {
-            let valid = true;
-            // Add additional validation logic here for other fields
-            submitButton.prop('disabled', !valid);
         }
+
+        // Add event listeners for input changes
+        $('input').on('input', validateForm);
+        $emailInput.on('blur', checkEmailAvailability);
+
+        // Disable the submit button on form submit to prevent multiple submissions
+        $('form').on('submit', function () {
+            $submitButton.prop('disabled', true);
+        });
     });
-    function onSubmitForm(event) {
-        // Disable the button
-        document.getElementById("SubmitButton").disabled = true;
-        return true;
-    }</script>
+
+
+</script>

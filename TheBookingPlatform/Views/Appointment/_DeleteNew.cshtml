@@ -30,7 +30,7 @@
 <script>
     $("#actionButton").click(function () {
         var ID = $("#ID").val();
-        swal({
+        Swal.fire({
             title: 'Are you sure?',
             text: 'Do you want to delete this appointment?',
             icon: 'warning',
@@ -39,8 +39,10 @@
             cancelButtonText: 'No, cancel!',
             reverseButtons: true
         }).then((result) => {
+            
 
-            if (result) {
+            if (result.isConfirmed) {
+                
                 showLoadingSpinner();
 
                 // User confirmed, proceed with the AJAX request

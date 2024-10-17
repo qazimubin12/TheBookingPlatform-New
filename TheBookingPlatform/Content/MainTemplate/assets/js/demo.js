@@ -587,14 +587,14 @@ demo = {
 
     showSwal: function(type){
         if(type == 'basic'){
-        	swal({
+        	Swal.fire({
                 title: "Here's a message!",
                 buttonsStyling: false,
                 confirmButtonClass: "btn btn-success"
             }).catch(swal.noop)
 
     	}else if(type == 'title-and-text'){
-        	swal({
+        	Swal.fire({
                 title: "Here's a message!",
                 text: "It's pretty, isn't it?",
                 buttonsStyling: false,
@@ -602,7 +602,7 @@ demo = {
             }).catch(swal.noop)
 
     	}else if(type == 'success-message'){
-        	swal({
+        	Swal.fire({
                 title: "Good job!",
                 text: "You clicked the button!",
                 buttonsStyling: false,
@@ -611,7 +611,7 @@ demo = {
             }).catch(swal.noop)
 
     	}else if(type == 'warning-message-and-confirmation'){
-            swal({
+            Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
                     type: 'warning',
@@ -621,7 +621,7 @@ demo = {
                     confirmButtonText: 'Yes, delete it!',
                     buttonsStyling: false
                 }).then(function() {
-                  swal({
+                  Swal.fire({
                     title: 'Deleted!',
                     text: 'Your file has been deleted.',
                     type: 'success',
@@ -630,7 +630,7 @@ demo = {
                     })
                 }).catch(swal.noop)
     	}else if(type == 'warning-message-and-cancel'){
-            swal({
+            Swal.fire({
                     title: 'Are you sure?',
                     text: 'You will not be able to recover this imaginary file!',
                     type: 'warning',
@@ -641,7 +641,7 @@ demo = {
                     cancelButtonClass: "btn btn-danger",
                     buttonsStyling: false
                 }).then(function() {
-                  swal({
+                  Swal.fire({
                     title: 'Deleted!',
                     text: 'Your imaginary file has been deleted.',
                     type: 'success',
@@ -651,7 +651,7 @@ demo = {
                 }, function(dismiss) {
                   // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
                   if (dismiss === 'cancel') {
-                    swal({
+                    Swal.fire({
                       title: 'Cancelled',
                       text: 'Your imaginary file is safe :)',
                       type: 'error',
@@ -662,7 +662,7 @@ demo = {
                 })
 
     	}else if(type == 'custom-html'){
-        	swal({
+        	Swal.fire({
                 title: 'HTML example',
                 buttonsStyling: false,
                 confirmButtonClass: "btn btn-success",
@@ -673,13 +673,13 @@ demo = {
                 }).catch(swal.noop)
 
     	}else if(type == 'auto-close'){
-        	swal({ title: "Auto close alert!",
+        	Swal.fire({ title: "Auto close alert!",
             	   text: "I will close in 2 seconds.",
             	   timer: 2000,
             	   showConfirmButton: false
                }).catch(swal.noop)
     	} else if(type == 'input-field'){
-            swal({
+            Swal.fire({
                     title: 'Input something',
                     html: '<div class="form-group">' +
                               '<input id="input-field" type="text" class="form-control" />' +
@@ -689,7 +689,7 @@ demo = {
                     cancelButtonClass: 'btn btn-danger',
                     buttonsStyling: false
                 }).then(function(result) {
-                    swal({
+                    Swal.fire({
                         type: 'success',
                         html: 'You entered: <strong>' +
                                 $('#input-field').val() +
@@ -864,7 +864,7 @@ demo = {
 			select: function(start, end) {
 
                 // on select we show the Sweet Alert modal with an input
-				swal({
+				Swal.fire({
     				title: 'Create an Event',
     				html: '<div class="form-group">' +
                             '<input class="form-control" placeholder="Event Title" id="input-field">' +
