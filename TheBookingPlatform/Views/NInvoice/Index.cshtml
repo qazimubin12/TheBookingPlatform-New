@@ -4,6 +4,13 @@
     .card {
         margin: 0px;
     }
+
+    .table > :not(caption) > * > * {
+        padding: 0.5rem 0rem;
+        background-color: var(--bs-table-bg);
+        border-bottom-width: 1px;
+        box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
+    }
 </style>
 <div class="card">
     <div class="card-body">
@@ -16,7 +23,6 @@
                 @if (Model.NInvoices != null)
                 {
 
-                    <div class="table-responsive">
                         <table id="InvoicesTABLE" class="table table-striped">
                             <thead>
                                 <tr>
@@ -52,18 +58,34 @@
                                         <td class="text-center">@item.NInvoice.DueDate.ToString("yyyy-MM-dd")</td>
                                         <td class="text-center">@item.NInvoice.PaymentMethod</td>
                                         <td class="text-center">
-
-                                            <a href="@Url.Action("Action", "NInvoice", new { ID = item.NInvoice.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
-                                            <a href="@Url.Action("View", "NInvoice", new { ID = item.NInvoice.ID })" class="btn btn-sm btn-rounded btn-primary btn-icon-text"><i class="mdi mdi-eye"></i> VIEW</a>
-
-                                            <button data-href="@Url.Action("Delete", "NInvoice", new { ID = item.NInvoice.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
-
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-rounded btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" style="margin-bottom:0.2rem;" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Action", "NInvoice", new { ID = item.NInvoice.ID })">
+                                                            <i class="mdi mdi-pencil"></i> EDIT
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("View", "NInvoice", new { ID = item.NInvoice.ID })">
+                                                            <i class="mdi mdi-eye"></i> VIEW
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item data-btn" data-href="@Url.Action("Delete", "NInvoice", new { ID = item.NInvoice.ID })" type="button" data-bs-toggle="modal" data-bs-target="#actionModal">
+                                                            <i class="mdi mdi-delete"></i> DELETE
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </td>
+
                                     </tr>
                                 }
                             </tbody>
                         </table>
-                    </div>
                 }
                 else
                 {

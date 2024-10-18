@@ -618,8 +618,8 @@ namespace TheBookingPlatform.Controllers
                                     appointment.DepositMethod = "Pin";
                                     appointment.Notes = fullEvent.Summary;
                                     var haveAnyappointment = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(googleCalendar.Business, employee.GoogleCalendarID, appointment.Date, appointment.Time, appointment.EndTime);
-                                    if (haveAnyappointment)
-                                    {
+                                    //if (haveAnyappointment)
+                                    //{
                                         TimeSpan duration = appointment.EndTime - appointment.Time;
                                         var service = ServiceServices.Instance.GetService(employee.Business, "ABSENSE").FirstOrDefault();
                                         if (service != null)
@@ -636,7 +636,7 @@ namespace TheBookingPlatform.Controllers
                                         appointment.BookingDate = DateTime.Now;
                                         appointment.GoogleCalendarEventID = item.Id;
                                         AppointmentServices.Instance.SaveAppointment(appointment);
-                                    }
+                                    //}
 
                                 }
                             }

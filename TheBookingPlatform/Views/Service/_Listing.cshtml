@@ -20,11 +20,11 @@
                             <input type="number" class="form-control" style="width:40px;margin-left:10px;float:left;" value="@item.ServiceCategory.DisplayOrder" onchange="ChangeOrder('@item.ServiceCategory.ID', this.value)" />
                             <a role="button" data-bs-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_@item.ServiceCategory.ID" aria-expanded="true" aria-controls="Service_@item.ServiceCategory.ID">
 
-                                <h4 class="panel-title text-center">
+                                <h6 class="panel-title text-center" style="margin-bottom:0px;">
                                     @item.ServiceCategory.Name
 
                                     <i class="material-icons">keyboard_arrow_down</i>
-                                </h4>
+                                </h6>
                             </a>
 
                         </div>

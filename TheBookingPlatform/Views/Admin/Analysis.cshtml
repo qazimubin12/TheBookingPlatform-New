@@ -22,365 +22,367 @@
         margin-top: 0px;
     }
 </style>
-<div class="row">
-    <div class="card col-md-12">
-        <div class="card-body">
-            <h4 class="card-title">
-                Analysis
-            </h4>
-            <span id="errorText" class="text-danger">
+<div class="container">
+    <div class="row">
+        <div class="card col-md-12">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Analysis
+                </h4>
+                <span id="errorText" class="text-danger">
 
-            </span>
-            <form method="post">
-                <div style="align-items:end;" class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <div class="input-group input-group-dynamic">
-                                @*<label style="margin-bottom:15px;"  class="label-control">Start Date</label>*@
+                </span>
+                <form method="post">
+                    <div style="align-items:end;" class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+                                    @*<label style="margin-bottom:15px;"  class="label-control">Start Date</label>*@
 
-                                <input style="margin-top:15px;" type="date" name="StartDate" id="StartDate" class="form-control " value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                                    <input style="margin-top:15px;" type="date" name="StartDate" id="StartDate" class="form-control " value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <div class="input-group input-group-dynamic">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
 
-                                @*<label style="margin-bottom:15px;" class="label-control">End Date</label>*@
-                                <input style="margin-top:15px;" type="date" name="EndDate" id="EndDate" class="form-control " value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                                    @*<label style="margin-bottom:15px;" class="label-control">End Date</label>*@
+                                    <input style="margin-top:15px;" type="date" name="EndDate" id="EndDate" class="form-control " value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <div class="input-group input-group-dynamic">
-                                @*<label class="label-control">Choose Employees</label>*@
-                                <select class="form-control " id="SelectedEmployeeIds" name="SelectedEmployeeIds" multiple>
-                                    <option disabled>Choose Employees </option>
-                                    @foreach (var item in Model.Employees)
-                                    {
-                                        if (Model.SelectedEmployeeIDs != null)
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+                                    @*<label class="label-control">Choose Employees</label>*@
+                                    <select class="form-control " id="SelectedEmployeeIds" name="SelectedEmployeeIds" multiple>
+                                        <option disabled>Choose Employees </option>
+                                        @foreach (var item in Model.Employees)
                                         {
-                                            if (Model.SelectedEmployeeIDs.Split(',').ToList().Contains(item.ID.ToString()))
+                                            if (Model.SelectedEmployeeIDs != null)
+                                            {
+                                                if (Model.SelectedEmployeeIDs.Split(',').ToList().Contains(item.ID.ToString()))
+                                                {
+                                                    <option selected value="@item.ID">@item.Name </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.ID">@item.Name </option>
+
+                                                }
+                                            }
+                                            else
                                             {
                                                 <option selected value="@item.ID">@item.Name </option>
+
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+
+                                    @*<label class="label-control">Choose Status</label>*@
+                                    <select style="margin-top:0px;" class="form-control" name="SelectedStatuses" id="SelectedStatuses" multiple>
+                                        <option disabled> Choose Status</option>
+                                        @foreach (var item in Model.Statuses)
+                                        {
+                                            if (Model.Status != null)
+                                            {
+                                                if (Model.Status.Split(',').ToList().Contains(item))
+                                                {
+                                                    <option selected value="@item">@item </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item">@item </option>
+
+                                                }
                                             }
                                             else
-                                            {
-                                                <option value="@item.ID">@item.Name </option>
-
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <option selected value="@item.ID">@item.Name </option>
-
-                                        }
-                                    }
-                                </select>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <div class="input-group input-group-dynamic">
-
-                                @*<label class="label-control">Choose Status</label>*@
-                                <select style="margin-top:0px;" class="form-control" name="SelectedStatuses" id="SelectedStatuses" multiple>
-                                    <option disabled> Choose Status</option>
-                                    @foreach (var item in Model.Statuses)
-                                    {
-                                        if (Model.Status != null)
-                                        {
-                                            if (Model.Status.Split(',').ToList().Contains(item))
                                             {
                                                 <option selected value="@item">@item </option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@item">@item </option>
 
                                             }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <div class="input-group input-group-dynamic">
+
+                                    @*<label class="label-control">Is Cancelled?</label>*@
+                                    <select style="margin-top:0px;" class="form-control" name="IsCancelled" id="IsCancelled">
+                                        @if (Model.IsCancelled)
+                                        {
+                                            <option value="False">False </option>
+                                            <option selected value="True">True </option>
                                         }
                                         else
                                         {
-                                            <option selected value="@item">@item </option>
-
+                                            <option selected value="False">False </option>
+                                            <option value="True">True </option>
                                         }
-                                    }
-                                </select>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <div class="input-group input-group-dynamic">
-
-                                @*<label class="label-control">Is Cancelled?</label>*@
-                                <select style="margin-top:0px;" class="form-control" name="IsCancelled" id="IsCancelled">
-                                    @if (Model.IsCancelled)
-                                    {
-                                        <option value="False">False </option>
-                                        <option selected value="True">True </option>
-                                    }
-                                    else
-                                    {
-                                        <option selected value="False">False </option>
-                                        <option value="True">True </option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <button style="margin-top:20px;" class="btn btn-sm btn-primary" type="submit" id="SubmitBtn">SUBMIT</button>
-                        <button style="margin-top:20px;" class="btn btn-sm btn-primary" type="button" id="ClearFilters">
-                            <i style=" width: 0px; display: flex; justify-content: center;" class="material-icons">clear_all</i>
-                        </button>
-                    </div>
-
-                </div>
-            </form>
-
-        </div>
-    </div>
-
-
-    <div class="card col-md-12">
-        <div class="card-body">
-            <h4 class="card-title">
-                Deposit Information
-            </h4>
-            <div class="row" style="margin-top:20px;">
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Cash</p>
-                                <h4 class="mb-0">@Model.SumOfCashDeposit</h4>
-                            </div>
+                        <div class="col-md-2">
+                            <button style="margin-top:20px;" class="btn btn-sm btn-primary" type="submit" id="SubmitBtn">SUBMIT</button>
+                            <button style="margin-top:20px;" class="btn btn-sm btn-primary" type="button" id="ClearFilters">
+                                <i style=" width: 0px; display: flex; justify-content: center;" class="material-icons">clear_all</i>
+                            </button>
                         </div>
 
                     </div>
-                </div>
+                </form>
 
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">account_balance_wallet</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Online</p>
-                                <h4 class="mb-0"> @Model.SumOfOnlineDeposit</h4>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">credit_card</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Pin</p>
-                                <h4 class="mb-0">@Model.SumOfPinDeposit</h4>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">attach_money</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Grand Total</p>
-                                <h4 class="mb-0">@(Model.SumOfOnlineDeposit+Model.SumOfPinDeposit+Model.SumOfCashDeposit)</h4>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
             </div>
-
         </div>
     </div>
-
-
-
-    <div class="card col-md-12">
-        <div class="card-body">
-            <h4 class="card-title">
-                Service Cost Information
-            </h4>
-            <div class="row" style="margin-top:20px;">
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
+    <div class="row">
+        <div class="card col-md-12">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Deposit Information
+                </h4>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Cash</p>
+                                    <h4 class="mb-0">@Model.SumOfCashDeposit</h4>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Service Cost</p>
-                                <h4 class="mb-0">@Model.TotalServicePrices</h4>
-                            </div>
+
                         </div>
-
                     </div>
 
-
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-warning shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">account_balance_wallet</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Online</p>
+                                    <h4 class="mb-0"> @Model.SumOfOnlineDeposit</h4>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Offline Discount(s)</p>
-                                <h4 class="mb-0">  @Model.TotalOfflineDiscount</h4>
-                            </div>
+
                         </div>
-
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-success shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Price After Discount </p>
-                                <h4 class="mb-0">@Model.TotalPriceAfterOfflineDiscount</h4>
-                            </div>
-                        </div>
 
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">credit_card</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Pin</p>
+                                    <h4 class="mb-0">@Model.SumOfPinDeposit</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">attach_money</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Grand Total</p>
+                                    <h4 class="mb-0">@(Model.SumOfOnlineDeposit+Model.SumOfPinDeposit+Model.SumOfCashDeposit)</h4>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
             </div>
-            <div class="row" style="margin-top:20px;">
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card col-md-12">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Service Cost Information
+                </h4>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Service Cost</p>
+                                    <h4 class="mb-0">@Model.TotalServicePrices</h4>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Online Discount(Price Change)</p>
-                                <h4 class="mb-0">@Model.TotalOnlinePriceChange</h4>
-                            </div>
+
                         </div>
 
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Employee Price Change</p>
-                                <h4 class="mb-0"> @Model.TotalEmployeePriceChange</h4>
-                            </div>
-                        </div>
 
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">  Total After Price Change(s)</p>
-                                <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
-                            </div>
-                        </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
 
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-warning shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Offline Discount(s)</p>
+                                    <h4 class="mb-0">  @Math.Round(Model.TotalOfflineDiscount, 2)</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-success shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Price After Discount </p>
+                                    <h4 class="mb-0">@Model.TotalPriceAfterOfflineDiscount</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Online Discount(Price Change)</p>
+                                    <h4 class="mb-0">@Model.TotalOnlinePriceChange</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;"> Employee Price Change</p>
+                                    <h4 class="mb-0"> @Model.TotalEmployeePriceChange</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">  Total After Price Change(s)</p>
+                                    <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
+
             </div>
 
         </div>
 
     </div>
+    <div class="row">
+        <div class="card col-md-12">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Earnings
+                </h4>
+                <div class="row" style="margin-top:20px;">
 
-
-    <div class="card col-md-12">
-        <div class="card-body">
-            <h4 class="card-title">
-                Earnings
-            </h4>
-            <div class="row" style="margin-top:20px;">
-
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned</p>
+                                    <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned</p>
-                                <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
-                            </div>
+
                         </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned from Services</p>
+                                    <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
+                                </div>
+                            </div>
 
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-warning shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned from Products</p>
+                                    <h6 class="mb-0">COMING SOON.</h6>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned from Services</p>
-                                <h4 class="mb-0">@Model.TotalAfterPriceChange</h4>
-                            </div>
-                        </div>
 
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-warning shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Earned from Products</p>
-                                <h6 class="mb-0">COMING SOON.</h6>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
             </div>
 
         </div>
 
+
     </div>
-
-
-
-    <div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
-        <div class="col-md-6">
+    <div class="row">
+        <div class="col-md-6" style="padding:0px;">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">
@@ -390,9 +392,9 @@
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Day</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Earnings</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Clients Visisted</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Day</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Earnings</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Clients Visited</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -405,15 +407,15 @@
 
                                     foreach (var item in combinedData)
                                     {
-                                        <tr>
+                                        <tr class="text-center">
                                             <td>
-                                                <span class="mb-0 text-sm">@item.Date.ToString("yyyy-MM-dd")</span>
+                                                @item.Date.ToString("yyyy-MM-dd")
                                             </td>
                                             <td>
-                                                <p class="text-sm font-weight-normal mb-0">@item.DaySale</p>
+                                                @item.DaySale
                                             </td>
-                                            <td class="text-center">
-                                                <p class="text-sm font-weight-normal mb-0">@item.NoOfClients</p>
+                                            <td class="">
+                                                @item.NoOfClients
                                             </td>
                                         </tr>
                                     }
@@ -425,28 +427,28 @@
                 </div>
             </div>
         </div>
-    
-        <div class="col-md-6">
+
+        <div class="col-md-6" style="padding:0px;">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">
-                       Popular Services
+                        Popular Services
                     </h4>
                     <div class="table-responsive p-0" style="max-height:400px;overflow-y:scroll;">
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Service Name</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Service Name</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (Model.serviceBookingCounts != null)
                                 {
-                                    foreach (var item in Model.serviceBookingCounts)
+                                    foreach (var item in Model.serviceBookingCounts.OrderByDescending(x => x.Value).Take(10))
                                     {
                                         <tr>
-                                            <td class="">
+                                            <td style="white-space:normal;" class="">
                                                 @item.Key
                                             </td>
                                             <td class="">
@@ -465,279 +467,274 @@
             </div>
         </div>
     </div>
-    
-
-</div>
 
 
 
 
-<div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
-    <div class="card ">
-        <div class="card-body">
-            <h4 class="card-title">
-                Client Visitations
-            </h4>
 
-            <div class="row" style="margin-top:20px;">
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
+    <div class="row" style=" padding-left: 0px; padding-right: 0px; ">
+        <div class="card ">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Client Visitations
+                </h4>
+
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-lg-3 col-md-3 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Appointments</p>
+                                    <h6 class="mb-0"> @Model.TotalNoOfAppointments</h6>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Total Appointments</p>
-                                <h6 class="mb-0"> @Model.TotalNoOfAppointments</h6>
-                            </div>
+
                         </div>
-
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-success shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
+                    <div class="col-lg-3 col-md-3 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-success shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Checkedout Appointments</p>
+                                    <h6 class="mb-0">@Model.CheckoutAppointmentsCount</h6>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Checkedout Appointments</p>
-                                <h6 class="mb-0">@Model.CheckoutAppointmentsCount</h6>
-                            </div>
+
                         </div>
-
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
+                    <div class="col-lg-3 col-md-3 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Pending Appointments</p>
+                                    <h6 class="mb-0">@Model.PendingAppointmentsCount</h6>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Pending Appointments</p>
-                                <h6 class="mb-0">@Model.PendingAppointmentsCount</h6>
-                            </div>
+
                         </div>
-
                     </div>
-                </div>
-            </div>
-            <div class="row" style="margin-top:30px;">
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-danger shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
+                    @*<div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-danger shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Cancelled Appointments</p>
+                                    <h6 class="mb-0">@Model.CancelledAppointmentCount</h6>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">Cancelled Appointments</p>
-                                <h6 class="mb-0">@Model.CancelledAppointmentCount</h6>
-                            </div>
+
                         </div>
+                    </div>*@
+                    <div class="col-lg-3 col-md-3 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">No Show Appointments</p>
+                                    <h6 class="mb-0">@Model.NoShowAppointmentsCount</h6>
+                                </div>
+                            </div>
 
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize" style="padding-left:40px;">No Show Appointments</p>
-                                <h6 class="mb-0">@Model.NoShowAppointmentsCount</h6>
-                            </div>
                         </div>
-
                     </div>
+
+
                 </div>
-
-
             </div>
         </div>
+
     </div>
 
-</div>
 
+    <div class="row " style=" padding-left: 0px; padding-right: 0px; ">
+        <div class="card ">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Clients Acquired And Return(s) Statistics
+                </h4>
 
-<div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
-    <div class="card ">
-        <div class="card-body">
-            <h4 class="card-title">
-                Clients Acquired And Return(s) Statistics
-            </h4>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body p-3 position-relative">
+                                <div class="row">
+                                    <div class="col-7 text-start">
+                                        <p class="text-sm mb-1 text-capitalize font-weight-bold">New Clients</p>
+                                        <h5 class="font-weight-bolder mb-0">
+                                            @Model.NewClients
+                                        </h5>
+                                        <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
 
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body p-3 position-relative">
-                            <div class="row">
-                                <div class="col-7 text-start">
-                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">New Clients</p>
-                                    <h5 class="font-weight-bolder mb-0">
-                                        @Model.NewClients
-                                    </h5>
-                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="dropdown text-end">
+                                            <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
 
-                                </div>
-                                <div class="col-5">
-                                    <div class="dropdown text-end">
-                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
-
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body p-3 position-relative">
-                            <div class="row">
-                                <div class="col-7 text-start">
-                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">Returned Visit</p>
-                                    <h5 class="font-weight-bolder mb-0">
-                                        @Model.ReturnedClients
-                                    </h5>
-                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body p-3 position-relative">
+                                <div class="row">
+                                    <div class="col-7 text-start">
+                                        <p class="text-sm mb-1 text-capitalize font-weight-bold">Returned Visit</p>
+                                        <h5 class="font-weight-bolder mb-0">
+                                            @Model.ReturnedClients
+                                        </h5>
+                                        <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
 
-                                </div>
-                                <div class="col-5">
-                                    <div class="dropdown text-end">
-                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="dropdown text-end">
+                                            <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body p-3 position-relative">
-                            <div class="row">
-                                <div class="col-7 text-start">
-                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">Lost Clients</p>
-                                    <h5 class="font-weight-bolder mb-0">
-                                        @Model.LostClients
-                                    </h5>
-                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body p-3 position-relative">
+                                <div class="row">
+                                    <div class="col-7 text-start">
+                                        <p class="text-sm mb-1 text-capitalize font-weight-bold">Lost Clients</p>
+                                        <h5 class="font-weight-bolder mb-0">
+                                            @Model.LostClients
+                                        </h5>
+                                        <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
 
-                                </div>
-                                <div class="col-5">
-                                    <div class="dropdown text-end">
-                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="dropdown text-end">
+                                            <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
-    <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">
-                Payment Methods
-            </h4>
-            <div class="row" style="margin-top:20px;">
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">payments</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Cash</p>
-                                <h4 class="mb-0">
-                                    @Model.CheckedOutCashCount
-                                </h4>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">credit_card</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Card</p>
-                                <h4 class="mb-0"> @Model.CheckedOutCardCount</h4>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">account_balance_wallet</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Pin</p>
-                                <h4 class="mb-0">@Model.CheckedOutPinCount</h4>
-                            </div>
-                        </div>
-
-                    </div>
                 </div>
             </div>
-            <div class="row" style="margin-top:20px;">
-
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">card_membership</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Loyalty Card</p>
-                                <h4 class="mb-0">@Model.CheckedOutLoyaltyCardCount</h4>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="card  mb-2">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">redeem</i>
-                            </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Gift Card</p>
-                                <h4 class="mb-0">@Model.CheckedOutGiftCardCount</h4>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
         </div>
 
     </div>
-</div>
+
+    <div class="row" style=" padding-left: 0px; padding-right: 0px; ">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Payment Methods
+                </h4>
+                <div class="row" style="margin-top:20px;">
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">payments</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Cash</p>
+                                    <h4 class="mb-0">
+                                        @Model.CheckedOutCashCount
+                                    </h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">credit_card</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Card</p>
+                                    <h4 class="mb-0"> @Model.CheckedOutCardCount</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-info shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">account_balance_wallet</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Pin</p>
+                                    <h4 class="mb-0">@Model.CheckedOutPinCount</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:20px;">
+
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">card_membership</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Loyalty Card</p>
+                                    <h4 class="mb-0">@Model.CheckedOutLoyaltyCardCount</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">redeem</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Gift Card</p>
+                                    <h4 class="mb-0">@Model.CheckedOutGiftCardCount</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 
 
-<div class="row col-md-12" style=" padding-left: 0px; padding-right: 0px; ">
-    <div class="col-md-6">
+    <div class="row" style=" padding-left: 0px; padding-right: 0px; ">
         <div class="card ">
             <div class="card-body">
                 <h4 class="card-title">
@@ -778,8 +775,7 @@
             </div>
 
         </div>
-    </div>
-    <div class="col-md-6">
+
         <div class="card">
             <div class="card-body card-header-icon" data-background-color="red">
                 <i class="material-icons">bar_chart</i>
@@ -788,152 +784,153 @@
             </div>
         </div>
     </div>
-</div>
 
 
 
-<div class="card col-md-12">
-    <div class="card-body">
-        <h4 class="card-title">
-            Rebook Reminders
-        </h4>
+    <div class="row" style=" padding-left: 0px; padding-right: 0px; ">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Rebook Reminders
+                </h4>
 
 
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-body p-3 position-relative">
-                        <div class="row">
-                            <div class="col-7 text-start">
-                                <p class="text-sm mb-1 text-capitalize font-weight-bold">Rebook Email Sent</p>
-                                <h5 class="font-weight-bolder mb-0">
-                                    @Model.NoOfRebookReminderSent
-                                </h5>
-                                <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body p-3 position-relative">
+                                <div class="row">
+                                    <div class="col-7 text-start">
+                                        <p class="text-sm mb-1 text-capitalize font-weight-bold">Rebook Email Sent</p>
+                                        <h5 class="font-weight-bolder mb-0">
+                                            @Model.NoOfRebookReminderSent
+                                        </h5>
+                                        <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
 
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="dropdown text-end">
+                                            <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-5">
-                                <div class="dropdown text-end">
-                                    <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+                        </div>
+                    </div>
 
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body p-3 position-relative">
+                                <div class="row">
+                                    <div class="col-7 text-start">
+                                        <p class="text-sm mb-1 text-capitalize font-weight-bold">Rebook Email Opened</p>
+                                        <h5 class="font-weight-bolder mb-0">
+                                            @Model.NoOfRebookReminderOpened
+                                        </h5>
+                                        <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="dropdown text-end">
+                                            <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body p-3 position-relative">
+                                <div class="row">
+                                    <div class="col-7 text-start">
+                                        <p class="text-sm mb-1 text-capitalize font-weight-bold">Click On Rebook</p>
+                                        <h5 class="font-weight-bolder mb-0">
+                                            @Model.NoOfRebookReminderClicked
+                                        </h5>
+                                        <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="dropdown text-end">
+                                            <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="card">
+                            <div class="card-body p-3 position-relative">
+                                <div class="row">
+                                    <div class="col-7 text-start">
+                                        <p class="text-sm mb-1 text-capitalize font-weight-bold">Appointment by Rebook</p>
+                                        <h5 class="font-weight-bolder mb-0">
+                                            @Model.AppointmentsByRebook
+                                        </h5>
+                                        <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="dropdown text-end">
+                                            <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
+
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                @*<div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        Rebook Email Sent
+                                    </th>
+                                    <th class="text-center">
+                                        Rebook Email Opened
+                                    </th>
+                                    <th class="text-center">
+                                        Click On Rebook
+                                    </th>
+                                    <th class="text-center">
+                                        Appointment by Rebook
+                                    </th>
 
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-body p-3 position-relative">
-                        <div class="row">
-                            <div class="col-7 text-start">
-                                <p class="text-sm mb-1 text-capitalize font-weight-bold">Rebook Email Opened</p>
-                                <h5 class="font-weight-bolder mb-0">
-                                    @Model.NoOfRebookReminderOpened
-                                </h5>
-                                <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">
+                                        @Model.NoOfRebookReminderSent
+                                    </td>
+                                    <td class="text-center">
+                                        @Model.NoOfRebookReminderOpened
+                                    </td>
+                                    <td class="text-center">
+                                        @Model.NoOfRebookReminderClicked
+                                    </td>
+                                    <td class="text-center">
+                                        @Model.AppointmentsByRebook
+                                    </td>
 
-                            </div>
-                            <div class="col-5">
-                                <div class="dropdown text-end">
-                                    <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-body p-3 position-relative">
-                        <div class="row">
-                            <div class="col-7 text-start">
-                                <p class="text-sm mb-1 text-capitalize font-weight-bold">Click On Rebook</p>
-                                <h5 class="font-weight-bolder mb-0">
-                                    @Model.NoOfRebookReminderClicked
-                                </h5>
-                                <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
-
-                            </div>
-                            <div class="col-5">
-                                <div class="dropdown text-end">
-                                    <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-body p-3 position-relative">
-                        <div class="row">
-                            <div class="col-7 text-start">
-                                <p class="text-sm mb-1 text-capitalize font-weight-bold">Appointment by Rebook</p>
-                                <h5 class="font-weight-bolder mb-0">
-                                    @Model.AppointmentsByRebook
-                                </h5>
-                                <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
-
-                            </div>
-                            <div class="col-5">
-                                <div class="dropdown text-end">
-                                    <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>*@
             </div>
         </div>
-        @*<div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="text-center">
-                            Rebook Email Sent
-                        </th>
-                        <th class="text-center">
-                            Rebook Email Opened
-                        </th>
-                        <th class="text-center">
-                            Click On Rebook
-                        </th>
-                        <th class="text-center">
-                            Appointment by Rebook
-                        </th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="text-center">
-                            @Model.NoOfRebookReminderSent
-                        </td>
-                        <td class="text-center">
-                            @Model.NoOfRebookReminderOpened
-                        </td>
-                        <td class="text-center">
-                            @Model.NoOfRebookReminderClicked
-                        </td>
-                        <td class="text-center">
-                            @Model.AppointmentsByRebook
-                        </td>
-
-                    </tr>
-                </tbody>
-            </table>
-        </div>*@
     </div>
 
 </div>
-
 <script>
   
     var labels = [];
@@ -976,6 +973,9 @@
         },
         options: {
             scales: {
+                x: {
+                    display: false // Hide the x-axis labels
+                },
                 y: {
                     beginAtZero: true
                 }

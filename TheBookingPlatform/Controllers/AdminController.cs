@@ -472,7 +472,7 @@ namespace TheBookingPlatform.Controllers
                 }
 
                 bool isLostClient =
-        !AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item) &&
+            AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item) &&
         !AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, item);
 
                 if (isLostClient)

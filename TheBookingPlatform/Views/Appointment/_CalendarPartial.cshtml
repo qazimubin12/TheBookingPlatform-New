@@ -317,7 +317,7 @@
     }
 </style>
 
-<input type="hidden" id="IntervalFinal" />
+<input type="hidden" value="@Model.LoggedInUser.IntervalCalendar" id="IntervalFinal" />
 <div style="background-color:white; padding:10px;border-radius:10px;" id="fullCalendar"></div>
 
 <div class="modal  fade center" id="actionModal" style="z-index:56;" tabindex="-1" role="dialog">
@@ -1791,7 +1791,7 @@ daysOfWeek: []
                             }
                             else if (FromGCAL) {
                                 $("#checkoutButn").hide();
-                                $("#DeleteAppointmentButton").show();
+                                $("#DeleteAppointmentButton").hide();
                                 $("#CustomerROW").hide();
                                 $("#moreButton").hide();
                                 $("#CustomerEmailROW").hide();
@@ -2047,7 +2047,7 @@ daysOfWeek: []
         });
 
         date.css({
-            'font-size': '1.75rem',
+            'font-size': '1.0rem',
         });
         ted.css({
             'font-size': 'x-small',
@@ -2148,6 +2148,16 @@ daysOfWeek: []
         UpdateIntervalOnUser('00:60:00'); // 30 minutes
     });
 
+    function adjustMent() {
+        var elementToAppend = $(".emee");
+
+        // Append this block to the second .fc-toolbar-chunk
+        $('.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr .fc-toolbar-chunk:eq(2)').append(elementToAppend);
+
+        // Ensure the new element has display: flex
+        $('.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr .fc-toolbar-chunk:eq(2)').css("display", "flex");
+    }
+
     function generateDarkColor(color) {
         // Example: Darken the color by reducing the lightness
         var hslColor = tinycolor(color).toHsl();
@@ -2159,7 +2169,7 @@ daysOfWeek: []
         ViewCalendar();
         //demo.initFullCalendar();
         $(".navbar-transparent").hide();
-
+        adjustMent();
         $(".fc-next-button").click(function () {
             showLoadingSpinner();
             window.location.href = '@Url.Action("Calendar", "Appointment", new {date = nextDate })';

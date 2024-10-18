@@ -233,9 +233,13 @@ namespace TheBookingPlatform.Services
             {
                 return context.Appointments.AsNoTracking()
                     .Where(x => x.Business == Business
-                        && x.Date.Date == StartDate.Date    // Truncate time part of Date
-                        && x.Time.TimeOfDay == StartTime.TimeOfDay  // Truncate date part of Time
-                        && x.EndTime.TimeOfDay == EndTime.TimeOfDay // Truncate date part of EndTime
+                        && x.Date.Day == StartDate.Day &&
+                        x.Date.Month == StartDate.Month &&
+                        x.Date.Year == StartDate.Year 
+                        && x.Time.Hour == StartTime.Hour 
+                        && x.Time.Minute == StartTime.Minute
+                        && x.EndTime.Hour == EndTime.Minute 
+                        && x.EndTime.Minute == EndTime.Minute
                         && x.IsCancelled == false
                         && x.DELETED == false
                         && x.GoogleCalendarEventID == EmployeeCalendarID)
