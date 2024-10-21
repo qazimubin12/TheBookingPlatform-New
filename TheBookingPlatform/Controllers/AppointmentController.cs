@@ -4947,7 +4947,7 @@ namespace TheBookingPlatform.Controllers
                 return "Error: Google Calendar service not found.";
             }
             var userCalendarID = "";
-            if(Oldemployee != null)
+            if(oldEmployeeID != 0)
             {
                 userCalendarID = Oldemployee.GoogleCalendarID;
             }

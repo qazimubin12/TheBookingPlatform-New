@@ -394,7 +394,6 @@ namespace TheBookingPlatform.Controllers
             model.TotalOfflineDiscount = OfflineDiscountCost;
             model.TotalPriceAfterOfflineDiscount = ServiceCost - OfflineDiscountCost;
 
-
             var OnlinePriceChange = 0.0;
             foreach (var item in ListOfOnlinePriceChange)
             {
@@ -408,6 +407,7 @@ namespace TheBookingPlatform.Controllers
 
                 }
             }
+
             model.TotalOnlinePriceChange = float.Parse(OnlinePriceChange.ToString());
 
 
@@ -456,6 +456,7 @@ namespace TheBookingPlatform.Controllers
             var filteredAppointments = servicesAll.Where(x => x.FromGCAL == false).Select(x => x.CustomerID).Distinct().ToList();
             int TotalNewClients = 0;
             int ReturnedClients = 0;
+            var LostClientsList = new List<Customer>();
             int LostClients = 0;
             DateTime thirtyDaysAgo = StartDate.AddDays(-30);
 
@@ -471,17 +472,25 @@ namespace TheBookingPlatform.Controllers
                     ReturnedClients++;
                 }
 
-                bool isLostClient =
-            AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item) &&
-        !AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, item);
+                var lostClientIds = AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item);
+                var currentClientIds = AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled,item);
 
-                if (isLostClient)
+        //        bool isLostClient =
+        //    AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW2(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item) &&
+        //!AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW2(loggedInUser.Company, false, IsCancelled, item);
+        //        var lostClients = lostClientIds.Except(currentClientIds).ToList();
+
+
+                foreach (var ids in lostClientIds)
                 {
-                    LostClients++;
+                    LostClientsList.Add(CustomerServices.Instance.GetCustomer(ids));
                 }
+                LostClients = LostClientsList.Count;
+             
 
 
             }
+            model.LostClientsList = LostClientsList;
             model.ReturnedClients = ReturnedClients;
             model.NewClients = TotalNewClients;
 

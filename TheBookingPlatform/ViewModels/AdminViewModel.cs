@@ -94,6 +94,7 @@ namespace TheBookingPlatform.ViewModels
         public int NoOfRebookReminderOpened   { get; set; }
         public int AppointmentsByRebook         { get; set; }
         public float TotalEmployeePriceChange { get;  set; }
+        public List<Customer> LostClientsList { get;  set; }
     }
 
 

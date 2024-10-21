@@ -651,7 +651,7 @@ namespace TheBookingPlatform.Services
             }
         }
 
-        public bool GetAppointmentBookingWRTBusinessNEW(string company, bool Deleted, bool isCancelled, DateTime DaysAgo, int CustomerID)
+        public bool GetAppointmentBookingWRTBusinessNEW2(string company, bool Deleted, bool isCancelled, DateTime DaysAgo, int CustomerID)
         {
             using (var context = new DSContext())
             {
@@ -661,7 +661,7 @@ namespace TheBookingPlatform.Services
             }
         }
 
-        public bool GetAppointmentBookingWRTBusinessNEW(string company, bool Deleted, bool isCancelled, int CustomerID)
+        public bool GetAppointmentBookingWRTBusinessNEW2(string company, bool Deleted, bool isCancelled, int CustomerID)
         {
             using (var context = new DSContext())
             {
@@ -670,6 +670,70 @@ namespace TheBookingPlatform.Services
 
             }
         }
+
+        public List<int> GetAppointmentBookingWRTBusinessNEW(string company, bool Deleted, bool isCancelled, DateTime daysAgo, int customerID)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Appointments.AsNoTracking()
+                    .Where(x => x.Business == company &&
+                                x.DELETED == Deleted &&
+                                x.CustomerID == customerID &&
+                                x.IsCancelled == isCancelled &&
+                                x.Date >= daysAgo)
+                    .Select(x => x.CustomerID)
+                    .Distinct() // Optional: to ensure unique CustomerIDs
+                    .ToList();
+            }
+        }
+
+        public List<int> GetAppointmentBookingWRTBusinessNEW(string company, bool Deleted, bool isCancelled, int CustomerID)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Appointments.AsNoTracking()
+                    .Where(x => x.Business == company &&
+                                x.DELETED == Deleted &&
+                                x.IsCancelled == isCancelled &&
+                                x.Date > DateTime.Now)
+                    .Select(x => x.CustomerID)
+                    .Distinct() // Optional: to ensure unique CustomerIDs
+                    .ToList();
+            }
+        }
+
+        //public List<int> GetLostClients(string company, bool Deleted, bool isCancelled, DateTime DaysAgo)
+        //{
+        //    using (var context = new DSContext())
+        //    {
+        //        // Get a list of customer IDs who had appointments before 30 days ago and have no recent appointments.
+        //        var customersWithPastAppointments = context.Appointments
+        //            .AsNoTracking()
+        //            .Where(x => x.Business == company
+        //                        && x.DELETED == Deleted
+        //                        && x.IsCancelled == isCancelled
+        //                        && x.Date >= DaysAgo)
+        //            .Select(x => x.CustomerID)
+        //            .Distinct()
+        //            .ToList();
+
+        //        // Return the list of customers who do not have any future appointments
+        //        var lostCustomers = customersWithPastAppointments.Where(customerID =>
+        //            !context.Appointments
+        //            .AsNoTracking()
+        //            .Where(x => x.Business == company
+        //                        && x.DELETED == Deleted
+        //                        && x.IsCancelled == isCancelled
+        //                        && x.CustomerID == customerID
+        //                        && x.Date > DateTime.Now)
+        //            .Any()
+        //        ).ToList();
+
+        //        return lostCustomers;
+        //    }
+        //}
+
+
 
 
         public List<Appointment> GetAllAppointmentWRTBusiness(string company, bool isDeleted, int employeeID, DateTime startDate, DateTime endDate, bool IsCancelled)

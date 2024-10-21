@@ -443,7 +443,7 @@
                                                                 @if (Model.GoogleCalendarIntegration.Disabled)
                                                                 {
 
-                                                                    <button id="GCalendarSettingsBtn" disabled="disabled" onclick="window.location.href='@Url.Action("AuthRedirect", "EmployeeRequest")'" class="btn btn-sm btn-primary">
+                                                                    <button id="GCalendarSettingsBtn" disabled="disabled" onclick="window.location.href='@Url.Action("AuthRedirect", "EmployeeRequest", new {Company= Model.LoggedInCompany })'" class="btn btn-sm btn-primary">
                                                                         Settings
                                                                     </button>
                                                                 }
@@ -837,7 +837,7 @@
 
     $("#authorizeBtn").click(function () {
 
-        window.location.href = '@Url.Action("AuthRedirect","EmployeeRequest")';
+        window.location.href = '@Url.Action("AuthRedirect", "EmployeeRequest", new {Company=Model.LoggedInCompany})';
     });
 
 

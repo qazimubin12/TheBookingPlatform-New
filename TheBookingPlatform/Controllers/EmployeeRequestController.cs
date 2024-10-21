@@ -430,8 +430,7 @@ namespace TheBookingPlatform.Controllers
         public async Task<ActionResult> CallBack(string code, string error, string state)
         {
             OAuthViewModel model = new OAuthViewModel();
-            var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
-            var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(loggedInUser.Company);
+            var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(state);
             if (googleCalendar == null)
             {
                 if (string.IsNullOrWhiteSpace(error))
@@ -447,9 +446,9 @@ namespace TheBookingPlatform.Controllers
                 }
             }
 
-            model.GoogleCalendarIntegration = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(loggedInUser.Company);
+            model.GoogleCalendarIntegration = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(state);
             model.Calendars = await GetCalendars();
-            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company, true);
+            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(state, true);
             return View("IntegrationSettings", model);
         }
 
@@ -781,8 +780,7 @@ namespace TheBookingPlatform.Controllers
             var appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(user.Company, false, true);
             foreach (var item in appointments)
             {
-                item.DELETED = true;
-                item.DeletedTime = DateTime.Now.ToString();
+                AppointmentServices.Instance.DeleteAppointment(item.ID);
             }
             var newapps = AppointmentServices.Instance.GetAllAppointmentWRTBusinessTodaynFuture(user.Company, false, false);
             foreach (var item in newapps)
@@ -1047,7 +1045,7 @@ namespace TheBookingPlatform.Controllers
         }
 
         [HttpGet]
-        public ActionResult AuthRedirect()
+        public ActionResult AuthRedirect(string Company)
         {
             var CLIENT_ID = "201633868472-3sf5q4hbiqupcf0smo6auch9bku6bech.apps.googleusercontent.com";
             const string REDIRECT_URI = "https://app.yourbookingplatform.com/EmployeeRequest/CallBack";
@@ -1059,7 +1057,7 @@ namespace TheBookingPlatform.Controllers
             urlBuilder.Append("&access_type=offline");
             urlBuilder.Append("&include_granted_scopes=true");
             urlBuilder.Append("&response_type=code");
-            urlBuilder.Append("&state=there");
+            urlBuilder.Append("&state="+ Company);
             urlBuilder.Append("&redirect_uri=" + Uri.EscapeDataString(REDIRECT_URI));
             urlBuilder.Append("&client_id=" + Uri.EscapeDataString(CLIENT_ID));
             urlBuilder.Append("&prompt=consent"); // Force re-consent for refresh token
