@@ -146,7 +146,7 @@ namespace TheBookingPlatform.ViewModels
         public float Percentage { get; set; }
         public string TypeOfChange { get; set; }
         public int PriceChangeID { get; set; }
-
+        public int EmployeeID { get; set; }
         public bool EmpHaveDiscount { get; set; }
         public float EmpPercentage { get; set; }
         public string EmpTypeOfChange { get; set; }

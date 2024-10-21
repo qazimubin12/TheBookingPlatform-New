@@ -1282,27 +1282,30 @@
             dataType: 'json',
             data: { CompanyID: companyID, SelectedDate: selectedDate, ServiceIDs: serviceIDs, EmployeeID: selectedEmployee, DoesSelected: DoesSelected },
             success: function (data) {
-
+                debugger
                 var ListOfTimeSlotsWithDiscount = data.ListOfTimeSlotsWithDiscount;
                 // Update your UI with the retrieved time slots
                 var timeSlotsContainer = $('#TimeSlots'); // Get the timeSlots div by its ID
                 // Clear the container before adding new content
                 timeSlotsContainer.empty();
                 if (ListOfTimeSlotsWithDiscount != null) {
-                    if (ListOfTimeSlotsWithDiscount.length > 0) {
+                    
+                    if (ListOfTimeSlotsWithDiscount.length > 0)
+                    {
                         //// Create a table element
                         //var table = $('<table class="table table-borderless"></table>');
                         //var row = $('<tr></tr>'); // Create a table row for buttons
 
                         // Iterate through the time slots and create buttons
-                        for (var i = 0; i < ListOfTimeSlotsWithDiscount.length; i++) {
+                        for (var i = 0; i < ListOfTimeSlotsWithDiscount.length; i++)
+                        {
                             var timeSlot = ListOfTimeSlotsWithDiscount[i];
                             // Create a button element
 
                             if (timeSlot.HaveDiscount) {
                                 var button = $('<button type="button" translate="no" data-typeofchange="' + timeSlot.TypeOfChange + '" class="btnTimeSlot btn btn-primary btn-rounded btn-sm"></button>');
                                 button.text(timeSlot.TimeSlot); // Set the text of the button to the time slot
-                                button.attr('data-employee', data.FinalEmployeeID);
+                                button.attr('data-employee', timeSlot.EmployeeID);
                                 button.attr('data-timeslot', timeSlot.TimeSlot);
                                 if (timeSlot.TypeOfChange === "Discount") {
                                     var discountBadge = $('<span class="discount-ribbon">-' + timeSlot.Percentage + '%</span>');
@@ -1328,9 +1331,10 @@
                                     button.attr('data-emppricechangeid', timeSlot.EmpPriceChangeID);
                                 //    button.append(empDiscountBadge);
                                 }
-                            } else {
+                            }
+                            else {
                                 var button = $('<button type="button" translate="no" class="btnTimeSlot btn btn-primary btn-rounded btn-sm"></button>');
-                                button.attr('data-employee', data.FinalEmployeeID);
+                                button.attr('data-employee', timeSlot.EmployeeID);
                                 button.text(timeSlot.TimeSlot); // Set the text of the button to the time slot
                                 button.attr('data-timeslot', timeSlot.TimeSlot);
                                 if (timeSlot.EmpHaveDiscount) {

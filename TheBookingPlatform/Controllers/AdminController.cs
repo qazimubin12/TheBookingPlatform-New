@@ -472,24 +472,34 @@ namespace TheBookingPlatform.Controllers
                     ReturnedClients++;
                 }
 
-                var lostClientIds = AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item);
-                var currentClientIds = AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled,item);
-
         //        bool isLostClient =
         //    AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW2(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item) &&
         //!AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW2(loggedInUser.Company, false, IsCancelled, item);
         //        var lostClients = lostClientIds.Except(currentClientIds).ToList();
 
 
-                foreach (var ids in lostClientIds)
-                {
-                    LostClientsList.Add(CustomerServices.Instance.GetCustomer(ids));
-                }
-                LostClients = LostClientsList.Count;
              
 
 
             }
+
+
+            var customers = CustomerServices.Instance.GetCustomerWRTBusiness(loggedInUser.Company).Select(x=>x.ID);
+            var lostClients = new List<int>();
+            foreach (var item in customers)
+            {
+                var lostClientIds = AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item);
+                var currentClientIds = AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, item);
+                lostClients = lostClientIds.Except(currentClientIds).ToList();
+            }
+
+            foreach (var ids in lostClients)
+            {
+                LostClientsList.Add(CustomerServices.Instance.GetCustomer(ids));
+            }
+            LostClients = LostClientsList.Count;
+
+
             model.LostClientsList = LostClientsList;
             model.ReturnedClients = ReturnedClients;
             model.NewClients = TotalNewClients;
