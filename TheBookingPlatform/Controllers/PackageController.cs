@@ -89,7 +89,6 @@ namespace TheBookingPlatform.Controllers
                 "Company",
                 "Opening Hours",
                 "Services",
-                "Services Category",
                 "Customers",
                 "Time Table",
                 "Reviews",

@@ -27,6 +27,11 @@ using MailMessage = System.Net.Mail.MailMessage;
 using Service = TheBookingPlatform.Entities.Service;
 using Event = TheBookingPlatform.Controllers.AppointmentController.Event;
 using System.Threading.Tasks;
+using static Microsoft.IO.RecyclableMemoryStreamManager;
+using System.Web.UI.WebControls;
+using Microsoft.Owin.Security.Twitter.Messages;
+using System.Net.Http;
+using static TheBookingPlatform.Controllers.BookingController;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -514,7 +519,7 @@ namespace TheBookingPlatform.Controllers
             var history = new History();
             history.Date = DateTime.Now;
             history.Note = jsonContent + contentLength + contentType + headers;
-
+            //HistoryServices.Instance.SaveHistory(history);
             // Regular expression to extract the URL
             string uri = string.Empty;
             try
@@ -600,17 +605,110 @@ namespace TheBookingPlatform.Controllers
                             {
                                 if (appointment != null)
                                 {
-                                    appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
-                                    appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
-                                    appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);                                   
-                                    appointment.Business = employee.Business;
-                                    appointment.EmployeeID = employee.ID;
-                                    appointment.GoogleCalendarEventID = item.Id;
-                                    AppointmentServices.Instance.UpdateAppointment(appointment);
+                                    try
+                                    {
+                                        var requestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events/{item.Id}";
+                                        var client = new RestClient(requestUrl);
+
+                                        // Create a new request
+                                        var request = new RestRequest();
+
+                                        // Add the Bearer token to the Authorization header
+                                        request.AddHeader("Authorization", $"Bearer {googleCalendar.AccessToken}");
+
+                                        // Make the REST request asynchronously
+                                        var response = await client.ExecuteAsync(request, Method.Get);
+
+                                        // Check if the response is successful
+                                        if (response.IsSuccessful)
+                                        {
+                                            try
+                                            {
+
+                                                var ha = new History();
+                                                ha.Type = "Response by Qmubin";
+                                                ha.Note = "Reponse Came:" + response.Content;
+                                                ha.Date = DateTime.Now;
+                                                ha.Business = JsonConvert.SerializeObject(fullEvent);
+                                                HistoryServices.Instance.SaveHistory(ha);
+
+
+                                                NEvent calendarEvent = JsonConvert.DeserializeObject<NEvent>(response.Content);
+
+                                                // Extract the organizer's email (which can be used as calendarId)
+                                                string organizerEmail = calendarEvent.Organizer.Email;
+                                                var newemployee = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(organizerEmail);
+
+                                                appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
+                                                appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
+                                                appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);
+                                                appointment.Business = employee.Business;
+                                                appointment.EmployeeID = newemployee.ID;
+                                                appointment.GoogleCalendarEventID = item.Id;
+                                                AppointmentServices.Instance.UpdateAppointment(appointment);
+
+                                                ha = new History();
+                                                ha.Type = "Error by Qmubin";
+                                                ha.Note = "Appointment got newlyupdated by GC" + appointment.ID + " EventID:" + item.Id;
+                                                ha.Date = DateTime.Now;
+                                                ha.Business = JsonConvert.SerializeObject(fullEvent);
+                                                HistoryServices.Instance.SaveHistory(ha);
+                                            }
+                                            catch (Exception ex)
+                                            {
+
+                                                string appointmentJson = JsonConvert.SerializeObject(appointment);
+                                                var nhistory = new History();
+                                                nhistory.Date = DateTime.Now;
+                                                nhistory.Note = ex.Message;
+                                                nhistory.Type = appointmentJson;
+                                                nhistory.Type = "Error by Qmubin";
+                                                HistoryServices.Instance.SaveHistory(nhistory);
+                                            }
+                                            // Deserialize the response content
+
+
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        string appointmentJson = JsonConvert.SerializeObject(appointment);
+                                        var nhistory = new History();
+                                        nhistory.Date = DateTime.Now;
+                                        nhistory.Note = ex.Message;
+                                        nhistory.Type = appointmentJson;
+                                        nhistory.Type = "Error by Qmubin";
+                                        HistoryServices.Instance.SaveHistory(nhistory);
+                                    }
+
+                                    //Get item.Id as eventID for GCal do the rest request and get the event calendarId 
+
+
+                                    //var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + employee.GoogleCalendarID + "/events/" + appointment.GoogleCalendarEventID);
+                                    //client = new RestClient(url);
+                                    //request = new RestRequest();
+
+                                    //request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                                    //request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
+                                    //request.AddHeader("Accept", "application/json");
+
+                                    //response = client.Delete(request);
+                                    //if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                                    //{
+                                    //    ha = new History();
+                                    //    ha.Type = "Error by Qmubin";
+                                    //    ha.Note = "Old Appointment was Deleted by GC" + appointment.ID + " EventID:" + item.Id;
+                                    //    ha.Date = DateTime.Now;
+                                    //    ha.Business = JsonConvert.SerializeObject(fullEvent);
+                                    //    HistoryServices.Instance.SaveHistory(ha);
+                                    //}
+
+
+
                                 }
                                 else
                                 {
-                                    
+
                                     appointment = new Appointment();
                                     appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
                                     appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
@@ -620,22 +718,30 @@ namespace TheBookingPlatform.Controllers
                                     var haveAnyappointment = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(googleCalendar.Business, employee.GoogleCalendarID, appointment.Date, appointment.Time, appointment.EndTime);
                                     //if (haveAnyappointment)
                                     //{
-                                        TimeSpan duration = appointment.EndTime - appointment.Time;
-                                        var service = ServiceServices.Instance.GetService(employee.Business, "ABSENSE").FirstOrDefault();
-                                        if (service != null)
-                                        {
-                                            appointment.Service = service.ID.ToString();
-                                        }
-                                        appointment.Status = "Pending";
-                                        appointment.Color = "#dff0e3";
-                                        appointment.Business = employee.Business;
-                                        appointment.EmployeeID = employee.ID;
-                                        appointment.FromGCAL = true;
-                                        appointment.IsPaid = true;
-                                        appointment.ServiceDuration = duration.TotalMinutes + "mins";
-                                        appointment.BookingDate = DateTime.Now;
-                                        appointment.GoogleCalendarEventID = item.Id;
-                                        AppointmentServices.Instance.SaveAppointment(appointment);
+                                    TimeSpan duration = appointment.EndTime - appointment.Time;
+                                    var service = ServiceServices.Instance.GetService(employee.Business, "ABSENSE").FirstOrDefault();
+                                    if (service != null)
+                                    {
+                                        appointment.Service = service.ID.ToString();
+                                    }
+                                    appointment.Status = "Pending";
+                                    appointment.Color = "#dff0e3";
+                                    appointment.Business = employee.Business;
+                                    appointment.EmployeeID = employee.ID;
+                                    appointment.FromGCAL = true;
+                                    appointment.IsPaid = true;
+                                    appointment.ServiceDuration = duration.TotalMinutes + "mins";
+                                    appointment.BookingDate = DateTime.Now;
+                                    appointment.GoogleCalendarEventID = item.Id;
+                                    AppointmentServices.Instance.SaveAppointment(appointment);
+
+
+                                    var ha = new History();
+                                    ha.Type = "Error by Qmubin";
+                                    ha.Note = "Appointment got saved by GC" + appointment.ID + " EventID:" + item.Id;
+                                    ha.Date = DateTime.Now;
+                                    ha.Business = JsonConvert.SerializeObject(fullEvent);
+                                    HistoryServices.Instance.SaveHistory(ha);
                                     //}
 
                                 }
@@ -647,7 +753,7 @@ namespace TheBookingPlatform.Controllers
                                 nhistory.Date = DateTime.Now;
                                 nhistory.Note = ex.Message;
                                 nhistory.Type = appointmentJson;
-                                nhistory.Business = "QASIM";
+                                nhistory.Type = "Error by Qmubin";
                                 HistoryServices.Instance.SaveHistory(nhistory);
                             }
 
@@ -662,6 +768,55 @@ namespace TheBookingPlatform.Controllers
                             appointment.DELETED = true;
                             appointment.DeletedTime = DateTime.Now.ToString();
                             AppointmentServices.Instance.UpdateAppointment(appointment);
+
+                            //history = new History();
+                            //history.Business = "New Recived ";
+                            //history.Note = JsonConvert.SerializeObject(item);
+                            //history.Date = DateTime.Now;
+                            //HistoryServices.Instance.SaveHistory(history);
+
+
+                            //string oldOrganizerEmail = item.Organizer.Email;
+
+                            //// Fetch the new event from the new organizer's calendar (using the organizer's email)
+                            //var newEmployee = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(oldOrganizerEmail);
+                            //if (newEmployee != null)
+                            //{
+                            //    var newEvents = GetEvents(googleCalendar.AccessToken,newEmployee.GoogleCalendarID, DateTime.Now.Date);
+
+                            //    // Iterate through new events to find the matching one
+                            //    foreach (var newEvent in newEvents.Items)
+                            //    {
+                            //        if (newEvent.Id == item.Id)
+                            //        {
+                            //            appointment = new Appointment();
+                            //            appointment.Date = newEvent.Start.DateTime.Value;
+                            //            appointment.Time = newEvent.Start.DateTime.Value;
+                            //            appointment.EndTime = newEvent.End.DateTime.Value;
+                            //            appointment.DepositMethod = "Pin";
+                            //            appointment.Notes = newEvent.Summary;
+                            //            var haveAnyappointment = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(googleCalendar.Business, employee.GoogleCalendarID, appointment.Date, appointment.Time, appointment.EndTime);
+                            //            //if (haveAnyappointment)
+                            //            //{
+                            //            TimeSpan duration = appointment.EndTime - appointment.Time;
+                            //            var service = ServiceServices.Instance.GetService(employee.Business, "ABSENSE").FirstOrDefault();
+                            //            if (service != null)
+                            //            {
+                            //                appointment.Service = service.ID.ToString();
+                            //            }
+                            //            appointment.Status = "Pending";
+                            //            appointment.Color = "#dff0e3";
+                            //            appointment.Business = employee.Business;
+                            //            appointment.EmployeeID = employee.ID;
+                            //            appointment.FromGCAL = true;
+                            //            appointment.IsPaid = true;
+                            //            appointment.ServiceDuration = duration.TotalMinutes + "mins";
+                            //            appointment.BookingDate = DateTime.Now;
+                            //            appointment.GoogleCalendarEventID = item.Id;
+                            //            AppointmentServices.Instance.SaveAppointment(appointment);
+                            //        }
+                            //    }
+                            //}
                         }
                     }
                 }
@@ -1828,7 +1983,8 @@ namespace TheBookingPlatform.Controllers
                             history.Note = "Appointment got deleted from GCalendar";
                             history.Business = appointment.Business;
                             HistoryServices.Instance.SaveHistory(history);
-                        }else
+                        }
+                        else
                         {
 
                             var history = new History();
@@ -2179,7 +2335,7 @@ namespace TheBookingPlatform.Controllers
                 // Retrieve Google Calendar services
 
 
-             
+
 
                 var url = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events";
                 var finalUrl = new Uri(url);
@@ -2315,7 +2471,13 @@ namespace TheBookingPlatform.Controllers
                 }
             }
             #endregion
-            var link = "http://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business, SentBy = "Cancellation" });
+            string scheme = Request.Url.Scheme;  // e.g., "http" or "https"
+            string host = Request.Url.Host;      // e.g., "localhost"
+            int port = Request.Url.Port;         // e.g., "44317"
+
+            // Construct the main domain URL
+            string mainDomain = $"{scheme}://{host}:{port}/";
+            var link = mainDomain + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business, SentBy = "Cancellation" });
             return Json(new { session = link });
 
         }
@@ -2691,7 +2853,7 @@ namespace TheBookingPlatform.Controllers
                         var history = new History();
                         history.EmployeeName = employee.Name;
                         history.CustomerName = customer.FirstName + " " + customer.LastName;
-                        history.Note = "Appointment ID:"+appointment.ID+"   Online Appointment was created for " + history.CustomerName + "";
+                        history.Note = "Appointment ID:" + appointment.ID + "   Online Appointment was created for " + history.CustomerName + "";
                         history.Date = DateTime.Now;
                         history.Business = appointment.Business;
                         history.Type = "General";
@@ -3482,16 +3644,21 @@ namespace TheBookingPlatform.Controllers
                         WaitingListServices.Instance.SaveWaitingList(waitingList);
 
                     }
+                    string scheme = Request.Url.Scheme;  // e.g., "http" or "https"
+                    string host = Request.Url.Host;      // e.g., "localhost"
+                    int port = Request.Url.Port;         // e.g., "44317"
 
+                    // Construct the main domain URL
+                    string mainDomain = $"{scheme}://{host}:{port}/";
                     if (CustomerFound)
                     {
 
-                        var link = "http://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, businessName = company.Business, WaitingList = "Yes" });
+                        var link = mainDomain + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, businessName = company.Business, WaitingList = "Yes" });
                         return Json(new { session = link, });
                     }
                     else
                     {
-                        var link = "http://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = 0, businessName = company.Business, WaitingList = "Yes" });
+                        var link = mainDomain + Url.Action("CustomerProfile", "Booking", new { CustomerID = 0, businessName = company.Business, WaitingList = "Yes" });
                         return Json(new { session = link });
 
                     }
@@ -3581,8 +3748,13 @@ namespace TheBookingPlatform.Controllers
                         WaitingListServices.Instance.SaveWaitingList(waitingList);
 
                     }
+                    string scheme = Request.Url.Scheme;  // e.g., "http" or "https"
+                    string host = Request.Url.Host;      // e.g., "localhost"
+                    int port = Request.Url.Port;         // e.g., "44317"
 
-                    var link = "http://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, businessName = company.Business, WaitingList = "Yes" });
+                    // Construct the main domain URL
+                    string mainDomain = $"{scheme}://{host}:{port}/";
+                    var link = mainDomain + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, businessName = company.Business, WaitingList = "Yes" });
                     return Json(new { session = link, });
                 }
 
@@ -4426,7 +4598,7 @@ namespace TheBookingPlatform.Controllers
                                                             TypeOfChange = TypeOfChange,
                                                             HaveDiscount = true,
                                                             Percentage = discountpercentage,
-                                                            EmployeeID= EmployeeID,
+                                                            EmployeeID = EmployeeID,
                                                             PriceChangeID = ChangeID,
                                                             EmpHaveDiscount = true,
                                                             EmpPercentage = employeePriceChange.Percentage,
@@ -4437,7 +4609,7 @@ namespace TheBookingPlatform.Controllers
                                                     }
                                                     else
                                                     {
-                                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                     }
 
                                                 }
@@ -4452,7 +4624,7 @@ namespace TheBookingPlatform.Controllers
                                                             HaveDiscount = false,
                                                             Percentage = discountpercentage,
                                                             PriceChangeID = 0,
-                                                            EmployeeID= EmployeeID,
+                                                            EmployeeID = EmployeeID,
                                                             EmpHaveDiscount = true,
                                                             EmpPercentage = employeePriceChange.Percentage,
                                                             EmpPriceChangeID = employeePriceChange.ID,
@@ -4462,14 +4634,14 @@ namespace TheBookingPlatform.Controllers
                                                     }
                                                     else
                                                     {
-                                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                     }
 
                                                 }
                                             }
                                             else
                                             {
-                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
 
                                             }
                                         }
@@ -4604,7 +4776,7 @@ namespace TheBookingPlatform.Controllers
                                                     Percentage = discountpercentage,
                                                     PriceChangeID = ChangeID,
                                                     EmpHaveDiscount = true,
-                                                    EmployeeID= EmployeeID,
+                                                    EmployeeID = EmployeeID,
                                                     EmpPercentage = employeePriceChange.Percentage,
                                                     EmpPriceChangeID = employeePriceChange.ID,
                                                     EmpTypeOfChange = employeePriceChange.TypeOfChange
@@ -4613,7 +4785,7 @@ namespace TheBookingPlatform.Controllers
                                             }
                                             else
                                             {
-                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                             }
                                         }
                                         else
@@ -4628,7 +4800,7 @@ namespace TheBookingPlatform.Controllers
                                                     Percentage = discountpercentage,
                                                     PriceChangeID = 0,
                                                     EmpHaveDiscount = true,
-                                                    EmployeeID= EmployeeID,
+                                                    EmployeeID = EmployeeID,
                                                     EmpPercentage = employeePriceChange.Percentage,
                                                     EmpPriceChangeID = employeePriceChange.ID,
                                                     EmpTypeOfChange = employeePriceChange.TypeOfChange
@@ -4637,7 +4809,7 @@ namespace TheBookingPlatform.Controllers
                                             }
                                             else
                                             {
-                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID= EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                             }
 
                                         }
@@ -4654,7 +4826,7 @@ namespace TheBookingPlatform.Controllers
                                                 HaveDiscount = false,
                                                 Percentage = discountpercentage,
                                                 PriceChangeID = 0,
-                                                EmployeeID= EmployeeID,
+                                                EmployeeID = EmployeeID,
                                                 EmpHaveDiscount = true,
                                                 EmpPercentage = employeePriceChange.Percentage,
                                                 EmpPriceChangeID = employeePriceChange.ID,
@@ -4664,12 +4836,12 @@ namespace TheBookingPlatform.Controllers
                                         }
                                         else
                                         {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                         }
 
                                     }
                                 }
-                                
+
                             }
 
                         }
@@ -4789,7 +4961,7 @@ namespace TheBookingPlatform.Controllers
                                                                 HaveDiscount = true,
                                                                 Percentage = discountpercentage,
                                                                 PriceChangeID = ChangeID,
-                                                                EmployeeID= EmployeeID,
+                                                                EmployeeID = EmployeeID,
                                                                 EmpHaveDiscount = true,
                                                                 EmpPercentage = employeePriceChange.Percentage,
                                                                 EmpPriceChangeID = employeePriceChange.ID,
@@ -4799,7 +4971,7 @@ namespace TheBookingPlatform.Controllers
                                                         }
                                                         else
                                                         {
-                                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID=EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                         }
                                                     }
                                                     else
@@ -4814,7 +4986,7 @@ namespace TheBookingPlatform.Controllers
                                                                 Percentage = discountpercentage,
                                                                 PriceChangeID = 0,
                                                                 EmpHaveDiscount = true,
-                                                                EmployeeID =EmployeeID,
+                                                                EmployeeID = EmployeeID,
                                                                 EmpPercentage = employeePriceChange.Percentage,
                                                                 EmpPriceChangeID = employeePriceChange.ID,
                                                                 EmpTypeOfChange = employeePriceChange.TypeOfChange
@@ -4823,7 +4995,7 @@ namespace TheBookingPlatform.Controllers
                                                         }
                                                         else
                                                         {
-                                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                         }
 
                                                     }
@@ -4841,7 +5013,7 @@ namespace TheBookingPlatform.Controllers
                                                             Percentage = discountpercentage,
                                                             PriceChangeID = 0,
                                                             EmpHaveDiscount = true,
-                                                            EmployeeID= EmployeeID,
+                                                            EmployeeID = EmployeeID,
                                                             EmpPercentage = employeePriceChange.Percentage,
                                                             EmpPriceChangeID = employeePriceChange.ID,
                                                             EmpTypeOfChange = employeePriceChange.TypeOfChange
@@ -4850,7 +5022,7 @@ namespace TheBookingPlatform.Controllers
                                                     }
                                                     else
                                                     {
-                                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID= EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                     }
 
                                                 }
@@ -5067,16 +5239,16 @@ namespace TheBookingPlatform.Controllers
 
                                         if (ChangeFound)
                                         {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {EmployeeID=emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
 
                                         }
                                         else
                                         {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID=emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
 
                                         }
                                     }
-                                   
+
 
                                 }
 
@@ -5360,7 +5532,7 @@ namespace TheBookingPlatform.Controllers
                                                                         }
                                                                         else
                                                                         {
-                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot,EmployeeID= emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                                         }
                                                                     }
                                                                     else
@@ -5384,7 +5556,7 @@ namespace TheBookingPlatform.Controllers
                                                                         }
                                                                         else
                                                                         {
-                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot,EmployeeID= emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                         }
 
                                                                     }
@@ -5410,7 +5582,7 @@ namespace TheBookingPlatform.Controllers
                                                                     }
                                                                     else
                                                                     {
-                                                                        NewiteratedEmployeeList.Add(new TimeSlotModel { EmployeeID= emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                        NewiteratedEmployeeList.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                     }
                                                                 }
                                                             }
@@ -5557,7 +5729,7 @@ namespace TheBookingPlatform.Controllers
                                                                 }
                                                                 else
                                                                 {
-                                                                    NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID =emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                                    NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                                 }
                                                             }
                                                             else
@@ -5581,7 +5753,7 @@ namespace TheBookingPlatform.Controllers
                                                                 }
                                                                 else
                                                                 {
-                                                                    NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot,EmployeeID= emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                    NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                 }
 
                                                             }
@@ -5607,7 +5779,7 @@ namespace TheBookingPlatform.Controllers
                                                             }
                                                             else
                                                             {
-                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot,EmployeeID= emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                             }
                                                         }
                                                     }
@@ -5742,7 +5914,7 @@ namespace TheBookingPlatform.Controllers
                                                                             }
                                                                             else
                                                                             {
-                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { EmployeeID=emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                                             }
                                                                         }
                                                                         else
@@ -5766,7 +5938,7 @@ namespace TheBookingPlatform.Controllers
                                                                             }
                                                                             else
                                                                             {
-                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel {EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                             }
 
                                                                         }
@@ -5782,7 +5954,7 @@ namespace TheBookingPlatform.Controllers
                                                                                 HaveDiscount = false,
                                                                                 Percentage = discountpercentage,
                                                                                 PriceChangeID = 0,
-                                                                                EmployeeID= emp.ID,
+                                                                                EmployeeID = emp.ID,
                                                                                 EmpHaveDiscount = true,
                                                                                 EmpPercentage = employeePriceChange.Percentage,
                                                                                 EmpPriceChangeID = employeePriceChange.ID,
@@ -5792,7 +5964,13 @@ namespace TheBookingPlatform.Controllers
                                                                         }
                                                                         else
                                                                         {
-                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0,
+                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel
+                                                                            {
+                                                                                TimeSlot = timeSlot,
+                                                                                TypeOfChange = TypeOfChange,
+                                                                                HaveDiscount = false,
+                                                                                Percentage = discountpercentage,
+                                                                                PriceChangeID = 0,
                                                                                 EmployeeID = emp.ID,
                                                                             });
                                                                         }
