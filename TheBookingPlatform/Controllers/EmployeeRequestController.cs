@@ -949,11 +949,11 @@ namespace TheBookingPlatform.Controllers
         }
         public async Task<List<GCalendars>> GetCalendars()
         {
-            var ListofGCalendar = new List<GCalendars>();
 
             var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
             var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(loggedInUser.Company);
 
+            var ListofGCalendar = new List<GCalendars>();
             var CLIENT_ID = "201633868472-3sf5q4hbiqupcf0smo6auch9bku6bech.apps.googleusercontent.com";
             var API_KEY = "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc";
             var clientScret = "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";

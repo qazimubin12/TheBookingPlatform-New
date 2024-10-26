@@ -84,7 +84,7 @@ namespace TheBookingPlatform.Controllers
                 var categories = ServicesCategoriesServices.Instance.GetServiceCategories(SearchTerm).Where(x => x.Business == LoggedInUser.Company).OrderBy(x => x.DisplayOrder).ToList();
                 foreach (var item in categories)
                 {
-                    var ServicesWRTCategory = ServiceServices.Instance.GetService().Where(x => x.Category == item.Name && x.Business == LoggedInUser.Company).OrderBy(x => x.DisplayOrder).ToList();
+                    var ServicesWRTCategory = ServiceServices.Instance.GetService().Where(x => x.Category.Trim() == item.Name.Trim() && x.Business == LoggedInUser.Company).OrderBy(x => x.DisplayOrder).ToList();
                     ServicesList.Add(new ServiceModel { ServiceCategory = item, Services = ServicesWRTCategory, Company = company });
                 }
             }
@@ -93,7 +93,7 @@ namespace TheBookingPlatform.Controllers
                 var categories = ServicesCategoriesServices.Instance.GetServiceCategories(SearchTerm).OrderBy(x => x.DisplayOrder).ToList();
                 foreach (var item in categories)
                 {
-                    var ServicesWRTCategory = ServiceServices.Instance.GetService().Where(x => x.Category == item.Name).OrderBy(x => x.DisplayOrder).ToList();
+                    var ServicesWRTCategory = ServiceServices.Instance.GetService().Where(x => x.Category.Trim() == item.Name.Trim()).OrderBy(x => x.DisplayOrder).ToList();
                     ServicesList.Add(new ServiceModel { ServiceCategory = item, Services = ServicesWRTCategory, Company = company });
                 }
             }

@@ -176,6 +176,24 @@ namespace TheBookingPlatform.Controllers
             model.NoOfRebookReminderClicked = 0;
             model.NoOfRebookReminderOpened = 0;
             model.AppointmentsByRebook = 0;
+
+            var GetDtos = AppointmentServices.Instance.GetFilteredAppointments();
+            foreach (var item in GetDtos)
+            {
+                var appointment = AppointmentServices.Instance.GetAppointment(item.ID);
+                if (appointment != null)
+                {
+                    if(appointment.Service.Split(',').ToList().Count() != appointment.ServiceDiscount.Split(',').ToList().Count())
+                    {
+                        string DiscountData = "";
+                        int serviceCount = appointment.Service.Split(',').Length;
+                        DiscountData = string.Join(",", Enumerable.Repeat("0", serviceCount));
+                        appointment.ServiceDiscount = DiscountData;
+                        AppointmentServices.Instance.UpdateAppointment(appointment);
+                    }
+                }
+            }
+
             return View(model);
         }
 

@@ -122,6 +122,7 @@ namespace TheBookingPlatform.ViewModels
         public History History { get; set; }
     }
 
+  
     public class HomeViewModel
     {
         public string Error { get; set; }

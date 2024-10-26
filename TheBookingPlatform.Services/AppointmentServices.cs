@@ -89,6 +89,46 @@ namespace TheBookingPlatform.Services
 
             }
         }
+        public class AppointmentDto
+        {
+            public int ID { get; set; }
+            public string Business { get; set; }
+            public string Service { get; set; }
+            public string ServiceDiscount { get; set; }
+            public string ServiceDuration { get; set; }
+
+        }
+        public List<AppointmentDto> GetFilteredAppointments()
+        {
+            using (var context = new DSContext())
+            {
+                var result = context.Appointments
+                    .Where(a => a.FromGCAL == false && a.Service != null &&
+                        // Count of commas in Service
+                        (a.Service.Length - a.Service.Replace(",", "").Length) !=
+                        // Count of commas in ServiceDuration
+                        (a.ServiceDuration.Length - a.ServiceDuration.Replace(",", "").Length)
+
+                        || // OR condition
+
+                        // Count of commas in Service
+                        (a.Service.Length - a.Service.Replace(",", "").Length) !=
+                        // Count of commas in ServiceDiscount
+                        (a.ServiceDiscount.Length - a.ServiceDiscount.Replace(",", "").Length)
+                    )
+                    .Select(a => new AppointmentDto
+                    {
+                        ID = a.ID,
+                        Business = a.Business,
+                        Service = a.Service,
+                        ServiceDiscount = a.ServiceDiscount,
+                        ServiceDuration = a.ServiceDuration
+                    })
+                    .ToList();
+
+                return result;
+            }
+        }
 
 
 
