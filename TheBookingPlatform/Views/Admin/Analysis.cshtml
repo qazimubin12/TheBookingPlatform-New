@@ -34,6 +34,14 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0
     }
+    .dropdown-menu-hide {
+        display: none !important; /* Initially hidden */
+    }
+
+    .dropdown-menu-show {
+        display: block !important; /* Show dropdown when class is added */
+    }
+
 
     .btn-group .dropdown-toggle:active, .btn-group.open .dropdown-toggle {
         outline: 0
@@ -631,7 +639,7 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <div style="margin-bottom:-10px;"  class="form-group">
+                            <div style="margin-bottom:-10px;" id="SelectedEmployeeIDsGR"  class="form-group">
                                 @*<label class="label-control">Choose Employees</label>*@
                                 @*<select></select>*@
 
@@ -664,7 +672,7 @@
 
                         </div>
                         <div class="col-md-2">
-                            <div style="margin-bottom:-10px;"  class="form-group">
+                            <div style="margin-bottom:-10px;" id="SelectedStatusGR"  class="form-group">
                                 @*<label class="label-control">Choose Status</label>*@
                                 <select class="selectpicker" id="SelectedStatuses" name="SelectedStatuses" data-style="select-with-transition" multiple title="Choose Status" data-size="7">
                                     @foreach (var item in Model.Statuses)
@@ -1593,35 +1601,69 @@
         }
     });
     $(document).ready(function () {
-        updateSubmitButtonState();
+        //updateSubmitButtonState();
 
 
 
-        $("#SelectedStatuses, #SelectedEmployeeIds").change(function () {
-            updateSubmitButtonState();
-        });
+        //$("#SelectedStatuses, #SelectedEmployeeIds").change(function () {
+        //    updateSubmitButtonState();
+        //});
 
-        function updateSubmitButtonState() {
-            var employeeIdsSelected = $("#SelectedEmployeeIds option:selected").length > 0;
-            var statusesSelected = $("#SelectedStatuses option:selected").length > 0;
+        //function updateSubmitButtonState() {
+        //    var employeeIdsSelected = $("#SelectedEmployeeIds option:selected").length > 0;
+        //    var statusesSelected = $("#SelectedStatuses option:selected").length > 0;
 
-            if (employeeIdsSelected && statusesSelected) {
-                // At least one option is selected for both fields
-                $("#SubmitBtn").removeAttr("disabled");
-                $("#errorText").val('');
-            } else {
-                // No option is selected for either field
-                $("#SubmitBtn").attr("disabled", "disabled");
-                if (!employeeIdsSelected) {
-                    $("#errorText").val('Kindly select at least one employee');
-                } else {
-                    $("#errorText").val('Kindly select at least one status');
-                }
-            }
+        //    if (employeeIdsSelected && statusesSelected) {
+        //        // At least one option is selected for both fields
+        //        $("#SubmitBtn").removeAttr("disabled");
+        //        $("#errorText").val('');
+        //    } else {
+        //        // No option is selected for either field
+        //        $("#SubmitBtn").attr("disabled", "disabled");
+        //        if (!employeeIdsSelected) {
+        //            $("#errorText").val('Kindly select at least one employee');
+        //        } else {
+        //            $("#errorText").val('Kindly select at least one status');
+        //        }
+        //    }
+        //}
+    });
+    $('#SelectedEmployeeIDsGR').on('click', function (event) {
+        const target = $(event.target); // Get the clicked element
+
+        // Check if the clicked element is the dropdown button
+        if (target.is('.btn[data-id="SelectedEmployeeIDs"]') || target.parents('.btn[data-id="SelectedEmployeeIDs"]').length) {
+            // Toggle the dropdown menu visibility
+            target.closest('.btn-group').find('.dropdown-menu').toggleClass('dropdown-menu-show');
+        } else {
+            // If clicked outside, hide the dropdown menu
+            $('.dropdown-menu-show').removeClass('dropdown-menu-show');
         }
+
+        event.stopPropagation(); // Stop the click event from propagating to avoid unintended behaviors
     });
 
 
+    $('#SelectedStatusGR').on('click', function (event) {
+        const target = $(event.target); // Get the clicked element
+
+        // Check if the clicked element is the dropdown button
+        if (target.is('.btn[data-id="SelectedStatuses"]') || target.parents('.btn[data-id="SelectedStatuses"]').length) {
+            // Toggle the dropdown menu visibility
+            target.closest('.btn-group').find('.dropdown-menu').toggleClass('dropdown-menu-show');
+        } else {
+            // If clicked outside, hide the dropdown menu
+            $('.dropdown-menu-show').removeClass('dropdown-menu-show');
+        }
+
+        event.stopPropagation(); // Stop the click event from propagating to avoid unintended behaviors
+    });
+
+    // Hide the dropdown menu when clicking outside
+    $(document).on('click', function () {
+        $('.dropdown-menu-show').removeClass('dropdown-menu-show');
+    });
+   
 
 
 

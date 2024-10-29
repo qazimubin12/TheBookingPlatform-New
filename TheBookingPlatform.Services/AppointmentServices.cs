@@ -648,6 +648,8 @@ namespace TheBookingPlatform.Services
                   && !AbsenseServiceIDs.Contains(x.Service)
                   && x.Date >= StartDate && x.Date <= EndDate)
       .Select(X => X.Deposit);
+
+
                 if (totalDeposit.Any())
                 {
                     // If there are matching appointments, calculate the sum
@@ -658,9 +660,6 @@ namespace TheBookingPlatform.Services
                     // If there are no matching appointments, return 0
                     return 0;
                 }
-                //return context.Appointments.AsNoTracking().Where(x => x.Business == Business && x.DELETED == false && x.IsCancelled == IsCancelled
-                //                           && x.Date >= StartDate && x.Date <= EndDate && x.DepositMethod == "Online"
-                //                           && !AbsenseServiceIDs.Contains(x.Service)).Select(X => X.Deposit).Sum();
             }
         }
         public float GetPinDeposit(DateTime StartDate, DateTime EndDate, string Business, bool IsCancelled, List<int> SelectedEmployeeIds, List<string> AbsenseServiceIDs)
@@ -720,7 +719,7 @@ namespace TheBookingPlatform.Services
                                 x.DELETED == Deleted &&
                                 x.CustomerID == customerID &&
                                 x.IsCancelled == isCancelled &&
-                                x.Date >= daysAgo)
+                                x.Date <= daysAgo)
                     .Select(x => x.CustomerID)
                     .Distinct() // Optional: to ensure unique CustomerIDs
                     .ToList();
@@ -735,7 +734,7 @@ namespace TheBookingPlatform.Services
                     .Where(x => x.Business == company &&
                                 x.DELETED == Deleted &&
                                 x.IsCancelled == isCancelled &&
-                                x.Date > DateTime.Now)
+                                x.Date >= DateTime.Now)
                     .Select(x => x.CustomerID)
                     .Distinct() // Optional: to ensure unique CustomerIDs
                     .ToList();
@@ -784,6 +783,17 @@ namespace TheBookingPlatform.Services
                 return context.Appointments.AsNoTracking().Where(x => x.Business == company && x.DELETED == isDeleted && x.IsCancelled == IsCancelled && x.EmployeeID == employeeID && x.Date >= startDate.Date && x.Date <= endDate.Date).ToList();
 
             }
+        }
+
+        public List<Appointment> GetAllAppointmentWRTBusiness(DateTime startDate, DateTime endDate, string company, bool isCancelled, List<int> selectedEmployees)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Appointments.AsNoTracking().Where(x => x.Business == company && x.DELETED == false && x.IsCancelled == isCancelled && selectedEmployees.Contains(x.EmployeeID) && x.Color.Trim() != "darkgray" && x.Date >= startDate.Date && x.Date <= endDate.Date).ToList();
+
+            }
+
         }
     }
 }

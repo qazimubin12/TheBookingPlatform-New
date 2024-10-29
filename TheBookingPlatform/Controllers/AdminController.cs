@@ -215,7 +215,7 @@ namespace TheBookingPlatform.Controllers
             AnalysisViewModel model = new AnalysisViewModel();
             var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
 
-            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company, "");
+            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company,true);
             var listOfStrings = new List<string>
             {
                 "",
@@ -231,11 +231,24 @@ namespace TheBookingPlatform.Controllers
             model.EndDate = EndDate;
             var selectedEmployees = SelectedEmployeeIDs.Select(x => int.Parse(x)).ToList();
             var AbsenseServiceIds = ServiceServices.Instance.GetAbsenseServiceIDs(loggedInUser.Company);
-            model.SumOfOnlineDeposit = AppointmentServices.Instance.GetOnlineDeposit(StartDate, EndDate, loggedInUser.Company, IsCancelled, selectedEmployees, AbsenseServiceIds);
-            model.SumOfCashDeposit = AppointmentServices.Instance.GetCashDeposit(StartDate, EndDate, loggedInUser.Company, IsCancelled, selectedEmployees, AbsenseServiceIds);
-            model.SumOfPinDeposit = AppointmentServices.Instance.GetPinDeposit(StartDate, EndDate, loggedInUser.Company, IsCancelled, selectedEmployees, AbsenseServiceIds);
 
-            var servicesAll = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(loggedInUser.Company, false, selectedEmployees, StartDate, EndDate, AbsenseServiceIds, IsCancelled, SelectedStatuses);
+            var AllAppointmentsWithabsenceIDsFilters = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(StartDate, EndDate, loggedInUser.Company, IsCancelled, selectedEmployees);
+            model.SumOfOnlineDeposit = AllAppointmentsWithabsenceIDsFilters.Where(x => x.DepositMethod == "Online").Sum(x => x.Deposit);
+            model.SumOfCashDeposit = AllAppointmentsWithabsenceIDsFilters.Where(x => x.DepositMethod == "Cash").Sum(x => x.Deposit);
+            model.SumOfPinDeposit = AllAppointmentsWithabsenceIDsFilters.Where(x => x.DepositMethod == "Pin").Sum(x => x.Deposit);
+
+            var servicesAll = AllAppointmentsWithabsenceIDsFilters;
+
+
+
+
+
+
+
+
+
+
+
             float ServiceCost = 0;
             float TotalOnlinePriceChange = 0;
             float TotalEmployeePriceChange = 0;
@@ -264,88 +277,97 @@ namespace TheBookingPlatform.Controllers
             model.NumberOfClientsOnEachDays = dayWiseClientVisitation;
             var ListOfOnlinePriceChange = new List<OnlinePriceChangeModel>();
             var ListOfEmployeePriceChange = new List<EmployeePriceChangeModel>();
-            foreach (var service in servicesAll)
+            try
             {
-                if (service.FromGCAL)
+                foreach (var service in servicesAll)
                 {
-                    continue;
-                }
-                var servicesplit = service.Service.Split(',').Select(x => int.Parse(x)).ToList();
-                var PriceChange = PriceChangeServices.Instance.GetPriceChange(service.OnlinePriceChange);
-                var EmployeePriceChange = EmployeePriceChangeServices.Instance.GetEmployeePriceChange(service.EmployeePriceChange);
-
-                foreach (var item in servicesplit)
-                 {
-                    var ServicePrice = ServiceServices.Instance.GetService(item).Price;
-                    float dailySale = 0;
-                    TotalOnlinePriceChange = 0;
-                    TotalEmployeePriceChange = 0;
-                    if (PriceChange != null)
+                    if (service.FromGCAL)
                     {
-                        if (PriceChange.TypeOfChange == "Price Increase")
-                        {
-                            var PriceChangeServiced = ServicePrice * (PriceChange.Percentage / 100);
-                            TotalOnlinePriceChange += PriceChangeServiced;
-                            ListOfOnlinePriceChange.Add(new OnlinePriceChangeModel { Amount = TotalOnlinePriceChange, Type = PriceChange.TypeOfChange });
-                            TotalFinalCost += ServicePrice + PriceChangeServiced;
-                            dailySale = ServicePrice + PriceChangeServiced;
+                        continue;
+                    }
+                    var servicesplit = service.Service.Split(',').Select(x => int.Parse(x)).ToList();
+                    var PriceChange = PriceChangeServices.Instance.GetPriceChange(service.OnlinePriceChange);
+                    var EmployeePriceChange = EmployeePriceChangeServices.Instance.GetEmployeePriceChange(service.EmployeePriceChange);
 
+                    foreach (var item in servicesplit)
+                    {
+                        var ServicePrice = ServiceServices.Instance.GetService(item).Price;
+                        float dailySale = 0;
+                        TotalOnlinePriceChange = 0;
+                        TotalEmployeePriceChange = 0;
+                        if (PriceChange != null)
+                        {
+                            if (PriceChange.TypeOfChange == "Price Increase")
+                            {
+                                var PriceChangeServiced = ServicePrice * (PriceChange.Percentage / 100);
+                                TotalOnlinePriceChange += PriceChangeServiced;
+                                ListOfOnlinePriceChange.Add(new OnlinePriceChangeModel { Amount = TotalOnlinePriceChange, Type = PriceChange.TypeOfChange });
+                                TotalFinalCost += ServicePrice + PriceChangeServiced;
+                                dailySale = ServicePrice + PriceChangeServiced;
+
+                            }
+                            else
+                            {
+                                var PriceChangeServiced = ServicePrice * (PriceChange.Percentage / 100);
+                                TotalOnlinePriceChange += PriceChangeServiced;
+                                ListOfOnlinePriceChange.Add(new OnlinePriceChangeModel { Amount = TotalOnlinePriceChange, Type = PriceChange.TypeOfChange });
+                                TotalFinalCost += ServicePrice - PriceChangeServiced;
+                                dailySale = ServicePrice - PriceChangeServiced;
+                            }
                         }
                         else
                         {
-                            var PriceChangeServiced = ServicePrice * (PriceChange.Percentage / 100);
-                            TotalOnlinePriceChange += PriceChangeServiced;
-                            ListOfOnlinePriceChange.Add(new OnlinePriceChangeModel { Amount = TotalOnlinePriceChange, Type = PriceChange.TypeOfChange });
-                            TotalFinalCost += ServicePrice - PriceChangeServiced;
-                            dailySale = ServicePrice - PriceChangeServiced;
+                            dailySale = ServicePrice;
+
                         }
-                    }
-                    else
-                    {
-                        dailySale = ServicePrice;
 
-                    }
-
-                    if (EmployeePriceChange != null)
-                    {
-                        if (EmployeePriceChange.TypeOfChange == "Price Increase")
+                        if (EmployeePriceChange != null)
                         {
-                            var PriceChangeServiced = ServicePrice * (EmployeePriceChange.Percentage / 100);
-                            TotalEmployeePriceChange += PriceChangeServiced;
-                            ListOfEmployeePriceChange.Add(new EmployeePriceChangeModel { Amount = TotalEmployeePriceChange, Type = EmployeePriceChange.TypeOfChange });
+                            if (EmployeePriceChange.TypeOfChange == "Price Increase")
+                            {
+                                var PriceChangeServiced = ServicePrice * (EmployeePriceChange.Percentage / 100);
+                                TotalEmployeePriceChange += PriceChangeServiced;
+                                ListOfEmployeePriceChange.Add(new EmployeePriceChangeModel { Amount = TotalEmployeePriceChange, Type = EmployeePriceChange.TypeOfChange });
 
-                            dailySale = ServicePrice + PriceChangeServiced;
+                                dailySale = ServicePrice + PriceChangeServiced;
 
 
+                            }
+                            else
+                            {
+                                var PriceChangeServiced = ServicePrice * (EmployeePriceChange.Percentage / 100);
+                                TotalEmployeePriceChange += PriceChangeServiced;
+                                ListOfEmployeePriceChange.Add(new EmployeePriceChangeModel { Amount = TotalEmployeePriceChange, Type = EmployeePriceChange.TypeOfChange });
+                                dailySale = ServicePrice + PriceChangeServiced;
+
+
+                            }
                         }
                         else
                         {
-                            var PriceChangeServiced = ServicePrice * (EmployeePriceChange.Percentage / 100);
-                            TotalEmployeePriceChange += PriceChangeServiced;
-                            ListOfEmployeePriceChange.Add(new EmployeePriceChangeModel { Amount = TotalEmployeePriceChange, Type = EmployeePriceChange.TypeOfChange });
-                            dailySale = ServicePrice + PriceChangeServiced;
-
+                            dailySale = ServicePrice;
 
                         }
-                    }
-                    else
-                    {
-                        dailySale = ServicePrice;
+
+                        ServiceCost += ServicePrice;
+                        var existingDaySale = dayWiseSales.FirstOrDefault(x => x.Date.Day == service.Date.Day && x.Date.Month == service.Date.Month && x.Date.Year == service.Date.Year);
+                        if (existingDaySale != null)
+                        {
+                            existingDaySale.DaySale += dailySale;
+                        }
+                        else
+                        {
+                            dayWiseSales.Add(new DayWiseSale { Date = service.Date.Date, DaySale = dailySale });
+                        }
 
                     }
-
-                    ServiceCost += ServicePrice;
-                    var existingDaySale = dayWiseSales.FirstOrDefault(x => x.Date.Day == service.Date.Day && x.Date.Month == service.Date.Month && x.Date.Year == service.Date.Year);
-                    if (existingDaySale != null)
-                    {
-                        existingDaySale.DaySale += dailySale;
-                    }
-                    else
-                    {
-                        dayWiseSales.Add(new DayWiseSale { Date = service.Date.Date, DaySale = dailySale });
-                    }
-
                 }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
             model.NoShowAppointmentsCount = servicesAll.Where(X => X.Status == "No Show" && X.FromGCAL == false).Count();
 

@@ -89,6 +89,8 @@ namespace TheBookingPlatform.Services
             }
         }
 
+       
+
         public Customer GetCustomerWRTBusiness(string Business, string Email,string Password)
         {
             using (var context = new DSContext())
