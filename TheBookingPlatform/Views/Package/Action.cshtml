@@ -1,10 +1,25 @@
 ﻿@model TheBookingPlatform.ViewModels.PackageActionViewModel
 @{
     ViewBag.Title = "Action";
-    
+
 }
 
 
+<head>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+          integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+            integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+
+</head>
 <style>
 
 
@@ -13,6 +28,16 @@
         line-height: 1.428571429;
         color: black;
         font-weight: 400;
+    }
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+    .selectize-dropdown {
+        width: auto !important;
+        background: white !important;
     }
 
     .checkbox label {
@@ -24,7 +49,7 @@
 <form id="actionForm">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-body">
                 @if (Model.ID != 0)
                 {
                     <h4 class="card-title">
@@ -37,64 +62,75 @@
                         Create Package
                     </h4>
                 }
-            </div>
-
-
-            <div class="card-content">
-                <div style="display:flex;align-items:end;" class="row">
+                <div class="row">
                     <div class="col-md-6">
                         <input type="hidden" id="ID" value="@Model.ID" />
                         <div class="form-group">
-                            <label>
-                                Name
-                            </label>
-                            <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                            <div class="input-group input-group-dynamic">
+                                <label>
+                                    Name
+                                </label>
+                                <input type="text" value="@Model.Name" class="form-control" name="Name" />
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                Description
-                            </label>
-                            <input type="text" value="@Model.Description" class="form-control" name="Description" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Description
+                                </label>
+                                <input type="text" value="@Model.Description" class="form-control" name="Description" />
+                            </div>
+                            </div>
                         </div>
-                    </div>
 
                 </div>
 
-                <div style="display:flex;vertical-align:middle;" class="row">
+                <div  class="row">
 
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                Price
-                            </label>
-                            <input type="number" value="@Model.Price" class="form-control" name="Price" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Price
+                                </label>
+                                <input type="number" value="@Model.Price" class="form-control" name="Price" />
 
 
+                            </div>
+                            </div>
                         </div>
-                    </div>
                     <div class="col-md-6">
+
                         <div class="form-group">
-                            <label>
-                                VAT
-                            </label>
-                            <input type="number" value="@Model.VAT" class="form-control" name="VAT" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    VAT
+                                </label>
+                                <input type="number" value="@Model.VAT" class="form-control" name="VAT" />
 
 
+                            </div>
+                            </div>
                         </div>
-                    </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                API Key
-                            </label>
-                            <input type="text" value="@Model.APIKEY" class="form-control" name="APIKEY" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    API Key
+                                </label>
+                                <input type="text" value="@Model.APIKEY" class="form-control" name="APIKEY" />
 
 
+                            </div>
                         </div>
                     </div>
 
@@ -105,19 +141,22 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>
-                                No of Users
-                            </label>
-                            <input type="number" value="@Model.NoOfUsers" class="form-control" name="NoOfUsers" />
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    No of Users
+                                </label>
+                                <input type="number" value="@Model.NoOfUsers" class="form-control" name="NoOfUsers" />
 
 
+                            </div>
+                            </div>
                         </div>
-                    </div>
                 </div>
                 <div class="row">
 
                     <div class="form-group" style="margin-left:1.5rem">
-                        <select class="selectpicker" data-style="select-with-transition" id="Features" name="Features" multiple title="Choose Features" data-size="7">
+                        <select class="chocho" id="Features" name="Features" multiple title="Choose Features" placeholder="Choose Features">
                             <option disabled>Choose Features </option>
                             @foreach (var item in Model.FeaturesList)
                             {
@@ -162,7 +201,7 @@
             </div>
 
 
-            
+
         </div>
     </div>
 </form>
@@ -172,10 +211,20 @@
 </div>
 
 
+<script>
+    $(function () {
+        $(".chocho").selectize({
+            plugins: ["restore_on_backspace", "clear_button"],
+            delimiter: " - ",
 
+            persist: false,
+            maxItems: null
+        });
+    });
+</script>
 
 <script>
-  
+
     $(document).ready(function () {
         $("#ActionBtn").click(function () {
             showLoadingSpinner();
@@ -199,7 +248,7 @@
                 });
         });
 
-        
+
 
     });
 
