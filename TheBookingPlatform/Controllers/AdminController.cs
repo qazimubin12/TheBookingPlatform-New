@@ -113,14 +113,123 @@ namespace TheBookingPlatform.Controllers
             }
         }
 
+        
+        public JsonResult GetLostClietCustomers(string FilterDuration)
+        {
+            var numberOfDays = 30;
+            var user = UserManager.FindById(User.Identity.GetUserId());
 
-        public ActionResult Dashboard()
+            if (FilterDuration != "")
+            {
+                switch (FilterDuration)
+                {
+                    case "30 days":
+                        numberOfDays = 30;
+                        break;
+                    case "60 days":
+                        numberOfDays = 60;
+                        break;
+                    case "3 months":
+                        numberOfDays = 90; // Approximate for 3 months
+                        break;
+                    case "6 months":
+                        numberOfDays = 180; // Approximate for 6 months
+                        break;
+                    case "1 year":
+                        numberOfDays = 365;
+                        break;
+                    case "2 years":
+                        numberOfDays = 730; // 2 * 365
+                        break;
+                    default:
+                        // Handle unexpected value or keep numberOfDays as 0
+                        break;
+                }
+
+                var currentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var CurrentDatePrev = currentDate.AddDays(-numberOfDays);
+                List<Customer> LostClientsList = new List<Customer>();
+                if (user != null)
+                {
+                    var customers = CustomerServices.Instance.GetCustomerWRTBusiness(user.Company);
+                    var lostClients = new List<int>();
+
+                    var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, CurrentDatePrev, 30, customers.Select(x => x.ID).ToList());
+                    LostClientsList = customers.Where(x => lostClientIds.Contains(x.ID)).ToList();                   
+                }
+                return Json(new { success = true, LostCustomers = LostClientsList }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success =false }, JsonRequestBehavior.AllowGet);
+
+            }
+        }
+
+        public ActionResult Dashboard(string FilterDuration = "")
         {
             AdminViewModel model = new AdminViewModel();
             var user = UserManager.FindById(User.Identity.GetUserId());
+            var numberOfDays = 30;
+            if (FilterDuration != "")
+            {
+                switch (FilterDuration)
+                {
+                    case "30 days":
+                        numberOfDays = 30;
+                        break;
+                    case "60 days":
+                        numberOfDays = 60;
+                        break;
+                    case "3 months":
+                        numberOfDays = 90; // Approximate for 3 months
+                        break;
+                    case "6 months":
+                        numberOfDays = 180; // Approximate for 6 months
+                        break;
+                    case "1 year":
+                        numberOfDays = 365;
+                        break;
+                    case "2 years":
+                        numberOfDays = 730; // 2 * 365
+                        break;
+                    default:
+                        // Handle unexpected value or keep numberOfDays as 0
+                        break;
+                }
+            }
+            int LostClients = 0;
+            int ReturnedClients = 0;
+            int TotalNewClients = 0;
+            var currentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var CurrentDatePrev = currentDate.AddDays(-numberOfDays);
             if (user != null)
             {
+                var customers = CustomerServices.Instance.GetCustomerWRTBusiness(user.Company);
+                var lostClients = new List<int>();
 
+                var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, CurrentDatePrev,30, customers.Select(x=>x.ID).ToList());
+                //LostClientsList = customers.Where(x=> lostClientIds.Contains(x.ID)).ToList();
+
+
+                LostClients = lostClientIds.Count;
+                foreach (var item in customers)
+                {
+                    if (item.DateAdded.Year == currentDate.Year && item.DateAdded.Month == currentDate.Month)
+                    {
+                        TotalNewClients++;
+                    }
+                    if (AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(user.Company, false, false, DateTime.Now, item.ID))
+                    {
+                        ReturnedClients++;
+                    }
+                }
+
+                
+                model.ReturnedClients = ReturnedClients;
+                model.NewClients = TotalNewClients;
+                model.FilterDuration = FilterDuration;
+                model.LostClients = LostClients;
                 model.SignedInUser = user;
                 if (!User.IsInRole("Super Admin"))
                 {
@@ -256,8 +365,8 @@ namespace TheBookingPlatform.Controllers
             float TotalFinalCost = 0;
             var dayWiseSales = new List<DayWiseSale>();
             var dayWiseClientVisitation = new List<ClientVisitation>();
-            var result = from appointment in servicesAll.Where(x=>x.FromGCAL == false && x.Service != null)
-                         group appointment by appointment.Date into grouped
+            var result = from appointment in servicesAll
+                         group appointment by appointment.Date.ToString("yyyy-MM-dd") into grouped
                          select new
                          {
                              Date = grouped.Key,
@@ -500,51 +609,9 @@ namespace TheBookingPlatform.Controllers
             int LostClients = 0;
             DateTime thirtyDaysAgo = StartDate.AddDays(-30);
 
-            foreach (var item in filteredAppointments)
-            {
-                bool hasPreviousAppointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(loggedInUser.Company, false, IsCancelled, StartDate, item);
-                if (!hasPreviousAppointments)
-                {
-                    TotalNewClients++;
-                }
-                else
-                {
-                    ReturnedClients++;
-                }
+        
 
-        //        bool isLostClient =
-        //    AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW2(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item) &&
-        //!AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW2(loggedInUser.Company, false, IsCancelled, item);
-        //        var lostClients = lostClientIds.Except(currentClientIds).ToList();
-
-
-             
-
-
-            }
-
-
-            var customers = CustomerServices.Instance.GetCustomerWRTBusiness(loggedInUser.Company).Select(x=>x.ID);
-            var lostClients = new List<int>();
-            foreach (var item in customers)
-            {
-                var lostClientIds = AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, thirtyDaysAgo, item);
-                var currentClientIds = AppointmentServices.Instance.GetAppointmentBookingWRTBusinessNEW(loggedInUser.Company, false, IsCancelled, item);
-                lostClients = lostClientIds.Except(currentClientIds).ToList();
-            }
-
-            foreach (var ids in lostClients)
-            {
-                LostClientsList.Add(CustomerServices.Instance.GetCustomer(ids));
-            }
-            LostClients = LostClientsList.Count;
-
-
-            model.LostClientsList = LostClientsList;
-            model.ReturnedClients = ReturnedClients;
-            model.NewClients = TotalNewClients;
-
-            model.LostClients = LostClients;
+           
             float CheckOutCashCount = 0;
             float CheckOutCardCount = 0;
             float CheckOutPinCount = 0;
@@ -660,6 +727,7 @@ namespace TheBookingPlatform.Controllers
             var final = UserManager.FindById(User.Identity.GetUserId());
             var companyLoggedIn = CompanyServices.Instance.GetCompany().Where(x => x.Business == final.Company).FirstOrDefault();
             var franchise = FranchiseRequestServices.Instance.GetFranchiseRequestByUserID(final.Id, Business, companyLoggedIn.ID);
+
             if (franchise != null)
             {
                 if (franchise.Accepted)
@@ -696,14 +764,7 @@ namespace TheBookingPlatform.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult Dashboard(string SearchTerm)
-        {
-            AdminViewModel model = new AdminViewModel();
-            var user = UserManager.FindById(User.Identity.GetUserId());
-            model.SignedInUser = user;
-            return View(model);
-        }
+       
 
 
     }

@@ -727,15 +727,12 @@ namespace TheBookingPlatform.Controllers
                     }
                     if (item.Status == "cancelled")
                     {
-                        //if (item.Organizer != null)
-                        //{
 
-                        //}
                         try
                         {
 
                             var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
-                            if (appointment != null)
+                            if (appointment != null && appointment.FromGCAL) //From GCal is because it's deleting the appoiintment which was created on YBP
                             {
                                 appointment.DELETED = true;
                                 appointment.GoogleCalendarEventID = "CANCELLED";

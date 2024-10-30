@@ -23,6 +23,11 @@ namespace TheBookingPlatform.ViewModels
         public string SearchTerm { get; set; }
         public List<Appointment> AllAppointments { get; set; }
         public List<Shift> Shifts { get;  set; }
+        public int NewClients { get;  set; }
+        public List<Customer> LostClientsList { get;  set; }
+        public int ReturnedClients { get;  set; }
+        public int LostClients { get;  set; }
+        public string FilterDuration { get;  set; }
     }
 
     public class DayWiseSale
@@ -33,7 +38,7 @@ namespace TheBookingPlatform.ViewModels
 
     public class ClientVisitation
     {
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
         public int NoOfClients { get; set; }
     }
     public class AnalysisViewModel
