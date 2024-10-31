@@ -152,26 +152,42 @@ namespace TheBookingPlatform.Services
 
             }
         }
-        public bool GetAppointmentBookingWRTBusiness(string businesName, bool Deleted, bool isCancelled, DateTime StartDate, int CustomerID)
+        public bool GetAppointmentBookingWRTBusiness(string businessName, bool deleted, bool isCancelled, DateTime startDate, DateTime endDate, int numberOfDaysBehind, int customerID)
         {
             using (var context = new DSContext())
             {
+                // Step 1: Check if the specified CustomerID has any appointments within StartDate and EndDate
+                bool hasAppointmentInDateRange = context.Appointments.AsNoTracking()
+                    .Any(x => x.Business == businessName &&
+                              x.DELETED == deleted &&
+                              x.IsCancelled == isCancelled &&
+                              x.CustomerID == customerID &&
+                              x.Date >= startDate &&
+                              x.Date <= endDate);
 
-                return context.Appointments.AsNoTracking()
-                    .Where(x => x.Business == businesName &&
-                                x.DELETED == Deleted &&
-                                x.CustomerID == CustomerID &&
-                                x.IsCancelled == isCancelled)
-                    .Any(x => x.Date < StartDate) &&
-                    context.Appointments.AsNoTracking()
-                    .Where(x => x.Business == businesName &&
-                                x.DELETED == Deleted &&
-                                x.CustomerID == CustomerID &&
-                                x.IsCancelled == isCancelled)
-                    .Any(x => x.Date > StartDate);
+                if (!hasAppointmentInDateRange)
+                {
+                    // If there are no appointments in the primary range, return false
+                    return false;
+                }
 
+                // Step 2: Calculate past date range for additional check
+                var pastStartDate = startDate.AddDays(-numberOfDaysBehind);
+
+                // Step 3: Check if the same CustomerID has any appointments in the past range (StartDate - numberOfDaysBehind to StartDate)
+                bool hasPastAppointment = context.Appointments.AsNoTracking()
+                    .Any(x => x.Business == businessName &&
+                              x.DELETED == deleted &&
+                              x.IsCancelled == isCancelled &&
+                              x.CustomerID == customerID &&
+                              x.Date >= pastStartDate &&
+                              x.Date < startDate);
+
+                // Step 4: Return true if there's an appointment in the past range; otherwise, return false
+                return hasPastAppointment;
             }
         }
+
 
         public List<Appointment> GetAppointmentBookingWRTBusiness(string businesName, bool Deleted, int CustomerID)
         {

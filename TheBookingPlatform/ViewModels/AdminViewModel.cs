@@ -9,6 +9,8 @@ namespace TheBookingPlatform.ViewModels
     public class AdminViewModel
     {
         public User SignedInUser { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public int IntervalCalendar { get; set; }
         public Company Company { get; set; }
         public List<OpeningHour> OpeningHours { get; set; }
