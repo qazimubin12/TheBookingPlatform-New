@@ -786,7 +786,36 @@
 
 <script>
 
+    function enforceDiscountInput() {
+        $('.discount-input').each(function () {
+            // If the input is empty, set it to 0
+            if ($(this).val().trim() === "") {
+                $(this).val(0);
+            }
+        });
+    }
 
+    // Run the function when the page loads
+    enforceDiscountInput();
+    $(document).on('input', '.discount-input', function () {
+        // If the current input is empty, set it to 0
+        if ($(this).val().trim() === "") {
+            $(this).val(0);
+        }
+    });
+
+    // Also apply the check on blur
+    $(document).on('blur', '.discount-input', function () {
+        if ($(this).val().trim() === "") {
+            $(this).val(0);
+        }
+    });
+    // Also apply the check on blur
+    $(document).on('change', '.discount-input', function () {
+        if ($(this).val().trim() === "") {
+            $(this).val(0);
+        }
+    });
 
     $(document).ready(function () {
 

@@ -4034,7 +4034,7 @@ namespace TheBookingPlatform.Controllers
                                     appointment.IsWalkIn = false;
                                 }
                                 appointment.IsPaid = true;
-
+                                appointment.Status = "Pending";
                                 string ConcatenatedServices = "";
                                 int MinsToBeAddedForEndTime = 0;
                                 float TotalCost = 0;
@@ -4271,6 +4271,7 @@ namespace TheBookingPlatform.Controllers
                                 appointment.Color = "#F79700";
 
                             }
+                            appointment.Status = "Pending";
 
                             var employee = EmployeeServices.Instance.GetEmployee(model.EmployeeID);
                             appointment.FromGCAL = false;
@@ -4679,14 +4680,17 @@ namespace TheBookingPlatform.Controllers
                         appointment.EndTime = appointment.Time.AddMinutes(MinsToBeAddedForEndTime);
                         appointment.Service = model.Service;
                         appointment.TotalCost = TotalCost - model.Deposit;
-                        if (ServiceServices.Instance.GetService(int.Parse(model.Service.Split(',').FirstOrDefault())).Name == "Break")
+                        if (appointment.DepositMethod != "Online")
                         {
-                            appointment.Color = "darkgray";
-                        }
-                        else
-                        {
-                            appointment.Color = "#F79700";
+                            if (ServiceServices.Instance.GetService(int.Parse(model.Service.Split(',').FirstOrDefault())).Name == "Break")
+                            {
+                                appointment.Color = "darkgray";
+                            }
+                            else
+                            {
+                                appointment.Color = "#F79700";
 
+                            }
                         }
                         if (model.ServiceDiscount == null)
                         {
@@ -6334,6 +6338,7 @@ namespace TheBookingPlatform.Controllers
             appointment.ServiceDiscount = "0";
             appointment.TotalCost = 0;
             appointment.Color = "darkgray";
+            appointment.Status = "Pending";
 
             AppointmentServices.Instance.SaveAppointment(appointment);
 

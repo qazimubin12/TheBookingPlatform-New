@@ -44,6 +44,18 @@ namespace TheBookingPlatform.Services
             }
         }
 
+
+        public List<Invoice> GetInvoices(string business,List<int> AppointmentIDs)
+        {
+            using (var context = new DSContext())
+            {
+               
+                
+                    return context.Invoices.Where(x=>x.Business == business && AppointmentIDs.Contains(x.AppointmentID)).ToList();
+                
+            }
+
+        }
         public List<Invoice> GetInvoice(string Business,int CustomerID ,string SearchTerm = "")
         {
             using (var context = new DSContext())

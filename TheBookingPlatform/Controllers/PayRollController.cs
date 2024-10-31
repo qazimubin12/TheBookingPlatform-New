@@ -71,13 +71,8 @@ namespace TheBookingPlatform.Controllers
             PayRollViewModel model = new PayRollViewModel();
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
             model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true);
-            var listOfStrings = new List<string>
-            {
-                "No Show",
-                "Paid",
-                "Pending"
-            };
-            model.Statuses = listOfStrings;
+            var company = CompanyServices.Instance.GetCompany().Where(X => X.Business == LoggedInUser.Company).FirstOrDefault();
+            model.Statuses = company.StatusForPayroll.Split(',').ToList();
             model.EmployeeID = Employee;
             model.Type = Type;
             model.Employee = EmployeeServices.Instance.GetEmployee(Employee);
@@ -88,7 +83,6 @@ namespace TheBookingPlatform.Controllers
 
             if (User.IsInRole("Calendar"))
             {
-                var company = CompanyServices.Instance.GetCompany().Where(X => X.Business == LoggedInUser.Company).FirstOrDefault();
                 model.EndDate = DateTime.Now;
                 var employee = EmployeeServices.Instance.GetEmployeeWithLinkedUserID(LoggedInUser.Id);
                 model.Employee = employee;
@@ -237,9 +231,10 @@ namespace TheBookingPlatform.Controllers
         {
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
             var model = JsonConvert.DeserializeObject<PayRollModel>(requestData);
-            var appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, model.EmployeeID, model.StartDate, model.EndDate, model.isCancelled).Where(x => x.Color != "darkgray").OrderBy(x => x.Time.TimeOfDay).ToList();
-            var serviceIDList = new List<int>();
+            var company = CompanyServices.Instance.GetCompany().Where(X => X.Business == LoggedInUser.Company).FirstOrDefault();
             var employee = EmployeeServices.Instance.GetEmployee(model.EmployeeID);
+            var appointments = new List<Appointment>();
+            var serviceIDList = new List<int>();
             var appointmentIDs = new List<int>();
             float TotalAmount = 0;
             float TimeSpend = 0;
@@ -248,64 +243,83 @@ namespace TheBookingPlatform.Controllers
             var TotalOnlinePriceChange = 0.0;
             var OfflineDiscountCost = 0.0;
             var ServicePrice = 0.0;
-            var groupedByDate = appointments
-          .GroupBy(a => a.Date.Date);
-            foreach (var item in groupedByDate)
+            if (employee.Type == "Time to Time")
             {
-                var firstAppointmentTime = item.OrderBy(X => X.Time.TimeOfDay).Select(x => x.Time).FirstOrDefault();
-                var lastAppointmentEndTime = item.OrderBy(X => X.Time.TimeOfDay).Select(x => x.EndTime).LastOrDefault();
-                TimeSpan duration = lastAppointmentEndTime.TimeOfDay - firstAppointmentTime.TimeOfDay;
-                TimeSpend += float.Parse(duration.TotalMinutes.ToString());
-            }
-            foreach (var item in appointments)
-            {
-                if (item.Status != null)
+                appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, model.EmployeeID, model.StartDate, model.EndDate, model.isCancelled).Where(x => x.Color != "darkgray" && model.Status.Contains(x.Status.Trim())).OrderBy(X=>X.Date.Day).ThenBy(x => x.Time.TimeOfDay).ToList();
+                var groupedByDate = appointments
+       .GroupBy(a => a.Date.Date);
+                foreach (var item in groupedByDate)
                 {
-                    var statusesInAppointments = item.Status.Split(',').Select(x => x.Trim()).ToList();
-                    var statuses = model.Status;
-                    if (statusesInAppointments.Any(status => statuses.Contains(status)))
+                    var firstAppointmentTime = item.OrderBy(X => X.Time.TimeOfDay).Select(x => x.Time).FirstOrDefault();
+                    var lastAppointmentEndTime = item.OrderBy(X => X.Time.TimeOfDay).Select(x => x.EndTime).LastOrDefault();
+                    TimeSpan duration = lastAppointmentEndTime.TimeOfDay - firstAppointmentTime.TimeOfDay;
+                    TimeSpend += float.Parse(duration.TotalMinutes.ToString());
+                }
+            }
+            else
+            {
+                appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, model.EmployeeID, model.StartDate, model.EndDate, model.isCancelled).Where(x => x.Color != "darkgray" && model.Status.Contains(x.Status)).OrderBy(x => x.Time.TimeOfDay).ToList();
+                foreach (var item in appointments)
+                {
+                    if (item.Status != null)
                     {
-                        var servicesInAppointments = item.Service.Split(',').Select(x => int.Parse(x)).ToList();
-
-                        foreach (var service in servicesInAppointments)
+                        var statusesInAppointments = item.Status.Split(',').Select(x => x.Trim()).ToList();
+                        var statuses = model.Status;
+                        if (statusesInAppointments.Any(status => statuses.Contains(status)))
                         {
-                            var PriceChange = PriceChangeServices.Instance.GetPriceChange(item.OnlinePriceChange);
+                            var servicesInAppointments = item.Service.Split(',').Select(x => int.Parse(x)).ToList();
 
-                            var price = ServiceServices.Instance.GetService(service).Price;
-                            ServicePrice += price;
-                            if (PriceChange != null)
+                            foreach (var service in servicesInAppointments)
                             {
-                                if (PriceChange.TypeOfChange == "Price Increase")
+                                var PriceChange = PriceChangeServices.Instance.GetPriceChange(item.OnlinePriceChange);
+
+                                var price = ServiceServices.Instance.GetService(service).Price;
+                                ServicePrice += price;
+                                if (PriceChange != null)
                                 {
-                                    var PriceChangeServiced = price * (PriceChange.Percentage / 100);
-                                    TotalOnlinePriceChange += PriceChangeServiced;
+                                    if (PriceChange.TypeOfChange == "Price Increase")
+                                    {
+                                        var PriceChangeServiced = price * (PriceChange.Percentage / 100);
+                                        TotalOnlinePriceChange += PriceChangeServiced;
 
+                                    }
+                                    else
+                                    {
+                                        var PriceChangeServiced = price * (PriceChange.Percentage / 100);
+                                        TotalOnlinePriceChange += PriceChangeServiced;
+
+
+
+                                    }
                                 }
-                                else
-                                {
-                                    var PriceChangeServiced = price * (PriceChange.Percentage / 100);
-                                    TotalOnlinePriceChange += PriceChangeServiced;
 
-
-
-                                }
                             }
 
-                        }
+                            var servicesplit = item.ServiceDiscount.Split(',').Select(x => float.Parse(x)).ToList();
+                            for (int i = 0; i < servicesplit.Count; i++)
+                            {
 
-                        var servicesplit = item.ServiceDiscount.Split(',').Select(x => float.Parse(x)).ToList();
-                        for (int i = 0; i < servicesplit.Count; i++)
-                        {
-                            
-                            var service = ServiceServices.Instance.GetService(servicesInAppointments[i]);
-                            var serviceName = service.Name;
-                            float discount = servicesplit[i];
-                            var finalDiscount = discount / 100;
+                                var service = ServiceServices.Instance.GetService(servicesInAppointments[i]);
+                                var serviceName = service.Name;
+                                float discount = servicesplit[i];
+                                var finalDiscount = discount / 100;
 
-                            // Your calculations based on serviceId and discount here
-                            var offlineDiscountValue = service.Price * finalDiscount;
-                            OfflineDiscountCost += offlineDiscountValue;
+                                // Your calculations based on serviceId and discount here
+                                var offlineDiscountValue = service.Price * finalDiscount;
+                                OfflineDiscountCost += offlineDiscountValue;
+                            }
+
+                            appointmentIDs.Add(item.ID);
+
+                            var servicedurations = item.ServiceDuration.Split(',').Select(x => x.Trim()).ToList();
+                            foreach (var duration in servicedurations)
+                            {
+                                TotalDurations += ExtractNumberFromString(duration);
+                            }
                         }
+                    }
+                    else
+                    {
 
                         appointmentIDs.Add(item.ID);
 
@@ -314,24 +328,15 @@ namespace TheBookingPlatform.Controllers
                         {
                             TotalDurations += ExtractNumberFromString(duration);
                         }
+
                     }
                 }
-                else
-                {
 
-                    appointmentIDs.Add(item.ID);
-
-                    var servicedurations = item.ServiceDuration.Split(',').Select(x => x.Trim()).ToList();
-                    foreach (var duration in servicedurations)
-                    {
-                        TotalDurations += ExtractNumberFromString(duration);
-                    }
-
-                }
             }
 
-            var company = CompanyServices.Instance.GetCompany().Where(X => X.Business == LoggedInUser.Company).FirstOrDefault();
-            var invoices = InvoiceServices.Instance.GetInvoice().Where(x => appointmentIDs.Contains(x.AppointmentID)).ToList();
+
+
+            var invoices = InvoiceServices.Instance.GetInvoices(LoggedInUser.Company, appointmentIDs);
             TotalAmount = invoices.Select(x => x.GrandTotal).Sum();
             float Amount = 0;
             string FinalAmount = "";
@@ -383,7 +388,7 @@ namespace TheBookingPlatform.Controllers
                     }
                 }
             }
-            var appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(employee.Business, false, employee.ID, StartDate, EndDate, false).Where(x => x.Color != "darkgray").OrderBy(x => x.Time.TimeOfDay).ToList();
+            var appointments = new List<Appointment>();
             var serviceIDList = new List<int>();
             var appointmentIDs = new List<int>();
             float TotalAmount = 0;
@@ -393,63 +398,86 @@ namespace TheBookingPlatform.Controllers
             var TotalOnlinePriceChange = 0.0;
             var OfflineDiscountCost = 0.0;
             var ServicePrice = 0.0;
-            var groupedByDate = appointments
-          .GroupBy(a => a.Date.Date);
-            foreach (var item in groupedByDate)
+            if (employee.Type == "Time to Time")
             {
-                var firstAppointmentTime = item.OrderBy(X => X.Time.TimeOfDay).Select(x => x.Time).FirstOrDefault();
-                var lastAppointmentEndTime = item.OrderBy(X => X.Time.TimeOfDay).Select(x => x.EndTime).LastOrDefault();
-                TimeSpan duration = lastAppointmentEndTime.TimeOfDay - firstAppointmentTime.TimeOfDay;
-                TimeSpend += float.Parse(duration.TotalMinutes.ToString());
-            }
-            foreach (var item in appointments)
-            {
-                if (item.Status != null)
+                appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, employee.ID, StartDate, EndDate, false).Where(x => x.Color != "darkgray" && company.StatusForPayroll.Split(',').ToList().Contains(x.Status.Trim())).OrderBy(x => x.Time.TimeOfDay).ToList();
+                var groupedByDate = appointments
+   .GroupBy(a => a.Date.Date);
+
+
+                foreach (var item in groupedByDate)
                 {
-                    var statusesInAppointments = item.Status.Split(',').Select(x => x.Trim()).ToList();
-                    var statuses = company.StatusForPayroll;
-                    if (statusesInAppointments.Any(status => statuses.Contains(status)))
+                    var firstAppointmentTime = item.OrderBy(X => X.Time.TimeOfDay).Select(x => x.Time).FirstOrDefault();
+                    var lastAppointmentEndTime = item.OrderBy(X => X.Time.TimeOfDay).Select(x => x.EndTime).LastOrDefault();
+                    TimeSpan duration = lastAppointmentEndTime.TimeOfDay - firstAppointmentTime.TimeOfDay;
+                    TimeSpend += float.Parse(duration.TotalMinutes.ToString());
+                }
+            }
+            else
+            {
+
+
+                appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, employee.ID, StartDate, EndDate, false).Where(x => x.Color != "darkgray" && company.StatusForPayroll.Split(',').ToList().Contains(x.Status)).OrderBy(x => x.Time.TimeOfDay).ToList();
+                foreach (var item in appointments)
+                {
+                    if (item.Status != null)
                     {
-                        var servicesInAppointments = item.Service.Split(',').Select(x => int.Parse(x)).ToList();
-
-                        foreach (var service in servicesInAppointments)
+                        var statusesInAppointments = item.Status.Split(',').Select(x => x.Trim()).ToList();
+                        var statuses = company.StatusForPayroll;
+                        if (statusesInAppointments.Any(status => statuses.Contains(status)))
                         {
-                            var PriceChange = PriceChangeServices.Instance.GetPriceChange(item.OnlinePriceChange);
+                            var servicesInAppointments = item.Service.Split(',').Select(x => int.Parse(x)).ToList();
 
-                            var price = ServiceServices.Instance.GetService(service).Price;
-                            ServicePrice += price;
-                            if (PriceChange != null)
+                            foreach (var service in servicesInAppointments)
                             {
-                                if (PriceChange.TypeOfChange == "Price Increase")
+                                var PriceChange = PriceChangeServices.Instance.GetPriceChange(item.OnlinePriceChange);
+
+                                var price = ServiceServices.Instance.GetService(service).Price;
+                                ServicePrice += price;
+                                if (PriceChange != null)
                                 {
-                                    var PriceChangeServiced = price * (PriceChange.Percentage / 100);
-                                    TotalOnlinePriceChange += PriceChangeServiced;
+                                    if (PriceChange.TypeOfChange == "Price Increase")
+                                    {
+                                        var PriceChangeServiced = price * (PriceChange.Percentage / 100);
+                                        TotalOnlinePriceChange += PriceChangeServiced;
 
+                                    }
+                                    else
+                                    {
+                                        var PriceChangeServiced = price * (PriceChange.Percentage / 100);
+                                        TotalOnlinePriceChange += PriceChangeServiced;
+
+
+
+                                    }
                                 }
-                                else
-                                {
-                                    var PriceChangeServiced = price * (PriceChange.Percentage / 100);
-                                    TotalOnlinePriceChange += PriceChangeServiced;
 
-
-
-                                }
                             }
 
-                        }
+                            var servicesplit = item.ServiceDiscount.Split(',').Select(x => float.Parse(x)).ToList();
+                            for (int i = 0; i < servicesplit.Count; i++)
+                            {
+                                var service = ServiceServices.Instance.GetService(servicesInAppointments[i]);
+                                var serviceName = service.Name;
+                                float discount = servicesplit[i];
+                                var finalDiscount = discount / 100;
 
-                        var servicesplit = item.ServiceDiscount.Split(',').Select(x => float.Parse(x)).ToList();
-                        for (int i = 0; i < servicesplit.Count; i++)
-                        {
-                            var service = ServiceServices.Instance.GetService(servicesInAppointments[i]);
-                            var serviceName = service.Name;
-                            float discount = servicesplit[i];
-                            var finalDiscount = discount / 100;
+                                // Your calculations based on serviceId and discount here
+                                var offlineDiscountValue = service.Price * finalDiscount;
+                                OfflineDiscountCost += offlineDiscountValue;
+                            }
 
-                            // Your calculations based on serviceId and discount here
-                            var offlineDiscountValue = service.Price * finalDiscount;
-                            OfflineDiscountCost += offlineDiscountValue;
+                            appointmentIDs.Add(item.ID);
+
+                            var servicedurations = item.ServiceDuration.Split(',').Select(x => x.Trim()).ToList();
+                            foreach (var duration in servicedurations)
+                            {
+                                TotalDurations += ExtractNumberFromString(duration);
+                            }
                         }
+                    }
+                    else
+                    {
 
                         appointmentIDs.Add(item.ID);
 
@@ -458,22 +486,13 @@ namespace TheBookingPlatform.Controllers
                         {
                             TotalDurations += ExtractNumberFromString(duration);
                         }
+
                     }
                 }
-                else
-                {
 
-                    appointmentIDs.Add(item.ID);
-
-                    var servicedurations = item.ServiceDuration.Split(',').Select(x => x.Trim()).ToList();
-                    foreach (var duration in servicedurations)
-                    {
-                        TotalDurations += ExtractNumberFromString(duration);
-                    }
-
-                }
             }
-            var invoices = InvoiceServices.Instance.GetInvoice().Where(x => appointmentIDs.Contains(x.AppointmentID)).ToList();
+
+            var invoices = InvoiceServices.Instance.GetInvoices(LoggedInUser.Company, appointmentIDs);
             TotalAmount = invoices.Select(x => x.GrandTotal).Sum();
             float Amount = 0;
             string FinalAmount = "";
@@ -508,6 +527,7 @@ namespace TheBookingPlatform.Controllers
             model.CompanyAddress = company.Address;
             model.CompanyLogo = company.Logo;
             model.Percentage = employee.Percentage;
+            model.Company = company;
             model.VStartDate = StartDate.ToString("yyyy-MM-dd");
             model.VEndDate = EndDate.ToString("yyyy-MM-dd");
             return View("ViewPayRoll", model);
@@ -527,6 +547,7 @@ namespace TheBookingPlatform.Controllers
             model.CompanyAddress = companyAddress;
             model.CompanyLogo = companyLogo;
             model.Percentage = percentage;
+            model.Company = CompanyServices.Instance.GetCompany(companyName).FirstOrDefault();
             model.VStartDate = StartDate;
             model.VEndDate = EndDate;
             return View("ViewPayRoll", model);

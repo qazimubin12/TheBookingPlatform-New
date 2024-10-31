@@ -171,107 +171,116 @@ namespace TheBookingPlatform.Controllers
             AdminViewModel model = new AdminViewModel();
             var user = UserManager.FindById(User.Identity.GetUserId()); 
             model.SignedInUser = user;
-
-            if (StartDate != "" || EndDate != "")
+            if (model.SignedInUser != null)
             {
-                model.StartDate = DateTime.Parse(StartDate);
-                model.EndDate = DateTime.Parse(EndDate);
-                var numberOfDays = 30;
-                if (FilterDuration != "")
+                if (StartDate != "" || EndDate != "")
                 {
-                    switch (FilterDuration)
+                    model.StartDate = DateTime.Parse(StartDate);
+                    model.EndDate = DateTime.Parse(EndDate);
+                    var numberOfDays = 30;
+                    if (FilterDuration != "")
                     {
-                        case "30 days":
-                            numberOfDays = 30;
-                            break;
-                        case "60 days":
-                            numberOfDays = 60;
-                            break;
-                        case "3 months":
-                            numberOfDays = 90; // Approximate for 3 months
-                            break;
-                        case "6 months":
-                            numberOfDays = 180; // Approximate for 6 months
-                            break;
-                        case "1 year":
-                            numberOfDays = 365;
-                            break;
-                        case "2 years":
-                            numberOfDays = 730; // 2 * 365
-                            break;
-                        default:
-                            // Handle unexpected value or keep numberOfDays as 0
-                            break;
-                    }
-                }
-                int LostClients = 0;
-                int ReturnedClients = 0;
-                int TotalNewClients = 0;
-                var currentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                var CurrentDatePrev = currentDate.AddDays(-numberOfDays);
-                if (user != null)
-                {
-                    var customers = CustomerServices.Instance.GetCustomerWRTBusiness(user.Company);
-                    var lostClients = new List<int>();
-
-                    var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, CurrentDatePrev, 30, customers.Select(x => x.ID).ToList());
-                    //LostClientsList = customers.Where(x=> lostClientIds.Contains(x.ID)).ToList();
-
-
-                    LostClients = lostClientIds.Count;
-                    foreach (var item in customers)
-                    {
-                        if (item.DateAdded >= model.StartDate && item.DateAdded <= model.EndDate)
+                        switch (FilterDuration)
                         {
-                            TotalNewClients++;
-                        }
-                        if (AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(user.Company, false, false, model.StartDate, model.EndDate, numberOfDays, item.ID))
-                        {
-                            ReturnedClients++;
-                        }
-
-                    }
-
-                   
-
-
-                    model.ReturnedClients = ReturnedClients;
-                    model.NewClients = TotalNewClients;
-                    model.FilterDuration = FilterDuration;
-                    model.LostClients = LostClients;
-
-                    if (!User.IsInRole("Super Admin"))
-                    {
-                        model.Company = CompanyServices.Instance.GetCompany(model.SignedInUser.Company).FirstOrDefault();
-                        if (model.Company != null)
-                        {
-                            model.OpeningHours = OpeningHourServices.Instance.GetOpeningHour().Where(x => x.Business == model.Company.Business).ToList();
-                            model.Shifts = ShiftServices.Instance.GetShiftWRTBusiness(user.Company);
-
+                            case "30 days":
+                                numberOfDays = 30;
+                                break;
+                            case "60 days":
+                                numberOfDays = 60;
+                                break;
+                            case "3 months":
+                                numberOfDays = 90; // Approximate for 3 months
+                                break;
+                            case "6 months":
+                                numberOfDays = 180; // Approximate for 6 months
+                                break;
+                            case "1 year":
+                                numberOfDays = 365;
+                                break;
+                            case "2 years":
+                                numberOfDays = 730; // 2 * 365
+                                break;
+                            default:
+                                // Handle unexpected value or keep numberOfDays as 0
+                                break;
                         }
                     }
-
-
-                    if (user.Role == "Owner")
+                    int LostClients = 0;
+                    int ReturnedClients = 0;
+                    int TotalNewClients = 0;
+                    //var currentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                    //var CurrentDatePrev = currentDate.AddDays(-numberOfDays);
+                    if (user != null)
                     {
-                        var package = PackageServices.Instance.GetPackage(user.Package);
-                        if (package == null && user.IsInTrialPeriod == false)
+                        var customers = CustomerServices.Instance.GetCustomerWRTBusiness(user.Company);
+                        var lostClients = new List<int>();
+
+                        var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, model.StartDate, numberOfDays, customers.Select(x => x.ID).ToList());
+                        //LostClientsList = customers.Where(x=> lostClientIds.Contains(x.ID)).ToList();
+
+
+                        LostClients = lostClientIds.Count;
+                        foreach (var item in customers)
                         {
-                            return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                            if (item.DateAdded >= model.StartDate && item.DateAdded <= model.EndDate)
+                            {
+                                TotalNewClients++;
+                            }
+                            if (AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(user.Company, false, false, model.StartDate, model.EndDate, numberOfDays, item.ID))
+                            {
+                                ReturnedClients++;
+                            }
+
+                        }
+
+
+
+
+                        model.ReturnedClients = ReturnedClients;
+                        model.NewClients = TotalNewClients;
+                        model.FilterDuration = FilterDuration;
+                        model.LostClients = LostClients;
+
+                        if (!User.IsInRole("Super Admin"))
+                        {
+                            model.Company = CompanyServices.Instance.GetCompany(model.SignedInUser.Company).FirstOrDefault();
+                            if (model.Company != null)
+                            {
+                                model.OpeningHours = OpeningHourServices.Instance.GetOpeningHour().Where(x => x.Business == model.Company.Business).ToList();
+                                model.Shifts = ShiftServices.Instance.GetShiftWRTBusiness(user.Company);
+
+                            }
+                        }
+
+
+                        if (user.Role == "Owner")
+                        {
+                            var package = PackageServices.Instance.GetPackage(user.Package);
+                            if (package == null && user.IsInTrialPeriod == false)
+                            {
+                                return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                            }
                         }
                     }
+                    else
+                    {
+                        return RedirectToAction("Login", "Account");
+                    }
+                    return View(model);
                 }
                 else
                 {
-                    return RedirectToAction("Login", "Account");
+                    DateTime firstDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                    DateTime lastDayOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+                    model.StartDate = firstDay;
+                    model.EndDate = lastDayOfCurrentMonth;
+                    return View(model);
                 }
-                return View(model);
             }
             else
             {
-                model.StartDate = DateTime.Now;
-                model.EndDate = DateTime.Now;
-                return View(model);
+                return RedirectToAction("Login", "Account");
+
             }
 
         }
@@ -304,22 +313,6 @@ namespace TheBookingPlatform.Controllers
             model.NoOfRebookReminderOpened = 0;
             model.AppointmentsByRebook = 0;
 
-            var GetDtos = AppointmentServices.Instance.GetFilteredAppointments();
-            foreach (var item in GetDtos)
-            {
-                var appointment = AppointmentServices.Instance.GetAppointment(item.ID);
-                if (appointment != null)
-                {
-                    if(appointment.Service.Split(',').ToList().Count() != appointment.ServiceDiscount.Split(',').ToList().Count())
-                    {
-                        string DiscountData = "";
-                        int serviceCount = appointment.Service.Split(',').Length;
-                        DiscountData = string.Join(",", Enumerable.Repeat("0", serviceCount));
-                        appointment.ServiceDiscount = DiscountData;
-                        AppointmentServices.Instance.UpdateAppointment(appointment);
-                    }
-                }
-            }
 
             return View(model);
         }

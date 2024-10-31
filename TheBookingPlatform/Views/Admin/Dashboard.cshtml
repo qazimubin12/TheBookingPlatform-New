@@ -92,7 +92,7 @@
                     <div class="form-group col-md-3">
                         <div class="input-group input-group-dynamic">
                             <label>Start Date</label>
-                            <input type="date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" id="StartDate" name="EndDate" />
+                            <input type="date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" id="StartDate" name="StartDate" />
                         </div>
                     </div>
                     <div class="form-group col-md-3">
@@ -112,7 +112,7 @@
                             <option @(Model.FilterDuration == "2 years" ? "selected" : "") value="2 years">2 years ago</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="form-group col-md-3" style="margin-top:40px;">
                         <button type="submit" class="btn btn-primary btn-sm">
                             FILTER
                         </button>

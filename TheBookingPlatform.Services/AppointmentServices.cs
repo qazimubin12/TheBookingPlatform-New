@@ -647,7 +647,8 @@ namespace TheBookingPlatform.Services
                   && x.DepositMethod == "Cash"
                   && SelectedEmployeeIds.Contains(x.EmployeeID)
                   && !AbsenseServiceIDs.Contains(x.Service)
-                  && x.Date >= StartDate && x.Date <= EndDate)
+ && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
+                                && DbFunctions.TruncateTime(x.Date) <= StartDate.Date)
       .Select(X => X.Deposit);
                 if (totalDeposit.Any())
                 {
@@ -673,8 +674,8 @@ namespace TheBookingPlatform.Services
                   && x.DepositMethod == "Online"
                   && SelectedEmployeeIds.Contains(x.EmployeeID)
                   && !AbsenseServiceIDs.Contains(x.Service)
-                  && x.Date >= StartDate && x.Date <= EndDate)
-      .Select(X => X.Deposit);
+ && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
+                                && DbFunctions.TruncateTime(x.Date) <= StartDate.Date).Select(X => X.Deposit);
 
 
                 if (totalDeposit.Any())
@@ -701,8 +702,9 @@ namespace TheBookingPlatform.Services
                   && x.DepositMethod == "Pin"
                   && SelectedEmployeeIds.Contains(x.EmployeeID)
                   && !AbsenseServiceIDs.Contains(x.Service)
-                  && x.Date >= StartDate && x.Date <= EndDate)
-                  .Select(X => X.Deposit);
+                     && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
+                                && DbFunctions.TruncateTime(x.Date) <= StartDate.Date)
+                 .Select(X => X.Deposit);
                 if (totalDeposit.Any())
                 {
                     // If there are matching appointments, calculate the sum
@@ -816,18 +818,22 @@ namespace TheBookingPlatform.Services
         {
             using (var context = new DSContext())
             {
-
-                return context.Appointments.AsNoTracking().Where(x => x.Business == company && x.DELETED == isDeleted && x.IsCancelled == IsCancelled && x.EmployeeID == employeeID && x.Date >= startDate.Date && x.Date <= endDate.Date).ToList();
-
+                return context.Appointments.AsNoTracking()
+                    .Where(x => x.Business == company
+                                && x.DELETED == isDeleted
+                                && x.IsCancelled == IsCancelled
+                                && x.EmployeeID == employeeID
+                                && DbFunctions.TruncateTime(x.Date) >= startDate.Date
+                                && DbFunctions.TruncateTime(x.Date) <= endDate.Date)
+                    .ToList();
             }
         }
-
         public List<Appointment> GetAllAppointmentWRTBusiness(DateTime startDate, DateTime endDate, string company, bool isCancelled, List<int> selectedEmployees)
         {
             using (var context = new DSContext())
             {
 
-                return context.Appointments.AsNoTracking().Where(x => x.Business == company && x.DELETED == false && x.IsCancelled == isCancelled && selectedEmployees.Contains(x.EmployeeID) && x.Color.Trim() != "darkgray" && x.Date >= startDate.Date && x.Date <= endDate.Date).ToList();
+                return context.Appointments.AsNoTracking().Where(x => x.Business == company && x.DELETED == false && x.IsCancelled == isCancelled && selectedEmployees.Contains(x.EmployeeID) && x.Color.Trim() != "darkgray" && DbFunctions.TruncateTime(x.Date) >= startDate.Date && DbFunctions.TruncateTime(x.Date) <= endDate.Date).ToList();
 
             }
 

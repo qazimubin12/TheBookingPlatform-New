@@ -1595,17 +1595,17 @@
     }
         function addService() {
 
-        const newRow = document.createElement('div');
-        newRow.className = 'row';
-        newRow.id = `ServiceRow_${serviceCount}`;
-        var serviceId = 'Service_' + serviceCount;
-        var durationId = 'Duration_' + serviceCount;
-        var discountId = 'Discount_' + serviceCount;
+            const newRow = document.createElement('div');
+            newRow.className = 'row';
+            newRow.id = `ServiceRow_${serviceCount}`;
+            var serviceId = 'Service_' + serviceCount;
+            var durationId = 'Duration_' + serviceCount;
+            var discountId = 'Discount_' + serviceCount;
 
-        var serviceidElemtn = 'ServiceID_' + serviceCount;
-        var servicePrice = 'ServicePrice_' + serviceCount;
+            var serviceidElemtn = 'ServiceID_' + serviceCount;
+            var servicePrice = 'ServicePrice_' + serviceCount;
 
-        newRow.innerHTML = `
+            newRow.innerHTML = `
                 <div class="col-md-6">
                                     <div class="input-group input-group-dynamic">
 
@@ -1642,12 +1642,14 @@
 
             `;
 
-        document.querySelector('#MainContainer').appendChild(newRow);
-        serviceCount++;
-        initializeAutocomplete();
-        updateDeleteButtonVisibility();
+            document.querySelector('#MainContainer').appendChild(newRow);
+            serviceCount++;
+            initializeAutocomplete();
+            updateDeleteButtonVisibility();
+            enforceDiscountInput();
+            $('.discount-input').blur(); // Triggers blur for existing .discount-input elements
 
-    }
+        }
     function removeService(id) {
         const rowToRemove = document.getElementById(`ServiceRow_${id}`);
         if (rowToRemove) {
@@ -1776,7 +1778,6 @@
                                     desiredElement.val(service.Duration);
                                     updateTotal();
                                     hideLoadingSpinner();
-
                                 },
                                 error: function (error) {
                                     console.error('Error fetching service details:', error);
@@ -2070,10 +2071,49 @@
 
         return hours + ":" + minutes + " " + ampm;
     }
+       
+
+        function enforceDiscountInput() {
+            $('.discount-input').each(function () {
+                // If the input is empty, set it to 0
+                if ($(this).val().trim() === "") {
+                    $(this).val(0);
+                }
+            });
+        }
+
     $(document).ready(function () {
             initializeAutocomplete();
             initializeAutocompleteForCustomers();
         updateDeleteButtonVisibility();
+        
+        // Run the function when the page loads
+
+        // Optionally, run the function whenever any discount input loses focus
+
+
+        // Run the function when the page loads
+        enforceDiscountInput();
+
+        $(document).on('input', '.discount-input', function () {
+            // If the current input is empty, set it to 0
+            if ($(this).val().trim() === "") {
+                $(this).val(0);
+            }
+        });
+
+        // Also apply the check on blur
+        $(document).on('blur', '.discount-input', function () {
+            if ($(this).val().trim() === "") {
+                $(this).val(0);
+            }
+        });
+
+        $(document).on('change', '.discount-input', function () {
+            if ($(this).val().trim() === "") {
+                $(this).val(0);
+            }
+        });
         var activeTab = $(".nav-pills li.active");
         // Get the href attribute of the active tab
         var activeTabHref = activeTab.find("a").attr("href");
@@ -2200,7 +2240,7 @@
 
                     <div class="form-group">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="text" id="${discountId}" name='ServiceDiscountInput'  class="form-control discount-input">
+                        <input type="text" id="${discountId}" name='ServiceDiscountInput' value="0" class="form-control discount-input">
                     </div>
                     </div>
                 </div>
@@ -2212,6 +2252,8 @@
                 serviceCount++;
                 initializeAutocomplete();
                 updateDeleteButtonVisibility();
+                enforceDiscountInput();
+                $('.discount-input').blur(); // Triggers blur for existing .discount-input elements
 
             }
             $("#AddMoreBtn").click(function () {
@@ -2952,7 +2994,7 @@ else
 
                     <div class="form-group">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="text" id="${discountId}" name='ServiceDiscountInput'  class="form-control discount-input">
+                        <input type="text" id="${discountId}" name='ServiceDiscountInput' value="0" class="form-control discount-input">
                     </div>
                     </div>
                 </div>
@@ -2964,6 +3006,9 @@ else
         serviceCount++;
         initializeAutocomplete();
         updateDeleteButtonVisibility();
+        enforceDiscountInput();
+        $('.discount-input').blur(); // Triggers blur for existing .discount-input elements
+
 
     }
     function removeService(id) {
@@ -3389,6 +3434,22 @@ else
 
         return hours + ":" + minutes + " " + ampm;
     }
+
+
+        function enforceDiscountInput() {
+            $('.discount-input').each(function () {
+                // If the input is empty, set it to 0
+                if ($(this).val().trim() === "") {
+                    $(this).val(0);
+                }
+            });
+        }
+
+        // Run the function when the page loads
+        enforceDiscountInput();
+     
+
+
     $(document).ready(function () {
         initializeAutocomplete();
         initializeAutocompleteForCustomers();
@@ -3410,9 +3471,32 @@ else
         $(".btn-cancel").attr("href", url);
         //AdjustTheControls();
 
+      
 
+        // Run the function when the page loads
 
+        // Optionally, run the function whenever any discount input loses focus
+ 
 
+        $(document).on('input', '.discount-input', function () {
+            // If the current input is empty, set it to 0
+            if ($(this).val().trim() === "") {
+                $(this).val(0);
+            }
+        });
+
+        // Also apply the check on blur
+        $(document).on('blur', '.discount-input', function () {
+            if ($(this).val().trim() === "") {
+                $(this).val(0);
+            }
+        });
+        // Also apply the check on blur
+        $(document).on('change', '.discount-input', function () {
+            if ($(this).val().trim() === "") {
+                $(this).val(0);
+            }
+        });
         const buttons = $('.day-button');
         const today = new Date().toLocaleString('en-us', { weekday: 'long' });
         let selectedDays = []; // Create an array to store selected days
@@ -3502,7 +3586,7 @@ else
 
                     <div class="form-group">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="text" id="${discountId}" disabled name='ServiceDiscountInput'  class="form-control discount-input">
+                        <input type="text" id="${discountId}" disabled name='ServiceDiscountInput' value="0"  class="form-control discount-input">
                     </div>
                                         </div>
 
@@ -3516,6 +3600,8 @@ else
             serviceCount++;
             initializeAutocomplete();
             updateDeleteButtonVisibility();
+            enforceDiscountInput();
+            $('.discount-input').blur(); // Triggers blur for existing .discount-input elements
 
         }
         $("#AddMoreBtn").click(function () {

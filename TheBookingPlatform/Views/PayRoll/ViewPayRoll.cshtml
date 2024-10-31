@@ -104,7 +104,9 @@
                                                     <td>To Pay</td>
                                                     <td></td>
                                                     <td></td>
-                                                    <td>@Model.Amount @Model.Type</td>
+                                                  
+                                                        <td>@Model.Amount @Model.Company.Currency</td>
+                                                    
                                                 </tr>
                                                 @if (Model.Type != "Percentage")
                                                 {
