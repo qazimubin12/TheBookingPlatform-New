@@ -9,6 +9,7 @@ namespace TheBookingPlatform.ViewModels
     public class CustomerListingViewModel
     {
         public string SearchTerm { get; set; }
+        public int TotalCustomerCount { get; set; }
         public List<CustomerModel> Customers { get; set; }
         public int TotalCount { get; set; }
         public int PageNumber { get; set; }

@@ -1,15 +1,69 @@
 ﻿@model TheBookingPlatform.ViewModels.CustomerListingViewModel
 
+
+<style>
+    .choices[data-type*='select-one'] .choices__inner {
+        padding-bottom: 0;
+    }
+
+    .btn {
+        margin-bottom: 0rem;
+        letter-spacing: 0;
+        text-transform: uppercase;
+        background-size: 150%;
+        background-position-x: 25%;
+        position: relative;
+        overflow: hidden;
+        -webkit-appearance: none;
+    }
+
+    .btn-sm, .btn-group-sm > .btn{
+        padding-bottom:0px;
+        padding-top:0px;
+    }
+    .table > :not(caption) > * > * {
+        padding: 0.2rem 0.2rem;
+    }
+    input[type="text"]::placeholder {
+         padding: 10px; 
+    }
+    
+    .ui-autocomplete {
+        z-index: 1051; /* Ensure it's above other Bootstrap components */
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+        .ui-autocomplete .ui-menu-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+            .ui-autocomplete .ui-menu-item:hover {
+                background: #f8f9fa;
+            }
+
+        .ui-autocomplete .ui-state-focus {
+            background: #e9ecef;
+        }
+
+</style>
 <div class="card">
     <div class="card-body">
         <h2 class="card-title">Customers</h2>
-
+        <h4>Total Customers : @Model.TotalCustomerCount</h4>
         <div class="row">
+            <div class="form-group">
+                <div class="input-group-dynamic">
+                    <input style="border:solid 1px black;border-radius:10px;" type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers" />
+                </div>
+            </div>
             <div class="col-lg-12 grid-margin stretch-card">
                 @if (Model.Customers != null && Model.Customers.Any())
                 {
-                    <div class="table-responsive">
-                        <table id="CustomersTable" class="table table-striped">
+                    <div class="">
+                        <table id="CustomersTable" class="table">
                             <thead>
                                 <tr>
                                     <th class="text-center">Name</th>
@@ -80,7 +134,7 @@
                                 if (Model.PageNumber > 5)
                                 {
                                     <li class="page-item disabled"><span class="page-link">...</span></li>
-;
+                                    ;
                                 }
 
                                 // Calculate the start and end page numbers to display
@@ -95,10 +149,10 @@
                                 }
 
                                 // Ellipses if necessary
-                               if (Model.PageNumber < Model.TotalPages - 4)
+                                if (Model.PageNumber < Model.TotalPages - 4)
                                 {
                                     <li class="page-item disabled"><span class="page-link">...</span></li>
-;
+                                    ;
                                 }
 
                                 // Display the last page
@@ -162,7 +216,7 @@
             rowIds.push($(this).data('id'));
         });
         var serializedRowIds = JSON.stringify(rowIds);
-        
+
         $.ajax({
             url: '@Url.Action("Export","Customer")',
             type: 'POST',
@@ -199,9 +253,9 @@
 
     $(document).ready(function () {
         $('#CustomersTable').DataTable({
-            "pagingType": "full_numbers",
+            "paging": false, // Disable pagination
             "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-            "pageLength": 100, // Set the default page length to 100
+            "pageLength": 100, // This will be ignored since pagination is disabled
             responsive: true,
             language: {
                 search: "_INPUT_",
@@ -217,6 +271,44 @@
                     $("#actionModal").modal('show'); // Make sure the modal is shown after the response is loaded
                 });
         });
+
+
+        $("#AutoCompletecustomers").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("GetCustomers", "Customer")',  // Using Razor syntax to generate the URL
+                    type: "GET",
+                    data: {
+                        SearchTerm: request.term
+                    },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.FirstName + ' ' + item.LastName,
+                                value: item.FirstName + ' ' + item.LastName,
+                                url: "/Customer/CustomerProfile?ID=" + item.ID
+                            };
+                        }));
+                    }
+                });
+            },
+            select: function (event, ui) {
+                // Redirect to the URL of the selected item
+                window.location.href = ui.item.url;
+            }
+        }).data("ui-autocomplete")._renderMenu = function (ul, items) {
+            var self = this;
+            ul.addClass("list-group"); // Add Bootstrap list group class to ul
+            $.each(items, function (index, item) {
+                self._renderItemData(ul, item);
+            });
+        };
+
+        $("#AutoCompletecustomers").data("ui-autocomplete")._renderItem = function (ul, item) {
+            return $("<li class='list-group-item list-group-item-action'>")
+                .append("<div>" + item.label + "</div>")
+                .appendTo(ul);
+        };
     });
 
     function redirectToProfile(id) {

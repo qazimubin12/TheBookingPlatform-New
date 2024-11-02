@@ -374,7 +374,7 @@
                 var rowData = description + '_' + quantity + '_' + unitPrice + '_' + amount;
                 allRowsData.push(rowData);
             });
-            var resultString = allRowsData.join(',');
+            var resultString = allRowsData.join('~');
             return resultString;
         }
 

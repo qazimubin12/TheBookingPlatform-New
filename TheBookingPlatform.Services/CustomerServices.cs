@@ -165,6 +165,25 @@ namespace TheBookingPlatform.Services
         }
 
        
+        public int GetCustomerCount(string business)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Customers.Where(X=>X.Business ==business).Count();
+
+            }
+        }
+           
+        public int GetCustomerCount()
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Customers.Count();
+
+            }
+        }
 
         public Customer GetCustomerWRTBusiness(string Business, string Email,string Password)
         {

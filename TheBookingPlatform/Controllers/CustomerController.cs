@@ -88,6 +88,7 @@ namespace TheBookingPlatform.Controllers
 
             if (LoggedInUser.Role != "Super Admin")
             {
+                model.TotalCustomerCount = CustomerServices.Instance.GetCustomerCount(LoggedInUser.Company);
                 var pagedCustomers = CustomerServices.Instance.GetCustomersWRTBusiness(LoggedInUser.Company, SearchTerm, pageNumber, pageSize);
                 model.Customers = pagedCustomers.Items.Select(item => new CustomerModel
                 {
@@ -103,6 +104,8 @@ namespace TheBookingPlatform.Controllers
             else
             {
                 var pagedCustomers = CustomerServices.Instance.GetCustomers(SearchTerm, pageNumber, pageSize);
+                model.TotalCustomerCount = CustomerServices.Instance.GetCustomerCount();
+
                 model.Customers = pagedCustomers.Items.Select(item => new CustomerModel
                 {
                     IsBlocked = item.IsBlocked,
@@ -237,7 +240,7 @@ namespace TheBookingPlatform.Controllers
                     listOfLoyaltyCardDetails.Add(item);
                 }
             }
-            model.LoyaltyCardHistories = historiesofLoyaltyCard;
+            model.LoyaltyCardHistories = listOfLoyaltyCardDetails;
 
             return View(model);
         }

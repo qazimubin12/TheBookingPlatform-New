@@ -156,7 +156,7 @@ namespace TheBookingPlatform.Controllers
                     var NInvoiceItemModelList = new List<NInvoiceItemModel>();
                     if (ninvoice.ItemDetails != null)
                     {
-                        var items = ninvoice.ItemDetails.Split(',').ToList();
+                        var items = ninvoice.ItemDetails.Split('~').ToList();
                         foreach (var item in items)
                         {
                             var DataofItem = item.Split('_');
@@ -207,7 +207,7 @@ namespace TheBookingPlatform.Controllers
             var NInvoiceItemModelList = new List<NInvoiceItemModel>();
             if (ninvoice.ItemDetails != null)
             {
-                var items = ninvoice.ItemDetails.Split(',').ToList();
+                var items = ninvoice.ItemDetails.Split('~').ToList();
                 foreach (var item in items)
                 {
                     var DataofItem = item.Split('_');

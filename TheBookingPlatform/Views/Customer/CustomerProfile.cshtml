@@ -3,7 +3,24 @@
 @{
     ViewBag.Title = "CustomerProfile";
 }
+<style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+    .form-check{
+        width:auto;
+    }
 
+    .table > :not(caption) > * > * {
+        padding: 0.2rem 0.2rem;
+        background-color: var(--bs-table-bg);
+        border-bottom-width: 1px;
+        box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
+    }
+</style>
 <div class="row">
     <div class="card">
         <div class="card-body">
@@ -53,336 +70,246 @@
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="pill1">
-
-                        <div class="card-content">
-                            <h4>Personal Info</h4>
-                            <div class="row">
-                                <input type="hidden" id="ID" name="ID" value="@Model.Customer.ID" />
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            First Name
-                                        </label>
-                                        <input type="text" value="@Model.Customer.FirstName" placeholder="Enter First Name." class="form-control" name="FirstName" />
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title">Personal Info</h2>
+                                <div class="row">
+                                    <input type="hidden" id="ID" name="ID" value="@Model.Customer.ID" />
+                                    <div class="col-md-6">
+                                            <div class="form-group">
+                                        <div class="input-group input-group-dynamic">
+                                                <label>
+                                                    First Name
+                                                </label>
+                                                <input readonly type="text" value="@Model.Customer.FirstName" placeholder="Enter First Name." class="form-control" name="FirstName" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            Last Name
-                                        </label>
-                                        <input type="text" value="@Model.Customer.LastName" placeholder="Enter Last Name." class="form-control" name="LastName" />
-                                    </div>
-                                </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
 
-
-
-
-                            </div>
-                            <div class="row">
-
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            Gender
-                                        </label>
-                                        <div class="row" style=" display: flex; align-items: end; ">
-
-                                            @if (Model.Customer.Gender == "Male")
-                                            {
-                                                <div class="radio">
-                                                    <label>
-                                                        <input checked value="Male" type="radio" name="Gender">
-                                                        Male
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Female" type="radio" name="Gender">
-                                                        Female
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Non Binary" type="radio" name="Gender">
-                                                        Non Binary
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Unknown" type="radio" name="Gender">
-                                                        Unknown
-                                                    </label>
-                                                </div>
-                                            }
-                                            else if (Model.Customer.Gender == "Female")
-                                            {
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Male" type="radio" name="Gender">
-                                                        Male
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input checked value="Female" type="radio" name="Gender">
-                                                        Female
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Non Binary" type="radio" name="Gender">
-                                                        Non Binary
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Unknown" type="radio" name="Gender">
-                                                        Unknown
-                                                    </label>
-                                                </div>
-                                            }
-                                            else if (Model.Customer.Gender == "Non Binary")
-                                            {
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Male" type="radio" name="Gender">
-                                                        Male
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Female" type="radio" name="Gender">
-                                                        Female
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input checked value="Non Binary" type="radio" name="Gender">
-                                                        Non Binary
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Unknown" type="radio" name="Gender">
-                                                        Unknown
-                                                    </label>
-                                                </div>
-                                            }
-                                            else if (Model.Customer.Gender == "Unknown")
-                                            {
-
-
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Male" type="radio" name="Gender">
-                                                        Male
-                                                    </label>
-                                                </div>
-
-
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Female" type="radio" name="Gender">
-                                                        Female
-                                                    </label>
-                                                </div>
-
-
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Non Binary" type="radio" name="Gender">
-                                                        Non Binary
-                                                    </label>
-                                                </div>
-
-
-                                                <div class="radio">
-                                                    <label>
-                                                        <input checked value="Unknown" type="radio" name="Gender">
-                                                        Unknown
-                                                    </label>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Male" type="radio" name="Gender">
-                                                        Male
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Female" type="radio" name="Gender">
-                                                        Female
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Non Binary" type="radio" name="Gender">
-                                                        Non Binary
-                                                    </label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label>
-                                                        <input value="Unknown" type="radio" name="Gender">
-                                                        Unknown
-                                                    </label>
-                                                </div>
-                                            }
-
+                                                <label>
+                                                    Last Name
+                                                </label>
+                                                <input readonly type="text" value="@Model.Customer.LastName" placeholder="Enter Last Name." class="form-control" name="LastName" />
+                                            </div>
+                                            </div>
                                         </div>
 
+
+
+
+                                </div>
+                                <div class="row">
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Gender</label>
+                                            <div class="row d-flex align-items-end">
+                                                <div class="form-check">
+                                                    <input readonly class="form-check-input" type="radio" name="Gender" value="Male"
+                                                           @(Model.Customer.Gender == "Male" ? "checked" : "")>
+                                                    <label class="form-check-label">Male</label>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input readonly class="form-check-input" type="radio" name="Gender" value="Female"
+                                                           @(Model.Customer.Gender == "Female" ? "checked" : "")>
+                                                    <label class="form-check-label">Female</label>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input readonly class="form-check-input" type="radio" name="Gender" value="Non Binary"
+                                                           @(Model.Customer.Gender == "Non Binary" ? "checked" : "")>
+                                                    <label class="form-check-label">Non Binary</label>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input readonly class="form-check-input" type="radio" name="Gender" value="Unknown"
+                                                           @(Model.Customer.Gender == "Unknown" ? "checked" : "")>
+                                                    <label class="form-check-label">Unknown</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    Date of Brith
+                                                </label>
+                                                @if (Model.Customer.ID == 0)
+                                                {
+                                                    @Html.TextBox("DateOfBirth", "{0:yyyy-MM-dd}", new { @style = "width:100%", @id = "DateOfBirth", @class = "form-control", type = "date" })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBox("DateOfBirth", Model.Customer.DateOfBirth, "{0:yyyy-MM-dd}", new { @style = "width:100%", @id = "DateOfBirth", @class = "form-control", type = "date" })
+
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div style="margin-top:2px;" class="form-group">
-                                        <label>
-                                            Date of Brith
-                                        </label>
-                                        @if (Model.Customer.ID == 0)
+
+                                <hr />
+                                <h4>Contact Information</h4>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    Email Address
+                                                </label>
+                                                <input type="text" readonly value="@Model.Customer.Email" placeholder="Enter Email." class="form-control" name="Email" />
+                                            </div>
+                                        </div>
+                                        </div>
+                                </div>
+
+                                <div class="row">
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    Mobile Number
+                                                </label>
+                                                <input maxlength="13" readonly type="text" value="@Model.Customer.MobileNumber" placeholder="Enter Mobile Number." id="MobileNumber" class="form-control" name="MobileNumber" />
+                                                <span id="phoneNumberError" class="text-danger"></span>
+
+                                            </div>
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    Address
+                                                </label>
+                                                <input type="text" readonly value="@Model.Customer.Address" placeholder="Enter Address." class="form-control" name="Address" />
+                                            </div>
+                                            </div>
+                                        </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    Postal Code
+                                                </label>
+                                                <input type="text" readonly value="@Model.Customer.PostalCode" placeholder="Enter  Postal Code." class="form-control" name="PostalCode" />
+                                            </div>
+                                            </div>
+                                        </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    City
+                                                </label>
+                                                <input type="text" readonly value="@Model.Customer.City" placeholder="Enter City." class="form-control" name="City" />
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                </div>
+
+                                <hr />
+                                <h4>Other Information</h4>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    Addtional Customer Information
+                                                </label>
+                                                <input type="text" readonly value="@Model.Customer.AdditionalInformation" placeholder="Enter Addtional Customer Information." class="form-control" name="AdditionalInformation" />
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    Additional Invoice Information
+                                                </label>
+                                                <input type="text" readonly value="@Model.Customer.AdditionalInvoiceInformation" placeholder="Enter Additional Invoice Information." class="form-control" name="AdditionalInvoiceInformation" />
+                                            </div>
+                                            </div>
+                                        </div>
+
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="input-group input-group-dynamic">
+
+                                                <label>
+                                                    Warning When Saving Appointments
+                                                </label>
+                                                <input type="text" readonly value="@Model.Customer.WarningInformation" placeholder="Enter  Warning When Saving Appointments" class="form-control" name="WarningInformation" />
+                                            </div>
+                                            </div>
+                                        </div>
+                                </div>
+
+
+                                <div class="row">
+
+                                    <div style="margin:20px;" class="form-group">
+                                        <div class="col-md-12">
+                                            Profile Picture
+                                        </div>
+                                        <label>Choose Image (Click on Image to Change)</label>
+                                        <br />
+                                        @if (Model.Customer.ProfilePicture == "" || Model.Customer.ProfilePicture == null)
                                         {
-                                            @Html.TextBox("DateOfBirth", "{0:yyyy-MM-dd}", new { @style = "width:100%", @id = "DateOfBirth", @class = "form-control", type = "date" })
+                                            <img id="MainThumb" style="width:150px;cursor:pointer;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
                                         }
                                         else
                                         {
-                                            @Html.TextBox("DateOfBirth", Model.Customer.DateOfBirth, "{0:yyyy-MM-dd}", new { @style = "width:100%", @id = "DateOfBirth", @class = "form-control", type = "date" })
+                                            <img id="MainThumb" style="width:150px;cursor:pointer;" src="@Model.Customer.ProfilePicture" alt="...">
 
                                         }
 
-                                    </div>
-                                </div>
-
-
-
-
-                            </div>
-
-
-                            <hr />
-                            <h4>Contact Information</h4>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>
-                                            Email Address
-                                        </label>
-                                        <input type="text" value="@Model.Customer.Email" placeholder="Enter Email." class="form-control" name="Email" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            Mobile Number
-                                        </label>
-                                        <input maxlength="13" type="text" value="@Model.Customer.MobileNumber" placeholder="Enter Mobile Number." id="MobileNumber" class="form-control" name="MobileNumber" />
-                                        <span id="phoneNumberError" class="text-danger"></span>
+                                        <input value="@Model.Customer.ProfilePicture" type="hidden" name="Photo" id="Photo" />
+                                        <input style=" width: 150px; " type="file" id="PhotoUpload" accept="image/*" />
 
                                     </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            Address
-                                        </label>
-                                        <input type="text" value="@Model.Customer.Address" placeholder="Enter Address." class="form-control" name="Address" />
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>
-                                            Postal Code
-                                        </label>
-                                        <input type="text" value="@Model.Customer.PostalCode" placeholder="Enter  Postal Code." class="form-control" name="PostalCode" />
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>
-                                            City
-                                        </label>
-                                        <input type="text" value="@Model.Customer.City" placeholder="Enter City." class="form-control" name="City" />
-                                    </div>
+                                    <a href="@Url.Action("Action", "Customer", new {ID= Model.Customer.ID})" class="btn btn-primary btn-sm">EDIT CUSTOMER</a>
                                 </div>
 
                             </div>
-
-                            <hr />
-                            <h4>Other Information</h4>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>
-                                            Addtional Customer Information
-                                        </label>
-                                        <input type="text" value="@Model.Customer.AdditionalInformation" placeholder="Enter Addtional Customer Information." class="form-control" name="AdditionalInformation" />
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>
-                                            Additional Invoice Information
-                                        </label>
-                                        <input type="text" value="@Model.Customer.AdditionalInvoiceInformation" placeholder="Enter Additional Invoice Information." class="form-control" name="AdditionalInvoiceInformation" />
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>
-                                            Warning When Saving Appointments
-                                        </label>
-                                        <input type="text" value="@Model.Customer.WarningInformation" placeholder="Enter  Warning When Saving Appointments" class="form-control" name="WarningInformation" />
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="row">
-
-                                <div style="margin:20px;" class="form-group">
-                                    <div class="col-md-12">
-                                        Profile Picture
-                                    </div>
-                                    <label>Choose Image (Click on Image to Change)</label>
-                                    <br />
-                                    @if (Model.Customer.ProfilePicture == "" || Model.Customer.ProfilePicture == null)
-                                    {
-                                        <img id="MainThumb" style="width:150px;cursor:pointer;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
-                                    }
-                                    else
-                                    {
-                                        <img id="MainThumb" style="width:150px;cursor:pointer;" src="@Model.Customer.ProfilePicture" alt="...">
-
-                                    }
-
-                                    <input value="@Model.Customer.ProfilePicture" type="hidden" name="Photo" id="Photo" />
-                                    <input style=" width: 150px; " type="file" id="PhotoUpload" accept="image/*" />
-
-                                </div>
-
-                            </div>
-
                         </div>
+                        
 
 
 
                     </div>
                     <div class="tab-pane" id="pill2">
-                        <table class="table table-striped">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th class="text-center">
@@ -408,7 +335,7 @@
                                             <table style="border: none; background-color: transparent;  " class="table table-borderless">
                                                 @foreach (var listofservice in item.Services)
                                                 {
-                                                    <tr>
+                                                    <tr style="border-color:white;">
                                                         @if (listofservice.Discount == 0)
                                                         {
                                                             <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price  </td>
