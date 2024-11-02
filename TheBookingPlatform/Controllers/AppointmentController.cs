@@ -4857,7 +4857,7 @@ namespace TheBookingPlatform.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
 
 

@@ -1,113 +1,226 @@
 ﻿@model TheBookingPlatform.ViewModels.CustomerListingViewModel
 
-<style>
- 
-</style>
-   
-    <div class="row">
-        <div class="col col-lg-12">
-            @{
-                Html.RenderPartial("_Listing", Model);
-            }
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">Customers</h2>
+
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                @if (Model.Customers != null && Model.Customers.Any())
+                {
+                    <div class="table-responsive">
+                        <table id="CustomersTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Name</th>
+                                    <th class="text-center">Email</th>
+                                    <th class="text-center">Mobile</th>
+                                    <th class="text-center">Is Blocked</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Customers)
+                                {
+                                    <tr class="customerID" data-id="@item.ID">
+                                        <td class="text-center" onclick='window.location.href="@Url.Action("CustomerProfile","Customer",new{ID=item.ID})"'>@item.FirstName @item.LastName</td>
+                                        <td class="text-center" onclick='window.location.href="@Url.Action("CustomerProfile","Customer",new{ID=item.ID})"'>@item.Email</td>
+                                        <td class="text-center" onclick='window.location.href="@Url.Action("CustomerProfile","Customer",new{ID=item.ID})"'>@item.MobileNumber</td>
+                                        <td class="text-center">
+                                            <select class="form-control choices__input" onchange="ChangeBlockStatus('@item.ID')">
+                                                <option value="True" @(item.IsBlocked ? "selected" : "")>Yes</option>
+                                                <option value="False" @(!item.IsBlocked ? "selected" : "")>No</option>
+                                            </select>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="@Url.Action("Action", "Customer", new { ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                            <button data-href="@Url.Action("Delete", "Customer", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            @if (Model.PageNumber > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new { SearchTerm = Model.SearchTerm, pageNumber = 1, pageSize = Model.PageSize })" aria-label="First">
+                                        <span aria-hidden="true">First</span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new { SearchTerm = Model.SearchTerm, pageNumber = Model.PageNumber - 1, pageSize = Model.PageSize })" aria-label="Previous">
+                                        <span aria-hidden="true">Previous</span>
+                                    </a>
+                                </li>
+                            }
+
+                            @if (Model.TotalPages <= 10)
+                            {
+                                // Display all page numbers if less than or equal to 10
+                                for (int i = 1; i <= Model.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { SearchTerm = Model.SearchTerm, pageNumber = i, pageSize = Model.PageSize })">@i</a>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                // Display the first page
+                                <li class="page-item @(1 == Model.PageNumber ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { SearchTerm = Model.SearchTerm, pageNumber = 1, pageSize = Model.PageSize })">1</a>
+                                </li>
+
+                                // Ellipses if necessary
+                                if (Model.PageNumber > 5)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+;
+                                }
+
+                                // Calculate the start and end page numbers to display
+                                int startPage = Math.Max(2, Model.PageNumber - 4);
+                                int endPage = Math.Min(Model.TotalPages - 1, Model.PageNumber + 4);
+
+                                for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { SearchTerm = Model.SearchTerm, pageNumber = i, pageSize = Model.PageSize })">@i</a>
+                                    </li>
+                                }
+
+                                // Ellipses if necessary
+                               if (Model.PageNumber < Model.TotalPages - 4)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+;
+                                }
+
+                                // Display the last page
+                                <li class="page-item @(Model.TotalPages == Model.PageNumber ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { SearchTerm = Model.SearchTerm, pageNumber = Model.TotalPages, pageSize = Model.PageSize })">@Model.TotalPages</a>
+                                </li>
+                            }
+
+                            @if (Model.PageNumber < Model.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new { SearchTerm = Model.SearchTerm, pageNumber = Model.PageNumber + 1, pageSize = Model.PageSize })" aria-label="Next">
+                                        <span aria-hidden="true">Next</span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new { SearchTerm = Model.SearchTerm, pageNumber = Model.TotalPages, pageSize = Model.PageSize })" aria-label="Last">
+                                        <span aria-hidden="true">Last</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+                else
+                {
+                    <div class="alert alert-warning col-md-12" role="alert">Sorry! No records exist.</div>
+                }
+            </div>
         </div>
     </div>
+</div>
+
+
 
 <div class="modal  fade center" id="actionModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
     </div>
 </div>
-
 <script>
 
-
-
-
-    $(".data-btn").click(function () {
+    function ChangeBlockStatus(ID) {
         $.ajax({
-            url: $(this).attr("data-href"),
-        })
-            .done(function (response) {
-                $("#actionModal .modal-dialog").html(response);
-            });
-    });
+            url: '@Url.Action("ChangeBlockStatus", "Customer")', // Update this with your controller and action names
+            type: 'POST',
+            data: { ID: ID },
+            success: function (result) {
+                alert("Status Updated");
 
-    function RepopulateCustomers(SearchTerm) {
-        $.ajax({
-            url: '@Url.Action("GetCustomers", "Customer")', // Replace with the actual URL
-            method: 'GET',
-            data: { SearchTerm: SearchTerm },
-            dataType: 'json',
-            success: function (data) {
-                // Clear existing options
-
-                $('#CustomersTable tbody').empty();
-
-                // Repopulate with new data
-                $.each(data, function (index, item) {
-                    var newRow = $('<tr>');
-
-
-                    newRow.append($('<td style="cursor:pointer;" onclick="redirectToProfile(' + item.ID + ')">').addClass('text-center').text(item.FirstName + ' ' + item.LastName));
-                    newRow.append($('<td style="cursor:pointer;" onclick="redirectToProfile(' + item.ID + ')">').addClass('text-center').text(item.Email));
-                    newRow.append($('<td style="cursor:pointer;" onclick="redirectToProfile(' + item.ID + ')">').addClass('text-center').text(item.MobileNumber));
-                    var selectElement = $('<select>', {
-                        class: 'form-control',
-                        onchange: 'ChangeBlockStatus(' + item.ID + ')'
-                    });
-
-                    // Add the options to the select element
-                    selectElement.append($('<option>', {
-                        value: 'True',
-                        text: 'Yes',
-                        selected: item.IsBlocked
-                    }));
-
-                    selectElement.append($('<option>', {
-                        value: 'False',
-                        text: 'No',
-                        selected: !item.IsBlocked
-                    }));
-
-                    // Create a new td element
-                    var tdElement = $('<td>', {
-                        class: 'text-center'
-                    });
-
-                    // Append the select element to the td element
-                    tdElement.append(selectElement);
-
-                    // Append the td element to the newRow or any other container as needed
-                    newRow.append(tdElement);
-                    var actionColumn = $('<td>').addClass('text-center');
-                    var editLink = $('<a>')
-                        .attr('href', '@Url.Action("Action", "Customer")' + '?ID=' + item.ID)
-                        .addClass('btn btn-sm btn-rounded btn-info btn-icon-text')
-                        .html('<i class="mdi mdi-pencil"></i> EDIT');
-                    var deleteButton = $('<button>')
-                        .attr('data-href', '@Url.Action("Delete", "Customer")' + '?ID=' + item.ID)
-                        .attr('type', 'button')
-                        .addClass('data-btn btn btn-sm btn-rounded btn-danger btn-icon-text')
-                        .attr('data-bs-toggle', 'modal')
-                        .attr('data-bs-target', '#actionModal')
-                        .html('<i class="mdi mdi-delete"></i> DELETE');
-
-                    actionColumn.append(editLink);
-                    actionColumn.append(deleteButton);
-
-                    newRow.append(actionColumn);
-
-
-                    $('#CustomersTable tbody').append(newRow);
-
-                });
             },
-            error: function (xhr, status, error) {
-                console.error('Error fetching data:', error);
+            error: function (error) {
+                // Handle error response if needed
             }
         });
     }
+
+    $("#exportBtn").click(function () {
+        var rowIds = [];
+        // Collect data-id from each row with class customerID
+        $('#CustomersTable tr.customerID').each(function () {
+            rowIds.push($(this).data('id'));
+        });
+        var serializedRowIds = JSON.stringify(rowIds);
+        
+        $.ajax({
+            url: '@Url.Action("Export","Customer")',
+            type: 'POST',
+            data: {
+                IDs: serializedRowIds
+            },
+            xhrFields: {
+                responseType: 'blob' // Important
+            }
+
+
+        })
+            .done(function (blob) {
+                var link = document.createElement('a');
+                // Create a blob URL for the binary data
+                var url = window.URL.createObjectURL(blob);
+                link.href = url;
+                link.download = 'Customers.xlsx';
+
+                // Append the link to the body
+                document.body.appendChild(link);
+
+                // Simulate a click on the link
+                link.click();
+
+                // Remove the link from the document
+                document.body.removeChild(link);
+
+                // Release the object URL
+                window.URL.revokeObjectURL(url);
+            });
+    });
+
+
+    $(document).ready(function () {
+        $('#CustomersTable').DataTable({
+            "pagingType": "full_numbers",
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "pageLength": 100, // Set the default page length to 100
+            responsive: true,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search records",
+            }
+        });
+        $(document).on('click', '.data-btn', function () {
+            $.ajax({
+                url: $(this).attr("data-href"),
+            })
+                .done(function (response) {
+                    $("#actionModal .modal-dialog").html(response);
+                    $("#actionModal").modal('show'); // Make sure the modal is shown after the response is loaded
+                });
+        });
+    });
+
     function redirectToProfile(id) {
         window.location.href = '@Url.Action("CustomerProfile", "Customer")' + '?ID=' + id;
     }
-
 </script>
+

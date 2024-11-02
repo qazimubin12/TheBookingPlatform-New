@@ -246,11 +246,11 @@
                                             <label style="white-space:nowrap;">Discount %</label>
                                             @if (Model.OnlinePriceChange != 0)
                                             {
-                                                <input type="text" id="Duration" name="ServiceDiscountInput" disabled value="0" class="form-control discount-input">
+                                                <input type="number" id="Duration" name="ServiceDiscountInput" disabled value="0" class="form-control discount-input">
                                             }
                                             else
                                             {
-                                                <input type="text" id="Duration" name="ServiceDiscountInput" value="0" class="form-control discount-input">
+                                                <input type="number" id="Duration" name="ServiceDiscountInput" value="0" class="form-control discount-input">
 
                                             }
                                         </div>
@@ -296,11 +296,11 @@
                                                     <label style="white-space:nowrap">Discount %</label>
                                                     @if (Model.OnlinePriceChange != 0)
                                                     {
-                                                        <input type="text" value="@item.Discount" disabled name="ServiceDiscountInput" id="Discount" class="form-control discount-input">
+                                                        <input type="number" value="@item.Discount" disabled name="ServiceDiscountInput" id="Discount" class="form-control discount-input">
                                                     }
                                                     else
                                                     {
-                                                        <input type="text" value="@item.Discount" name="ServiceDiscountInput" id="Discount" class="form-control discount-input">
+                                                        <input type="number" value="@item.Discount" name="ServiceDiscountInput" id="Discount" class="form-control discount-input">
 
                                                     }
                                                 </div>
@@ -347,11 +347,11 @@
                                                 {
 
 
-                                                    <input type="text" id="Discount" value="0" disabled name="ServiceDiscountInput" class="form-control discount-input">
+                                                    <input type="number" id="Discount" value="0" disabled name="ServiceDiscountInput" class="form-control discount-input">
                                                 }
                                                 else
                                                 {
-                                                    <input type="text" id="Discount" value="0" name="ServiceDiscountInput" class="form-control discount-input">
+                                                    <input type="number" id="Discount" value="0" name="ServiceDiscountInput" class="form-control discount-input">
 
                                                 }
                                             </div>
@@ -375,25 +375,16 @@
                                 <div class="input-group input-group-dynamic">
 
                                     <label>Deposit Amount</label>
-                                    <input disabled class="form-control" value="@Model.Deposit" type="number" name="Deposit" id="Deposit" />
+                                    <input  class="form-control" value="@Model.Deposit" type="number" name="Deposit" id="Deposit" />
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
                                 <div class="input-group input-group-dynamic">
 
                                     <label>Deposit Method</label>
-                                    <select disabled name="DepositMethod" id="DepositMethod" class="form-control choices__input">
-                                        @if (Model.DepositMethod == "Pin")
+                                    <select  name="DepositMethod" id="DepositMethod" class="form-control choices__input">
+                                        @if (Model.DepositMethod == "Cash")
                                         {
-                                            <option selected value="Pin">Pin</option>
-                                            <option value="Cash">Cash</option>
-                                            <option value="Card">Card</option>
-                                            <option value="Online">Online</option>
-                                            <option value="GiftCard">GiftCard</option>
-                                        }
-                                        else if (Model.DepositMethod == "Cash")
-                                        {
-                                            <option value="Pin">Pin</option>
                                             <option selected value="Cash">Cash</option>
                                             <option value="Card">Card</option>
                                             <option value="Online">Online</option>
@@ -401,7 +392,6 @@
                                         }
                                         else if (Model.DepositMethod == "Card")
                                         {
-                                            <option value="Pin">Pin</option>
                                             <option value="Cash">Cash</option>
                                             <option selected value="Card">Card</option>
                                             <option value="Online">Online</option>
@@ -409,7 +399,6 @@
                                         }
                                         else if (Model.DepositMethod == "Online")
                                         {
-                                            <option value="Pin">Pin</option>
                                             <option value="Cash">Cash</option>
                                             <option value="Card">Card</option>
                                             <option selected value="Online">Online</option>
@@ -427,7 +416,6 @@
                                         }
                                         else
                                         {
-                                            <option value="Pin">Pin</option>
                                             <option value="Cash">Cash</option>
                                             <option value="Card">Card</option>
                                             <option value="Online">Online</option>
@@ -1447,19 +1435,6 @@
 
 
     }
-    function EnableTheDepositOptions() {
-        var ConcatenatedServices = $("#ConcatenatedServices");
-        var Deposit = $("#Deposit");
-        var DepositMethod = $("#DepositMethod");
-        if (ConcatenatedServices.length >= 1) {
-            // Remove the "disabled" attribute from Deposit and DepositMethod
-            Deposit.removeAttr("disabled");
-            DepositMethod.removeAttr("disabled");
-        } else {
-            Deposit.attr("disabled", "disabled");
-            DepositMethod.attr("disabled", "disabled");
-        }
-    }
     $(".duration-input").on("input", function () {
         // Get the input value in lowercase
         var inputValue = $(this).val().toLowerCase();
@@ -1633,7 +1608,7 @@
 
                     <div class="form-group">
                         <label style="white-space:nowrap;">Discount %</label>
-                        <input type="text" id="${discountId}" name='ServiceDiscountInput' value='0'  class="form-control discount-input">
+                        <input type="number" id="${discountId}" name='ServiceDiscountInput' value='0'  class="form-control discount-input">
                     </div>
                 </div>
                 </div>
@@ -1691,7 +1666,6 @@
         }
 
         $("#TotalCost").text("@Model.Company.Currency" + total.toFixed(2)); // Optionally, round the total to two decimal places.
-        EnableTheDepositOptions();
         CheckIfEmployeeProvideTheService();
     }
     $("#Deposit").on("change", function () {
@@ -2240,7 +2214,7 @@
 
                     <div class="form-group">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="text" id="${discountId}" name='ServiceDiscountInput' value="0" class="form-control discount-input">
+                        <input type="number" id="${discountId}" name='ServiceDiscountInput' value="0" class="form-control discount-input">
                     </div>
                     </div>
                 </div>
@@ -2298,7 +2272,7 @@
 
 
         $("#actionButton").click(function () {
-
+            $(this).attr("disabled", "disabled");
             CheckIfEmployeeProvideTheService();
             updateServiceInput();
             if ($("#EmployeeID").val() == "0") {
@@ -2401,11 +2375,12 @@
                                                         }
                                                         else {
                                                             hideLoadingSpinner();
-
+                                                            $(this).removeAttr("disabled");
                                                             $(".errorDiv").html(response.Message);
                                                         }
                                                     });
                                             } else {
+                                                $(this).removeAttr("disabled");
                                                 // User clicked "Cancel" in the confirmation dialog, do nothing
                                             }
                                         });
@@ -2427,7 +2402,7 @@
                                             }
                                             else {
                                                 hideLoadingSpinner();
-
+                                                $(this).removeAttr("disabled");
                                                 $(".errorDiv").html(response.Message);
                                             }
                                         });
@@ -2436,7 +2411,7 @@
                             else {
                                 $(".errorDiv").html(response.Message);
                                 hideLoadingSpinner();
-
+                                $(this).removeAttr("disabled");
                             }
                         });
                 }
@@ -2477,11 +2452,12 @@
                                         }
                                         else {
                                             hideLoadingSpinner();
-
                                             $(".errorDiv").html(response.Message);
+                                            $(this).removeAttr("disabled");
                                         }
                                     });
                             } else {
+
                                 // User clicked "Cancel" in the confirmation dialog, do nothing
                             }
                         });
@@ -2503,7 +2479,7 @@
                             }
                             else {
                                 hideLoadingSpinner();
-
+                                $(this).removeAttr("disabled");
                                 $(".errorDiv").html(response.Message);
                             }
                         });
@@ -2809,19 +2785,6 @@ else
         $("#ServiceDuration").val(concatenatedServiceDurationValues);
         $("#ServiceDiscount").val(concatentatedServiceDiscountValues);
     }
-    function EnableTheDepositOptions() {
-        var ConcatenatedServices = $("#ConcatenatedServices");
-        var Deposit = $("#Deposit");
-        var DepositMethod = $("#DepositMethod");
-        if (ConcatenatedServices.length >= 1) {
-            // Remove the "disabled" attribute from Deposit and DepositMethod
-            Deposit.removeAttr("disabled");
-            DepositMethod.removeAttr("disabled");
-        } else {
-            Deposit.attr("disabled", "disabled");
-            DepositMethod.attr("disabled", "disabled");
-        }
-    }
     $(".duration-input").on("input", function () {
         // Get the input value in lowercase
         var inputValue = $(this).val().toLowerCase();
@@ -2994,7 +2957,7 @@ else
 
                     <div class="form-group">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="text" id="${discountId}" name='ServiceDiscountInput' value="0" class="form-control discount-input">
+                        <input type="number" id="${discountId}" name='ServiceDiscountInput' value="0" class="form-control discount-input">
                     </div>
                     </div>
                 </div>
@@ -3051,7 +3014,6 @@ else
         }
 
         $("#TotalCost").text("@Model.Company.Currency" + total.toFixed(2)); // Optionally, round the total to two decimal places.
-        EnableTheDepositOptions();
         CheckIfEmployeeProvideTheService();
 
     }
@@ -3586,7 +3548,7 @@ else
 
                     <div class="form-group">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="text" id="${discountId}" disabled name='ServiceDiscountInput' value="0"  class="form-control discount-input">
+                        <input type="number" id="${discountId}" disabled name='ServiceDiscountInput' value="0"  class="form-control discount-input">
                     </div>
                                         </div>
 
@@ -3678,6 +3640,8 @@ else
             showLoadingSpinner();
             CheckIfEmployeeProvideTheService();
             updateServiceInput();
+            $(this).attr("disabled", "disabled");
+
             if ($("#EmployeeID").val() == "0") {
                 alert("Please Select Employee");
                 hideLoadingSpinner();
@@ -3769,11 +3733,14 @@ else
                                                         }
                                                         else {
                                                             hideLoadingSpinner();
+                                                            $(this).removeAttr("disabled");
 
                                                             $(".errorDiv").html(response.Message);
                                                         }
                                                     });
                                             } else {
+                                                $(this).removeAttr("disabled");
+
                                                 // User clicked "Cancel" in the confirmation dialog, do nothing
                                             }
                                         });
@@ -3795,6 +3762,7 @@ else
                                             }
                                             else {
                                                 hideLoadingSpinner();
+                                                $(this).removeAttr("disabled");
 
                                                 $(".errorDiv").html(response.Message);
                                             }
@@ -3804,6 +3772,7 @@ else
                             else {
                                 $(".errorDiv").html(response.Message);
                                 hideLoadingSpinner();
+                                $(this).removeAttr("disabled");
 
                             }
                         });
@@ -3844,11 +3813,13 @@ else
                                         }
                                         else {
                                             hideLoadingSpinner();
+                                            $(this).removeAttr("disabled");
 
                                             $(".errorDiv").html(response.Message);
                                         }
                                     });
                             } else {
+                                $(this).removeAttr("disabled");
                                 // User clicked "Cancel" in the confirmation dialog, do nothing
                             }
                         });
@@ -3867,8 +3838,10 @@ else
                                 let encodedDate = encodeURIComponent(Date);
                                 window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
                                 hideLoadingSpinner();
+
                             }
                             else {
+                                $(this).removeAttr("disabled");
 
                                 hideLoadingSpinner();
                                 $(".errorDiv").html(response.Message);

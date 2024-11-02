@@ -242,7 +242,7 @@
 
                                                         <div class="form-group">
                                                             <label style="white-space:nowrap">Discount %</label>
-                                                            <input type="text" id="Duration" name="ServiceDiscountInput" value="0" class="form-control discount-input">
+                                                            <input type="number" id="Duration" name="ServiceDiscountInput" value="0" class="form-control discount-input">
                                                         </div>
                                                     </div>
 
@@ -262,13 +262,12 @@
                                                     <div class="form-group col-md-6">
                                                         <div class="input-group input-group-dynamic">
                                                             <label>Deposit Amount</label>
-                                                            <input disabled class="form-control" type="number" name="Deposit" id="Deposit" />
+                                                            <input  class="form-control" type="number" name="Deposit" id="Deposit" />
                                                         </div>
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label>Deposit Method</label>
-                                                        <select disabled name="DepositMethod" id="DepositMethod" class="form-control choices__input">
-                                                            <option value="Pin">Pin</option>
+                                                        <select  name="DepositMethod" id="DepositMethod" class="form-control choices__input">
                                                             <option value="Cash">Cash</option>
                                                             <option value="Card">Card</option>
                                                             <option value="Online">Online</option>
@@ -895,7 +894,7 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="text" id="${discountId}" value='0' name='ServiceDiscountInput'  class="form-control discount-input">
+                        <input type="number" id="${discountId}" value='0' name='ServiceDiscountInput'  class="form-control discount-input">
                     </div>
                 </div>
                     <button class="btn btn-danger btn-sm" type="button" onclick="removeService(${serviceCount})">X</button>
@@ -1417,26 +1416,11 @@
         }
 
         $("#TotalCost").text("@Model.Company.Currency" + total.toFixed(2)); // Optionally, round the total to two decimal places.
-        EnableTheDepositOptions();
         CheckIfEmployeeProvideTheService();
         CheckAvailability();
 
     }
-    function EnableTheDepositOptions() {
-        var ConcatenatedServices = $("#ConcatenatedServices");
-        console.log(ConcatenatedServices.val());
-        var Deposit = $("#Deposit");
-        var DepositMethod = $("#DepositMethod");
-        console.log("THIS" + ConcatenatedServices.length);
-        if (ConcatenatedServices.length >= 1) {
-            // Remove the "disabled" attribute from Deposit and DepositMethod
-            Deposit.removeAttr("disabled");
-            DepositMethod.removeAttr("disabled");
-        } else {
-            Deposit.attr("disabled", "disabled");
-            DepositMethod.attr("disabled", "disabled");
-        }
-    }
+    
     function initializeAutocomplete() {
 
         var $inputField = $(".autocomplete");

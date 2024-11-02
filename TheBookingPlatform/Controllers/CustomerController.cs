@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Office.Interop.Word;
 using OfficeOpenXml;
 using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -67,30 +69,52 @@ namespace TheBookingPlatform.Controllers
 
         #endregion
         // GET: Customer
+       
         [NoCache]
-        public ActionResult Index(string SearchTerm = "")
+        public ActionResult Index(string SearchTerm = "", int pageNumber = 1, int pageSize = 100)
         {
-            CustomerListingViewModel model = new CustomerListingViewModel();
-            var customerModel = new List<CustomerModel>();
-            model.SearchTerm = SearchTerm;
-            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
+            CustomerListingViewModel model = new CustomerListingViewModel
+            {
+                SearchTerm = SearchTerm,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+            if (LoggedInUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             if (LoggedInUser.Role != "Super Admin")
             {
-                var customers = CustomerServices.Instance.GetCustomersWRTBusiness(LoggedInUser.Company, SearchTerm);
-                foreach (var item in customers)
+                var pagedCustomers = CustomerServices.Instance.GetCustomersWRTBusiness(LoggedInUser.Company, SearchTerm, pageNumber, pageSize);
+                model.Customers = pagedCustomers.Items.Select(item => new CustomerModel
                 {
-                    customerModel.Add(new CustomerModel {IsBlocked=item.IsBlocked, ID = item.ID, Email = item.Email, FirstName = item.FirstName, LastName = item.LastName, MobileNumber = item.MobileNumber });
-                }
+                    IsBlocked = item.IsBlocked,
+                    ID = item.ID,
+                    Email = item.Email,
+                    FirstName = item.FirstName,
+                    LastName = item.LastName,
+                    MobileNumber = item.MobileNumber
+                }).ToList();
+                model.TotalCount = pagedCustomers.TotalCount;
             }
             else
             {
-                var customers = CustomerServices.Instance.GetCustomer(SearchTerm);
-                foreach (var item in customers)
+                var pagedCustomers = CustomerServices.Instance.GetCustomers(SearchTerm, pageNumber, pageSize);
+                model.Customers = pagedCustomers.Items.Select(item => new CustomerModel
                 {
-                    customerModel.Add(new CustomerModel { IsBlocked = item.IsBlocked, ID = item.ID, Email = item.Email, FirstName = item.FirstName, LastName = item.LastName, MobileNumber = item.MobileNumber });
-                }
+                    IsBlocked = item.IsBlocked,
+                    ID = item.ID,
+                    Email = item.Email,
+                    FirstName = item.FirstName,
+                    LastName = item.LastName,
+                    MobileNumber = item.MobileNumber
+                }).ToList();
+                model.TotalCount = pagedCustomers.TotalCount;
             }
-            model.Customers = customerModel;
+
             return View(model);
         }
 

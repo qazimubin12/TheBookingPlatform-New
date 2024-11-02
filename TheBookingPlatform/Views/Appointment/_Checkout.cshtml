@@ -1,18 +1,17 @@
 ﻿@model TheBookingPlatform.ViewModels.AppointmentDetailsViewModel
 @{
     ViewBag.Title = "Checkout";
-    float TotalOfServicesMinusDiscount = Model.Services.Sum(x => x.Price * (1 - x.Discount / 100)) - Model.Appointment.Deposit;
-    float BeforePrice = 0;
-    float AfterPrice = 0;
+    float Total = 0;
+    float ServiceTotalMinusOfflineDiscount = Model.Services.Sum(x => x.Price * (1 - x.Discount / 100));
     if (Model.PriceChange != null)
     {
         if (Model.PriceChange.TypeOfChange == "Discount")
         {
-            TotalOfServicesMinusDiscount -= TotalOfServicesMinusDiscount * (Model.PriceChange.Percentage / 100);
+            ServiceTotalMinusOfflineDiscount -= ServiceTotalMinusOfflineDiscount * (Model.PriceChange.Percentage / 100);
         }
         else
         {
-            TotalOfServicesMinusDiscount += TotalOfServicesMinusDiscount * (Model.PriceChange.Percentage / 100);
+            ServiceTotalMinusOfflineDiscount += ServiceTotalMinusOfflineDiscount * (Model.PriceChange.Percentage / 100);
 
         }
     }
@@ -20,20 +19,50 @@
     {
         if (Model.EmployeePriceChange.TypeOfChange == "Discount")
         {
-            TotalOfServicesMinusDiscount -= TotalOfServicesMinusDiscount * (Model.EmployeePriceChange.Percentage / 100);
+            ServiceTotalMinusOfflineDiscount -= ServiceTotalMinusOfflineDiscount * (Model.EmployeePriceChange.Percentage / 100);
         }
         else
         {
-            TotalOfServicesMinusDiscount += TotalOfServicesMinusDiscount * (Model.EmployeePriceChange.Percentage / 100);
+            ServiceTotalMinusOfflineDiscount += ServiceTotalMinusOfflineDiscount * (Model.EmployeePriceChange.Percentage / 100);
 
         }
     }
-    BeforePrice = TotalOfServicesMinusDiscount;
     if (Model.Coupon != null)
     {
-        TotalOfServicesMinusDiscount = TotalOfServicesMinusDiscount - (TotalOfServicesMinusDiscount * Model.Coupon.Discount / 100);
+        Total = ServiceTotalMinusOfflineDiscount - (ServiceTotalMinusOfflineDiscount * Model.Coupon.Discount / 100);
     }
-    AfterPrice = TotalOfServicesMinusDiscount;
+    else
+    {
+        Total = ServiceTotalMinusOfflineDiscount;
+    }
+
+
+    var depositAmount = Total * Model.Company.Deposit / 100;
+    Total -= depositAmount;
+
+
+
+
+
+
+    //if (Model.EmployeePriceChange != null)
+    //{
+    //    if (Model.EmployeePriceChange.TypeOfChange == "Discount")
+    //    {
+    //        TotalOfServicesMinusDiscount -= TotalOfServicesMinusDiscount * (Model.EmployeePriceChange.Percentage / 100);
+    //    }
+    //    else
+    //    {
+    //        TotalOfServicesMinusDiscount += TotalOfServicesMinusDiscount * (Model.EmployeePriceChange.Percentage / 100);
+
+    //    }
+    //}
+    //BeforePrice = TotalOfServicesMinusDiscount;
+    //if (Model.Coupon != null)
+    //{
+    //    TotalOfServicesMinusDiscount = TotalOfServicesMinusDiscount - (TotalOfServicesMinusDiscount * Model.Coupon.Discount / 100);
+    //}
+    //AfterPrice = TotalOfServicesMinusDiscount;
 }
 
 <style>
@@ -72,21 +101,21 @@
                     <h4>Payment Method</h4>
                     <ul id="ListOfThings" class="list-group">
                         @*<li class="list-group-item">
-                            <button style="white-space:nowrap;" id="Pin" class="btn btn-block btn-primary" type="button">
-                                <i class="material-icons">password</i>  Pin
-                            </button>
-                        </li>*@
-                        <li class="list-group-item">
-                            <button style="white-space:nowrap;" id="Cash" class="btn btn-block btn-primary" type="button">
-                                <i class="material-icons">payments</i>  Cash
-                            </button>
-                        </li>
+            <button style="white-space:nowrap;" id="Pin" class="btn btn-block btn-primary" type="button">
+                <i class="material-icons">password</i>  Pin
+            </button>
+        </li>*@
+
                         <li class="list-group-item">
                             <button style="white-space:nowrap;" id="Card" class="btn btn-block btn-primary" type="button">
                                 <i class="material-icons">credit_card</i>  Card
                             </button>
                         </li>
-
+                        <li class="list-group-item">
+                            <button style="white-space:nowrap;" id="Cash" class="btn btn-block btn-primary" type="button">
+                                <i class="material-icons">payments</i>  Cash
+                            </button>
+                        </li>
 
                         <li class="list-group-item">
                             <button style="white-space:nowrap;" id="Gift Card" class="btn btn-block btn-primary" type="button">
@@ -99,7 +128,7 @@
                             </button>
                         </li>
                         <li class="list-group-item">
-                            <button style="white-space:nowrap;"  id="Loyalty Card" class="btn btn-block btn-primary" type="button">
+                            <button style="white-space:nowrap;" id="Loyalty Card" class="btn btn-block btn-primary" type="button">
                                 <i class="material-icons">redeem</i>  Loyalty
                             </button>
                         </li>
@@ -305,7 +334,7 @@
                         }
                     </tbody>
                 </table>
-                <h4 class="card-title">Deposit: @Model.Company.Currency<span id="deposit">@Model.Appointment.Deposit</span></h4><br />
+                <h4 class="card-title">Deposit: @Model.Company.Currency<span id="deposit">@depositAmount</span></h4><br />
                 @if (Model.PriceChange != null)
                 {
                     if (Model.PriceChange.TypeOfChange == "Discount")
@@ -336,15 +365,15 @@
                 <div style="display: flex; align-items: center; justify-content: center;" class="row">
                     @if (Model.Coupon != null)
                     {
-                        <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@BeforePrice</span> <span id="Total"> @TotalOfServicesMinusDiscount</span></h4>
+                        <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@ServiceTotalMinusOfflineDiscount</span> <span id="Total"> @Total</span></h4>
 
                     }
                     else
                     {
-                        <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@TotalOfServicesMinusDiscount</span></h4>
+                        <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@Total</span></h4>
 
                     }
-                    <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@TotalOfServicesMinusDiscount</span></h4>
+                    <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@Total</span></h4>
 
                     @if (Model.Appointment.Status == "Paid")
                     {

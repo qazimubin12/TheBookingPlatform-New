@@ -32,6 +32,14 @@ namespace TheBookingPlatform.Services
             public int MainID { get; set; }
             public int Count { get; set; }
         }
+        public class PagedResult<T>
+        {
+            public int TotalCount { get; set; }
+            public int PageSize { get; set; }
+            public int PageNumber { get; set; }
+            public List<T> Items { get; set; }
+        }
+
 
         public List<Customer> GetCustomer(string SearchTerm = "")
         {
@@ -78,6 +86,73 @@ namespace TheBookingPlatform.Services
             }
         }
 
+
+        public PagedResult<Customer> GetCustomers( string SearchTerm = "", int pageNumber = 1, int pageSize = 10)
+        {
+            using (var context = new DSContext())
+            {
+                var query = context.Customers.AsNoTracking().ToList();
+
+                // Apply search functionality
+                if (!string.IsNullOrEmpty(SearchTerm))
+                {
+                    var lowerSearchTerm = SearchTerm.ToLower();
+                    query = query.Where(p =>
+                        (p.FirstName != null && p.FirstName.ToLower().Contains(lowerSearchTerm)) ||
+                        (p.LastName != null && p.LastName.ToLower().Contains(lowerSearchTerm)) ||
+                        (p.FirstName != null && p.LastName != null &&
+                        (p.FirstName.ToLower() + " " + p.LastName.ToLower()).Contains(lowerSearchTerm))).ToList();
+                }
+
+                var totalCustomers = query.Count();
+                var customers = query.OrderBy(x => x.FirstName)
+                                     .Skip((pageNumber - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .ToList();
+
+                return new PagedResult<Customer>
+                {
+                    TotalCount = totalCustomers,
+                    PageSize = pageSize,
+                    PageNumber = pageNumber,
+                    Items = customers
+                };
+            }
+        }
+
+
+        public PagedResult<Customer> GetCustomersWRTBusiness(string Business, string SearchTerm = "", int pageNumber = 1, int pageSize = 10)
+        {
+            using (var context = new DSContext())
+            {
+                var query = context.Customers.AsNoTracking().Where(x => x.Business == Business);
+
+                // Apply search functionality
+                if (!string.IsNullOrEmpty(SearchTerm))
+                {
+                    var lowerSearchTerm = SearchTerm.ToLower();
+                    query = query.Where(p =>
+                        (p.FirstName != null && p.FirstName.ToLower().Contains(lowerSearchTerm)) ||
+                        (p.LastName != null && p.LastName.ToLower().Contains(lowerSearchTerm)) ||
+                        (p.FirstName != null && p.LastName != null &&
+                        (p.FirstName.ToLower() + " " + p.LastName.ToLower()).Contains(lowerSearchTerm)));
+                }
+
+                var totalCustomers = query.Count();
+                var customers = query.OrderBy(x => x.FirstName)
+                                     .Skip((pageNumber - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .ToList();
+
+                return new PagedResult<Customer>
+                {
+                    TotalCount = totalCustomers,
+                    PageSize = pageSize,
+                    PageNumber = pageNumber,
+                    Items = customers
+                };
+            }
+        }
 
         public List<Customer> GetCustomerWRTBusiness(string Business)
         {

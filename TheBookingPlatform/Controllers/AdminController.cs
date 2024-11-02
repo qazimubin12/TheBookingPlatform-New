@@ -222,7 +222,7 @@ namespace TheBookingPlatform.Controllers
                         LostClients = lostClientIds.Count;
                         foreach (var item in customers)
                         {
-                            if (item.DateAdded >= model.StartDate && item.DateAdded <= model.EndDate)
+                            if (item.DateAdded.Date >= model.StartDate.Date && item.DateAdded.Date <= model.EndDate.Date)
                             {
                                 TotalNewClients++;
                             }
