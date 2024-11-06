@@ -84,6 +84,14 @@ namespace TheBookingPlatform.Services
                 return context.Products.Where(x => x.Business == Business && x.SupplierID == SupplierID).ToList();
             }
         }
+        
+        public List<Product> GetProductsWRTSupplierID(string Business)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Products.Where(x => x.Business == Business).ToList();
+            }
+        }
 
         public Product GetProduct(string Name)
         {

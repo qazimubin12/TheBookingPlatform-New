@@ -6,6 +6,13 @@
 
 
 <style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+
     .autocomplete-suggestions {
         box-sizing: border-box;
         border-radius: 5px;
@@ -149,12 +156,12 @@
     <div class="row">
         <div class="col-md-12">
             <div style="margin:0px;" class="card">
-                <div class="card-content">
+                <div class="card-body">
                     @if (Model.ID == 0)
                     {
-                        <h4 class="card-title">
+                        <h2 class="card-title">
                             Create Price Change
-                        </h4>
+                        </h2>
                     }
                     else
                     {
@@ -216,8 +223,10 @@
 
 
                         <div class="form-group">
-                            <label>Percentage</label>
-                            <input type="text" id="Percentage" value="@Model.Percentage" name="Percentage" class="form-control">
+                            <div class="input-group input-group-dynamic">
+                                <label>Percentage</label>
+                                <input type="text" id="Percentage" value="@Model.Percentage" name="Percentage" class="form-control">
+                            </div>
                         </div>
 
                     </div>
@@ -230,32 +239,38 @@
                         <div class="col-md-12">
 
                             <div class="form-group col-md-6">
-                                <label>
-                                    Select Date
-                                </label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="StartDate">
+                                <div class="input-group input-group-dynamic">
 
-                                }
-                                else
-                                {
-                                    <input type="date" id="Date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" name="StartDate">
-                                }
+                                    <label>
+                                        Select Date
+                                    </label>
+                                    @if (Model.ID == 0)
+                                    {
+                                        <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="StartDate">
+
+                                    }
+                                    else
+                                    {
+                                        <input type="date" id="Date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" name="StartDate">
+                                    }
+                                </div>
                             </div>
                             <div class="form-group col-md-6">
-                                <label>
-                                    Select Time
-                                </label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input type="time" id="StartTime" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="StartTime">
+                                <div class="input-group input-group-dynamic">
 
-                                }
-                                else
-                                {
-                                    <input type="time" id="StartTime" class="form-control timepicker" value="@Model.StartTime.ToString("HH:mm")" name="StartTime">
-                                }
+                                    <label>
+                                        Select Time
+                                    </label>
+                                    @if (Model.ID == 0)
+                                    {
+                                        <input type="time" id="StartTime" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="StartTime">
+
+                                    }
+                                    else
+                                    {
+                                        <input type="time" id="StartTime" class="form-control timepicker" value="@Model.StartTime.ToString("HH:mm")" name="StartTime">
+                                    }
+                                </div>
                             </div>
 
 
@@ -265,32 +280,38 @@
                         <div class="col-md-12">
 
                             <div class="form-group col-md-6">
-                                <label>
-                                    End Date
-                                </label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="EndDate">
+                                <div class="input-group input-group-dynamic">
 
-                                }
-                                else
-                                {
-                                    <input type="date" id="Date" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" name="EndDate">
-                                }
+                                    <label>
+                                        End Date
+                                    </label>
+                                    @if (Model.ID == 0)
+                                    {
+                                        <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="EndDate">
+
+                                    }
+                                    else
+                                    {
+                                        <input type="date" id="Date" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" name="EndDate">
+                                    }
+                                </div>
                             </div>
                             <div class="form-group col-md-6">
-                                <label>
-                                    Select Time
-                                </label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input type="time" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" name="EndTime">
+                                <div class="input-group input-group-dynamic">
 
-                                }
-                                else
-                                {
-                                    <input type="time" id="EndTime" class="form-control" value="@Model.EndTime.ToString("HH:mm")" name="EndTime">
-                                }
+                                    <label>
+                                        Select Time
+                                    </label>
+                                    @if (Model.ID == 0)
+                                    {
+                                        <input type="time" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" name="EndTime">
+
+                                    }
+                                    else
+                                    {
+                                        <input type="time" id="EndTime" class="form-control" value="@Model.EndTime.ToString("HH:mm")" name="EndTime">
+                                    }
+                                </div>
                             </div>
 
 
@@ -298,15 +319,15 @@
                         </div>
                     </div>
 
-                    <div class="checkbox form-horizontal-checkbox">
+                    <div class="form-check">
                         <label>
                             @if (Model.Repeat == true)
                             {
-                                <input type="checkbox" onchange="CheckIsRepeatRow()" checked name="Repeat" id="Repeat">
+                                <input class="form-check-input" type="checkbox" onchange="CheckIsRepeatRow()" checked name="Repeat" id="Repeat">
                             }
                             else
                             {
-                                <input type="checkbox" onchange="CheckIsRepeatRow()" name="Repeat" id="Repeat">
+                                <input class="form-check-input" type="checkbox" onchange="CheckIsRepeatRow()" name="Repeat" id="Repeat">
 
                             }
                             Repeat Price Change
@@ -323,103 +344,114 @@
 
                         }
                     </div>
-                </div>
 
-                <div id="RepeatRow">
-                    <div style="display:inline;">
-                        <div class="form-group col-md-6">
-                            <label>Frequency</label>
-                            @if (Model.ID == 0)
-                            {
-                                <select class="form-control choices__input" id="Frequency" name="Frequency">
-                                    <option value="Every Week">Every Week</option>
-                                    <option value="Every Day">Every Day</option>
-                                    <option value="Every Month">Every Month</option>
-                                </select>
-                            }
-                            else
-                            {
-                                if (Model.Frequency == "Every Week")
-                                {
-                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
-                                        <option selected value="Every Week">Every Week</option>
-                                        <option value="Every Day">Every Day</option>
-                                        <option value="Every Month">Every Month</option>
-                                    </select>
-                                }
-                                else if (Model.Frequency == "Every Day")
-                                {
-                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
-                                        <option value="Every Week">Every Week</option>
-                                        <option selected value="Every Day">Every Day</option>
-                                        <option value="Every Month">Every Month</option>
-                                    </select>
-                                }
-                                else if (Model.Frequency == "Every Month")
-                                {
-                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
-                                        <option value="Every Week">Every Week</option>
-                                        <option value="Every Day">Every Day</option>
-                                        <option selected value="Every Month">Every Month</option>
-                                    </select>
-                                }
-                            }
-                        </div>
-
-                        <div id="WeekRow">
+                    <div id="RepeatRow">
+                        <div style="display:inline;">
                             <div class="form-group col-md-6">
-                                <label>Every</label>
-                                <select class="form-control choices__input" id="Every" name="EveryWeek">
-                                    @for (int i = 1; i <= 12; i++)
+                                <label>Frequency</label>
+                                @if (Model.ID == 0)
+                                {
+                                    <select class="form-control choices__input" id="Frequency" name="Frequency">
+                                        <option value="Every Week">Every Week</option>
+                                        <option value="Every Day">Every Day</option>
+                                        <option value="Every Month">Every Month</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    if (Model.Frequency == "Every Week")
                                     {
-                                        if (Model.EveryWeek == "1 Week")
-                                        {
-                                            if (i == 1)
-                                            {
-                                                if (Model.EveryWeek == "1 Week")
-                                                {
-                                                    <option selected value="@i Week">@i Week </option>
+                                        <select class="form-control choices__input" id="Frequency" name="Frequency">
+                                            <option selected value="Every Week">Every Week</option>
+                                            <option value="Every Day">Every Day</option>
+                                            <option value="Every Month">Every Month</option>
+                                        </select>
+                                    }
+                                    else if (Model.Frequency == "Every Day")
+                                    {
+                                        <select class="form-control choices__input" id="Frequency" name="Frequency">
+                                            <option value="Every Week">Every Week</option>
+                                            <option selected value="Every Day">Every Day</option>
+                                            <option value="Every Month">Every Month</option>
+                                        </select>
+                                    }
+                                    else if (Model.Frequency == "Every Month")
+                                    {
+                                        <select class="form-control choices__input" id="Frequency" name="Frequency">
+                                            <option value="Every Week">Every Week</option>
+                                            <option value="Every Day">Every Day</option>
+                                            <option selected value="Every Month">Every Month</option>
+                                        </select>
+                                    }
+                                }
+                            </div>
 
+                            <div id="WeekRow">
+                                <div class="form-group col-md-6">
+                                    <label>Every</label>
+                                    <select class="form-control choices__input" id="Every" name="EveryWeek">
+                                        @for (int i = 1; i <= 12; i++)
+                                        {
+                                            if (Model.EveryWeek == "1 Week")
+                                            {
+                                                if (i == 1)
+                                                {
+                                                    if (Model.EveryWeek == "1 Week")
+                                                    {
+                                                        <option selected value="@i Week">@i Week </option>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i Week">@i Week </option>
+
+                                                    }
                                                 }
                                                 else
                                                 {
                                                     <option value="@i Week">@i Week </option>
 
                                                 }
+
                                             }
                                             else
                                             {
-                                                <option value="@i Week">@i Week </option>
-
+                                                if (Model.EveryDay == i + " Weeks")
+                                                {
+                                                    <option selected value="@i Weeks">@i Weeks </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@i Weeks">@i Weeks </option>
+                                                }
                                             }
+                                        }
 
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-12">
+                                    <label>On</label><br />
+                                    @if (Model.ID != 0)
+                                    {
+                                        if (Model.Frequency == "Every Week" && Model.Days != null)
+                                        {
+                                            foreach (var day in new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" })
+                                            {
+                                                <button type="button" class="day-button @(Model.Days.Split(',').Contains(day) ? "active" : "")" data-day="@day">@day.Substring(0, 3)</button>
+                                            }
                                         }
                                         else
                                         {
-                                            if (Model.EveryDay == i + " Weeks")
+                                            foreach (var day in new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" })
                                             {
-                                                <option selected value="@i Weeks">@i Weeks </option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@i Weeks">@i Weeks </option>
+                                                <button type="button" class="day-button" data-day="@day">@day.Substring(0, 3)</button>
                                             }
                                         }
-                                    }
 
-                                </select>
-                            </div>
 
-                            <div class="form-group col-md-12">
-                                <label>On</label><br />
-                                @if (Model.ID != 0)
-                                {
-                                    if (Model.Frequency == "Every Week" && Model.Days != null)
-                                    {
-                                        foreach (var day in new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" })
-                                        {
-                                            <button type="button" class="day-button @(Model.Days.Split(',').Contains(day) ? "active" : "")" data-day="@day">@day.Substring(0, 3)</button>
-                                        }
+
+
                                     }
                                     else
                                     {
@@ -429,251 +461,258 @@
                                         }
                                     }
 
+                                </div>
 
+                                <div class="form-group col-md-12">
+                                    <label>Ends</label><br />
 
-
-                                }
-                                else
-                                {
-                                    foreach (var day in new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" })
-                                    {
-                                        <button type="button" class="day-button" data-day="@day">@day.Substring(0, 3)</button>
-                                    }
-                                }
-
-                            </div>
-
-                            <div class="form-group col-md-12">
-                                <label>Ends</label><br />
-
-                                <select name="EndsWeek" id="EndWeek" class="form-control choices__input">
-                                    @if (Model.EndsWeek == "Never")
-                                    {
-                                        <option selected value="Never">Never</option>
-                                        <option value="Specific Date">On a Specific Date</option>
-                                        <option value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                    else if (Model.EndsWeek == "Specific Date")
-                                    {
-                                        <option value="Never">Never</option>
-                                        <option selected value="Specific Date">On a Specific Date</option>
-                                        <option value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="Never">Never</option>
-                                        <option value="Specific Date">On a Specific Date</option>
-                                        <option selected value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                </select>
-                            </div>
-
-                            <div id="OnADateRowWeek" class="form-group col-md-12">
-                                <label>Ends Date</label><br />
-
-                                <input type="date" name="EndsDateWeek" value="@Model.EndsDateWeek" class="form-control" id="EndDate">
-                            </div>
-
-
-                            <div id="OnTimeRowWeek" class="form-group col-md-12">
-                                <label>Times</label><br />
-                                <input type="number" name="EndsNumberOfTimesWeek" value="@Model.EndsNumberOfTimesWeek" class="form-control" id="NumberOfTimes">
-                            </div>
-
-                        </div>
-                        <div id="DayRow">
-                            <div class="form-group col-md-6">
-                                <label>Every</label>
-                                <select class="form-control choices__input" id="Every" name="EveryDay">
-                                    @for (int i = 1; i <= 27; i++)
-                                    {
-                                        if (Model.EveryDay == "1 Day")
+                                    <select name="EndsWeek" id="EndWeek" class="form-control choices__input">
+                                        @if (Model.EndsWeek == "Never")
                                         {
-                                            if (i == 1)
-                                            {
-                                                if (Model.EveryDay == "1 Day")
-                                                {
-                                                    <option selected value="@i Day">@i Day </option>
-
-                                                }
-                                                else
-                                                {
-                                                    <option value="@i Day">@i Day </option>
-
-                                                }
-                                            }
-                                            else
-                                            {
-
-                                                <option selected value="@i Days">@i Days </option>
-
-
-                                            }
+                                            <option selected value="Never">Never</option>
+                                            <option value="Specific Date">On a Specific Date</option>
+                                            <option value="NumberOfTimes">After a Number of Times</option>
+                                        }
+                                        else if (Model.EndsWeek == "Specific Date")
+                                        {
+                                            <option value="Never">Never</option>
+                                            <option selected value="Specific Date">On a Specific Date</option>
+                                            <option value="NumberOfTimes">After a Number of Times</option>
                                         }
                                         else
                                         {
-                                            if (Model.EveryDay == i + " Days")
-                                            {
-                                                <option selected value="@i Days">@i Days </option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@i Days">@i Days </option>
-
-                                            }
+                                            <option value="Never">Never</option>
+                                            <option value="Specific Date">On a Specific Date</option>
+                                            <option selected value="NumberOfTimes">After a Number of Times</option>
                                         }
-                                    }
+                                    </select>
+                                </div>
 
-                                </select>
+                                <div id="OnADateRowWeek" class="form-group col-md-12">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>Ends Date</label>
+                                        <input type="date" name="EndsDateWeek" value="@Model.EndsDateWeek" class="form-control" id="EndDate">
+                                    </div>
+                                </div>
+
+
+                                <div id="OnTimeRowWeek" class="form-group col-md-12">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>Times</label>
+                                        <input type="number" name="EndsNumberOfTimesWeek" value="@Model.EndsNumberOfTimesWeek" class="form-control" id="NumberOfTimes">
+                                    </div>
+
+                                </div>
                             </div>
-
-                            <div class="form-group col-md-12">
-                                <label>Ends</label><br />
-
-                                <select name="EndsDay" id="EndDay" class="form-control choices__input">
-                                    @if (Model.EndsDay == "Never")
-                                    {
-                                        <option selected value="Never">Never</option>
-                                        <option value="Specific Date">On a Specific Date</option>
-                                        <option value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                    else if (Model.EndsDay == "Specific Date")
-                                    {
-                                        <option value="Never">Never</option>
-                                        <option selected value="Specific Date">On a Specific Date</option>
-                                        <option value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="Never">Never</option>
-                                        <option value="Specific Date">On a Specific Date</option>
-                                        <option selected value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                </select>
-                            </div>
-
-                            <div id="OnADateRowDay" class="form-group col-md-12">
-                                <label>Ends Date</label><br />
-                                <input type="date" name="EndsDateDay" value="@Model.EndsDateDay" class="form-control" id="EndDate">
-                            </div>
-
-
-                            <div id="OnTimeRowDay" class="form-group col-md-12">
-                                <label>Times</label><br />
-                                <input type="number" name="EndsNumberOfTimesDay" value="@Model.EndsNumberOfTimesDay" class="form-control" id="NumberOfTimes">
-                            </div>
-
-
-                        </div>
-                        <div id="MonthRow">
-                            <div class="form-group col-md-6">
-                                <label>Every</label>
-                                <select class="form-control choices__input" id="Every" name="EveryMonth">
-                                    @for (int i = 1; i <= 12; i++)
-                                    {
-                                        if (Model.EveryMonth == "1 Month")
+                            <div id="DayRow">
+                                <div class="form-group col-md-6">
+                                    <label>Every</label>
+                                    <select class="form-control choices__input" id="Every" name="EveryDay">
+                                        @for (int i = 1; i <= 27; i++)
                                         {
-                                            if (i == 1)
+                                            if (Model.EveryDay == "1 Day")
                                             {
-                                                if (Model.EveryMonth == "1 Month")
+                                                if (i == 1)
                                                 {
-                                                    <option selected value="@i Month">@i Month </option>
+                                                    if (Model.EveryDay == "1 Day")
+                                                    {
+                                                        <option selected value="@i Day">@i Day </option>
 
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i Day">@i Day </option>
+
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    <option value="@i Month">@i Month </option>
+
+                                                    <option selected value="@i Days">@i Days </option>
+
 
                                                 }
                                             }
                                             else
                                             {
-                                                <option value="@i Months">@i Months </option>
+                                                if (Model.EveryDay == i + " Days")
+                                                {
+                                                    <option selected value="@i Days">@i Days </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@i Days">@i Days </option>
+
+                                                }
                                             }
+                                        }
+
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-12">
+                                    <label>Ends</label><br />
+
+                                    <select name="EndsDay" id="EndDay" class="form-control choices__input">
+                                        @if (Model.EndsDay == "Never")
+                                        {
+                                            <option selected value="Never">Never</option>
+                                            <option value="Specific Date">On a Specific Date</option>
+                                            <option value="NumberOfTimes">After a Number of Times</option>
+                                        }
+                                        else if (Model.EndsDay == "Specific Date")
+                                        {
+                                            <option value="Never">Never</option>
+                                            <option selected value="Specific Date">On a Specific Date</option>
+                                            <option value="NumberOfTimes">After a Number of Times</option>
                                         }
                                         else
                                         {
+                                            <option value="Never">Never</option>
+                                            <option value="Specific Date">On a Specific Date</option>
+                                            <option selected value="NumberOfTimes">After a Number of Times</option>
+                                        }
+                                    </select>
+                                </div>
 
-                                            if (Model.EveryMonth == i + " Months")
+                                <div id="OnADateRowDay" class="form-group col-md-12">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>Ends Date</label><br />
+                                        <input type="date" name="EndsDateDay" value="@Model.EndsDateDay" class="form-control" id="EndDate">
+                                    </div>
+                                </div>
+
+
+                                <div id="OnTimeRowDay" class="form-group col-md-12">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>Times</label><br />
+                                        <input type="number" name="EndsNumberOfTimesDay" value="@Model.EndsNumberOfTimesDay" class="form-control" id="NumberOfTimes">
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div id="MonthRow">
+                                <div class="form-group col-md-6">
+                                    <label>Every</label>
+                                    <select class="form-control choices__input" id="Every" name="EveryMonth">
+                                        @for (int i = 1; i <= 12; i++)
+                                        {
+                                            if (Model.EveryMonth == "1 Month")
                                             {
-                                                <option selected value="@i Months">@i Months </option>
+                                                if (i == 1)
+                                                {
+                                                    if (Model.EveryMonth == "1 Month")
+                                                    {
+                                                        <option selected value="@i Month">@i Month </option>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i Month">@i Month </option>
+
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <option value="@i Months">@i Months </option>
+                                                }
                                             }
                                             else
                                             {
-                                                <option value="@i Months">@i Months </option>
 
+                                                if (Model.EveryMonth == i + " Months")
+                                                {
+                                                    <option selected value="@i Months">@i Months </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@i Months">@i Months </option>
+
+                                                }
                                             }
                                         }
-                                    }
 
-                                </select>
-                            </div>
+                                    </select>
+                                </div>
 
-                            <div class="form-group col-md-12">
-                                <label>On The</label><br />
-                                <select class="form-control choices__input" id="OnThe" name="On">
+                                <div class="form-group col-md-12">
+                                    <label>On The</label><br />
+                                    <select class="form-control choices__input" id="OnThe" name="On">
 
-                                    <option value="23rd">23rd</option>
-                                    <option value="4th Saturday">4th Saturday</option>
-                                </select>
+                                        <option value="23rd">23rd</option>
+                                        <option value="4th Saturday">4th Saturday</option>
+                                    </select>
 
-                            </div>
+                                </div>
 
-                            <div class="form-group col-md-12">
-                                <label>Ends</label><br />
+                                <div class="form-group col-md-12">
+                                    <label>Ends</label><br />
 
-                                <select name="EndsMonth" id="EndMonth" class="form-control choices__input">
-                                    @if (Model.EndsMonth == "Never")
-                                    {
-                                        <option selected value="Never">Never</option>
-                                        <option value="Specific Date">On a Specific Date</option>
-                                        <option value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                    else if (Model.EndsMonth == "Specific Date")
-                                    {
-                                        <option value="Never">Never</option>
-                                        <option selected value="Specific Date">On a Specific Date</option>
-                                        <option value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="Never">Never</option>
-                                        <option value="Specific Date">On a Specific Date</option>
-                                        <option selected value="NumberOfTimes">After a Number of Times</option>
-                                    }
-                                </select>
-                            </div>
+                                    <select name="EndsMonth" id="EndMonth" class="form-control choices__input">
+                                        @if (Model.EndsMonth == "Never")
+                                        {
+                                            <option selected value="Never">Never</option>
+                                            <option value="Specific Date">On a Specific Date</option>
+                                            <option value="NumberOfTimes">After a Number of Times</option>
+                                        }
+                                        else if (Model.EndsMonth == "Specific Date")
+                                        {
+                                            <option value="Never">Never</option>
+                                            <option selected value="Specific Date">On a Specific Date</option>
+                                            <option value="NumberOfTimes">After a Number of Times</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="Never">Never</option>
+                                            <option value="Specific Date">On a Specific Date</option>
+                                            <option selected value="NumberOfTimes">After a Number of Times</option>
+                                        }
+                                    </select>
+                                </div>
 
-                            <div id="OnADateRowMonth" class="form-group col-md-12">
-                                <label>Ends Date</label><br />
-                                <input type="date" name="EndsDateMonth" class="form-control" value="@Model.EndsDateMonth" id="EndDate">
-                            </div>
+                                <div id="OnADateRowMonth" class="form-group col-md-12">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>Ends Date</label><br />
+                                        <input type="date" name="EndsDateMonth" class="form-control" value="@Model.EndsDateMonth" id="EndDate">
+                                    </div>
+                                </div>
 
 
-                            <div id="OnTimeRowMonth" class="form-group col-md-12">
-                                <label>Times</label><br />
-                                <input type="number" name="EndsNumberOfTimesMonth" value="@Model.EndsNumberOfTimesMonth" class="form-control" id="NumberOfTimes">
+                                <div id="OnTimeRowMonth" class="form-group col-md-12">
+                                    <div class="input-group input-group-dynamic">
+
+                                        <label>Times</label><br />
+                                        <input type="number" name="EndsNumberOfTimesMonth" value="@Model.EndsNumberOfTimesMonth" class="form-control" id="NumberOfTimes">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-12">
+                    <div class="col-md-12">
 
 
-                    @if (Model.ID == 0)
-                    {
-                        <button type="button" id="actionButton" class="btn btn-primary btn-rounded">Create EmployeePriceChange</button>
-                    }
-                    else
-                    {
-                        <button type="button" id="actionButton" class="btn btn-secondary btn-rounded">Edit EmployeePriceChange</button>
+                        @if (Model.ID == 0)
+                        {
+                            <button type="button" id="actionButton" class="btn btn-primary btn-rounded">Create EmployeePriceChange</button>
+                        }
+                        else
+                        {
+                            <button type="button" id="actionButton" class="btn btn-secondary btn-rounded">Edit EmployeePriceChange</button>
 
-                    }
-                    <a href="@Url.Action("Index", "EmployeePriceChange", new {EmployeeID= Model.EmployeeID})" class="btn btn-secondary  btn-rounded">CANCEL</a>
+                        }
+                        <a href="@Url.Action("Index", "EmployeePriceChange", new {EmployeeID= Model.EmployeeID})" class="btn btn-secondary  btn-rounded">CANCEL</a>
 
-                    <span id="validationText" class="text-danger"></span>
+                        <span id="validationText" class="text-danger"></span>
+                    </div>
                 </div>
             </div>
+
 
         </div>
 

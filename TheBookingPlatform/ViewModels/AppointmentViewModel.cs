@@ -54,6 +54,12 @@ namespace TheBookingPlatform.ViewModels
         public int DisplayOrder { get; set; }
     }
 
+
+    public class SaleOnCheckout
+    {
+        public Sale Sale { get; set; }
+        public List<SaleProductModel> SaleProducts { get; set; }
+    }
     public class AppointmentDetailsViewModel
     {
         public string Selected { get; set; }
@@ -95,6 +101,7 @@ namespace TheBookingPlatform.ViewModels
         public List<History> LoyaltyCardHistories { get; set; }
         public EmployeePriceChange EmployeePriceChange { get;  set; }
         public Coupon Coupon { get;  set; }
+        public SaleOnCheckout SaleOnCheckOut { get;  set; }
     }
 
 

@@ -4,93 +4,82 @@
 </style>
 <div class="card">
     <div class="card-body">
-        <div class="card-header">
-            <h4 class="card-title">Employee Price Changes for @Model.Employee.Name </h4>
-        </div>
+        <h2 class="card-title">Employee Price Changes for @Model.Employee.Name </h2>
+        <form>
 
-        <div class="card-content">
-            <form>
+            <div class="form-group">
 
-                <div class="form-group">
+                <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                @Html.ValidationSummary("", new { @class = "text-danger" })
 
-                    <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
-                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+                <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                <a href="@Url.Action("Action", "EmployeePriceChange", new {EmployeeID = Model.Employee.ID})" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
 
-                    <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
-                    <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
-                    <a href="@Url.Action("Action", "EmployeePriceChange", new {EmployeeID = Model.Employee.ID})" class="btn btn-outline-success btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
+            </div>
+        </form>
 
-                </div>
-            </form>
-        </div>
-    </div>
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                @if (Model.EmployeePriceChanges != null)
+                {
 
-    <div class="row">
-        <div class="col col-lg-12">
-            <div class="row">
+                        <div class="table-responsive">
+                            <table id="EmployeePriceChangeTable" class="table table-striped">
+                                <thead>
+                                    <tr>
 
-                <div class="col-lg-12 grid-margin stretch-card">
-                    @if (Model.EmployeePriceChanges != null)
-                    {
-                        <div class="card">
+                                        <th class="text-center">
+                                            Type
+                                        </th>
+                                        <th class="text-center">
+                                            Percentage
+                                        </th>
+                                        <th class="text-center">
+                                            Start Date
+                                        </th>
+                                        <th class="text-center">
+                                            End Date
+                                        </th>
 
-                            <div class="table-responsive">
-                                <table id="EmployeePriceChangeTable" class="table table-striped">
-                                    <thead>
+
+                                        <th class="text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.EmployeePriceChanges)
+                                    {
                                         <tr>
+                                            <td class="text-center">@item.TypeOfChange</td>
+                                            <td class="text-center">@item.Percentage</td>
+                                            <td class="text-center">@item.StartDate</td>
+                                            <td class="text-center">@item.EndDate</td>
 
-                                            <th class="text-center">
-                                                Type
-                                            </th>
-                                            <th class="text-center">
-                                                Percentage
-                                            </th>
-                                            <th class="text-center">
-                                                Start Date
-                                            </th>
-                                            <th class="text-center">
-                                                End Date
-                                            </th>
+                                            <td class="text-center">
 
+                                                <a href="@Url.Action("Action", "EmployeePriceChange", new {EmployeeID=Model.Employee.ID, ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                <button data-href="@Url.Action("Delete", "EmployeePriceChange", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
 
-                                            <th class="text-center">
-                                                Action
-                                            </th>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in Model.EmployeePriceChanges)
-                                        {
-                                            <tr>
-                                                <td class="text-center">@item.TypeOfChange</td>
-                                                <td class="text-center">@item.Percentage</td>
-                                                <td class="text-center">@item.StartDate</td>
-                                                <td class="text-center">@item.EndDate</td>
-
-                                                <td class="text-center">
-
-                                                    <a href="@Url.Action("Action", "EmployeePriceChange", new {EmployeeID=Model.Employee.ID, ID = item.ID })" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
-                                                    <button data-href="@Url.Action("Delete", "EmployeePriceChange", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
-
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
-                    }
-                    else
-                    {
+                }
+                else
+                {
 
-                        <div class="alert alert-warning col-md-12" role="alert">
-                            Sorry! No records exist.
-                        </div>
-                    }
-                </div>
+                    <div class="alert alert-warning col-md-12" role="alert">
+                        Sorry! No records exist.
+                    </div>
+                }
             </div>
         </div>
-    </div>
+        </div>
+
 
 </div>
 <div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">

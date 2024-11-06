@@ -82,5 +82,7 @@ namespace TheBookingPlatform.Database
         public DbSet<EventSwitch> EventSwitches { get; set; }
         public DbSet<EventSwitchDate> EventSwitchDates { get; set; }
         public DbSet<GEventSwitch> GEventSwitches { get; set; }
+        public DbSet<SaleProduct> SaleProducts { get; set; }
+        public DbSet<Sale> Sales { get; set; }
     }
 }

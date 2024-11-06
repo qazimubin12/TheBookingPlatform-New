@@ -1,6 +1,9 @@
 ﻿@model TheBookingPlatform.ViewModels.CustomerListingViewModel
 
-
+<head>
+    <link href="~/Content/TBPContent/autocomplete/content/styles.css" rel="stylesheet" />
+    <script type="text/javascript" src="~/Content/TBPContent/autocomplete/src/jquery.autocomplete.js"></script>
+</head>
 <style>
     .choices[data-type*='select-one'] .choices__inner {
         padding-bottom: 0;
@@ -27,7 +30,48 @@
     input[type="text"]::placeholder {
          padding: 10px; 
     }
-    
+
+    .dt-info{
+        display:none;
+    }
+    .autocomplete-suggestions {
+        box-sizing: border-box;
+        border-radius: 5px;
+        background: #FFF;
+        cursor: default;
+        overflow: auto;
+        -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
+        /* Customize the scrollbar */
+        scrollbar-width: thin; /* For Firefox */
+        scrollbar-color: #999 #FFF; /* For Firefox */
+    }
+
+        .autocomplete-suggestions::-webkit-scrollbar {
+            width: 10px; /* Set the width of the scrollbar */
+        }
+
+        /* Define the scrollbar thumb */
+        .autocomplete-suggestions::-webkit-scrollbar-thumb {
+            background-color: #999; /* Color of the thumb */
+            border-radius: 5px; /* Rounded corners for the thumb */
+        }
+
+            /* Define the scrollbar thumb on hover */
+            .autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+                background-color: #666; /* Color of the thumb on hover */
+            }
+
+        /* Define the scrollbar track on hover */
+        .autocomplete-suggestions::-webkit-scrollbar-track {
+            background-color: #FFF; /* Color of the track */
+        }
+
+        /* Define the scrollbar corner (optional) */
+        .autocomplete-suggestions::-webkit-scrollbar-corner {
+            background-color: #FFF; /* Color of the scrollbar corner */
+        }
     .ui-autocomplete {
         z-index: 1051; /* Ensure it's above other Bootstrap components */
         max-height: 200px;
@@ -54,6 +98,11 @@
         <h2 class="card-title">Customers</h2>
         <h4>Total Customers : @Model.TotalCustomerCount</h4>
         <div class="row">
+            <div style="display:flex;justify-content:start;margin-bottom:20px;">
+                <a  href="@Url.Action("Action", "Customer")" class="btn btn-success "><i class="fas fa-plus mr-1"></i> Create</a>
+                <button data-href="@Url.Action("Import", "Customer")" type="button" class="data-btn btn  btn-danger" data-toggle="modal" data-target="#actionModal"><i class="mdi mdi-delete"></i>IMPORT</button>
+                <button type="button" id="exportBtn" class="btn btn-success "> EXPORT</button>
+            </div>
             <div class="form-group">
                 <div class="input-group-dynamic">
                     <input style="border:solid 1px black;border-radius:10px;" type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers" />
@@ -271,44 +320,131 @@
                     $("#actionModal").modal('show'); // Make sure the modal is shown after the response is loaded
                 });
         });
+        initializeAutocompleteForCustomers();
 
+        function initializeAutocompleteForCustomers() {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("GetCustomers", "Appointment")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var lookup = [];
 
-        $("#AutoCompletecustomers").autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: '@Url.Action("GetCustomers", "Customer")',  // Using Razor syntax to generate the URL
-                    type: "GET",
-                    data: {
-                        SearchTerm: request.term
-                    },
-                    success: function (data) {
-                        response($.map(data, function (item) {
-                            return {
-                                label: item.FirstName + ' ' + item.LastName,
-                                value: item.FirstName + ' ' + item.LastName,
-                                url: "/Customer/CustomerProfile?ID=" + item.ID
-                            };
-                        }));
-                    }
-                });
-            },
-            select: function (event, ui) {
-                // Redirect to the URL of the selected item
-                window.location.href = ui.item.url;
-            }
-        }).data("ui-autocomplete")._renderMenu = function (ul, items) {
-            var self = this;
-            ul.addClass("list-group"); // Add Bootstrap list group class to ul
-            $.each(items, function (index, item) {
-                self._renderItemData(ul, item);
+                    // Iterate through the ServiceModel items
+                    data.forEach(function (customer) {
+
+                        if (customer.LastName == null) {
+                            lookup.push({
+                                value: customer.FirstName,
+                                CustomerInitials: customer.FirstName.charAt(0),
+                                CustomerName: customer.FirstName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        }
+                        else if (customer.FirstName == null) {
+                            lookup.push({
+                                value: customer.LastName,
+                                CustomerInitials: customer.LastName.charAt(0),
+                                CustomerName: customer.LastName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        } else {
+                            lookup.push({
+                                value: customer.FirstName + " " + customer.LastName,
+                                CustomerInitials: customer.FirstName.charAt(0) + customer.LastName.charAt(0),
+                                CustomerName: customer.FirstName + " " + customer.LastName,
+                                CustomerEmail: customer.Email,
+                                CustomerMobileNumber: customer.MobileNumber,
+                                IsBlocked: customer.IsBlocked,
+                                data: {
+                                    id: customer.ID // Add the service.ID to data
+                                }
+                            });
+                        }
+                    });
+                    hideLoadingSpinner();
+                    $('#AutoCompletecustomers').devbridgeAutocomplete({
+                        lookup: lookup,
+                        minChars: 0,
+                        formatResult: function (suggestion, currentValue) {
+                            // Customize the rendering of each suggestion
+
+                            if (suggestion.IsBlocked) {
+                                return '<table class="table table-hovered">' +
+                                    '<tbody>' +
+                                    '<tr>' +
+                                    '<td style="width:70px;" class="suggestion-initial">' +
+                                    '<div class="circular-box">' + suggestion.CustomerInitials + '</div>' +
+                                    '</td>' +
+                                    '<td class="suggestion-details">' +
+                                    '<div class="customer-name">' + suggestion.CustomerName + '</div>' +
+                                    '<div class="customer-email">' + suggestion.CustomerEmail + '</div>' +
+                                    '<div class="customer-mobile">' + suggestion.CustomerMobileNumber + '</div>' +
+                                    '<span class="customer-blockStatus text-danger">Customer Blocked</span>' +
+                                    '</td>' +
+                                    '</tr>' +
+                                    '</tbody>' +
+                                    '</table>';
+                            } else {
+                                return '<table class="table table-hovered">' +
+                                    '<tbody>' +
+                                    '<tr>' +
+                                    '<td style="width:70px;" class="suggestion-initial">' +
+                                    '<div class="circular-box">' + suggestion.CustomerInitials + '</div>' +
+                                    '</td>' +
+                                    '<td class="suggestion-details">' +
+                                    '<div class="customer-name">' + suggestion.CustomerName + '</div>' +
+                                    '<div class="customer-email">' + suggestion.CustomerEmail + '</div>' +
+                                    '<div class="customer-mobile">' + suggestion.CustomerMobileNumber + '</div>' +
+                                    '</td>' +
+                                    '</tr>' +
+                                    '</tbody>' +
+                                    '</table>';
+                            }
+                        },
+                        onSelect: function (suggestion) {
+                            var selectedCustomerID = suggestion.data.id;
+                            console.log(selectedCustomerID);
+                            var $inputElement = $(this);
+                            showLoadingSpinner();
+                            redirectToProfile(selectedCustomerID);
+                            // Now you can access the selected service ID (selectedServiceId)
+                            // and use it as needed.
+                        },
+                        showNoSuggestionNotice: true,
+                        onSearchComplete: function (query, suggestions) {
+                            // Show or hide the "Create Customer" button based on search results
+                            $createCustomerBtn.toggle(suggestions.length === 0);
+                            //if (suggestions.length > 0) {
+                            //    $("#CreateCustomerPanel").hide();
+                            //} else {
+                            //    $("#CreateCustomerPanel").show();
+
+                            //}
+
+                        },
+
+                        noSuggestionNotice: 'Sorry, no matching results'
+                    });
+                },
+                error: function (error) {
+                    console.error('Error fetching data:', error);
+                    hideLoadingSpinner();
+
+                }
             });
-        };
-
-        $("#AutoCompletecustomers").data("ui-autocomplete")._renderItem = function (ul, item) {
-            return $("<li class='list-group-item list-group-item-action'>")
-                .append("<div>" + item.label + "</div>")
-                .appendTo(ul);
-        };
+        }
     });
 
     function redirectToProfile(id) {

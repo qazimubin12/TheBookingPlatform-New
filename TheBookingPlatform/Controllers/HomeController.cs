@@ -217,7 +217,8 @@ namespace TheBookingPlatform.Controllers
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
             if (LoggedInUser.Role == "Super Admin")
             {
-                var Employees = EmployeeServices.Instance.GetEmployee().OrderBy(x => x.DisplayOrder).ToList();
+                var Employees = EmployeeServices.Instance.GetEmployee().OrderBy(x => x.DisplayOrder).ToList(); 
+              
                 var ListOfEmployeeModel = new List<EmployeeModel>();
                 foreach (var item in Employees)
                 {
@@ -237,7 +238,20 @@ namespace TheBookingPlatform.Controllers
             else
             {
                 var Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true).OrderBy(x => x.DisplayOrder).ToList();
-                var ListOfEmployeeModel = new List<EmployeeModel>();
+                var ListOfEmployeeModel = new List<EmployeeModel>(); 
+                var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == LoggedInUser.Company).FirstOrDefault();
+                var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
+                foreach (var item in employeeRequest)
+                {
+                    if (item.Accepted)
+                    {
+                        var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                        if (!Employees.Select(x => x.ID).ToList().Contains(employee.ID))
+                        {
+                            Employees.Add(employee);
+                        }
+                    }
+                }
                 foreach (var item in Employees)
                 {
                     var ServiceForEmployee = EmployeeServiceServices.Instance.GetEmployeeServiceWRTEmployeeID(item.ID).Select(x => x.ServiceID).ToList();

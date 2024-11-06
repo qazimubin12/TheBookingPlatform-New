@@ -104,9 +104,17 @@
                                                     <td>To Pay</td>
                                                     <td></td>
                                                     <td></td>
-                                                  
+
+                                                    @if (Model.Type != "Time to Time")
+                                                    {
                                                         <td>@Model.Amount @Model.Company.Currency</td>
-                                                    
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>@Model.Amount Hrs</td>
+
+                                                    }
+
                                                 </tr>
                                                 @if (Model.Type != "Percentage")
                                                 {

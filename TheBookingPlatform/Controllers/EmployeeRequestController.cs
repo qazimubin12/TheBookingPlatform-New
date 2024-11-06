@@ -458,10 +458,24 @@ namespace TheBookingPlatform.Controllers
             var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
             var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(loggedInUser.Company);
 
-
+            var company = CompanyServices.Instance.GetCompany(loggedInUser.Company).FirstOrDefault();
             model.GoogleCalendarIntegration = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(loggedInUser.Company);
             model.Calendars = await GetCalendars();
             model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company, true);
+
+            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
+            foreach (var item in employeeRequest)
+            {
+
+                var companyFrom = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                var companyFor = CompanyServices.Instance.GetCompany(item.CompanyIDFor);
+                var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                if (!model.Employees.Contains(employee))
+                {
+                    model.Employees.Add(employee);
+                }
+
+            }
             return View("IntegrationSettings", model);
         }
 

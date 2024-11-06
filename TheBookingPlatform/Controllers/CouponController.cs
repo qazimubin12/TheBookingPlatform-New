@@ -60,6 +60,7 @@ namespace TheBookingPlatform.Controllers
 
         public CouponController(AMUserManager userManager, AMSignInManager signInManager)
         {
+
             UserManager = userManager;
             SignInManager = signInManager;
         }
@@ -68,6 +69,10 @@ namespace TheBookingPlatform.Controllers
         {
             CouponListingViewModel model = new CouponListingViewModel();
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+            if (LoggedInUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
             if (LoggedInUser.Role != "Super Admin")
             {
                 model.Coupons = CouponServices.Instance.GetCouponWRTBusiness(LoggedInUser.Company);

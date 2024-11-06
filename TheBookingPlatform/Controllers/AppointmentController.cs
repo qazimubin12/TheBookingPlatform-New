@@ -1314,6 +1314,7 @@ namespace TheBookingPlatform.Controllers
         {
             var ServicesList = new List<ServiceModel>();
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+
             var Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == LoggedInUser.Company).FirstOrDefault();
 
             if (LoggedInUser.Role != "Super Admin")
@@ -1512,6 +1513,7 @@ namespace TheBookingPlatform.Controllers
         public JsonResult GetCustomers()
         {
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+
             var customers = new List<CustomerAppointmentModel>();
             if (LoggedInUser.Role != "Super Admin")
             {
@@ -1726,6 +1728,7 @@ namespace TheBookingPlatform.Controllers
             var ServiceListCommand = appointment.Service.Split(',').ToList();
             var ServiceDuration = appointment.ServiceDuration.Split(',').ToList();
             var ServiceDiscount = appointment.ServiceDiscount.Split(',').ToList();
+            var saleonCheckout =new  SaleOnCheckout();
 
 
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == appointment.Business).FirstOrDefault();
@@ -1757,6 +1760,21 @@ namespace TheBookingPlatform.Controllers
             model.Appointment = appointment;
             model.Employee = employee;
             model.Coupon = CouponServices.Instance.GetCoupon(appointment.CouponID);
+            var sale = SaleServices.Instance.GetSaleWRTBusiness(appointment.Business, appointment.ID).Where(x => x.Type == "Via Appointment").FirstOrDefault();
+            if (sale != null)
+            {
+                var saleProducts = SaleProductServices.Instance.GetSaleProductWRTBusiness(appointment.Business, sale.ID);
+                var listofSaleprodcutSModel = new List<SaleProductModel>();
+                foreach (var item in saleProducts)
+                {
+                    var product = ProductServices.Instance.GetProduct(item.ID);
+
+                    listofSaleprodcutSModel.Add(new SaleProductModel { Product = product, Qty = item.Qty, Total = item.Total });
+                }
+                saleonCheckout.Sale = sale;
+                saleonCheckout.SaleProducts = listofSaleprodcutSModel;
+                model.SaleOnCheckOut = saleonCheckout;
+            }
             model.Selected = "Checkout";
             return PartialView("_Checkout", model);
         }
@@ -1846,7 +1864,7 @@ namespace TheBookingPlatform.Controllers
             model.Appointment = appointment;
             model.Employee = employee;
             model.Selected = "Checkout";
-            model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == appointment.Business).FirstOrDefault();
+            model.Company = CompanyServices.Instance.GetCompany(appointment.Business).FirstOrDefault();
 
             return View(model);
 
@@ -2021,6 +2039,7 @@ namespace TheBookingPlatform.Controllers
             AppointmentListingViewModel model = new AppointmentListingViewModel();
             var mainWaitingListModel = new List<WaitingListDetailedModel>();
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+
             var SelectedDate = DateTime.Parse(Date);
             var EmployeeSelectedWaitingList = WaitingListServices.Instance.GetWaitingList(LoggedInUser.Company, SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, "Created", EmployeeID);
             var NonSelectedWaitingList = WaitingListServices.Instance.GetWaitingList(LoggedInUser.Company, SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, "Created", true);

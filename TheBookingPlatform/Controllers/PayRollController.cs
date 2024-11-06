@@ -70,6 +70,10 @@ namespace TheBookingPlatform.Controllers
         {
             PayRollViewModel model = new PayRollViewModel();
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+            if(LoggedInUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
             model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true);
             var company = CompanyServices.Instance.GetCompany().Where(X => X.Business == LoggedInUser.Company).FirstOrDefault();
             model.Statuses = company.StatusForPayroll.Split(',').ToList();

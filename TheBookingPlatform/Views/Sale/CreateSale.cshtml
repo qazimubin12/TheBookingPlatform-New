@@ -1,0 +1,195 @@
+﻿@model TheBookingPlatform.ViewModels.SaleActionViewModel
+@{
+    ViewBag.Title = "CreateSale";
+}
+<style>
+    label {
+        width: 100%;
+        margin-left: 0px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+    }
+</style>
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">
+                Add Products for @(Model.Type == "Via Appointment" ? "Appointment of:":"") @(Model.Customer != null ? Model.Customer.FirstName +" "+Model.Customer.LastName : "Walk In")
+            </h4>
+            <div class="row">
+                <input type="hidden" id="CustomerID" value="@(Model.Customer != null ? Model.Customer.ID : 0 )" />
+                <input type="hidden" id="ID" value="@Model.ID" />
+                <input type="hidden" id="AppointmentID" value="@Model.Appointment.ID" />
+
+                <div class="form-group col-md-6">
+                    <label>Select Product</label>
+                    <select id="ProductSelect" class="form-control choices__input">
+                        @foreach (var item in Model.Products)
+                        {
+                            <option data-price="@item.SalesPrice" value="@item.ID">@item.Name (Price: @item.SalesPrice @Model.Company.Currency)</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <div class="input-group input-group-dynamic">
+                        <label>Add Qty</label>
+                        <input type="number" class="form-control" id="QtyInput" value="1" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label>&nbsp;</label>
+                    <button type="button" id="addProductBtn" class="btn btn-block btn-secondary">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="display:none;"></th>
+                            <th class="text-center">Product</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @if (Model.SaleProducts != null)
+                        {
+                            foreach (var item in Model.SaleProducts)
+                            {
+                                <tr>
+                                    <td class="text-center" style="display:none;">@item.Product.ID</td>
+                                    <td class="text-center">@item.Product.Name</td>
+                                    <td class="text-center">@item.Qty</td>
+                                    <td class="text-center">@item.Total</td>
+                                    <td class="text-center"><button class="btn btn-sm btn-danger deleteBtn" type="button"><i class="fa fa-trash"></i></button></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <div class="input-group input-group-dynamic">
+                        <label>Remarks</label>
+                        <input type="text" class="form-control" value="@Model.Sale.Remarks" id="Remarks" />
+                    </div>
+                </div>
+                @if (Model.ID != 0)
+                {
+                    <button class="btn btn-secondary w-auto m-3" id="actionBtn" type="button">
+                        UPDATE
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-primary w-auto m-3" id="actionBtn" type="button">
+                        SAVE
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+      
+
+        $('#addProductBtn').on('click', function() {
+            // Get selected product details
+            const productID = $('#ProductSelect').val();
+            const productName = $('#ProductSelect option:selected').text();
+
+
+
+            // Extract the price from the text using a regular expression
+            var priceMatch = productName.match(/Price:\s*([\d.]+)/);
+            debugger
+            if (priceMatch) {
+                var selectedPrice = parseFloat(priceMatch[1]); // Convert the matched price to a number
+
+                const qty = parseInt($('#QtyInput').val()) || 1;
+                const total = (selectedPrice * qty).toFixed(2);
+
+                console.log("Selected Product Price: " + selectedPrice);
+                if ($('#tableBody').find(`tr[data-product-id="${productID}"]`).length > 0) {
+                    alert("This product is already added. Please update the quantity if needed.");
+                    return;
+                }
+
+                // Append a new row to the table
+                const newRow = `
+    <tr data-product-id="${productID}">
+        <td class="text-center" style="display:none;">${productID}</td>
+        <td class="text-center">${productName}</td>
+        <td class="text-center">${qty}</td>
+        <td class="text-center">${total}</td>
+        <td class="text-center"><button class="btn btn-sm btn-danger deleteBtn" type="button"><i class="fa fa-trash"></i></button></td>
+    </tr>
+`;
+                $('#tableBody').append(newRow);
+            }
+            else {
+                console.log("Price not found in the selected option.");
+            }
+           
+            // Check if product is already added
+            
+
+            // Clear the quantity input for the next entry
+            $('#QtyInput').val(1);
+        });
+
+        // Handle row deletion
+        $('#tableBody').on('click', '.deleteBtn', function() {
+            $(this).closest('tr').remove();
+        });
+
+
+        $("#actionBtn").click(function () {
+
+            const saleData = {
+                CustomerID: document.getElementById("CustomerID").value || 0,
+                ID: document.getElementById("ID").value,
+                Remarks: document.getElementById("Remarks").value || "",
+                AppointmentID: document.getElementById("AppointmentID").value || 0,
+                SaleProducts: []
+            };
+
+            // Populate saleProducts array directly based on table rows
+            const rows = document.querySelectorAll("#tableBody tr");
+            rows.forEach(row => {
+                const productID = row.cells[0].innerText;
+                const qty = row.cells[2].innerText;
+                const total = row.cells[3].innerText;
+
+                saleData.SaleProducts.push({
+                    productID: parseInt(productID),
+                    qty: parseInt(qty),
+                    total: parseFloat(total)
+                });
+            });
+
+
+            $.ajax({
+                url: "/Sale/SaveSale", // Update with your controller action URL
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(saleData),
+                success: function (response) {
+                    console.log("Sale saved successfully!", response);
+                },
+                error: function (error) {
+                    console.error("Error saving sale:", error);
+                }
+            });
+        });
+    });
+</script>
