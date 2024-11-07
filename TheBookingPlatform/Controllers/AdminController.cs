@@ -643,30 +643,26 @@ namespace TheBookingPlatform.Controllers
             var Invoices = InvoiceServices.Instance.GetInvoices(loggedInUser.Company, AppointmentIDs);
             foreach (var item in Invoices)
             {
-                if (servicesAll.Select(x => x.ID).Contains(item.AppointmentID))
+
+                if (item.PaymentMethod.Trim() == "Cash")
                 {
-                    if (item.PaymentMethod == "Cash")
-                    {
-                        CheckOutCashCount += item.GrandTotal;
-                    }
-                    else if (item.PaymentMethod == "Card")
-                    {
-                        CheckOutCardCount += item.GrandTotal;
-                    }
-                    else if (item.PaymentMethod == "Gift Card")
-                    {
-                        CheckOutGiftCardCount += item.GrandTotal;
-                    }
-                    else if (item.PaymentMethod == "Pin")
-                    {
-                        CheckOutPinCount += item.GrandTotal;
-                    }
-                    else if (item.PaymentMethod == "Loyalty Card")
-                    {
-                        CheckOutLoyaltyCardCount += item.GrandTotal;
-                    }
+                    CheckOutCashCount += item.GrandTotal;
+                }
+                else if (item.PaymentMethod.Trim() == "Card")
+                {
+                    CheckOutCardCount += item.GrandTotal;
+                }
+                else if (item.PaymentMethod.Trim() == "Gift Card")
+                {
+                    CheckOutGiftCardCount += item.GrandTotal;
+                }
+           
+                else if (item.PaymentMethod.Trim() == "Loyalty Card")
+                {
+                    CheckOutLoyaltyCardCount += item.GrandTotal;
                 }
             }
+            
 
             int NoOfRebookReminderSent = 0;
             int NoOfRebookReminderClicked = 0;

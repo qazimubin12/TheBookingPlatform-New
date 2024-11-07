@@ -134,9 +134,10 @@
                                     <h5 class="font-weight-bolder mb-0">
                                         @Model.NewClients
                                     </h5>
-                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
 
-                                </div>
+                                </div>         
+                                <p class="text-sm">New client metrics are tracked according to the booking date instead of the appointment date.</p></span>
+
                                 <div class="col-5">
                                     <div class="dropdown text-end">
                                         <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
@@ -157,9 +158,10 @@
                                     <h5 class="font-weight-bolder mb-0">
                                         @Model.ReturnedClients
                                     </h5>
-                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
 
-                                </div><div class="col-5">
+                                </div>
+                                <p class="text-sm ">Clients who had a booking in the previous month(s) and have booked again in the current / future month(s).</p>
+                                <div class="col-5">
                                     <div class="dropdown text-end">
                                         <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
 
@@ -183,9 +185,10 @@
 
 
                                     <button id="downloadExcel" class="btn btn-sm btn-primary">Download</button>
-                                    <span style="white-space:nowrap;" class="text-sm text-end text-success font-weight-bolder mt-auto mb-0">+12% <span class="font-weight-normal text-secondary">since last month</span></span>
 
-                                </div><div class="col-5">
+                                </div>
+                                <p class="text-sm ">Clients who had a booking in the previous month(s) but do not have an appointment scheduled in the current / future month(s).</p>
+                                <div class="col-5">
                                     <div class="dropdown text-end">
                                         <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
 

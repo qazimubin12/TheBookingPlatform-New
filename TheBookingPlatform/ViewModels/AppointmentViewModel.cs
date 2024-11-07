@@ -9,6 +9,8 @@ namespace TheBookingPlatform.ViewModels
     public class AppointmentListingViewModel
     {
         public bool TodayOff { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime  EndDate { get; set; }
         public DateTime SelectedDate { get; set; }
         public List<Holiday> Holidays { get; set; }
         public List<WaitingListDetailedModel> MainWaitingLists { get; set; }

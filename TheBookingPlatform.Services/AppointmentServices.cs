@@ -143,6 +143,22 @@ namespace TheBookingPlatform.Services
             }
         }
 
+        public List<Appointment> GetAppointmentBookingWRTBusiness(string businesName, bool Deleted, bool isCancelled, int EmployeeID,DateTime StartDate,DateTime EndDate)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Appointments.AsNoTracking().Where(x => x.Business == businesName && x.DELETED == Deleted && x.IsCancelled == isCancelled && x.EmployeeID == EmployeeID
+                && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
+                                && DbFunctions.TruncateTime(x.Date) <= EndDate.Date).OrderBy(x => x.Date).ToList();
+
+            }
+        }
+
+
+
+
+
         public List<Appointment> GetAppointmentBookingWRTBusiness(string businesName, bool Deleted, bool isCancelled)
         {
             using (var context = new DSContext())
@@ -429,6 +445,19 @@ namespace TheBookingPlatform.Services
                 return totalServices;
             }
         }
+        public List<Appointment> GetAllAppointmentWRTBusiness(string Business, bool isDeleted,  DateTime StartDate, DateTime EndDate)
+        {
+            using (var context = new DSContext())
+            {
+                var totalServices = context.Appointments.AsNoTracking()
+                .Where(x => x.Business == Business
+                  && x.DELETED == false
+ && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
+                                && DbFunctions.TruncateTime(x.Date) <= EndDate.Date)
+                .ToList();
+                return totalServices;
+            }
+        }
 
         public List<Appointment> GetAllAppointment(string SearchTerm = "")
         {
@@ -660,8 +689,8 @@ namespace TheBookingPlatform.Services
                   && x.DepositMethod == "Cash"
                   && SelectedEmployeeIds.Contains(x.EmployeeID)
                   && !AbsenseServiceIDs.Contains(x.Service)
- && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
-                                && DbFunctions.TruncateTime(x.Date) <= StartDate.Date)
+                 && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
+                                && DbFunctions.TruncateTime(x.Date) <= EndDate.Date)
       .Select(X => X.Deposit);
                 if (totalDeposit.Any())
                 {
@@ -688,7 +717,7 @@ namespace TheBookingPlatform.Services
                   && SelectedEmployeeIds.Contains(x.EmployeeID)
                   && !AbsenseServiceIDs.Contains(x.Service)
  && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
-                                && DbFunctions.TruncateTime(x.Date) <= StartDate.Date).Select(X => X.Deposit);
+                                && DbFunctions.TruncateTime(x.Date) <= EndDate.Date).Select(X => X.Deposit);
 
 
                 if (totalDeposit.Any())
@@ -716,7 +745,7 @@ namespace TheBookingPlatform.Services
                   && SelectedEmployeeIds.Contains(x.EmployeeID)
                   && !AbsenseServiceIDs.Contains(x.Service)
                      && DbFunctions.TruncateTime(x.Date) >= StartDate.Date
-                                && DbFunctions.TruncateTime(x.Date) <= StartDate.Date)
+                                && DbFunctions.TruncateTime(x.Date) <= EndDate.Date)
                  .Select(X => X.Deposit);
                 if (totalDeposit.Any())
                 {

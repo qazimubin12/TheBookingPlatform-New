@@ -106,13 +106,13 @@
                 <div id="MainSideBar" class="col-md-2" style="border-right:solid 0.5px gray;">
                     @if (Model.SaleOnCheckOut != null)
                     {
-                        <a class="btn btn-success" href="@Url.Action("CreateSale", "Sale", new {SaleID=Model.SaleOnCheckOut.Sale.ID, AppointmentID = Model.Appointment.ID })">
+                        <a title="Add Products" class="btn btn-success" href="@Url.Action("CreateSale", "Sale", new {SaleID=Model.SaleOnCheckOut.Sale.ID, AppointmentID = Model.Appointment.ID })">
                             <i class="material-icons">category</i>
                         </a>
                     }
                     else
                     {
-                        <a class="btn btn-success" href="@Url.Action("CreateSale", "Sale", new { AppointmentID = Model.Appointment.ID })">
+                        <a title="Add Products" class="btn btn-success" href="@Url.Action("CreateSale", "Sale", new { AppointmentID = Model.Appointment.ID })">
                             <i class="material-icons">category</i>
                         </a>
                     }

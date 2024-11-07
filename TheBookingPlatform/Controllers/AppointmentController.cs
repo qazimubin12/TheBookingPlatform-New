@@ -1167,26 +1167,35 @@ namespace TheBookingPlatform.Controllers
         }
 
         [NoCache]
-        public ActionResult Index(string SearchTerm = "")
+        public ActionResult Index(string StartDate = "",string EndDate = "")
         {
 
             AppointmentListingViewModel model = new AppointmentListingViewModel();
             var AppointmentModel = new List<AppointmentListModel>();
-            model.SearchTerm = SearchTerm;
+            if(StartDate != "" && EndDate != "")
+            {
+               model.StartDate = DateTime.Parse(StartDate);
+                model.EndDate = DateTime.Parse(EndDate);
+            }
+            else
+            {
+                model.StartDate = DateTime.Now;
+                model.EndDate = DateTime.Now;
+            }
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == LoggedInUser.Company).FirstOrDefault();
 
             if (LoggedInUser.Role != "Super Admin")
             {
                 model.OpeningHours = OpeningHourServices.Instance.GetOpeningHoursWRTBusiness(LoggedInUser.Company, "");
-                var appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false);
+                var appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, model.StartDate, model.EndDate);
                 var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(model.Company.ID);
                 foreach (var item in employeerequests)
                 {
                     if (item.Accepted)
                     {
                         var employeeCompany = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                        appointments.AddRange(AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(employeeCompany.Business, false, false, item.EmployeeID));
+                        appointments.AddRange(AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(employeeCompany.Business, false, false, item.EmployeeID,model.StartDate,model.EndDate));
                     }
                 }
                 appointments = appointments.Distinct(new AppointmentComparer()).ToList();
@@ -2222,6 +2231,48 @@ namespace TheBookingPlatform.Controllers
             }
             // Return the HTML to populate the modal
             return Json(appointmentModel, JsonRequestBehavior.AllowGet);
+        }
+
+        public string SendEmail(string toEmail, string subject, string emailBody, Company company)
+        {
+
+            try
+            {
+                string senderEmail = "support@yourbookingplatform.com";
+                string senderPassword = "ttpa fcbl mpbn fxdl";
+
+                int Port = int.Parse(ConfigurationManager.AppSettings["portforSmtp"]);
+                string Host = ConfigurationManager.AppSettings["hostForSmtp"];
+                MailMessage mail = new MailMessage();
+                mail.To.Add(toEmail);
+                MailAddress ccAddress = new MailAddress(company.NotificationEmail, company.Business);
+
+                mail.CC.Add(ccAddress);
+                mail.From = new MailAddress(company.NotificationEmail, company.Business, System.Text.Encoding.UTF8);
+                mail.Subject = subject;
+                mail.SubjectEncoding = System.Text.Encoding.UTF8;
+                mail.ReplyTo = new MailAddress(company.NotificationEmail); // Set the ReplyTo address
+
+                mail.Body = emailBody;
+                mail.BodyEncoding = System.Text.Encoding.UTF8;
+                mail.IsBodyHtml = true;
+
+                mail.Priority = MailPriority.High;
+                SmtpClient client = new SmtpClient();
+                client.Credentials = new System.Net.NetworkCredential(senderEmail, senderPassword);
+                client.Port = Port;
+                client.Host = Host;
+                client.EnableSsl = true;
+                client.Send(mail);
+                return "Done";
+            }
+            catch (Exception ex)
+            {
+                Session["EmailStatus"] = ex.ToString();
+                return "Failed";
+            }
+           
+
         }
 
 
@@ -3803,7 +3854,9 @@ namespace TheBookingPlatform.Controllers
                     waitingList.WaitingListStatus = "Created";
                     WaitingListServices.Instance.UpdateWaitingList(waitingList);
                 }
+                
                 var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
+                var company = CompanyServices.Instance.GetCompany(LoggedInUser.Company).FirstOrDefault();
                 if (model.ID == 0)
                 {
                     var customer = CustomerServices.Instance.GetCustomer(model.CustomerID);
@@ -4331,7 +4384,6 @@ namespace TheBookingPlatform.Controllers
 
                             }
 
-                            var company = CompanyServices.Instance.GetCompany().Where(x => x.CreatedBy == LoggedInUser.Id).FirstOrDefault();
                             if (company == null)
                             {
                                 company = CompanyServices.Instance.GetCompany().Where(x => x.Business.Trim() == LoggedInUser.Company.Trim()).FirstOrDefault();
@@ -4423,8 +4475,14 @@ namespace TheBookingPlatform.Controllers
                 }
                 else
                 {
+                    bool Switched = false;
                     var appointment = AppointmentServices.Instance.GetAppointment(model.ID);
+                    if(appointment.CustomerID != model.CustomerID)
+                    {
+                        Switched = true;
+                    }
                     var customer = CustomerServices.Instance.GetCustomer(appointment.CustomerID);
+
                     var oldDate = appointment.Date.ToString("yyyy-MM-dd");
                     var oldTime = appointment.Time.ToString("H:mm");
                     var oldEmployeeID = appointment.EmployeeID;
@@ -4614,8 +4672,6 @@ namespace TheBookingPlatform.Controllers
                     }
                     else
                     {
-                        appointment.Business = appointment.Business;
-                        appointment.BookingDate = appointment.BookingDate;
                         appointment.Date = model.Date;
                         appointment.Time = model.Time;
                         appointment.Days = model.Days;
@@ -4795,9 +4851,6 @@ namespace TheBookingPlatform.Controllers
                             history.EmployeeName = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID).Name;
                             HistoryServices.Instance.SaveHistory(history);
                         }
-
-                                               
-                        var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
                         string ConcatenatedServices = "";
                         foreach (var item in appointment.Service.Split(',').ToList())
                         {
@@ -4815,6 +4868,58 @@ namespace TheBookingPlatform.Controllers
                                 }
                             }
                         }
+                        if (Switched)
+                        {
+                            #region ConfirmationEmailSender
+                            var EmailTemplate = "";
+                            if (!AppointmentServices.Instance.IsNewCustomer(company.Business, appointment.CustomerID))
+                            {
+                                EmailTemplate = "First Registration Email";
+                            }
+                            else
+                            {
+                                EmailTemplate = "Appointment Confirmation";
+                            }
+
+
+
+
+                          
+                            var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+
+
+                            string emailBody = "<html><body>";
+                            var emailTemplate = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(appointment.Business, EmailTemplate);
+                            if (emailTemplate != null)
+                            {
+                                emailBody += "<h2 style='font-family: Arial, sans-serif;'>" + EmailTemplate + "</h2>";
+                                emailBody += emailTemplate.TemplateCode;
+                                emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
+                                emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
+                                emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
+                                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                                emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
+                                emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
+                                emailBody = emailBody.Replace("{{employee}}", employee.Name);
+                                emailBody = emailBody.Replace("{{employee_specialization}}", employee.Specialization);
+                                emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
+
+                                emailBody = emailBody.Replace("{{services}}", ConcatenatedServices);
+                                emailBody = emailBody.Replace("{{company_name}}", company.Business);
+                                emailBody = emailBody.Replace("{{company_email}}", company.NotificationEmail);
+                                emailBody = emailBody.Replace("{{company_address}}", company.Address);
+                                emailBody = emailBody.Replace("{{company_logo}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + company.Logo}'>");
+                                emailBody = emailBody.Replace("{{company_phone}}", company.PhoneNumber);
+                                emailBody = emailBody.Replace("{{password}}", customer.Password);
+                                string cancelLink = string.Format("http://app.yourbookingplatform.com/Appointment/CancelByEmail/?AppointmentID={0}", appointment.ID);
+                                emailBody = emailBody.Replace("{{cancellink}}", $"<a href='{cancelLink}' class='btn btn-primary'>CANCEL/RESCHEDULE</a>");
+                                emailBody += "</body></html>";
+                                SendEmail(customer.Email, EmailTemplate, emailBody, company);
+                            }
+                            #endregion
+                        }
+
+                        
 
                         var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                         if (googleCalendar != null && !googleCalendar.Disabled)
@@ -4851,7 +4956,6 @@ namespace TheBookingPlatform.Controllers
                                 }
                             }
                         }
-                        var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == appointment.Business).FirstOrDefault();
                         var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
                         var emailDetails = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(appointment.Business, "Appointment Moved");
                         if (emailDetails != null && emailDetails.IsActive == true)
@@ -5721,43 +5825,71 @@ namespace TheBookingPlatform.Controllers
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
-        public ActionResult DeletedAppointments()
+        public ActionResult DeletedAppointments(string StartDate = "",string EndDate = "")
         {
             AppointmentListingViewModel model = new AppointmentListingViewModel();
+            if (StartDate != "" && EndDate != "")
+            {
+                model.StartDate = DateTime.Parse(StartDate);
+                model.EndDate = DateTime.Parse(EndDate);
+            }
+            else
+            {
+                model.StartDate = DateTime.Now;
+                model.EndDate = DateTime.Now;
+            }
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
-            var appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, true);
+            var appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, true).Where(x => x.Date >= model.StartDate && x.Date <= model.EndDate).ToList();
             var AppointmentModel = new List<AppointmentListModel>();
             foreach (var item in appointments)
             {
                 var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
-                var ServiceListCommand = item.Service.Split(',').ToList();
-                var ServiceDuration = item.ServiceDuration.Split(',').ToList();
-
-
-                var serviceList = new List<ServiceModelForCustomerProfile>();
-                for (int i = 0; i < ServiceListCommand.Count && i < ServiceDuration.Count; i++)
+                if(item.Service != null)
                 {
-                    var serivce = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
-                    var serviceViewModel = new ServiceModelForCustomerProfile
+                    var ServiceListCommand = item.Service.Split(',').ToList();
+                    var ServiceDuration = item.ServiceDuration.Split(',').ToList();
+
+
+                    var serviceList = new List<ServiceModelForCustomerProfile>();
+                    for (int i = 0; i < ServiceListCommand.Count && i < ServiceDuration.Count; i++)
                     {
-                        Name = serivce.Name,
-                        Duration = ServiceDuration[i]
-                    };
+                        var serivce = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
+                        var serviceViewModel = new ServiceModelForCustomerProfile
+                        {
+                            Name = serivce.Name,
+                            Duration = ServiceDuration[i]
+                        };
 
-                    serviceList.Add(serviceViewModel);
-                }
-                if (customer == null)
-                {
+                        serviceList.Add(serviceViewModel);
+                    }
+                    if (customer == null)
+                    {
 
-                    AppointmentModel.Add(new AppointmentListModel { DeletedTime = item.DeletedTime, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = " ", EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = "Walk In", Services = serviceList });
+                        AppointmentModel.Add(new AppointmentListModel { DeletedTime = item.DeletedTime, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = " ", EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = "Walk In", Services = serviceList });
+                    }
+                    else
+                    {
+
+                        AppointmentModel.Add(new AppointmentListModel { DeletedTime = item.DeletedTime, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = customer.LastName, EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = customer.FirstName, Services = serviceList });
+
+                    }
                 }
                 else
                 {
+                    
+                    if (customer == null)
+                    {
 
-                    AppointmentModel.Add(new AppointmentListModel { DeletedTime = item.DeletedTime, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = customer.LastName, EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = customer.FirstName, Services = serviceList });
+                        AppointmentModel.Add(new AppointmentListModel { DeletedTime = item.DeletedTime, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = " ", EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = "Walk In" });
+                    }
+                    else
+                    {
 
+                        AppointmentModel.Add(new AppointmentListModel { DeletedTime = item.DeletedTime, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = customer.LastName, EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = customer.FirstName });
+
+                    }
                 }
+              
             }
             model.Appointments = AppointmentModel;
             return View(model);

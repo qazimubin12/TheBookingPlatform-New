@@ -94,6 +94,7 @@ namespace TheBookingPlatform.Services
 
         public void SaveHistory(History File)
         {
+            File.Date = DateTime.Now;
             using (var context = new DSContext())
             {
                 context.Histories.Add(File);

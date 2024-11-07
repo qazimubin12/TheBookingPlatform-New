@@ -17,44 +17,45 @@
         <div class="card-body">
             <h4 class="card-title">Appointments </h4>
 
-            <form>
 
-                <div class="form-group">
+            <div class="form-group">
 
-                    <a href="@Url.Action("DeletedAppointments", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded"> VIEW DELETED</a>
+                <a href="@Url.Action("DeletedAppointments", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded"> VIEW DELETED</a>
 
-                    <a href="@Url.Action("Action", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded" type="button"><i class="fas fa-plus mr-1"></i> Create</a>
-                </div>
+                <a href="@Url.Action("Action", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded" type="button"><i class="fas fa-plus mr-1"></i> Create</a>
+            </div>
 
-                @if (!User.IsInRole("Calendar"))
+            @if (!User.IsInRole("Calendar"))
+            {
+                if (Model.OpeningHours != null)
                 {
-                    if (Model.OpeningHours != null)
+                    if (Model.OpeningHours.Count() > 7)
                     {
-                        if (Model.OpeningHours.Count() > 7)
-                        {
-                            <a id="CalendarButton" href="@Url.Action("Calendar", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded" type="button"><i class="fas fa-calendar mr-1"></i> Calendar</a>
-                        }
+                        <a id="CalendarButton" href="@Url.Action("Calendar", "Appointment")" class="btn btn-outline-success btn-sm btn-rounded" type="button"><i class="fas fa-calendar mr-1"></i> Calendar</a>
                     }
+                }
+                <form>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="input-group input-group-dynamic">
 
                                 <label>Start Date:</label>
-                                <input type="date" value="@DateTime.Now.AddDays(1 - DateTime.Now.Day).ToString("yyyy-MM-dd")" class="form-control" name="StartDate" id="StartDate" />
+                                <input type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control" name="StartDate" id="StartDate" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="input-group input-group-dynamic">
 
                                 <label>End Date:</label>
-                                <input type="date" value="@DateTime.Now.AddMonths(1).AddDays(-DateTime.Now.AddMonths(1).Day).ToString("yyyy-MM-dd")" class="form-control" name="EndDate" id="EndDate" />
+                                <input type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control" name="EndDate" id="EndDate" />
                             </div>
                         </div>
+                        <button class="btn btn-primary btn-sm btn-rounded w-auto" type="submit">FILTER</button>
                     </div>
+                </form>
 
-                    <a href="@Url.Action("Export", "Appointment")" id="exportBtn" class="btn btn-outline-success btn-sm btn-rounded">EXPORT</a>
-                }
-            </form>
+                <a href="@Url.Action("Export", "Appointment")" id="exportBtn" class="btn btn-outline-success btn-sm btn-rounded">EXPORT</a>
+            }
 
 
             @{
@@ -83,7 +84,7 @@
             var newUrl = "@Url.Action("Export", "Appointment")?StartDate=" + startDateValue + "&EndDate=" + endDateValue;
 
             // Update the href attribute of the export button
-            $("#exportBtn").attr("href", newUrl);
+            $("#exportBtn").attr("href", newUrl); 
         }
          updateExportLink();
     });
