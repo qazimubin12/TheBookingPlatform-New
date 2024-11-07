@@ -699,7 +699,9 @@
 
                     <select class="selectpicker" id="SelectedStatuses" name="SelectedStatuses" data-style="select-with-transition" multiple title="Choose Statuses" data-size="7">
                             <option disabled> Choose Status</option>
-                            @foreach (var item in Model.Statuses)
+                        @if (Model.Statuses != null)
+                        {
+                            foreach (var item in Model.Statuses)
                             {
                                 if (item == "Paid" || item == "Pending")
                                 {
@@ -711,6 +713,7 @@
                                     <option value="@item">@item </option>
                                 }
                             }
+                        }
                         </select>
                 </div>
                 <div class="form-group col-md-3" style="margin-top:8px;">

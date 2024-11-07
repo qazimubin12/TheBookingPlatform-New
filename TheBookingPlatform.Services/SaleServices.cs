@@ -48,6 +48,15 @@ namespace TheBookingPlatform.Services
             }
         }
 
+        public List<Sale> GetSaleWRTBusiness(string Business,List<int> Ids)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Sales.Where(x => x.Business == Business && Ids.Contains(x.AppointmentID)).OrderBy(x => x.ID).ToList();
+
+            }
+        }
         public List<Sale> GetSaleWRTBusiness(string Business, int CustomerID,string Type)
         {
             using (var context = new DSContext())

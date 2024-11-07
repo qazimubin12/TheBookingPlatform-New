@@ -58,9 +58,19 @@ namespace TheBookingPlatform.Services
             }
         }
 
+        public List<SaleProduct> GetSaleProductWRTBusiness(string Business, List<int> ReferenceIDs)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.SaleProducts.Where(x => x.Business == Business && ReferenceIDs.Contains(x.ReferenceID)).OrderBy(x => x.ID).ToList();
+
+            }
+        }
 
 
-      
+
+
         public SaleProduct GetSaleProduct(int ID)
         {
             using (var context = new DSContext())

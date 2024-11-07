@@ -1193,37 +1193,56 @@ namespace TheBookingPlatform.Controllers
                 foreach (var item in appointments)
                 {
                     var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
-                    var ServiceListCommand = item.Service.Split(',').ToList();
-                    var ServiceDuration = item.ServiceDuration.Split(',').ToList();
-
-
-                    var serviceList = new List<ServiceModelForCustomerProfile>();
-                    for (int i = 0; i < ServiceListCommand.Count && i < ServiceDuration.Count; i++)
+                    if(item.Service != null)
                     {
-                        var serivce = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
-                        if (serivce != null)
+                        var ServiceListCommand = item.Service.Split(',').ToList();
+                        var ServiceDuration = item.ServiceDuration.Split(',').ToList();
+
+
+                        var serviceList = new List<ServiceModelForCustomerProfile>();
+                        for (int i = 0; i < ServiceListCommand.Count && i < ServiceDuration.Count; i++)
                         {
-                            var serviceViewModel = new ServiceModelForCustomerProfile
+                            var serivce = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
+                            if (serivce != null)
                             {
-                                Name = serivce.Name,
-                                Duration = ServiceDuration[i]
-                            };
+                                var serviceViewModel = new ServiceModelForCustomerProfile
+                                {
+                                    Name = serivce.Name,
+                                    Duration = ServiceDuration[i]
+                                };
 
-                            serviceList.Add(serviceViewModel);
+                                serviceList.Add(serviceViewModel);
+                            }
                         }
-                    }
-                    if (customer == null)
-                    {
+                        if (customer == null)
+                        {
 
-                        var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                        AppointmentModel.Add(new AppointmentListModel { Business = employee.Business, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = " ", EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = "Walk In", Services = serviceList });
+                            var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                            AppointmentModel.Add(new AppointmentListModel { Business = employee.Business, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = " ", EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = "Walk In", Services = serviceList });
+                        }
+                        else
+                        {
+                            var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+
+                            AppointmentModel.Add(new AppointmentListModel { Business = employee.Business, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = customer.LastName, EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = customer.FirstName, Services = serviceList });
+
+                        }
                     }
                     else
                     {
-                        var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                        if (customer == null)
+                        {
 
-                        AppointmentModel.Add(new AppointmentListModel { Business = employee.Business, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = customer.LastName, EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = customer.FirstName, Services = serviceList });
+                            var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                            AppointmentModel.Add(new AppointmentListModel { Business = employee.Business, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = " ", EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = "Walk In" });
+                        }
+                        else
+                        {
+                            var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
 
+                            AppointmentModel.Add(new AppointmentListModel { Business = employee.Business, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = customer.LastName, EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = customer.FirstName });
+
+                        }
                     }
                 }
                 model.Appointments = AppointmentModel;

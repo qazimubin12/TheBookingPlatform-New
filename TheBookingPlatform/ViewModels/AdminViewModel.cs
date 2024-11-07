@@ -45,6 +45,8 @@ namespace TheBookingPlatform.ViewModels
     }
     public class AnalysisViewModel
     {
+        public float saleProductsAmount { get; set; }
+
         public List<DayWiseSale> DayWiseSales { get; set; }
         public List<Employee> Employees { get; set; }
         public List<string> Statuses { get; set; }

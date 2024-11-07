@@ -58,10 +58,12 @@
                                   
                                     <td class="text-center">
                                         <select class="form-control text-center">
-
-                                            @foreach (var service in item.Services)
+                                            @if (item.Services != null && item.Services.Count() > 1)
                                             {
+                                                foreach (var service in item.Services)
+                                                {
                                                 <option value="@service.Name">@service.Name - @service.Duration</option>
+                                                }
                                             }
                                         </select>
                                     </td>

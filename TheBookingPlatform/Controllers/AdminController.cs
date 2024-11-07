@@ -353,6 +353,10 @@ namespace TheBookingPlatform.Controllers
             var AbsenseServiceIds = ServiceServices.Instance.GetAbsenseServiceIDs(loggedInUser.Company);
 
             var AllAppointmentsWithabsenceIDsFilters = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(StartDate, EndDate, loggedInUser.Company, IsCancelled, selectedEmployees);
+            if(SelectedStatuses != null && SelectedStatuses.Count() > 0)
+            {
+                AllAppointmentsWithabsenceIDsFilters = AllAppointmentsWithabsenceIDsFilters.Where(x => SelectedStatuses.Contains(x.Status.Trim())).ToList();
+            }
             model.SumOfOnlineDeposit = AllAppointmentsWithabsenceIDsFilters.Where(x => x.DepositMethod == "Online").Sum(x => x.Deposit);
             model.SumOfCashDeposit = AllAppointmentsWithabsenceIDsFilters.Where(x => x.DepositMethod == "Cash").Sum(x => x.Deposit);
             model.SumOfPinDeposit = AllAppointmentsWithabsenceIDsFilters.Where(x => x.DepositMethod == "Pin").Sum(x => x.Deposit);
@@ -397,6 +401,14 @@ namespace TheBookingPlatform.Controllers
             model.NumberOfClientsOnEachDays = dayWiseClientVisitation;
             var ListOfOnlinePriceChange = new List<OnlinePriceChangeModel>();
             var ListOfEmployeePriceChange = new List<EmployeePriceChangeModel>();
+            var AppointmentIDs = servicesAll.Select(x => x.ID).ToList();
+            var sales = SaleServices.Instance.GetSaleWRTBusiness(loggedInUser.Company, AppointmentIDs).Select(x=>x.ID).ToList();
+            var saleProducts = SaleProductServices.Instance.GetSaleProductWRTBusiness(loggedInUser.Company, sales);
+            float saleProductsAmount = 0;
+            if(saleProducts != null && saleProducts.Count() > 0)
+            {
+                saleProductsAmount = saleProducts.Sum(x => x.Total);
+            }
             try
             {
                 foreach (var service in servicesAll)
@@ -553,7 +565,7 @@ namespace TheBookingPlatform.Controllers
             }
             model.TotalOfflineDiscount = OfflineDiscountCost;
             model.TotalPriceAfterOfflineDiscount = ServiceCost - OfflineDiscountCost;
-
+            model.saleProductsAmount = saleProductsAmount;
             var OnlinePriceChange = 0.0;
             foreach (var item in ListOfOnlinePriceChange)
             {
@@ -628,7 +640,7 @@ namespace TheBookingPlatform.Controllers
             float CheckOutPinCount = 0;
             float CheckOutGiftCardCount = 0;
             float CheckOutLoyaltyCardCount = 0;
-            var Invoices = InvoiceServices.Instance.GetInvoice().Where(X => X.Business == loggedInUser.Company).ToList();
+            var Invoices = InvoiceServices.Instance.GetInvoices(loggedInUser.Company, AppointmentIDs);
             foreach (var item in Invoices)
             {
                 if (servicesAll.Select(x => x.ID).Contains(item.AppointmentID))

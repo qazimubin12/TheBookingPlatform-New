@@ -77,7 +77,7 @@
                 <div class="form-group">
                     <div class="input-group input-group-dynamic">
                         <label>Remarks</label>
-                        <input type="text" class="form-control" value="@Model.Sale.Remarks" id="Remarks" />
+                        <input type="text" class="form-control" value="@(Model.Sale != null ? Model.Sale.Remarks:"")" id="Remarks" />
                     </div>
                 </div>
                 @if (Model.ID != 0)
@@ -184,7 +184,7 @@
                 contentType: "application/json",
                 data: JSON.stringify(saleData),
                 success: function (response) {
-                    console.log("Sale saved successfully!", response);
+                    window.location.href = '/Appointment/AppointmentDetailsCheckOutView?AppointmentID='+@Model.Appointment.ID;
                 },
                 error: function (error) {
                     console.error("Error saving sale:", error);

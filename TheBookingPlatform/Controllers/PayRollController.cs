@@ -74,9 +74,24 @@ namespace TheBookingPlatform.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true);
             var company = CompanyServices.Instance.GetCompany().Where(X => X.Business == LoggedInUser.Company).FirstOrDefault();
-            model.Statuses = company.StatusForPayroll.Split(',').ToList();
+            var Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true);
+
+            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
+            foreach (var item in employeeRequest)
+            {
+                if (item.Accepted)
+                {
+                    var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                    if (!Employees.Select(x => x.ID).ToList().Contains(employee.ID))
+                    {
+                        Employees.Add(employee);
+                    }
+                }
+            }
+
+            model.Employees = Employees;
+            model.Statuses = company.StatusForPayroll?.Split(',').ToList();
             model.EmployeeID = Employee;
             model.Type = Type;
             model.Employee = EmployeeServices.Instance.GetEmployee(Employee);
@@ -249,7 +264,7 @@ namespace TheBookingPlatform.Controllers
             var ServicePrice = 0.0;
             if (employee.Type == "Time to Time")
             {
-                appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, model.EmployeeID, model.StartDate, model.EndDate, model.isCancelled).Where(x => x.Color != "darkgray" && model.Status.Contains(x.Status.Trim())).OrderBy(X=>X.Date.Day).ThenBy(x => x.Time.TimeOfDay).ToList();
+                appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, model.EmployeeID, model.StartDate, model.EndDate, model.isCancelled).Where(x => x.Color != "darkgray" && model.Status.Contains(x.Status?.Trim())).OrderBy(X=>X.Date.Day).ThenBy(x => x.Time.TimeOfDay).ToList();
                 var groupedByDate = appointments
        .GroupBy(a => a.Date.Date);
                 foreach (var item in groupedByDate)
