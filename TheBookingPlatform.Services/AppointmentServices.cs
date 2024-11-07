@@ -496,8 +496,13 @@ namespace TheBookingPlatform.Services
 
         public void SaveAppointment(Appointment Appointment)
         {
+            if (Appointment.Status == null || Appointment.Status == "")
+            {
+                Appointment.Status = "Pending";
+            }
             using (var context = new DSContext())
             {
+
                 context.Appointments.Add(Appointment);
                 context.SaveChanges();
             }
@@ -507,6 +512,10 @@ namespace TheBookingPlatform.Services
         {
             try
             {
+                if (Appointment.Status == null || Appointment.Status == "")
+                {
+                    Appointment.Status = "Pending";
+                }
                 using (var context = new DSContext())
                 {
                     context.Entry(Appointment).State = EntityState.Modified;
@@ -523,6 +532,10 @@ namespace TheBookingPlatform.Services
 
         public void UpdateAppointmentNew(Appointment appointment)
         {
+            if (appointment.Status == null || appointment.Status == "")
+            {
+                appointment.Status = "Pending";
+            }
             try
             {
                 using (var context = new DSContext())

@@ -355,7 +355,7 @@ namespace TheBookingPlatform.Controllers
             var AllAppointmentsWithabsenceIDsFilters = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(StartDate, EndDate, loggedInUser.Company, IsCancelled, selectedEmployees);
             if(SelectedStatuses != null && SelectedStatuses.Count() > 0)
             {
-                AllAppointmentsWithabsenceIDsFilters = AllAppointmentsWithabsenceIDsFilters.Where(x => SelectedStatuses.Contains(x.Status.Trim())).ToList();
+                AllAppointmentsWithabsenceIDsFilters = AllAppointmentsWithabsenceIDsFilters.Where(x => SelectedStatuses.Contains(x.Status?.Trim())).ToList();
             }
             model.SumOfOnlineDeposit = AllAppointmentsWithabsenceIDsFilters.Where(x => x.DepositMethod == "Online").Sum(x => x.Deposit);
             model.SumOfCashDeposit = AllAppointmentsWithabsenceIDsFilters.Where(x => x.DepositMethod == "Cash").Sum(x => x.Deposit);
