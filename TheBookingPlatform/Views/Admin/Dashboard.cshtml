@@ -3,7 +3,13 @@
     ViewBag.Title = "Dashboard";
     DateTime firstDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     DateTime lastDayOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+    var colors = new[] { "primary", "secondary", "success", "danger", "warning", "info", "light", "dark" };
+    var random = new Random();
 }
+    
+
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
@@ -11,6 +17,7 @@
         overflow-x: scroll;
         width: contain;
     }
+
     label {
         width: 100%;
         margin-left: 0px;
@@ -83,136 +90,267 @@
     }
 </div>
 
-<div class="row " style=" padding-left: 0px; padding-right: 0px; ">
-    
-    <div class="card ">
-        <div class="card-body">
-            <form>
+<div class="row" style="padding-left: 0; padding-right: 0;">
+
+    @if (!User.IsInRole("Calendar"))
+    {
+        <div class="card">
+            <div class="card-body">
+                <form>
+                    <div class="row">
+                        <!-- Start Date -->
+                        <div class="form-group col-md-3">
+                            <div class="input-group input-group-dynamic">
+                                <label for="StartDate">Start Date</label>
+                                <input type="date" class="form-control"
+                                       id="StartDate" name="StartDate"
+                                       value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="form-group col-md-3">
+                            <div class="input-group input-group-dynamic">
+                                <label for="EndDate">End Date</label>
+                                <input type="date" class="form-control"
+                                       id="EndDate" name="EndDate"
+                                       value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+
+                        <!-- Last Appointment Filter -->
+                        <div class="form-group col-md-3">
+                            <label for="FilterDuration">Last Appointment Filter</label>
+                            <select name="FilterDuration" id="FilterDuration" class="form-select">
+                                <option @(Model.FilterDuration == "30 days" ? "selected" : "") value="30 days">30 days</option>
+                                <option @(Model.FilterDuration == "60 days" ? "selected" : "") value="60 days">60 days</option>
+                                <option @(Model.FilterDuration == "3 months" ? "selected" : "") value="3 months">3 months ago</option>
+                                <option @(Model.FilterDuration == "6 months" ? "selected" : "") value="6 months">6 months ago</option>
+                                <option @(Model.FilterDuration == "1 year" ? "selected" : "") value="1 year">1 year ago</option>
+                                <option @(Model.FilterDuration == "2 years" ? "selected" : "") value="2 years">2 years ago</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Button -->
+                        <div class="form-group col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary btn-sm">FILTER</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Statistics Title -->
+                <h4 class="card-title mt-4">Clients Acquired And Return(s) Statistics</h4>
+
+                <!-- Statistics Cards -->
                 <div class="row">
-                    <div class="form-group col-md-3">
-                        <div class="input-group input-group-dynamic">
-                            <label>Start Date</label>
-                            <input type="date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" id="StartDate" name="StartDate" />
-                        </div>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <div class="input-group input-group-dynamic">
-                            <label>End Date</label>
-                            <input type="date" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" id="EndDate" name="EndDate" />
-                        </div>
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label>Last Appointment Filter</label>
-                        <select name="FilterDuration" id="FilterDuration" class="form-select">
-                            <option @(Model.FilterDuration == "30 days" ? "selected" : "") value="30 days">30 days</option>
-                            <option @(Model.FilterDuration == "60 days" ? "selected" : "") value="60 days">60 days</option>
-                            <option @(Model.FilterDuration == "3 months" ? "selected" : "") value="3 months">3 months ago</option>
-                            <option @(Model.FilterDuration == "6 months" ? "selected" : "") value="6 months">6 months ago</option>
-                            <option @(Model.FilterDuration == "1 year" ? "selected" : "") value="1 year">1 year ago</option>
-                            <option @(Model.FilterDuration == "2 years" ? "selected" : "") value="2 years">2 years ago</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-3" style="margin-top:40px;">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                            FILTER
-                        </button>
-                    </div>
-                </div>
-            </form>
-            <h4 class="card-title">
-                Clients Acquired And Return(s) Statistics
-            </h4>
-
-            <div class="row">
-
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body p-3 position-relative">
-                            <div class="row">
-                                <div class="col-7 text-start">
-                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">New Clients</p>
-                                    <h5 class="font-weight-bolder mb-0">
-                                        @Model.NewClients
-                                    </h5>
-
-                                </div>         
-                                <p class="text-sm">New client metrics are tracked according to the booking date instead of the appointment date.</p></span>
-
-                                <div class="col-5">
-                                    <div class="dropdown text-end">
+                    <!-- New Clients Card -->
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <p class="text-sm mb-1 font-weight-bold">New Clients</p>
+                                        <h5 class="font-weight-bolder">@Model.NewClients</h5>
+                                        <p class="text-sm">New client metrics are tracked according to the booking date instead of the appointment date.</p>
+                                    </div>
+                                    <div class="col-5 text-end">
                                         <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
-
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body p-3 position-relative">
-                            <div class="row">
-                                <div class="col-7 text-start">
-                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">Returned Visit</p>
-                                    <h5 class="font-weight-bolder mb-0">
-                                        @Model.ReturnedClients
-                                    </h5>
-
-                                </div>
-                                <p class="text-sm ">Clients who had a booking in the previous month(s) and have booked again in the current / future month(s).</p>
-                                <div class="col-5">
-                                    <div class="dropdown text-end">
+                    <!-- Returned Visit Card -->
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <p class="text-sm mb-1 font-weight-bold">Returned Visit</p>
+                                        <h5 class="font-weight-bolder">@Model.ReturnedClients</h5>
+                                        <p class="text-sm">Clients who had a booking in previous months and booked again in the current/future months.</p>
+                                    </div>
+                                    <div class="col-5 text-end">
                                         <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
-
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-sm-4">
-                    <div class="card">
-                        <div class="card-body p-3 position-relative">
-                            <div class="row">
-                                <div class="col-7 text-start">
-                                    <p class="text-sm mb-1 text-capitalize font-weight-bold">Lost Clients</p>
-                                    <h5 class="font-weight-bolder mb-0">
-                                        @Model.LostClients
-                                    </h5>
-
-
-                                    <button id="downloadExcel" class="btn btn-sm btn-primary">Download</button>
-
-                                </div>
-                                <p class="text-sm ">Clients who had a booking in the previous month(s) but do not have an appointment scheduled in the current / future month(s).</p>
-                                <div class="col-5">
-                                    <div class="dropdown text-end">
+                    <!-- Lost Clients Card -->
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <p class="text-sm mb-1 font-weight-bold">Lost Clients</p>
+                                        <h5 class="font-weight-bolder">@Model.LostClients</h5>
+                                        <p class="text-sm">Clients who booked in previous months but have no future appointments.</p>
+                                        <button id="downloadExcel" class="btn btn-primary btn-sm mt-2">Download</button>
+                                    </div>
+                                    <div class="col-5 text-end">
                                         <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
-
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
-    </div>
 
+
+
+        <div class="card">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex align-items-center">
+                    <h6 class="mb-0">This is the percentage of time employees /staffs are productively working. Calculation also includes appointments from external calendars.</h6>
+                    @*<button type="button" class="btn btn-icon-only btn-rounded btn-outline-secondary mb-0 ms-2 btn-sm d-flex align-items-center justify-content-center ms-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="See the consumption per room">
+                        <i class="fas fa-info"></i>
+                    </button>*@
+                </div>
+            </div>
+            <div class="card-body p-3">
+                @if (Model.EmployeeOccupancies != null && Model.EmployeeOccupancies.Count() > 0)
+                {
+                    
+                        <div class="row">
+                            <div class="col-5 text-center">
+                                <div class="chart">
+                                    <canvas id="chart-consumption" class="chart-canvas" height="197"></canvas>
+                                </div>
+                                <h4 class="font-weight-bold mt-n8">
+                                    <span>@Model.EmployeeOccupancies.Where(x=>x.Percentage >= 0).Select(x=>x.Percentage).Average()%</span>
+                                    <span class="d-block text-body text-sm">Calendar Bookings</span>
+                                </h4>
+                            </div>
+                            <div class="col-7">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center mb-0">
+                                        <tbody>
+                                            @foreach (var item in Model.EmployeeOccupancies.Where(x => x.Percentage >= 0))
+                                            {
+                                                var color = "bg-gradient-" + colors[random.Next(colors.Length)];
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex px-2 py-0">
+                                                        <span class="badge @color me-3"> </span>
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">@item.Employee.Name</h6>
+                                                            @*<span>Worked Hours: @item.WorkedHours</span>
+                                                            <span>Total Hours: @item.TotalTime</span>*@
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                
+                                                <td class="align-middle text-center text-sm">
+                                                    <span class="text-xs"> @item.Percentage% </span>
+                                                </td>
+                                            </tr>
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                
+            </div>
+        </div>
+    }
 </div>
+
 
 <div class="modal fade" id="actionModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
     </div>
 </div>
+<script>
+    // Convert C# data to JavaScript arrays for labels and values
+    var chartLabels = [];
+    var chartData = [];
+         @if (Model.EmployeeOccupancies != null && Model.EmployeeOccupancies.Count() > 0)
+         {
+             foreach (var item in Model.EmployeeOccupancies.Where(x => x.Percentage >= 0))
+             {
+        <text>
+            chartLabels.push('@item.Employee.Name');
+            chartData.push(@item.Percentage);
+        </text>
+             }
+         }
+</script>
 
 <script>
 
+    function LoadChart() {
+        var ctx1 = document.getElementById("chart-consumption").getContext("2d");
+
+        var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
+
+        gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
+        gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
+        gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
+
+        new Chart(ctx1, {
+            type: "doughnut",
+            data: {
+                labels: chartLabels, // Use dynamic labels
+                datasets: [{
+                    label: "Consumption",
+                    weight: 9,
+                    cutout: 90,
+                    tension: 0.9,
+                    pointRadius: 2,
+                    borderWidth: 2,
+                    backgroundColor: ['#FF0080', '#9E9E9E', '#03A9F4', '#4CAF50', '#ff667c'],
+                    data: chartData, // Use dynamic data
+                    fill: false
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            drawBorder: false,
+                            display: false,
+                            drawOnChartArea: false,
+                            drawTicks: false,
+                        },
+                        ticks: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            drawBorder: false,
+                            display: false,
+                            drawOnChartArea: false,
+                            drawTicks: false,
+                        },
+                        ticks: {
+                            display: false,
+                        }
+                    },
+                },
+            },
+        });
+    }
 
     $(".data-btn").click(function () {
         $.ajax({
@@ -256,7 +394,11 @@
                 alert("Filter duration is required.");
             }
         });
+        LoadChart();
+
+
     });
+
 
 
 

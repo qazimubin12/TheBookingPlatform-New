@@ -161,7 +161,7 @@ namespace TheBookingPlatform.Controllers
             }
             else
             {
-                return Json(new { success = false}, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
 
             }
         }
@@ -203,9 +203,9 @@ namespace TheBookingPlatform.Controllers
         public JsonResult CheckEmployeeService(string Services, int EmployeeID)
         {
             var employee = EmployeeServices.Instance.GetEmployee(EmployeeID);
-            if(Services != "") { 
-            var finalIDsInt = Services.Split(',').Select(int.Parse).ToList();
-            var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == employee.Business).FirstOrDefault();
+            if (Services != "") {
+                var finalIDsInt = Services.Split(',').Select(int.Parse).ToList();
+                var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == employee.Business).FirstOrDefault();
                 if (EmployeeID != 0)
                 {
                     var employeeServices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(employee.Business, EmployeeID);
@@ -238,7 +238,7 @@ namespace TheBookingPlatform.Controllers
                 }
                 else
                 {
-                    return Json(new { success = false}, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false }, JsonRequestBehavior.AllowGet);
 
                 }
             }
@@ -929,7 +929,7 @@ namespace TheBookingPlatform.Controllers
                 }
                 appointments = appointments.Distinct(new AppointmentComparer()).ToList();
                 foreach (var item in appointments)
-                {  
+                {
                     if (item.IsPaid == false && item.DepositMethod == "Online" && item.IsCancelled == false && (DateTime.Now - item.BookingDate).TotalMinutes > 15)
                     {
                         item.IsCancelled = true;
@@ -962,7 +962,7 @@ namespace TheBookingPlatform.Controllers
 
                                 throw;
                             }
-                            
+
 
 
                         }
@@ -970,7 +970,7 @@ namespace TheBookingPlatform.Controllers
 
                         continue;
                     }
-                    if(item.DepositMethod == "Pin" && item.IsPaid == false)
+                    if (item.DepositMethod == "Pin" && item.IsPaid == false)
                     {
                         item.IsPaid = true;
                         AppointmentServices.Instance.UpdateAppointmentNew(item);
@@ -1167,14 +1167,14 @@ namespace TheBookingPlatform.Controllers
         }
 
         [NoCache]
-        public ActionResult Index(string StartDate = "",string EndDate = "")
+        public ActionResult Index(string StartDate = "", string EndDate = "")
         {
 
             AppointmentListingViewModel model = new AppointmentListingViewModel();
             var AppointmentModel = new List<AppointmentListModel>();
-            if(StartDate != "" && EndDate != "")
+            if (StartDate != "" && EndDate != "")
             {
-               model.StartDate = DateTime.Parse(StartDate);
+                model.StartDate = DateTime.Parse(StartDate);
                 model.EndDate = DateTime.Parse(EndDate);
             }
             else
@@ -1195,14 +1195,14 @@ namespace TheBookingPlatform.Controllers
                     if (item.Accepted)
                     {
                         var employeeCompany = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                        appointments.AddRange(AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(employeeCompany.Business, false, false, item.EmployeeID,model.StartDate,model.EndDate));
+                        appointments.AddRange(AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(employeeCompany.Business, false, false, item.EmployeeID, model.StartDate, model.EndDate));
                     }
                 }
                 appointments = appointments.Distinct(new AppointmentComparer()).ToList();
                 foreach (var item in appointments)
                 {
                     var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
-                    if(item.Service != null)
+                    if (item.Service != null)
                     {
                         var ServiceListCommand = item.Service.Split(',').ToList();
                         var ServiceDuration = item.ServiceDuration.Split(',').ToList();
@@ -1756,7 +1756,7 @@ namespace TheBookingPlatform.Controllers
             var ServiceListCommand = appointment.Service.Split(',').ToList();
             var ServiceDuration = appointment.ServiceDuration.Split(',').ToList();
             var ServiceDiscount = appointment.ServiceDiscount.Split(',').ToList();
-            var saleonCheckout =new  SaleOnCheckout();
+            var saleonCheckout = new SaleOnCheckout();
 
 
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == appointment.Business).FirstOrDefault();
@@ -2203,8 +2203,8 @@ namespace TheBookingPlatform.Controllers
 
                 int NoOfAppointments = InvoiceServices.Instance.GetInvoice(customer.Business, customer.ID, "").Count();
                 int NoOfNoShows = AppointmentServices.Instance
-                 .GetAllAppointmentWRTBusiness(customer.Business, false,customer.ID)
-                 .Where(x=>x.Status == "No Show")
+                 .GetAllAppointmentWRTBusiness(customer.Business, false, customer.ID)
+                 .Where(x => x.Status == "No Show")
                  .Count();
                 appointmentModel.NoOfAppointments = NoOfAppointments;
                 appointmentModel.NoOfNoShows = NoOfNoShows;
@@ -2271,7 +2271,7 @@ namespace TheBookingPlatform.Controllers
                 Session["EmailStatus"] = ex.ToString();
                 return "Failed";
             }
-           
+
 
         }
 
@@ -2558,7 +2558,7 @@ namespace TheBookingPlatform.Controllers
             var appointment = AppointmentServices.Instance.GetAppointment(int.Parse(id));
             var oldDate = appointment.Date;
             var oldtime = appointment.Time;
-            var oldEmployee= EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+            var oldEmployee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
 
             var result = AppointmentServices.Instance.UpdateEvent(id, start, end, int.Parse(EmployeeID));
 
@@ -2643,9 +2643,9 @@ namespace TheBookingPlatform.Controllers
                 //{
                 //}
                 RefreshToken(appointment.Business);
-                if(oldEmployee.ID != appointment.EmployeeID)
+                if (oldEmployee.ID != appointment.EmployeeID)
                 {
-                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices,oldEmployee.ID);
+                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployee.ID);
 
 
                 }
@@ -3854,7 +3854,7 @@ namespace TheBookingPlatform.Controllers
                     waitingList.WaitingListStatus = "Created";
                     WaitingListServices.Instance.UpdateWaitingList(waitingList);
                 }
-                
+
                 var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
                 var company = CompanyServices.Instance.GetCompany(LoggedInUser.Company).FirstOrDefault();
                 if (model.ID == 0)
@@ -4477,11 +4477,11 @@ namespace TheBookingPlatform.Controllers
                 {
                     bool Switched = false;
                     var appointment = AppointmentServices.Instance.GetAppointment(model.ID);
-                    if(appointment.CustomerID != model.CustomerID)
+                    if (appointment.CustomerID != model.CustomerID)
                     {
                         Switched = true;
                     }
-                    var customer = CustomerServices.Instance.GetCustomer(appointment.CustomerID);
+                    var customer = CustomerServices.Instance.GetCustomer(model.CustomerID);
 
                     var oldDate = appointment.Date.ToString("yyyy-MM-dd");
                     var oldTime = appointment.Time.ToString("H:mm");
@@ -4659,7 +4659,7 @@ namespace TheBookingPlatform.Controllers
                                 RefreshToken(LoggedInUser.Company);
                                 if (oldEmployeeID != appointment.EmployeeID)
                                 {
-                                    GenerateonGoogleCalendar(appointment.ID, service,oldEmployeeID);
+                                    GenerateonGoogleCalendar(appointment.ID, service, oldEmployeeID);
 
                                 }
                                 else
@@ -4884,7 +4884,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                          
+
                             var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
 
 
@@ -4919,14 +4919,14 @@ namespace TheBookingPlatform.Controllers
                             #endregion
                         }
 
-                        
+
 
                         var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                         if (googleCalendar != null && !googleCalendar.Disabled)
                         {
                             if (oldEmployeeID != appointment.EmployeeID)
                             {
-                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices,oldEmployeeID);
+                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployeeID);
 
                             }
                             else
@@ -5093,7 +5093,7 @@ namespace TheBookingPlatform.Controllers
                 return "Error: Google Calendar service not found.";
             }
             var userCalendarID = "";
-            if(oldEmployeeID != 0)
+            if (oldEmployeeID != 0)
             {
                 userCalendarID = Oldemployee.GoogleCalendarID;
             }
@@ -5113,7 +5113,7 @@ namespace TheBookingPlatform.Controllers
             var Nresponse = NrestClient.Delete(Nrequest);
             if (oldEmployeeID != 0)
             {
-                
+
                 if (Nresponse.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     RefreshToken(appointment.Business);
@@ -5195,7 +5195,7 @@ namespace TheBookingPlatform.Controllers
                         history.Type = "Error";
                         HistoryServices.Instance.SaveHistory(history);
                         return "Error: " + response.Content;
-                        
+
                     }
                 }
                 else
@@ -5289,7 +5289,7 @@ namespace TheBookingPlatform.Controllers
                     history.Type = "Error";
                     HistoryServices.Instance.SaveHistory(history);
                     return "Error: " + response.Content;
-                    
+
                 }
             }
 
@@ -5554,7 +5554,7 @@ namespace TheBookingPlatform.Controllers
                             IDTobeUsed = appointment.FirstRepeatedID;
                         }
                         var appointmentsoccurency = AppointmentServices.Instance.OtherRecurrencesAppointments(IDTobeUsed);
-                            var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                        var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
                         foreach (var item in appointmentsoccurency)
                         {
 
@@ -5609,7 +5609,7 @@ namespace TheBookingPlatform.Controllers
                                 history.Type = "Error";
                                 HistoryServices.Instance.SaveHistory(history);
                             }
-                          
+
                         }
                         //try
                         //{
@@ -5825,7 +5825,7 @@ namespace TheBookingPlatform.Controllers
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult DeletedAppointments(string StartDate = "",string EndDate = "")
+        public ActionResult DeletedAppointments(string StartDate = "", string EndDate = "")
         {
             AppointmentListingViewModel model = new AppointmentListingViewModel();
             if (StartDate != "" && EndDate != "")
@@ -5844,7 +5844,7 @@ namespace TheBookingPlatform.Controllers
             foreach (var item in appointments)
             {
                 var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
-                if(item.Service != null)
+                if (item.Service != null)
                 {
                     var ServiceListCommand = item.Service.Split(',').ToList();
                     var ServiceDuration = item.ServiceDuration.Split(',').ToList();
@@ -5876,7 +5876,7 @@ namespace TheBookingPlatform.Controllers
                 }
                 else
                 {
-                    
+
                     if (customer == null)
                     {
 
@@ -5889,7 +5889,7 @@ namespace TheBookingPlatform.Controllers
 
                     }
                 }
-              
+
             }
             model.Appointments = AppointmentModel;
             return View(model);
@@ -6176,12 +6176,12 @@ namespace TheBookingPlatform.Controllers
             var EndDat = DateTime.Parse(EndDate);
             if (LoggedInUser.Role != "Super Admin")
             {
-                Appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false)
-                    .Where(X => X.Date >= StartDat && X.Date <= EndDat).ToList();
+                Appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, StartDat, EndDat);
 
             }
             else
             {
+
                 Appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(false)
                      .Where(X => X.Date >= StartDat && X.Date <= EndDat).ToList();
             }
@@ -6216,172 +6216,248 @@ namespace TheBookingPlatform.Controllers
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             foreach (var Appointment in Appointments)
             {
-                var appointmentServiceIds = Appointment.Service.Split(',').ToList();
-
-                if (appointmentServiceIds.Count() > 0)
+                if (Appointment.Service != null)
                 {
-                    if (Appointment.Service != null)
+                    var appointmentServiceIds = Appointment.Service.Split(',').ToList();
+
+                    if (appointmentServiceIds.Count() > 0)
                     {
-                        var ServiceListCommand = Appointment.Service.Split(',').ToList();
-                        var ServiceDuration = Appointment.ServiceDuration.Split(',').ToList();
-                        var ServiceDiscount = Appointment.ServiceDiscount.Split(',').ToList();
-
-                        for (int i = 0; i < ServiceListCommand.Count && i < ServiceDuration.Count && i < ServiceDiscount.Count; i++)
+                        if (Appointment.Service != null)
                         {
-                            if (i == 0)
+                            var ServiceListCommand = Appointment.Service.Split(',').ToList();
+                            var ServiceDuration = Appointment.ServiceDuration.Split(',').ToList();
+                            var ServiceDiscount = Appointment.ServiceDiscount.Split(',').ToList();
+
+                            for (int i = 0; i < ServiceListCommand.Count && i < ServiceDuration.Count && i < ServiceDiscount.Count; i++)
                             {
-                                DataRow row = tableData.NewRow();
-                                var customer = CustomerServices.Instance.GetCustomer(Appointment.CustomerID);
-                                row["ID"] = Appointment.ID;
-                                row["Employee"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Name;
-                                row["Employee Specialization"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Specialization;
-
-                                if (customer == null)
+                                if (i == 0)
                                 {
-                                    row["Client Name"] = "Walk In";
-                                    row["Client Phone"] = "";
-                                    row["Client Email"] = "";
-                                }
-                                else
-                                {
-                                    row["Client Name"] = customer.FirstName + " " + customer.LastName;
-                                    row["Client Phone"] = customer.MobileNumber;
-                                    row["Client Email"] = customer.Email;
-                                }
+                                    DataRow row = tableData.NewRow();
+                                    var customer = CustomerServices.Instance.GetCustomer(Appointment.CustomerID);
+                                    row["ID"] = Appointment.ID;
+                                    row["Employee"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Name;
+                                    row["Employee Specialization"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Specialization;
 
-                                row["Visit Date"] = Appointment.Date.ToString("yyyy-MM-dd") + " -" + Appointment.Time.ToString("H:mm:ss");
-                                row["Created Date"] = Appointment.BookingDate.ToString("yyyy-MM-dd");
-                                row["Status"] = Appointment.Status;
-
-                                var service = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
-                                row["Service Category"] = service.Category;
-                                row["Service Names"] = service.Name;
-                                row["Service Cost"] = service.Price.ToString();
-                                row["Service Discount"] = float.Parse(ServiceDiscount[i]).ToString();
-                                row["Service Price After Discount"] = Convert.ToString(service.Price - (service.Price * float.Parse(ServiceDiscount[i]) / 100));
-                                row["Deposit Amount"] = Appointment.Deposit;
-                                row["Deposit Method"] = Appointment.DepositMethod;
-                                row["Notes"] = Appointment.Notes;
-                                row["ServiceDuration"] = ServiceDuration[i].ToString();
-
-                                var priceChange = PriceChangeServices.Instance.GetPriceChange(Appointment.OnlinePriceChange);
-                                if (priceChange != null)
-                                {
-                                    row["Online Price Change"] = priceChange.TypeOfChange + " " + priceChange.Percentage + " %";
-                                    if (priceChange.TypeOfChange == "Discount")
+                                    if (customer == null)
                                     {
-                                        row["Amount Change"] = service.Price * (priceChange.Percentage / 100);
+                                        row["Client Name"] = "Walk In";
+                                        row["Client Phone"] = "";
+                                        row["Client Email"] = "";
                                     }
                                     else
                                     {
-                                        row["Amount Change"] = service.Price * (priceChange.Percentage / 100);
+                                        row["Client Name"] = customer.FirstName + " " + customer.LastName;
+                                        row["Client Phone"] = customer.MobileNumber;
+                                        row["Client Email"] = customer.Email;
                                     }
 
-                                    if (priceChange.TypeOfChange == "Discount")
+                                    row["Visit Date"] = Appointment.Date.ToString("yyyy-MM-dd") + " -" + Appointment.Time.ToString("H:mm:ss");
+                                    row["Created Date"] = Appointment.BookingDate.ToString("yyyy-MM-dd");
+                                    row["Status"] = Appointment.Status;
+
+                                    var service = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
+                                    row["Service Category"] = service.Category;
+                                    row["Service Names"] = service.Name;
+                                    row["Service Cost"] = service.Price.ToString();
+                                    row["Service Discount"] = float.Parse(ServiceDiscount[i]).ToString();
+                                    row["Service Price After Discount"] = Convert.ToString(service.Price - (service.Price * float.Parse(ServiceDiscount[i]) / 100));
+                                    row["Deposit Amount"] = Appointment.Deposit;
+                                    row["Deposit Method"] = Appointment.DepositMethod;
+                                    row["Notes"] = Appointment.Notes;
+                                    row["ServiceDuration"] = ServiceDuration[i].ToString();
+
+                                    var priceChange = PriceChangeServices.Instance.GetPriceChange(Appointment.OnlinePriceChange);
+                                    if (priceChange != null)
                                     {
-                                        var serviceminusdeposit = service.Price/* - Appointment.Deposit*/;
-                                        var FinalTotal = serviceminusdeposit - (serviceminusdeposit * (priceChange.Percentage / 100));
-                                        row["Total After Price Change"] = FinalTotal;
+                                        row["Online Price Change"] = priceChange.TypeOfChange + " " + priceChange.Percentage + " %";
+                                        if (priceChange.TypeOfChange == "Discount")
+                                        {
+                                            row["Amount Change"] = service.Price * (priceChange.Percentage / 100);
+                                        }
+                                        else
+                                        {
+                                            row["Amount Change"] = service.Price * (priceChange.Percentage / 100);
+                                        }
+
+                                        if (priceChange.TypeOfChange == "Discount")
+                                        {
+                                            var serviceminusdeposit = service.Price/* - Appointment.Deposit*/;
+                                            var FinalTotal = serviceminusdeposit - (serviceminusdeposit * (priceChange.Percentage / 100));
+                                            row["Total After Price Change"] = FinalTotal;
+
+                                        }
+                                        else
+                                        {
+                                            var serviceminusdeposit = service.Price/* - Appointment.Deposit*/;
+                                            var FinalTotal = serviceminusdeposit + (serviceminusdeposit * (priceChange.Percentage / 100));
+                                            row["Total After Price Change"] = FinalTotal;
+                                        }
 
                                     }
                                     else
                                     {
-                                        var serviceminusdeposit = service.Price/* - Appointment.Deposit*/;
-                                        var FinalTotal = serviceminusdeposit + (serviceminusdeposit * (priceChange.Percentage / 100));
-                                        row["Total After Price Change"] = FinalTotal;
+                                        row["Online Price Change"] = "";
+                                        row["Amount Change"] = 0;
+                                        row["Total After Price Change"] = Convert.ToString(service.Price - (service.Price * float.Parse(ServiceDiscount[i]) / 100));
                                     }
-
+                                    row["Cancelled"] = Appointment.IsCancelled.ToString();
+                                    tableData.Rows.Add(row);
                                 }
                                 else
                                 {
-                                    row["Online Price Change"] = "";
-                                    row["Amount Change"] = 0;
-                                    row["Total After Price Change"] = Convert.ToString(service.Price - (service.Price * float.Parse(ServiceDiscount[i]) / 100));
+
+
+                                    // Create a row with no service information
+                                    DataRow row = tableData.NewRow();
+
+                                    row["ID"] = Appointment.ID;
+                                    row["Employee"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Name;
+                                    row["Employee Specialization"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Specialization;
+                                    var customer = CustomerServices.Instance.GetCustomer(Appointment.CustomerID);
+                                    if (customer == null)
+                                    {
+                                        row["Client Name"] = "Walk In";
+                                        row["Client Phone"] = "";
+                                        row["Client Email"] = "";
+                                    }
+                                    else
+                                    {
+                                        row["Client Name"] = customer.FirstName + " " + customer.LastName;
+                                        row["Client Phone"] = customer.MobileNumber;
+                                        row["Client Email"] = customer.Email;
+                                    }
+
+                                    row["Visit Date"] = Appointment.Date.ToString("yyyy-MM-dd") + " -" + Appointment.Time.ToString("H:mm:ss");
+                                    row["Created Date"] = Appointment.BookingDate.ToString("yyyy-MM-dd");
+                                    row["Status"] = Appointment.Status;
+
+                                    var service = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
+                                    row["Service Category"] = service.Category;
+                                    row["Service Names"] = service.Name;
+                                    row["Service Cost"] = service.Price.ToString();
+                                    row["Service Discount"] = "";
+                                    row["Service Price After Discount"] = Convert.ToString(service.Price - (service.Price * float.Parse(ServiceDiscount[i]) / 100));
+
+                                    row["ServiceDuration"] = ServiceDuration[i].ToString();
+
+                                    row["Deposit Amount"] = "";
+                                    row["Deposit Method"] = "";
+                                    row["Notes"] = Appointment.Notes;
+                                    var priceChange = PriceChangeServices.Instance.GetPriceChange(Appointment.OnlinePriceChange);
+                                    if (priceChange != null)
+                                    {
+                                        row["Online Price Change"] = priceChange.TypeOfChange + " " + priceChange.Percentage + " %";
+                                        if (priceChange.TypeOfChange == "Discount")
+                                        {
+                                            row["Amount Change"] = service.Price * (priceChange.Percentage / 100);
+                                        }
+                                        else
+                                        {
+                                            row["Amount Change"] = service.Price * (priceChange.Percentage / 100);
+                                        }
+
+
+                                        if (priceChange.TypeOfChange == "Discount")
+                                        {
+                                            var serviceminusdeposit = service.Price;
+                                            var FinalTotal = serviceminusdeposit - (serviceminusdeposit * (priceChange.Percentage / 100));
+                                            row["Total After Price Change"] = FinalTotal;
+                                        }
+                                        else
+                                        {
+                                            var serviceminusdeposit = service.Price;
+                                            var FinalTotal = serviceminusdeposit + (serviceminusdeposit * (priceChange.Percentage / 100));
+                                            row["Total After Price Change"] = FinalTotal;
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        row["Online Price Change"] = "";
+                                        row["Amount Change"] = 0;
+                                        row["Total After Price Change"] = Convert.ToString(service.Price - (service.Price * float.Parse(ServiceDiscount[i]) / 100));
+                                    }
+                                    row["Cancelled"] = Appointment.IsCancelled.ToString();
+                                    tableData.Rows.Add(row);
+
                                 }
-                                row["Cancelled"] = Appointment.IsCancelled.ToString();
-                                tableData.Rows.Add(row);
                             }
-                            else
-                            {
+
+                        }
+                    }
+                }
+                else
+                {
+                    DataRow row = tableData.NewRow();
+                    var customer = CustomerServices.Instance.GetCustomer(Appointment.CustomerID);
+                    row["ID"] = Appointment.ID;
+                    row["Employee"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Name;
+                    row["Employee Specialization"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Specialization;
+
+                    if (customer == null)
+                    {
+                        row["Client Name"] = "Walk In";
+                        row["Client Phone"] = "";
+                        row["Client Email"] = "";
+                    }
+                    else
+                    {
+                        row["Client Name"] = customer.FirstName + " " + customer.LastName;
+                        row["Client Phone"] = customer.MobileNumber;
+                        row["Client Email"] = customer.Email;
+                    }
+
+                    row["Visit Date"] = Appointment.Date.ToString("yyyy-MM-dd") + " -" + Appointment.Time.ToString("H:mm:ss");
+                    row["Created Date"] = Appointment.BookingDate.ToString("yyyy-MM-dd");
+                    row["Status"] = Appointment.Status;
 
 
-                                // Create a row with no service information
-                                DataRow row = tableData.NewRow();
+                    row["Service Category"] = "";
+                    row["Service Names"] = "";
+                    row["Service Cost"] = "";
+                    row["Service Discount"] = Appointment.ServiceDiscount;
+                    row["Service Price After Discount"] = "";
+                    row["Deposit Amount"] = Appointment.Deposit;
+                    row["Deposit Method"] = Appointment.DepositMethod;
+                    row["Notes"] = Appointment.Notes;
+                    row["ServiceDuration"] = Appointment.ServiceDuration;
 
-                                row["ID"] = Appointment.ID;
-                                row["Employee"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Name;
-                                row["Employee Specialization"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Specialization;
-                                var customer = CustomerServices.Instance.GetCustomer(Appointment.CustomerID);
-                                if (customer == null)
-                                {
-                                    row["Client Name"] = "Walk In";
-                                    row["Client Phone"] = "";
-                                    row["Client Email"] = "";
-                                }
-                                else
-                                {
-                                    row["Client Name"] = customer.FirstName + " " + customer.LastName;
-                                    row["Client Phone"] = customer.MobileNumber;
-                                    row["Client Email"] = customer.Email;
-                                }
+                    var priceChange = PriceChangeServices.Instance.GetPriceChange(Appointment.OnlinePriceChange);
+                    if (priceChange != null)
+                    {
+                        row["Online Price Change"] = priceChange.TypeOfChange + " " + priceChange.Percentage + " %";
+                        if (priceChange.TypeOfChange == "Discount")
+                        {
+                            row["Amount Change"] = "";
+                        }
+                        else
+                        {
+                            row["Amount Change"] = "";
+                        }
 
-                                row["Visit Date"] = Appointment.Date.ToString("yyyy-MM-dd") + " -" + Appointment.Time.ToString("H:mm:ss");
-                                row["Created Date"] = Appointment.BookingDate.ToString("yyyy-MM-dd");
-                                row["Status"] = Appointment.Status;
+                        if (priceChange.TypeOfChange == "Discount")
+                        {
+                            var serviceminusdeposit = 0;
+                            var FinalTotal = serviceminusdeposit - (serviceminusdeposit * (priceChange.Percentage / 100));
+                            row["Total After Price Change"] = FinalTotal;
 
-                                var service = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
-                                row["Service Category"] = service.Category;
-                                row["Service Names"] = service.Name;
-                                row["Service Cost"] = service.Price.ToString();
-                                row["Service Discount"] = "";
-                                row["Service Price After Discount"] = Convert.ToString(service.Price - (service.Price * float.Parse(ServiceDiscount[i]) / 100));
-
-                                row["ServiceDuration"] = ServiceDuration[i].ToString();
-
-                                row["Deposit Amount"] = "";
-                                row["Deposit Method"] = "";
-                                row["Notes"] = Appointment.Notes;
-                                var priceChange = PriceChangeServices.Instance.GetPriceChange(Appointment.OnlinePriceChange);
-                                if (priceChange != null)
-                                {
-                                    row["Online Price Change"] = priceChange.TypeOfChange + " " + priceChange.Percentage + " %";
-                                    if (priceChange.TypeOfChange == "Discount")
-                                    {
-                                        row["Amount Change"] = service.Price * (priceChange.Percentage / 100);
-                                    }
-                                    else
-                                    {
-                                        row["Amount Change"] = service.Price * (priceChange.Percentage / 100);
-                                    }
-
-
-                                    if (priceChange.TypeOfChange == "Discount")
-                                    {
-                                        var serviceminusdeposit = service.Price;
-                                        var FinalTotal = serviceminusdeposit - (serviceminusdeposit * (priceChange.Percentage / 100));
-                                        row["Total After Price Change"] = FinalTotal;
-                                    }
-                                    else
-                                    {
-                                        var serviceminusdeposit = service.Price;
-                                        var FinalTotal = serviceminusdeposit + (serviceminusdeposit * (priceChange.Percentage / 100));
-                                        row["Total After Price Change"] = FinalTotal;
-                                    }
-
-                                }
-                                else
-                                {
-                                    row["Online Price Change"] = "";
-                                    row["Amount Change"] = 0;
-                                    row["Total After Price Change"] = Convert.ToString(service.Price - (service.Price * float.Parse(ServiceDiscount[i]) / 100));
-                                }
-                                row["Cancelled"] = Appointment.IsCancelled.ToString();
-                                tableData.Rows.Add(row);
-
-                            }
+                        }
+                        else
+                        {
+                            var serviceminusdeposit = 0;
+                            var FinalTotal = serviceminusdeposit + (serviceminusdeposit * (priceChange.Percentage / 100));
+                            row["Total After Price Change"] = FinalTotal;
                         }
 
                     }
+                    else
+                    {
+                        row["Online Price Change"] = "";
+                        row["Amount Change"] = 0;
+                        row["Total After Price Change"] = 0;
+                    }
+                    row["Cancelled"] = Appointment.IsCancelled.ToString();
+                    tableData.Rows.Add(row);
                 }
             }
 
@@ -6415,7 +6491,7 @@ namespace TheBookingPlatform.Controllers
                 return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Appointments.xlsx");
             }
         }
-
+    
 
         public ActionResult Unsubscribe(int CustomerID)
         {

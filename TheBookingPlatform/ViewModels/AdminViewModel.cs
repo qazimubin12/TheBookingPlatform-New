@@ -30,8 +30,19 @@ namespace TheBookingPlatform.ViewModels
         public int ReturnedClients { get;  set; }
         public int LostClients { get;  set; }
         public string FilterDuration { get;  set; }
+        public List<EmployeeOccupancy> EmployeeOccupancies { get; set; }
+        public string Role { get;  set; }
     }
 
+
+    public class  EmployeeOccupancy
+    {
+        public Employee Employee { get; set; }
+        public float Percentage { get; set; }
+        public float WorkedHours { get; set; }
+        public float TotalTime { get; set; }
+
+    }
     public class DayWiseSale
     {
         public DateTime Date { get; set; }

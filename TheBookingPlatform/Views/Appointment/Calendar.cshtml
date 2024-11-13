@@ -180,7 +180,7 @@
         Html.RenderPartial("_CalendarPartial", Model);
 
 
-    }
+}
 </div>
 
 
@@ -201,6 +201,8 @@
 
                             <div style="margin-left:0px !important; " class="row">
                                 <div class="col-md-6">
+                                    @if (!User.IsInRole("Calendar"))
+                                    {
                                     <div style="display: flex; align-items: center;" class="row">
                                         <div class="input-group input-group-dynamic">
                                             <label style="margin-right:10px;">Customer:</label>
@@ -210,12 +212,13 @@
                                             </i>
                                         </div>
                                     </div>
+                                    }
                                 </div>
                                 <div class="col-md-6">
                                     @if (User.IsInRole("Calendar"))
                                     {
 
-                                        <div style="display: none; align-items: center;" class="row">
+                                        @*<div style="display: none; align-items: center;" class="row">
                                             <div class="input-group input-group-dynamic">
 
                                                 <label style="margin-right:10px;">Email:</label>
@@ -224,7 +227,7 @@
                                                     content_copy
                                                 </i>
                                             </div>
-                                        </div>
+                                        </div>*@
                                     }
                                     else
                                     {
@@ -313,6 +316,8 @@
 
 
                     <div class=" text-center ">
+                        @if (!User.IsInRole("Calendar"))
+                        {
                         <button style="padding:6px;" data-tooltip="Appointment Info" type="button" id="moreButton" class="btn btn-sm btn-info hover-button">
                             <i style="font-size:25px;" class="material-icons">info</i>
                         </button>
@@ -330,6 +335,7 @@
                         <button style="padding:6px;" data-tooltip="Send Reminder" type="button" id="SendReminderBtn" class="btn btn-sm btn-warning hover-button">
                             <i style="font-size:25px;" class="material-icons">mail</i>
                         </button>
+                        }
                         <span id="BusinessDEET" style="display:block;" class="text-muted">
 
                         </span>

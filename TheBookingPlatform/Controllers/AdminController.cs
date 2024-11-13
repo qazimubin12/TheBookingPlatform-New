@@ -9,6 +9,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TheBookingPlatform.Models;
+using System.Web.Routing;
+using System.Globalization;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -165,6 +167,53 @@ namespace TheBookingPlatform.Controllers
 
             }
         }
+        static bool IsDateInRangeNew(DateTime dateToCheck, DateTime startDate)
+        {
+            // Extracting only the date part without the time part
+            DateTime dateOnlyToCheck = dateToCheck.Date;
+            DateTime startDateOnly = startDate.Date;
+
+            if (dateOnlyToCheck >= startDateOnly)
+            {
+                return true; // If it's greater, it's definitely not in range
+            }
+            else
+            {
+                return false;
+            }
+
+            // Checking if the date falls within the range
+
+            // Checking if the date falls within the range
+        }
+        public string GetNextDayStatus(DateTime CurrentWeekStart, DateTime rosterStartDate, string targetDayString)
+        {
+            // Calculate the difference in days between the roster start date and today
+            if (!Enum.TryParse(targetDayString, true, out DayOfWeek targetDay))
+            {
+                return "Invalid day of the week specified.";
+            }
+            var FinalToBeCheckedDate = CurrentWeekStart;
+
+
+            TimeSpan difference = FinalToBeCheckedDate - rosterStartDate.Date;
+
+            // Calculate the number of weeks passed since the roster start date
+            int weeksPassed = (int)(difference.TotalDays / 7);
+
+            // Determine if the current week is odd or even
+            bool isEvenWeek = weeksPassed % 2 == 0;
+            bool isNextTargetDayInCurrentWeek = false;
+            if (isEvenWeek && difference.TotalDays >= 0)
+            {
+                isNextTargetDayInCurrentWeek = true;
+            }
+
+
+
+
+            return isNextTargetDayInCurrentWeek ? "YES" : "NO";
+        }
 
         public ActionResult Dashboard(string StartDate = "", string EndDate = "", string FilterDuration = "")
         {
@@ -233,8 +282,298 @@ namespace TheBookingPlatform.Controllers
 
                         }
 
+                        /////////////////////
+                        /// Occupancy
+                        /// 
+
+                        var employeeOccupancyList = new List<EmployeeOccupancy>();
+
+                        var employees = new List<Employee>();
+                        employees.AddRange(EmployeeServices.Instance.GetEmployeeWRTBusiness(user.Company, true).OrderBy(x => x.DisplayOrder).ToList());
+                        var company = CompanyServices.Instance.GetCompany(user.Company).FirstOrDefault();
+
+                        var employeeRequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
+                        foreach (var item in employeeRequests)
+                        {
+                            var employeeCompany = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                            if (item.Accepted)
+                            {
+                                if (!employees.Select(x => x.ID).Contains(employeeCompany.ID))
+                                {
+                                    employees.Add(employeeCompany);
+                                }
+                            }
+                        }
 
 
+
+                        foreach (var item in employees)
+                        {
+                            float SumForAverage = 0;
+                            float WorkedHours = 0;
+
+                            var empShifts = new List<ShiftModel>();
+                            var EnabledDates = new List<DateTime>();
+                            var roster = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(item.ID);
+                            List<float> DailyOccupancy = new List<float>();
+                            for (DateTime FirtIT = model.StartDate; FirtIT <= model.EndDate; FirtIT = FirtIT.AddDays(1))
+                            {
+                                var shifts = ShiftServices.Instance.GetShiftWRTBusiness(item.Business, item.ID).Where(x => x.Day == FirtIT.DayOfWeek.ToString()).ToList();
+                                if (shifts.Count() > 0)
+                                {
+                                    foreach (var shift in shifts)
+                                    {
+                                        var recurringShifts = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(item.Business, shift.ID);
+                                        if (recurringShifts != null)
+                                        {
+                                            if (recurringShifts.RecurEnd == "Custom Date" && recurringShifts.RecurEndDate != "")
+                                            {
+                                                if (IsDateInRangeNew(DateTime.Parse(recurringShifts.RecurEndDate), FirtIT))
+                                                {
+                                                    if (recurringShifts.Frequency == "Bi-Weekly")
+                                                    {
+
+                                                        if (GetNextDayStatus(FirtIT, shift.Date, shift.Day.ToString()) == "YES")
+                                                        {
+                                                            var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(item.Business, shift.ID);
+                                                            empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                                            EnabledDates.Add(FirtIT);
+                                                        }
+
+
+                                                    }
+                                                    else
+                                                    {
+                                                        var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(item.Business, shift.ID);
+                                                        empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                                        EnabledDates.Add(FirtIT);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (recurringShifts.Frequency == "Bi-Weekly")
+                                                {
+                                                    if (roster != null)
+                                                    {
+                                                        if (GetNextDayStatus(FirtIT, shift.Date, shift.Day.ToString()) == "YES")
+                                                        {
+                                                            var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(item.Business, shift.ID);
+                                                            empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                                            EnabledDates.Add(FirtIT);
+                                                        }
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    if (shift.Date <= FirtIT)
+                                                    {
+                                                        var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(item.Business, shift.ID);
+                                                        empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                                        EnabledDates.Add(FirtIT);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var exceptionShiftByShiftID = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusinessAndShift(item.Business, shift.ID);
+                                            if (exceptionShiftByShiftID != null)
+                                            {
+                                                if (exceptionShiftByShiftID.LastOrDefault() != null)
+                                                {
+                                                    if (exceptionShiftByShiftID.LastOrDefault().ExceptionDate.ToString("yyyy-MM-dd") == FirtIT.ToString("yyyy-MM-dd"))
+                                                    {
+                                                        empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShiftByShiftID });
+                                                        EnabledDates.Add(FirtIT);
+                                                    }
+
+                                                }
+                                            }
+                                            else
+                                            {
+                                                empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts });
+                                                EnabledDates.Add(FirtIT);
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            foreach (var date in EnabledDates)
+                            {
+                                var usethisShift = empShifts.Where(x => x.RecurShift != null && x.Shift.IsRecurring && x.Shift.Day == date.DayOfWeek.ToString() && x.Shift.Date.Date <= date.Date).Select(X => X.Shift).FirstOrDefault();
+                                var useExceptionShifts = empShifts
+                                    .Where(x => x.ExceptionShift != null && x.ExceptionShift.Count() > 0 && !x.Shift.IsRecurring)
+                                    .SelectMany(x => x.ExceptionShift);
+
+                                if (usethisShift == null && useExceptionShifts == null)
+                                {
+                                    //okay bye
+                                }
+                                else
+                                {
+                                    if (usethisShift != null)
+                                    {
+                                        bool FoundExceptionToo = false;
+                                        var FoundedExceptionShift = new ExceptionShift();
+                                        var empShiftsCount = empShifts.Count();
+                                        if (empShiftsCount > 0) // Ensure there's at least one element in empShifts
+                                        {
+                                            for (int i = 0; i < empShiftsCount; i++)
+                                            {
+                                                var firstEmpShift = empShifts[i]; // Accessing empShifts at index i
+                                                foreach (var dd in firstEmpShift.ExceptionShift.ToList())
+                                                {
+                                                    if (dd.ShiftID == firstEmpShift.Shift.ID && dd.ExceptionDate.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && dd.IsNotWorking == false)
+                                                    {
+                                                        FoundExceptionToo = true;
+                                                        FoundedExceptionShift = dd;
+                                                        break;
+                                                    }
+                                                    if (dd.ShiftID == firstEmpShift.Shift.ID && dd.ExceptionDate.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && dd.IsNotWorking == true)
+                                                    {
+                                                        FoundExceptionToo = true;
+                                                        FoundedExceptionShift = dd;
+                                                        break;
+                                                    }
+                                                }
+
+
+                                            }
+
+                                        }
+                                        if (FoundExceptionToo)
+                                        {
+
+                                            if (FoundedExceptionShift.ID != 0 && !FoundedExceptionShift.IsNotWorking)
+                                            {
+                                                DateTime startTime = date.Date
+                                               .AddHours(DateTime.ParseExact(FoundedExceptionShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                               .AddMinutes(DateTime.ParseExact(FoundedExceptionShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                                DateTime endTime = date.Date
+                                                    .AddHours(DateTime.ParseExact(FoundedExceptionShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                                    .AddMinutes(DateTime.ParseExact(FoundedExceptionShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                                SumForAverage += (float)(endTime - startTime).TotalMinutes;
+                                            }
+
+
+
+                                        }
+                                        else
+                                        {
+                                            DateTime startTime = date.Date
+                                                       .AddHours(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                                       .AddMinutes(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                            DateTime endTime = date.Date
+                                                .AddHours(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                                .AddMinutes(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+
+                                            SumForAverage += (float)(endTime - startTime).TotalMinutes;
+
+
+
+
+                                        }
+
+                                    }
+                                    else
+                                    {
+
+                                        if (useExceptionShifts != null)
+                                        {
+                                            bool FoundExceptionToo = false;
+                                            var FoundedExceptionShift = new ExceptionShift();
+                                            var empShiftsCount = empShifts.Count();
+                                            if (empShiftsCount > 0) // Ensure there's at least one element in empShifts
+                                            {
+                                                for (int i = 0; i < empShiftsCount; i++)
+                                                {
+                                                    var firstEmpShift = empShifts[i]; // Accessing empShifts at index i
+                                                    foreach (var datee in firstEmpShift.ExceptionShift.ToList())
+                                                    {
+                                                        if (datee.ExceptionDate.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && datee.IsNotWorking == false)
+                                                        {
+                                                            FoundExceptionToo = true;
+                                                            FoundedExceptionShift = datee;
+                                                            break;
+                                                        }
+                                                        if (datee.ExceptionDate.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && datee.IsNotWorking == true)
+                                                        {
+                                                            FoundExceptionToo = true;
+                                                            FoundedExceptionShift = datee;
+                                                            break;
+                                                        }
+                                                    }
+
+
+                                                }
+
+                                            }
+                                            if (FoundExceptionToo)
+                                            {
+
+                                                if (FoundedExceptionShift.ID != 0 && !FoundedExceptionShift.IsNotWorking)
+                                                {
+                                                    DateTime startTime = date.Date
+                                                   .AddHours(DateTime.ParseExact(FoundedExceptionShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                                   .AddMinutes(DateTime.ParseExact(FoundedExceptionShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                                    DateTime endTime = date.Date
+                                                        .AddHours(DateTime.ParseExact(FoundedExceptionShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                                        .AddMinutes(DateTime.ParseExact(FoundedExceptionShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+                                                    SumForAverage += (float)(endTime - startTime).TotalMinutes;
+
+
+                                                }
+
+
+
+                                            }
+                                        }
+
+                                    }
+                                }
+
+
+
+                                var appointmentsforthatday = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(company.Business, false, false, item.ID,date).Where(x=>x.Color != "darkgray").ToList();
+                                foreach (var app in appointmentsforthatday)
+                                {
+                                    var DurationWorked = (float)(app.EndTime - app.Time).TotalHours;
+                                    WorkedHours += DurationWorked;
+
+                                }
+                                var finalSum = SumForAverage / 60;
+                                float occupancyPercentage = (WorkedHours / finalSum) * 100;
+                                DailyOccupancy.Add(occupancyPercentage);
+                            }
+
+
+
+                            if(DailyOccupancy.Count()> 0)
+                            {
+                                employeeOccupancyList.Add(new EmployeeOccupancy { Employee = item, Percentage = (float)Math.Round(DailyOccupancy.Average(),1),TotalTime = SumForAverage/60,WorkedHours = WorkedHours });
+
+                            }
+                            else
+                            {
+                                employeeOccupancyList.Add(new EmployeeOccupancy { Employee = item, Percentage = 0,TotalTime = SumForAverage,WorkedHours = WorkedHours });
+
+                            }
+                        }
+
+
+
+
+                        model.EmployeeOccupancies = employeeOccupancyList;
 
                         model.ReturnedClients = ReturnedClients;
                         model.NewClients = TotalNewClients;

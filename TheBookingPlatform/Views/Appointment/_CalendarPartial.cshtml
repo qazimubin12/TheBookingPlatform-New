@@ -23,6 +23,10 @@
 
     var formattedDate = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("MM/dd/yyyy");
 
+    string YesShow = "false";
+    if (!User.IsInRole("Calendar")) {
+        YesShow = "true";
+    }
 
 
 
@@ -35,286 +39,289 @@
 
 
 <style>
-    .fc-direction-ltr .fc-timegrid-now-indicator-arrow {
-        left: 0;
-        border-width: 10px 33px 10px 11px;
-        border-radius: 0px 10px 10px 0px;
-        opacity: .7;
-    }
-
-    .employeePriceChange {
-        font-size: x-small;
-        display: flex;
-    }
-
-
-
-    .fc-timegrid-now-indicator-label {
-        position: absolute;
-        top: -1.5em; /* Adjust the positioning as needed */
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #007bff; /* Background color */
-        color: #fff; /* Text color */
-        padding: 0.2em 0.5em; /* Adjust padding as needed */
-        border-radius: 3px; /* Rounded corners */
-    }
-
-    .fc-now-indicator {
-        content: "Now"; /* Label text */
-        position: absolute;
-        top: -1.5em; /* Adjust the positioning as needed */
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #007bff; /* Background color */
-        color: #fff; /* Text color */
-        padding: 0.2em 0.5em; /* Adjust padding as needed */
-        border-radius: 3px; /* Rounded corners */
-    }
-
-    .fc .fc-timegrid-now-indicator-arrow {
-        position: absolute;
-        z-index: 4;
-        margin-top: -10px;
-        border-style: solid;
-        border-color: red;
-    }
-
-    .fc .fc-timegrid-now-indicator-line {
-        opacity: .7;
-        position: absolute;
-        z-index: 4;
-        left: 0;
-        right: 0;
-        margin-top: -2px;
-        border-style: solid;
-        border-color: #F2CB05;
-        border-color: var(--fc-now-indicator-color,#F2CB05);
-        border-width: 5px 0 0;
-    }
-
-    .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer:after {
-        content: "";
-    }
-
-
-    .fc-timegrid-slot {
-        height: 30px !important;
-    }
-
-    .fc-timegrid-event-harness {
-        width: 103%;
-    }
-
-    .unavailable-event .event-description {
-        font-size: 14px;
-        white-space: normal;
-        margin-top: 5px;
-        color: black;
-    }
-
-    .unavailable-event .fc-time {
-        display: none;
-    }
-
-    .container-fluid {
-        margin-right: auto;
-        margin-left: auto;
-        padding: 0px;
-    }
-
-
-    .employee-image {
-        width: 20px;
-        height: 20px;
-        margin-bottom: 0px;
-    }
-
-    .employee-specialization {
-        font-size: 0.6em;
-        width: auto;
-        color: grey;
-        float: left;
-        margin-top: 15px;
-        display:none;
-        padding-left: 0px;
-        padding-top: 0px;
-    }
-
-
-    .custom-modal-dialog {
-        width: 90%; /* Adjust the width as needed */
-        margin: auto; /* Center the modal horizontally */
-    }
-
-    .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer {
-        left: 0;
-        display: none;
-        right: 0;
-        bottom: 0;
-        height: 8px;
-        overflow: hidden;
-        line-height: 8px;
-        font-size: 11px;
-        font-family: monospace;
-        text-align: center;
-        cursor: s-resize;
-    }
-
-    .fc-time-grid-event.fc-short .fc-time:before {
-        content: '';
-    }
-
-    .fc-time {
-        border-radius: 5px;
-        height: 20px;
-    }
-
-    .fc-time-gray {
-        background-color: gray;
-    }
-
-    .fc-time-green {
-        background-color: darkslategrey;
-    }
-
-    .fc-time-purple {
-        background-color: indigo;
-    }
-
-    .fc-time-red {
-        background-color: brown;
-    }
-
-    .fc-time-yellow {
-        background-color: chocolate;
-    }
-    .fc-time-Gcal {
-        background-color: #9aad9c;
-    }
-    .fc-resizer .fc-end-resizer {
-        display: none;
-    }
-
-    .fc-title {
-        font-size: 12px; /* Adjust the font size as needed */
-        white-space: nowrap; /* Prevent text from wrapping */
-    }
-    /* Style the event description div */
-    .event-description {
-        font-size: 12px; /* Adjust the font size as needed */
-        white-space: normal; /* Allow text to wrap within the description div */
-        margin-top: 5px; /* Add spacing between the time and description */
-    }
-
-    .fc-content > .fc-time {
-        background-color: #8A789C;
-    }
-
-    .fc-timegrid-event .fc-event-main {
-        padding: 1px 1px 0px;
-        overflow: auto;
-        scrollbar-width: thin; /* For Firefox */
-    }
-
-        /* For Webkit browsers like Chrome and Safari */
-        .fc-timegrid-event .fc-event-main::-webkit-scrollbar {
-            width: 6px; /* Width of the scrollbar */
+        .fc-direction-ltr .fc-timegrid-now-indicator-arrow {
+            left: 0;
+            border-width: 10px 33px 10px 11px;
+            border-radius: 0px 10px 10px 0px;
+            opacity: .7;
         }
 
-        .fc-timegrid-event .fc-event-main::-webkit-scrollbar-thumb {
-            background-color: #888; /* Color of the thumb */
+        .employeePriceChange {
+            font-size: x-small;
+            display: flex;
         }
 
 
-    .inactive-slot {
-        background-color: #ccc; /* Change the background color */
-        cursor: not-allowed; /* Change the cursor to indicate it's not clickable */
-        opacity: 0.5; /* Reduce opacity to visually indicate it's inactive */
-    }
 
-    .fc-time-grid-event.fc-short .fc-time, .fc-time-grid-event.fc-short .fc-title {
-        display: flex;
-        vertical-align: top;
-    }
-
-
-    .employee-image {
-        width: 30px;
-        height: 30px;
-        border-radius: 5px;
-        float: left;
-        margin-left: 5px;
-        margin-top: 5px;
-        margin-right: 5px;
-        margin-bottom: 0px;
-    }
-
-
-    .fc .fc-col-header-cell-cushion {
-        display: inline-block;
-        /*        padding-right: 25px;
-*/ padding-top: 0px;
-        padding-bottom: 0px;
-        padding-left: 5px;
-        font-size: smaller;
-        margin-bottom: 0px;
-        float: left;
-    }
-
-
-    body {
-        overflow: hidden;
-    }
-
-    .fc-col-header-cell {
-        cursor: pointer;
-    }
-
-    .main-panel > .content {
-        margin-top: 0px;
-        padding: 0px 0px;
-        min-height: calc(100vh - 200px);
-    }
-
-    .loading-spinner-overlay {
-        display: none; /* Initially hidden */
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        z-index: 9999; /* Ensure it appears above all other content */
-        background-color: rgba(0,0,0,0.5); /* Transparent black */
-    }
-
-
-    .spinner {
-        border: 16px solid #f3f3f3;
-        border-top: 16px solid #3498db;
-        border-radius: 50%;
-        width: 120px;
-        height: 120px;
-        animation: spin 2s linear infinite;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    @@keyframes spin {
-        0% {
-            transform: translate(-50%, -50%) rotate(0deg);
+        .fc-timegrid-now-indicator-label {
+            position: absolute;
+            top: -1.5em; /* Adjust the positioning as needed */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #007bff; /* Background color */
+            color: #fff; /* Text color */
+            padding: 0.2em 0.5em; /* Adjust padding as needed */
+            border-radius: 3px; /* Rounded corners */
         }
 
-        100% {
-            transform: translate(-50%, -50%) rotate(360deg);
+        .fc-now-indicator {
+            content: "Now"; /* Label text */
+            position: absolute;
+            top: -1.5em; /* Adjust the positioning as needed */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #007bff; /* Background color */
+            color: #fff; /* Text color */
+            padding: 0.2em 0.5em; /* Adjust padding as needed */
+            border-radius: 3px; /* Rounded corners */
         }
-    }
-    .modal-backdrop.show {
-        opacity: var(--bs-backdrop-opacity);
-        z-index:54;
-    }
+
+        .fc .fc-timegrid-now-indicator-arrow {
+            position: absolute;
+            z-index: 4;
+            margin-top: -10px;
+            border-style: solid;
+            border-color: red;
+        }
+
+        .fc .fc-timegrid-now-indicator-line {
+            opacity: .7;
+            position: absolute;
+            z-index: 4;
+            left: 0;
+            right: 0;
+            margin-top: -2px;
+            border-style: solid;
+            border-color: #F2CB05;
+            border-color: var(--fc-now-indicator-color,#F2CB05);
+            border-width: 5px 0 0;
+        }
+
+        .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer:after {
+            content: "";
+        }
+
+
+        .fc-timegrid-slot {
+            height: 30px !important;
+        }
+
+        .fc-timegrid-event-harness {
+            width: 103%;
+        }
+
+        .unavailable-event .event-description {
+            font-size: 14px;
+            white-space: normal;
+            margin-top: 5px;
+            color: black;
+        }
+
+        .unavailable-event .fc-time {
+            display: none;
+        }
+
+        .container-fluid {
+            margin-right: auto;
+            margin-left: auto;
+            padding: 0px;
+        }
+
+
+        .employee-image {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 0px;
+        }
+
+        .employee-specialization {
+            font-size: 0.6em;
+            width: auto;
+            color: grey;
+            float: left;
+            margin-top: 15px;
+            display: none;
+            padding-left: 0px;
+            padding-top: 0px;
+        }
+
+
+        .custom-modal-dialog {
+            width: 90%; /* Adjust the width as needed */
+            margin: auto; /* Center the modal horizontally */
+        }
+
+        .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer {
+            left: 0;
+            display: none;
+            right: 0;
+            bottom: 0;
+            height: 8px;
+            overflow: hidden;
+            line-height: 8px;
+            font-size: 11px;
+            font-family: monospace;
+            text-align: center;
+            cursor: s-resize;
+        }
+
+        .fc-time-grid-event.fc-short .fc-time:before {
+            content: '';
+        }
+
+        .fc-time {
+            border-radius: 5px;
+            height: 20px;
+        }
+
+        .fc-time-gray {
+            background-color: gray;
+        }
+
+        .fc-time-green {
+            background-color: darkslategrey;
+        }
+
+        .fc-time-purple {
+            background-color: indigo;
+        }
+
+        .fc-time-red {
+            background-color: brown;
+        }
+
+        .fc-time-yellow {
+            background-color: chocolate;
+        }
+
+        .fc-time-Gcal {
+            background-color: #9aad9c;
+        }
+
+        .fc-resizer .fc-end-resizer {
+            display: none;
+        }
+
+        .fc-title {
+            font-size: 12px; /* Adjust the font size as needed */
+            white-space: nowrap; /* Prevent text from wrapping */
+        }
+        /* Style the event description div */
+        .event-description {
+            font-size: 12px; /* Adjust the font size as needed */
+            white-space: normal; /* Allow text to wrap within the description div */
+            margin-top: 5px; /* Add spacing between the time and description */
+        }
+
+        .fc-content > .fc-time {
+            background-color: #8A789C;
+        }
+
+        .fc-timegrid-event .fc-event-main {
+            padding: 1px 1px 0px;
+            overflow: auto;
+            scrollbar-width: thin; /* For Firefox */
+        }
+
+            /* For Webkit browsers like Chrome and Safari */
+            .fc-timegrid-event .fc-event-main::-webkit-scrollbar {
+                width: 6px; /* Width of the scrollbar */
+            }
+
+            .fc-timegrid-event .fc-event-main::-webkit-scrollbar-thumb {
+                background-color: #888; /* Color of the thumb */
+            }
+
+
+        .inactive-slot {
+            background-color: #ccc; /* Change the background color */
+            cursor: not-allowed; /* Change the cursor to indicate it's not clickable */
+            opacity: 0.5; /* Reduce opacity to visually indicate it's inactive */
+        }
+
+        .fc-time-grid-event.fc-short .fc-time, .fc-time-grid-event.fc-short .fc-title {
+            display: flex;
+            vertical-align: top;
+        }
+
+
+        .employee-image {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            float: left;
+            margin-left: 5px;
+            margin-top: 5px;
+            margin-right: 5px;
+            margin-bottom: 0px;
+        }
+
+
+        .fc .fc-col-header-cell-cushion {
+            display: inline-block;
+            /*        padding-right: 25px;
+    */ padding-top: 0px;
+            padding-bottom: 0px;
+            padding-left: 5px;
+            font-size: smaller;
+            margin-bottom: 0px;
+            float: left;
+        }
+
+
+        body {
+            overflow: hidden;
+        }
+
+        .fc-col-header-cell {
+            cursor: pointer;
+        }
+
+        .main-panel > .content {
+            margin-top: 0px;
+            padding: 0px 0px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .loading-spinner-overlay {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 9999; /* Ensure it appears above all other content */
+            background-color: rgba(0,0,0,0.5); /* Transparent black */
+        }
+
+
+        .spinner {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .modal-backdrop.show {
+            opacity: var(--bs-backdrop-opacity);
+            z-index: 54;
+        }
 </style>
 
 <input type="hidden" value="@Model.LoggedInUser.IntervalCalendar" id="IntervalFinal" />
@@ -325,7 +332,7 @@
     </div>
 </div>
 
-
+<input type="hidden" id="YesShow" value="@YesShow" />
 
 
 <!-- Loading Spinner Overlay -->
@@ -404,6 +411,7 @@
 
 
     function ViewCalendar() {
+        var YesShow = $("#YesShow").val();
         showLoadingSpinner();
         var calendarEl = document.getElementById('fullCalendar');
         today = new Date();
@@ -432,7 +440,7 @@
 
             now: new Date(),
             editable: true,
-            
+
             initialView: 'resourceTimeGridDay',
             nowIndicator: 'true',
             //timeZone: clientTimeZoneNameToBeUsed, //NEED TO COMMENT THIS
@@ -1361,7 +1369,7 @@ daysOfWeek: []
                     }
 
                 }
-              
+
             ],
             editable: true,  // Allow general event editing globally
 
@@ -1401,7 +1409,7 @@ daysOfWeek: []
                             var startDate = parseDotNetDate(appointment.Date);
                             var startTime = parseDotNetDate(appointment.Time);
                             startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
-                            
+
                             var endDate = addMinutes(startDate, appointment.TotalDuration);
                             events.push({
                                 id: eventId,
@@ -1412,7 +1420,7 @@ daysOfWeek: []
                                 start: startDate,
                                 reminderSent: reminderSent,
                                 end: endDate,
-                                editable: !FromGCAL, 
+                                editable: !FromGCAL,
                                 description: serviceList,
                                 notes: notes,
                                 isPaid: appointment.IsPaid,
@@ -1467,7 +1475,7 @@ daysOfWeek: []
                             return null; // Or handle invalid format as needed
                         }
 
-                        
+
                     },
                     error: function (error) {
                         console.error('Error fetching events: ', error);
@@ -1641,10 +1649,12 @@ daysOfWeek: []
                     // Create customer info block
 
                     if (arg.backgroundColor != "darkgray") {
-                        var customerInfoElement = document.createElement('div');
-                        customerInfoElement.classList.add('customer-info');
-                        customerInfoElement.innerHTML = customername + '<br>' + customerphone; // Use innerHTML to interpret the <br> tag
-                        eventContent.appendChild(customerInfoElement);
+                        if (YesShow == "true") {
+                            var customerInfoElement = document.createElement('div');
+                            customerInfoElement.classList.add('customer-info');
+                            customerInfoElement.innerHTML = customername + '<br>' + customerphone; // Use innerHTML to interpret the <br> tag
+                            eventContent.appendChild(customerInfoElement);
+                        }
                     }
 
                     // Add the event time
@@ -1705,7 +1715,8 @@ daysOfWeek: []
 
                         }
                     });
-                } else {
+                }
+                else {
                     // When an event is clicked, open the modal and fetch appointment details from the controller
                     debugger
                     var FromGCAL = calEvent.event.extendedProps.FromGCAL;
@@ -1835,7 +1846,7 @@ daysOfWeek: []
                             $("#checkoutButn").attr("onclick", "window.location.href='" + newUrl + "'");
                             $("#DeleteAppointmentButton").attr("onclick", "DeleteAppointment('" + AppID + "','" + appointmentDetails.IsRepeat + "')");
                             $("#SendReminderBtn").attr("onclick", "SendAppointmentReminder('" + AppID + "')");
-                            
+
                             if (appointmentDetails.IsPaid == false) {
                                 if (appointmentDetails.IsCancelled == false) {
                                     alert("Awaiting PrePayment");
@@ -1862,12 +1873,12 @@ daysOfWeek: []
 
                         }
                     });
-                    
-                   
+
+
                 }
             },
             eventDragStart: function (event, delta, revertFunc) {
-                
+
                 if (event.event.backgroundColor == "#5DAF4D") {
                     alert("Cannot Move this Appointment");
                     location.reload();

@@ -4178,8 +4178,16 @@ namespace TheBookingPlatform.Controllers
                             if (IsSlotWithinEmployeeTimeRange(slotStart, slotEnd, employeeStartTime, employeeEndTime))
                             {
                                 //if (slotEnd.TimeOfDay <= firstAppointment.Time.TimeOfDay)
-                                //{
-                                if (slotStart >= currentTime)
+                                //{\
+                                if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                {
+                                    if (slotStart >= currentTime)
+                                    {
+                                        availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                    }
+                                }
+                                else
                                 {
                                     availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4229,9 +4237,18 @@ namespace TheBookingPlatform.Controllers
                             {
                                 if (slotEnd.TimeOfDay <= appointment.Time.TimeOfDay)
                                 {
-                                    if (slotStart >= currentTime)
+                                    if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                    {
+                                        if (slotStart >= currentTime)
+                                        {
+                                            availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                        }
+                                    }
+                                    else
                                     {
                                         availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
                                     }
                                 }
                                 //else if (slotEnd.Hour == employeeEndTime.TimeOfDay.Hours)
@@ -4285,25 +4302,52 @@ namespace TheBookingPlatform.Controllers
                             {
                                 if (slotEnd.Hour < employeeEndTime.TimeOfDay.Hours)
                                 {
-                                    if (slotStart >= currentTime)
+                                    if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                    {
+                                        if (slotStart >= currentTime)
+                                        {
+                                            availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                        }
+                                    }
+                                    else
                                     {
                                         availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
                                     }
                                 }
                                 else if (slotEnd.Hour == employeeEndTime.TimeOfDay.Hours)
                                 {
                                     if (slotEnd.Minute < employeeEndTime.TimeOfDay.Minutes)
                                     {
-                                        if (slotStart >= currentTime)
+                                        if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                        {
+                                            if (slotStart >= currentTime)
+                                            {
+                                                availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                            }
+                                        }
+                                        else
                                         {
                                             availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
                                         }
                                     }
                                     else if (slotEnd.Minute == employeeEndTime.TimeOfDay.Minutes)
                                     {
-                                        if (slotStart >= currentTime)
+                                        if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                        {
+                                            if (slotStart >= currentTime)
+                                            {
+                                                availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                            }
+                                        }
+                                        else
                                         {
                                             availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
                                         }
                                     }
                                 }
@@ -4329,23 +4373,53 @@ namespace TheBookingPlatform.Controllers
                                 {
                                     if (slotStart >= currentTime)
                                     {
-                                        availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+                                        if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                        {
+                                            if (slotStart >= currentTime)
+                                            {
+                                                availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                        }
                                     }
                                 }
                                 else if (slotEnd.Hour == employeeEndTime.TimeOfDay.Hours)
                                 {
                                     if (slotEnd.Minute < employeeEndTime.TimeOfDay.Minutes)
                                     {
-                                        if (slotStart >= currentTime)
+                                        if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                        {
+                                            if (slotStart >= currentTime)
+                                            {
+                                                availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                            }
+                                        }
+                                        else
                                         {
                                             availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
                                         }
                                     }
                                     else if (slotEnd.Minute == employeeEndTime.TimeOfDay.Minutes)
                                     {
-                                        if (slotStart >= currentTime)
+                                        if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                        {
+                                            if (slotStart >= currentTime)
+                                            {
+                                                availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                            }
+                                        }
+                                        else
                                         {
                                             availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
                                         }
                                     }
                                 }
@@ -4393,8 +4467,8 @@ namespace TheBookingPlatform.Controllers
             {
                 var empShifts = new List<ShiftModel>();
 
-
-                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, EmployeeID, false, false).ToList();
+                
+                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, EmployeeID, false, false).Where(x=>x.IsPaid).ToList();
 
 
                 var ListOfTimeSlotsWithDiscount = new List<TimeSlotModel>();
@@ -4405,13 +4479,13 @@ namespace TheBookingPlatform.Controllers
                     {
                         if (CompanyID == item.CompanyIDFrom)
                         {
-                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(item.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).ToList();
+                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(item.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).Where(x => x.IsPaid).ToList();
                             appointments.AddRange(appointment);
                         }
                         else
                         {
                             var companyFrom = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(companyFrom.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).ToList();
+                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(companyFrom.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).Where(x => x.IsPaid).ToList();
                             appointments.AddRange(appointment);
                         }
 
@@ -4894,6 +4968,8 @@ namespace TheBookingPlatform.Controllers
                                     }
 
                                 }
+
+
                                 if (FoundExceptionToo)
                                 {
 
@@ -5338,11 +5414,15 @@ namespace TheBookingPlatform.Controllers
                     var emp = EmployeeServices.Instance.GetEmployee(empnew);
                     if (emp != null)
                     {
+                        if(emp.ID == 32)
+                        {
+
+                        }
                         if (emp.AllowOnlineBooking)
                         {
                             while (true)
                             {
-                                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, empnew, false, false);
+                                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, empnew, false, false).Where(x=>x.IsPaid).ToList();
 
                                 var roster = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(emp.ID);
                                 if (roster != null)

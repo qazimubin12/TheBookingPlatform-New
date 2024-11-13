@@ -638,6 +638,7 @@ namespace TheBookingPlatform.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId());
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == user.Company).FirstOrDefault();
             model.Contact = user.PhoneNumber;
+            model.Role = user.Role;
             model.Email = user.Email;
             model.ID = user.Id;
             model.UserName = user.UserName;
@@ -663,8 +664,9 @@ namespace TheBookingPlatform.Controllers
             user.PhoneNumber = model.Contact;
             user.UserName = model.Email;
             user.Email = model.Email;
+            user.Password = model.Password;
             await UserManager.UpdateAsync(user);
-
+            model.Company = CompanyServices.Instance.GetCompany(user.Company).FirstOrDefault();
             return View(model);
         }
 

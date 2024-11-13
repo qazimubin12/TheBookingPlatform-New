@@ -143,6 +143,17 @@ namespace TheBookingPlatform.Services
             }
         }
 
+
+        public List<Appointment> GetAppointmentBookingWRTBusiness(string businesName, bool Deleted, bool isCancelled, int EmployeeID,DateTime date)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Appointments.AsNoTracking().Where(x => x.Business == businesName && x.DELETED == Deleted && x.IsCancelled == isCancelled && x.EmployeeID == EmployeeID && DbFunctions.TruncateTime(x.Date) == date.Date).OrderBy(x => x.Date).ToList();
+
+            }
+        }
+
         public List<Appointment> GetAppointmentBookingWRTBusiness(string businesName, bool Deleted, bool isCancelled, int EmployeeID,DateTime StartDate,DateTime EndDate)
         {
             using (var context = new DSContext())

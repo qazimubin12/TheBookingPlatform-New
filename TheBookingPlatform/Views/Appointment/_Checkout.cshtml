@@ -37,7 +37,7 @@
     }
 
 
-    var depositAmount = Total * Model.Company.Deposit / 100;
+    var depositAmount = Model.Appointment.Deposit;
     Total -= depositAmount;
     float totalAmountOfProducts = 0;
     if (Model.SaleOnCheckOut != null)
