@@ -124,7 +124,7 @@ namespace TheBookingPlatform.Controllers
         //
         // POST: /Account/Login[
         [AllowAnonymous]
-        public async Task<ActionResult> AutoLogin(string Email, string PasswordKAK, string returnUrl = "")
+        public async Task<ActionResult> AutoLogin(string Email, string PasswordKAK="", string returnUrl = "")
         {
             var model = new LoginViewModel();
             model.Email = Email;

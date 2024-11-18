@@ -15,6 +15,12 @@ using Stripe.Checkout;
 using Stripe;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
+using Newtonsoft.Json;
+using System.IO;
+using System.Net.Http.Headers;
+using System.Net;
+using System.Text;
+using Microsoft.Owin.Security.Twitter.Messages;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -775,5 +781,208 @@ namespace TheBookingPlatform.Controllers
 
             return json;
         }
+
+
+
+
+
+
+
+        ////sum up
+        ///
+        public ActionResult ConnectToSumUp()
+        {
+            var clientId = "cc_classic_5eWiWKdlN60nXBxS517fpX4rY1Vce";
+            var redirectUri = Url.Action("OAuthCallback", "User", null, Request.Url.Scheme);
+            var authUrl = $"https://api.sumup.com/authorize?client_id={clientId}&redirect_uri={redirectUri}&response_type=code&scope=payments";
+            return Redirect(authUrl);
+        }
+
+
+        public async Task<ActionResult> OAuthCallback(string code)
+        {
+            var clientId = "cc_classic_5eWiWKdlN60nXBxS517fpX4rY1Vce";
+            var clientSecret = "cc_sk_classic_ZjkCrq805wnC0TtsCF9CnCNSVUkZ7dM3witrhgkQLPbPOsSdl0";
+
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync("https://api.sumup.com/token", new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    { "grant_type", "authorization_code" },
+                    { "client_id", clientId },
+                    { "client_secret", clientSecret },
+                    { "code", code },
+                }));
+
+                var content = await response.Content.ReadAsStringAsync();
+                var tokenResponse = JsonConvert.DeserializeObject<SumUpTokenResponse>(content);
+
+                var supToek = SumUpTokenServices.Instance.GetSumUpToken().FirstOrDefault();
+                if (supToek != null)
+                {
+                    SumUpTokenServices.Instance.DeleteSumUpToken(supToek.ID);
+                }
+                // Store the access token securely, e.g., in a database or encrypted session
+                //SaveToken(tokenResponse);
+                var suptoken = new SumUpToken();
+                suptoken.Business = "ProductionServer";
+                suptoken.Token = content;
+                SumUpTokenServices.Instance.SaveSumUpToken(suptoken);
+                return RedirectToAction("Subscription");
+            }
+
+
+
+        }
+
+        public ActionResult Subscription()
+        {
+            return View();
+        }
+
+
+        public ActionResult SubscriptionSuccess(string transactionId)
+        {
+
+            // If no transaction ID is provided, handle error
+            ViewBag.Message = transactionId;
+            return View();
+
+
+            // Verify the transaction status from the database or SumUp API
+
+
+        }
+
+        public async Task<ActionResult> CreateSubscription(string userID)
+        {
+            var accessToken = SumUpTokenServices.Instance.GetSumUpToken().FirstOrDefault();
+            string response2 = "";
+            try
+            {
+                var tokenResponse = JsonConvert.DeserializeObject<SumUpTokenResponse>(accessToken.Token);
+
+                if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Invalid or expired SumUp token.");
+                }
+
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
+
+                    var paymentData = new
+                    {
+                        amount = "9.99",
+                        currency = "EUR",
+                        pay_to_email = "e54e49c7ca034793bcc2d174869fcafb@developer.sumup.com", // Replace with valid merchant email
+                        description = "Monthly Subscription",
+                        return_url = "https://app.yourbookingplatform/User/SubscriptionSuccess",
+                        callback_url = "https://app.yourbookingplatform.com/User/SubscriptionCallback"
+                    };
+
+                    var jsonPayload = JsonConvert.SerializeObject(paymentData);
+                    Console.WriteLine("JSON Payload: " + jsonPayload);
+
+                    var response = await client.PostAsync("https://api.sumup.com/v0.1/checkouts",
+                        new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
+
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+
+                    }
+                    response2 = content;
+                    var paymentResponse = JsonConvert.DeserializeObject<PaymentResponse>(content);
+
+                    // Redirect to SumUp checkout
+                    return Redirect(paymentResponse.CheckoutUrl);
+                }
+            }
+            catch (Exception ex)
+            {
+                accessToken.PaymentMessage = ex.Message +" Response:"+ response2;
+                SumUpTokenServices.Instance.UpdateSumUpToken(accessToken);
+
+                throw;
+            }
+            
+            
+        }
+
+
+        public class PaymentResponse
+        {
+            [JsonProperty("id")]
+            public string Id { get; set; } // Unique ID for the payment/checkout
+
+            [JsonProperty("status")]
+            public string Status { get; set; } // Status of the payment (e.g., 'PENDING', 'SUCCESSFUL')
+
+            [JsonProperty("checkout_url")]
+            public string CheckoutUrl { get; set; } // URL where the user completes the payment
+
+            [JsonProperty("amount")]
+            public decimal Amount { get; set; } // Payment amount
+
+            [JsonProperty("currency")]
+            public string Currency { get; set; } // Currency of the payment (e.g., 'USD')
+
+            [JsonProperty("pay_to_email")]
+            public string PayToEmail { get; set; } // Email of the merchant receiving the payment
+
+            [JsonProperty("description")]
+            public string Description { get; set; } // Description of the payment
+
+            [JsonProperty("transaction_id")]
+            public string TransactionId { get; set; } // Transaction ID if payment is successful
+        }
+
+        public class PaymentCallback
+        {
+            [JsonProperty("transaction_id")]
+            public string TransactionId { get; set; } // Unique ID of the transaction
+
+            [JsonProperty("status")]
+            public string Status { get; set; } // Status of the payment (e.g., 'SUCCESSFUL', 'FAILED')
+
+            [JsonProperty("amount")]
+            public decimal Amount { get; set; } // Payment amount
+
+            [JsonProperty("currency")]
+            public string Currency { get; set; } // Payment currency
+
+            [JsonProperty("customer_id")]
+            public string CustomerId { get; set; } // Identifier for the customer (optional, based on your system)
+
+            [JsonProperty("payment_type")]
+            public string PaymentType { get; set; } // Type of payment (e.g., 'CARD', 'BANK_TRANSFER')
+
+            [JsonProperty("timestamp")]
+            public DateTime Timestamp { get; set; } // Time the payment event occurred
+
+            [JsonProperty("checkout_id")]
+            public string CheckoutId { get; set; } // ID of the checkout session
+        }
+        [HttpPost]
+        public async Task<ActionResult> SubscriptionCallback()
+        {
+            var accessToken = SumUpTokenServices.Instance.GetSumUpToken().FirstOrDefault();
+
+            var content = await new StreamReader(Request.InputStream).ReadToEndAsync();
+            var paymentStatus = JsonConvert.DeserializeObject<PaymentCallback>(content);
+
+            if (paymentStatus.Status == "SUCCESSFUL")
+            {
+                accessToken.PaymentMessage = content;
+                SumUpTokenServices.Instance.UpdateSumUpToken(accessToken);
+                // Save the customer’s status as active
+                //UpdateCustomerStatus(paymentStatus.customer_id, true);
+            }
+
+            return new HttpStatusCodeResult(200);
+        }
+
     }
 }

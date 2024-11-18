@@ -1094,7 +1094,7 @@ namespace TheBookingPlatform.Controllers
                     if (franchise.UserID == final.Id)
                     {
                         var gotoLogin = UserManager.FindById(franchise.MappedToUserID);
-                        return Json(new { success = true, Email = gotoLogin.Email, Password = gotoLogin.Password }, JsonRequestBehavior.AllowGet);
+                        return Json(new { success = true, Email = gotoLogin.Email, KIKO = gotoLogin.Password }, JsonRequestBehavior.AllowGet);
 
                     }
                     else
@@ -1105,7 +1105,7 @@ namespace TheBookingPlatform.Controllers
                         model.RememberMe = false;
                         model.Email = gotoLogin.Email;
                         model.Password = gotoLogin.Password;
-                        return Json(new { success = true, Email = gotoLogin.Email, Password = gotoLogin.Password }, JsonRequestBehavior.AllowGet);
+                        return Json(new { success = true, Email = gotoLogin.Email, KIKO = gotoLogin.Password }, JsonRequestBehavior.AllowGet);
                     }
 
                 }

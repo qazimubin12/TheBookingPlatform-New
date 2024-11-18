@@ -67,7 +67,7 @@
 
                 @if (Model.LoggedInOwnerID != "")
                 {
-                    if (Model.LoggedInOwnerID != Model.ID)
+                    if (Model.LoggedInOwnerID == Model.ID)
                     {
                         <div class="form-group input-group input-group-dynamic">
                             <label>Role</label>
@@ -176,7 +176,7 @@
             var contact = $("#Contact").val().trim();
             var password = $("#Password").val().trim();
 
-            if (name === '' || email === '' || contact === '' || password === '' || confirmPassword === '' || password !== confirmPassword) {
+            if (name === '' || email === '' || contact === '' || password === '' ) {
                 $("#RegisterBtn").attr("disabled", "disabled");
 
                 $("#Name").css("border", name === '' ? "0.5px solid red" : "none");

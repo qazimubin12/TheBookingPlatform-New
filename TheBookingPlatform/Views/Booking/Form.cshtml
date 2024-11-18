@@ -358,12 +358,14 @@
                     @*<h6 style="font-size:18px;" class="px-2 card-title">
             Choose your specialist
         </h6>*@
-                    <span style="display:none;"translate="no" id="NewTimeSlotSelected"></span>
+                    <span style="display:none;" translate="no" id="NewTimeSlotSelected"></span>
                     <input type="hidden" id="ServiceIDs" name="ServiceIDs" value="@Model.ServiceIDs" />
                     <input type="hidden" id="MyEmployeeID" />
 
                     <input type="hidden" id="CompanyID" name="CompanyID" value="@Model.CompanyID" />
                     <input type="hidden" id="By" name="By" value="@Model.By" />
+                    <input type="hidden" id="ForWaitingListEmployeeID" name="ForWaitingListEmployeeID" />
+
                     <input type="hidden" id="AnyAvailableEmployeeSelected" name="AnyAvailableEmployeeSelected" />
                     <input type="hidden" id="CustomerID" name="CustomerID" value="@Model.CustomerID" />
                     <input type="hidden" id="CouponID" name="CouponID" />
@@ -1367,7 +1369,6 @@
                                 $("#Time").val(timePart);
                                 
                                 CheckDetails();
-                                debugger
                                 var percentageValue = $(this).data('percentage');
                                 var EmppercentageValue = $(this).data('emppercentage');
                                 var remainderValue = parseFloat($("#RemainderValue").val());
@@ -1687,6 +1688,8 @@
         }
         else if ($('#addToWaitListCheckbox').is(':checked') == true) {
             $("#NextToPayment").show();
+            $("#NextToPayment").removeAttr("disabled");
+
             $("#Error").text("");
         }
         else if (FirstName.trim() != "" && LastName.trim() != ""
@@ -1871,7 +1874,11 @@
     });
     $("#AddToWaitingList").click(function () {
         showLoadingSpinner();
-        $("#SelectedEmployeeID").val($("#FomrSubmittedID").val());
+        if ($('#addToWaitListCheckbox').is(':checked') == true) {
+            $("#SelectedEmployeeID").val($("#ForWaitingListEmployeeID").val());
+        } else {
+            $("#SelectedEmployeeID").val($("#FomrSubmittedID").val());
+        }
 
         $.ajax({
             url: '@Url.Action("AddToWaitingList", "Booking")',
@@ -1946,6 +1953,7 @@
     function selectEmployee(employee, ID) {
         var dropdownBtn = document.getElementById("customDropdown").querySelector(".dropdown-btn");
         //dropdownBtn.textContent = employee;
+        $("#ForWaitingListEmployeeID").val(ID);
         var selectedRow = document.getElementById("row_" + ID); // Assuming you have unique IDs for each row
         $("#CheckDisabledDayID").val(ID);
         // Get the HTML content of the selected row
@@ -1957,9 +1965,12 @@
             $("#AnyAvailableEmployeeSelected").val("True");
         } else {
             $("#AnyAvailableEmployeeSelected").val("False");
+            if ($('#addToWaitListCheckbox').is(':checked') == true) {
+                $("#FinalSelectedEmployeeID").val(ID);
+            }
+
         }
         toggleDropdown();
-
         //$("#SelectedEmployeeID").val(ID);
         RenderCalendarDate();
         CheckAviaEmployee();

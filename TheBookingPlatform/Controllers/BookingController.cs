@@ -2867,13 +2867,21 @@ namespace TheBookingPlatform.Controllers
 
                         var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
                         var history = new History();
-                        history.EmployeeName = employee.Name;
+                        if (employee != null)
+                        {
+                            history.EmployeeName = employee.Name;
+                        }
+                        else
+                        {
+                            history.EmployeeName = "Any Available Specialist";
+                        }
                         history.CustomerName = customer.FirstName + " " + customer.LastName;
                         history.Note = "Appointment ID:" + appointment.ID + "   Online Appointment was created for " + history.CustomerName + "";
                         history.Date = DateTime.Now;
                         history.Business = appointment.Business;
                         history.Type = "General";
                         HistoryServices.Instance.SaveHistory(history);
+
                         long totalAmountDeposit = (long)appointment.Deposit;
                         var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                         if (googleCalendar != null && !googleCalendar.Disabled)
@@ -2999,7 +3007,14 @@ namespace TheBookingPlatform.Controllers
                         else
                         {
                             var historyn = new History();
-                            historyn.EmployeeName = employee.Name;
+                            if (employee != null)
+                            {
+                                historyn.EmployeeName = employee.Name;
+                            }
+                            else
+                            {
+                                historyn.EmployeeName = "Any Available Specialist";
+                            }
                             historyn.CustomerName = customer.FirstName + " " + customer.LastName;
                             historyn.Note = "Online Appointment was paid for " + historyn.CustomerName + "";
                             historyn.Date = DateTime.Now;
@@ -3241,7 +3256,9 @@ namespace TheBookingPlatform.Controllers
                     }
                     else
                     {
+
                         AppointmentServices.Instance.SaveAppointment(appointment);
+                        
                         var reminder = new TheBookingPlatform.Entities.Reminder();
                         reminder.Service = appointment.Service;
                         reminder.Business = appointment.Business;
@@ -3253,7 +3270,12 @@ namespace TheBookingPlatform.Controllers
                         ReminderServices.Instance.SaveReminder(reminder);
 
                         var history = new History();
-                        history.EmployeeName = employee.Name;
+                        employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                        if (employee != null)
+                        {
+                            history.EmployeeName = employee.Name;
+
+                        }
                         history.CustomerName = customer.FirstName + " " + customer.LastName;
                         history.Note = "Online Appointment was created for " + history.CustomerName + "";
                         history.Date = DateTime.Now;
@@ -4154,14 +4176,25 @@ namespace TheBookingPlatform.Controllers
             List<string> availableSlots = new List<string>();
             List<string> NotavailableSlots = new List<string>();
             DateTime currentTime = DateTime.Now;
-
-            appointments.Sort((x, y) => x.Time.TimeOfDay.CompareTo(y.Time.TimeOfDay));
+            var FinalAppointments = new List<Appointment>();
+            foreach (var item in appointments)
+            {
+                if (item.IsPaid == false && item.DepositMethod == "Online" && item.IsCancelled == false && (DateTime.Now - item.BookingDate).TotalMinutes > 15)
+                {
+                    item.IsCancelled = true;
+                }
+                else
+                {
+                    FinalAppointments.Add(item);
+                }
+            }
+            FinalAppointments.Sort((x, y) => x.Time.TimeOfDay.CompareTo(y.Time.TimeOfDay));
 
             DateTime lastEndTime = employeeStartTime;
 
-            if (appointments.Count > 0)
+            if (FinalAppointments.Count > 0)
             {
-                var firstAppointment = appointments[0];
+                var firstAppointment = FinalAppointments[0];
                 // Consider slots before the first appointment
                 if (employeeStartTime.TimeOfDay <= firstAppointment.Time.TimeOfDay)
                 {
@@ -4181,7 +4214,7 @@ namespace TheBookingPlatform.Controllers
                                 //{\
                                 if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
                                 {
-                                    if (slotStart >= currentTime)
+                                    if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                     {
                                         availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4219,7 +4252,7 @@ namespace TheBookingPlatform.Controllers
                 }
             }
 
-            foreach (var appointment in appointments)
+            foreach (var appointment in FinalAppointments)
             {
                 if (lastEndTime.TimeOfDay <= appointment.Time.TimeOfDay)
                 {
@@ -4239,7 +4272,7 @@ namespace TheBookingPlatform.Controllers
                                 {
                                     if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
                                     {
-                                        if (slotStart >= currentTime)
+                                        if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                         {
                                             availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4304,7 +4337,7 @@ namespace TheBookingPlatform.Controllers
                                 {
                                     if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
                                     {
-                                        if (slotStart >= currentTime)
+                                        if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                         {
                                             availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4322,7 +4355,7 @@ namespace TheBookingPlatform.Controllers
                                     {
                                         if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
                                         {
-                                            if (slotStart >= currentTime)
+                                            if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                             {
                                                 availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4338,7 +4371,7 @@ namespace TheBookingPlatform.Controllers
                                     {
                                         if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
                                         {
-                                            if (slotStart >= currentTime)
+                                            if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                             {
                                                 availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4371,11 +4404,11 @@ namespace TheBookingPlatform.Controllers
                             {
                                 if (slotEnd.Hour < employeeEndTime.TimeOfDay.Hours)
                                 {
-                                    if (slotStart >= currentTime)
+                                    if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                     {
                                         if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
                                         {
-                                            if (slotStart >= currentTime)
+                                            if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                             {
                                                 availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4394,7 +4427,7 @@ namespace TheBookingPlatform.Controllers
                                     {
                                         if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
                                         {
-                                            if (slotStart >= currentTime)
+                                            if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                             {
                                                 availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4410,7 +4443,7 @@ namespace TheBookingPlatform.Controllers
                                     {
                                         if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
                                         {
-                                            if (slotStart >= currentTime)
+                                            if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                             {
                                                 availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
@@ -4468,7 +4501,7 @@ namespace TheBookingPlatform.Controllers
                 var empShifts = new List<ShiftModel>();
 
                 
-                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, EmployeeID, false, false).Where(x=>x.IsPaid).ToList();
+                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, EmployeeID, false, false).ToList();
 
 
                 var ListOfTimeSlotsWithDiscount = new List<TimeSlotModel>();
@@ -4479,13 +4512,13 @@ namespace TheBookingPlatform.Controllers
                     {
                         if (CompanyID == item.CompanyIDFrom)
                         {
-                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(item.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).Where(x => x.IsPaid).ToList();
+                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(item.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).ToList();
                             appointments.AddRange(appointment);
                         }
                         else
                         {
                             var companyFrom = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(companyFrom.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).Where(x => x.IsPaid).ToList();
+                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(companyFrom.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).ToList();
                             appointments.AddRange(appointment);
                         }
 
@@ -5414,15 +5447,12 @@ namespace TheBookingPlatform.Controllers
                     var emp = EmployeeServices.Instance.GetEmployee(empnew);
                     if (emp != null)
                     {
-                        if(emp.ID == 32)
-                        {
-
-                        }
+                       
                         if (emp.AllowOnlineBooking)
                         {
                             while (true)
                             {
-                                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, empnew, false, false).Where(x=>x.IsPaid).ToList();
+                                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, empnew, false, false).ToList();
 
                                 var roster = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(emp.ID);
                                 if (roster != null)

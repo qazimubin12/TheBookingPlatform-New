@@ -2297,10 +2297,9 @@
                 if (data.success)
                 {
                     var Email = data.Email;
-                    var Password = data.Password;
-                    var goToLink = '@Url.Action("AutoLogin", "Account", new { Email = "__Email__", PasswordKAK = "__Password__" })'
+                    var KIKO = data.KIKO;
+                    var goToLink = '@Url.Action("AutoLogin", "Account", new { Email = "__Email__"})'
                         .replace("__Email__", encodeURIComponent(Email))
-                        .replace("__Password__", encodeURIComponent(Password));
 
                     // Set the href attribute of the anchor tag
                     $("#GoToLink").attr("href", goToLink);

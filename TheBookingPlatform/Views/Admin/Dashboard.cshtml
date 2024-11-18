@@ -204,36 +204,35 @@
 
 
 
-        <div class="card">
-            <div class="card-header pb-0 p-3">
-                <div class="d-flex align-items-center">
-                    <h6 class="mb-0">This is the percentage of time employees /staffs are productively working. Calculation also includes appointments from external calendars.</h6>
-                    @*<button type="button" class="btn btn-icon-only btn-rounded btn-outline-secondary mb-0 ms-2 btn-sm d-flex align-items-center justify-content-center ms-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="See the consumption per room">
-                        <i class="fas fa-info"></i>
-                    </button>*@
-                </div>
-            </div>
+        <div class="card" style="margin-top:20px;">
+            @*<div class="card-header pb-0 p-3">
+                
+            </div>*@
             <div class="card-body p-3">
+                <h4 class="mb-0 card-title">Employee Occupancy</h4>
+                <p class="text-sm">
+                    This is the percentage of time employees /staffs are productively working. Calculation also includes appointments from external calendars.
+                </p>
                 @if (Model.EmployeeOccupancies != null && Model.EmployeeOccupancies.Count() > 0)
                 {
-                    
-                        <div class="row">
-                            <div class="col-5 text-center">
-                                <div class="chart">
-                                    <canvas id="chart-consumption" class="chart-canvas" height="197"></canvas>
-                                </div>
-                                <h4 class="font-weight-bold mt-n8">
-                                    <span>@Model.EmployeeOccupancies.Where(x=>x.Percentage >= 0).Select(x=>x.Percentage).Average()%</span>
-                                    <span class="d-block text-body text-sm">Calendar Bookings</span>
-                                </h4>
+
+                    <div class="row">
+                        <div class="col-5 text-center">
+                            <div class="chart">
+                                <canvas id="chart-consumption" class="chart-canvas" height="197"></canvas>
                             </div>
-                            <div class="col-7">
-                                <div class="table-responsive">
-                                    <table class="table align-items-center mb-0">
-                                        <tbody>
-                                            @foreach (var item in Model.EmployeeOccupancies.Where(x => x.Percentage >= 0))
-                                            {
-                                                var color = "bg-gradient-" + colors[random.Next(colors.Length)];
+                            <h4 class="font-weight-bold mt-n8">
+                                <span>@Model.EmployeeOccupancies.Where(x => x.Percentage >= 0).Select(x => x.Percentage).Average()%</span>
+                                <span class="d-block text-body text-sm">Calendar Bookings</span>
+                            </h4>
+                        </div>
+                        <div class="col-7">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0">
+                                    <tbody>
+                                        @foreach (var item in Model.EmployeeOccupancies.Where(x => x.Percentage >= 0))
+                                        {
+                                            var color = "bg-gradient-" + colors[random.Next(colors.Length)];
                                             <tr>
                                                 <td>
                                                     <div class="d-flex px-2 py-0">
@@ -241,24 +240,24 @@
                                                         <div class="d-flex flex-column justify-content-center">
                                                             <h6 class="mb-0 text-sm">@item.Employee.Name</h6>
                                                             @*<span>Worked Hours: @item.WorkedHours</span>
-                                                            <span>Total Hours: @item.TotalTime</span>*@
+                                                    <span>Total Hours: @item.TotalTime</span>*@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                
+
                                                 <td class="align-middle text-center text-sm">
                                                     <span class="text-xs"> @item.Percentage% </span>
                                                 </td>
                                             </tr>
 
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        }
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                    }
-                
+                    </div>
+                }
+
             </div>
         </div>
     }

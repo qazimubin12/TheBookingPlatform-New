@@ -79,6 +79,14 @@
     <Compile Include="Migrations\202411051833577_addpapoi.Designer.cs">
       <DependentUpon>202411051833577_addpapoi.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411141952174_sumuptoken.cs" />
+    <Compile Include="Migrations\202411141952174_sumuptoken.Designer.cs">
+      <DependentUpon>202411141952174_sumuptoken.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411151918374_paymentmessage.cs" />
+    <Compile Include="Migrations\202411151918374_paymentmessage.Designer.cs">
+      <DependentUpon>202411151918374_paymentmessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -99,6 +107,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411051833577_addpapoi.resx">
       <DependentUpon>202411051833577_addpapoi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411141952174_sumuptoken.resx">
+      <DependentUpon>202411141952174_sumuptoken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411151918374_paymentmessage.resx">
+      <DependentUpon>202411151918374_paymentmessage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
