@@ -628,7 +628,6 @@ namespace TheBookingPlatform.Controllers
                                                     appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
                                                     appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
                                                     appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);
-                                                    appointment.Business = employee.Business;
                                                     appointment.GoogleCalendarEventID = item.Id;
                                                     AppointmentServices.Instance.UpdateAppointment(appointment);
                                                 }
@@ -640,7 +639,6 @@ namespace TheBookingPlatform.Controllers
                                                     appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
                                                     appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
                                                     appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);
-                                                    appointment.Business = employee.Business;
                                                     appointment.EmployeeID = newemployee.ID;
                                                     appointment.GoogleCalendarEventID = item.Id;
                                                     AppointmentServices.Instance.UpdateAppointment(appointment);
@@ -688,11 +686,8 @@ namespace TheBookingPlatform.Controllers
                                     appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);
                                     appointment.DepositMethod = "Pin";
                                     appointment.Notes = fullEvent.Summary;
-                                    var haveAnyappointment = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(googleCalendar.Business, employee.GoogleCalendarID, appointment.Date, appointment.Time, appointment.EndTime);
-                                    //if (haveAnyappointment)
-                                    //{
                                     TimeSpan duration = appointment.EndTime - appointment.Time;
-                                    var service = ServiceServices.Instance.GetService(employee.Business, "ABSENSE").FirstOrDefault();
+                                    var service = ServiceServices.Instance.GetService(employee.Business, "ABSENSE","").FirstOrDefault();
                                     if (service != null)
                                     {
                                         appointment.Service = service.ID.ToString();

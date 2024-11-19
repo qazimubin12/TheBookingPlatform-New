@@ -241,7 +241,7 @@ namespace TheBookingPlatform.Controllers
                 }
             }
             model.LoyaltyCardHistories = listOfLoyaltyCardDetails;
-
+            model.Company = CompanyServices.Instance.GetCompany(Customer.Business).FirstOrDefault();
             return View(model);
         }
 

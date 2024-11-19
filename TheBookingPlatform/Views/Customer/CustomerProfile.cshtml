@@ -338,11 +338,11 @@
                                                     <tr style="border-color:white;">
                                                         @if (listofservice.Discount == 0)
                                                         {
-                                                            <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price  </td>
+                                                            <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price @Model.Company.Currency  </td>
                                                         }
                                                         else
                                                         {
-                                                            <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price (Discount: @listofservice.Discount %) </td>
+                                                    <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price @Model.Company.Currency (Discount: @listofservice.Discount %) </td>
                                                         }
                                                     </tr>
                                                 }
