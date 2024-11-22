@@ -2617,6 +2617,7 @@ namespace TheBookingPlatform.Controllers
                 var secretKey = company.APIKEY;
                 StripeConfiguration.ApiKey = secretKey;
                 float Deposit = 0;
+                string ConcatenatedServices = "";
                 if (company.PaymentMethodIntegration)
                 {
                     foreach (var item in model.ServiceIDs.Split(',').ToList())
@@ -2634,7 +2635,7 @@ namespace TheBookingPlatform.Controllers
                         }
                         Deposit += service.Price;
                     }
-
+                    ConcatenatedServices = String.Join(",", serviceslist.Select(x => x.Name).ToList());
                     /////////////USE COUPON THING IF PRESENT
 
 
@@ -2647,6 +2648,7 @@ namespace TheBookingPlatform.Controllers
                         serviceslist.Add(new ServiceFormModel { ID = service.ID, Name = service.Name, Duration = service.Duration, Price = service.Price });
 
                     }
+                    ConcatenatedServices = String.Join(",",serviceslist.Select(x => x.Name).ToList());
                 }
                 if (model.CustomerID == 0)
                 {
@@ -2776,7 +2778,6 @@ namespace TheBookingPlatform.Controllers
                     appointment.IsWalkIn = false;
                     appointment.EmployeePriceChange = model.EmployeePriceChange;
                     appointment.OnlinePriceChange = model.OnlinePriceChange;
-                    string ConcatenatedServices = "";
                     var ConcatenatedResource = "";
                     int MinsToBeAddedForEndTime = 0;
                     float TotalCost = 0;
@@ -2796,15 +2797,7 @@ namespace TheBookingPlatform.Controllers
                             {
                                 Durations = String.Join(",", Durations, item.Duration);
                             }
-                            if (ConcatenatedServices == "")
-                            {
-                                ConcatenatedServices = String.Join(",", item.Name);
-                            }
-                            else
-                            {
-                                ConcatenatedServices = String.Join(",", ConcatenatedServices, item.Name);
-                            }
-
+                      
 
 
                         }
@@ -3167,7 +3160,6 @@ namespace TheBookingPlatform.Controllers
                     appointment.OnlinePriceChange = model.OnlinePriceChange;
 
                     appointment.IsWalkIn = false;
-                    string ConcatenatedServices = "";
                     int MinsToBeAddedForEndTime = 0;
                     float TotalCost = 0;
                     string Durations = "";
@@ -3189,14 +3181,7 @@ namespace TheBookingPlatform.Controllers
                                 {
                                     Durations = String.Join(",", Durations, ServiceNew.Duration);
                                 }
-                                if (ConcatenatedServices == "")
-                                {
-                                    ConcatenatedServices = String.Join(",", ServiceNew.Name);
-                                }
-                                else
-                                {
-                                    ConcatenatedServices = String.Join(",", ConcatenatedServices, ServiceNew.Name);
-                                }
+                               
                                 if (item.Resource != null)
                                 {
                                     if (ConcatenatedResource == "")
@@ -4399,22 +4384,21 @@ namespace TheBookingPlatform.Controllers
                             {
                                 if (slotEnd.Hour < employeeEndTime.TimeOfDay.Hours)
                                 {
-                                    if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
-                                    {
-                                        if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
-                                        {
-                                            if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
-                                            {
-                                                availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
-                                            }
-                                        }
-                                        else
+                                    if (employeeStartTime.Date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                                    {
+                                        if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
                                         {
                                             availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
                                         }
                                     }
+                                    else
+                                    {
+                                        availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
+
+                                    }
+
                                 }
                                 else if (slotEnd.Hour == employeeEndTime.TimeOfDay.Hours)
                                 {

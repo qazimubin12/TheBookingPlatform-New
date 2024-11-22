@@ -532,8 +532,14 @@
             })
                 .done(function (response) {
                     hideLoadingSpinner();
-                    window.location.href = '@Url.Action("Index","Shift")';
+                    var startDate = encodeURIComponent($("#StartDate").val());
+                    var endDate = encodeURIComponent($("#EndDate").val());
 
+                    // Construct the URL with the parameters
+                    var urlWithParams = '@Url.Action("Index", "Shift")' + '?StartOfWeek=' + startDate + '&EndOfWeek=' + endDate;
+
+                    // Redirect to the constructed URL
+                    window.location.href = urlWithParams;
                     // Handle success scenario
                 })
                 .fail(function () {

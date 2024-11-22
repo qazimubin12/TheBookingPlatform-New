@@ -792,7 +792,7 @@ namespace TheBookingPlatform.Controllers
         ///
         public ActionResult ConnectToSumUp()
         {
-            var clientId = "cc_classic_5eWiWKdlN60nXBxS517fpX4rY1Vce";
+            var clientId = "cc_classic_bvn3ByDMy2r6wMLH8jlaJoVixM6cc";
             var redirectUri = Url.Action("OAuthCallback", "User", null, Request.Url.Scheme);
             var authUrl = $"https://api.sumup.com/authorize?client_id={clientId}&redirect_uri={redirectUri}&response_type=code&scope=payments";
             return Redirect(authUrl);
@@ -801,8 +801,8 @@ namespace TheBookingPlatform.Controllers
 
         public async Task<ActionResult> OAuthCallback(string code)
         {
-            var clientId = "cc_classic_5eWiWKdlN60nXBxS517fpX4rY1Vce";
-            var clientSecret = "cc_sk_classic_ZjkCrq805wnC0TtsCF9CnCNSVUkZ7dM3witrhgkQLPbPOsSdl0";
+            var clientId = "cc_classic_bvn3ByDMy2r6wMLH8jlaJoVixM6cc";
+            var clientSecret = "cc_sk_classic_zJgpirf20BK4Mwo51ETAETGhCYjVx8ZxPKEK7SxmUhXRMFWoM4";
 
             using (var client = new HttpClient())
             {
@@ -818,10 +818,8 @@ namespace TheBookingPlatform.Controllers
                 var tokenResponse = JsonConvert.DeserializeObject<SumUpTokenResponse>(content);
 
                 var supToek = SumUpTokenServices.Instance.GetSumUpToken().FirstOrDefault();
-                if (supToek != null)
-                {
-                    SumUpTokenServices.Instance.DeleteSumUpToken(supToek.ID);
-                }
+
+                SumUpTokenServices.Instance.DeleteSumUpToken(supToek.ID);
                 // Store the access token securely, e.g., in a database or encrypted session
                 //SaveToken(tokenResponse);
                 var suptoken = new SumUpToken();
@@ -845,7 +843,7 @@ namespace TheBookingPlatform.Controllers
         {
 
             // If no transaction ID is provided, handle error
-            ViewBag.Message = transactionId;
+            ViewBag.Message = "We could not verify your payment. Please contact support.";
             return View();
 
 
@@ -857,58 +855,46 @@ namespace TheBookingPlatform.Controllers
         public async Task<ActionResult> CreateSubscription(string userID)
         {
             var accessToken = SumUpTokenServices.Instance.GetSumUpToken().FirstOrDefault();
-            string response2 = "";
-            try
-            {
-                var tokenResponse = JsonConvert.DeserializeObject<SumUpTokenResponse>(accessToken.Token);
+            var tokenResponse = JsonConvert.DeserializeObject<SumUpTokenResponse>(accessToken.Token);
 
-                if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
+            if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Invalid or expired SumUp token.");
+            }
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
+
+                var paymentData = new
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Invalid or expired SumUp token.");
+                    amount = "9.99",
+                    currency = "EUR",
+                    pay_to_email = "ezekiel.osayi@gmail.com", // Replace with valid merchant email
+                    description = "Monthly Subscription",
+                    return_url = "https://app.yourbookingplatform.com/User/SubscriptionSuccess",
+                    callback_url = "https://app.yourbookingplatform.com/User/SubscriptionCallback"
+                };
+
+                var jsonPayload = JsonConvert.SerializeObject(paymentData);
+                Console.WriteLine("JSON Payload: " + jsonPayload);
+
+                var response = await client.PostAsync("https://api.sumup.com/v0.1/checkouts",
+                    new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Error Response: " + content);
+                    throw new Exception($"Error creating subscription: {content}");
                 }
 
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
+                var paymentResponse = JsonConvert.DeserializeObject<PaymentResponse>(content);
 
-                    var paymentData = new
-                    {
-                        amount = "9.99",
-                        currency = "EUR",
-                        pay_to_email = "e54e49c7ca034793bcc2d174869fcafb@developer.sumup.com", // Replace with valid merchant email
-                        description = "Monthly Subscription",
-                        return_url = "https://app.yourbookingplatform/User/SubscriptionSuccess",
-                        callback_url = "https://app.yourbookingplatform.com/User/SubscriptionCallback"
-                    };
-
-                    var jsonPayload = JsonConvert.SerializeObject(paymentData);
-                    Console.WriteLine("JSON Payload: " + jsonPayload);
-
-                    var response = await client.PostAsync("https://api.sumup.com/v0.1/checkouts",
-                        new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
-
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-
-                    }
-                    response2 = content;
-                    var paymentResponse = JsonConvert.DeserializeObject<PaymentResponse>(content);
-
-                    // Redirect to SumUp checkout
-                    return Redirect(paymentResponse.CheckoutUrl);
-                }
+                // Redirect to SumUp checkout
+                return Redirect(paymentResponse.CheckoutUrl);
             }
-            catch (Exception ex)
-            {
-                accessToken.PaymentMessage = ex.Message +" Response:"+ response2;
-                SumUpTokenServices.Instance.UpdateSumUpToken(accessToken);
-
-                throw;
-            }
-            
-            
         }
 
 
@@ -968,21 +954,18 @@ namespace TheBookingPlatform.Controllers
         [HttpPost]
         public async Task<ActionResult> SubscriptionCallback()
         {
-            var accessToken = SumUpTokenServices.Instance.GetSumUpToken().FirstOrDefault();
-
             var content = await new StreamReader(Request.InputStream).ReadToEndAsync();
             var paymentStatus = JsonConvert.DeserializeObject<PaymentCallback>(content);
 
             if (paymentStatus.Status == "SUCCESSFUL")
             {
-                accessToken.PaymentMessage = content;
-                SumUpTokenServices.Instance.UpdateSumUpToken(accessToken);
                 // Save the customer’s status as active
                 //UpdateCustomerStatus(paymentStatus.customer_id, true);
             }
 
             return new HttpStatusCodeResult(200);
         }
+
 
     }
 }

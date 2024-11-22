@@ -286,55 +286,60 @@ namespace TheBookingPlatform.Controllers
                         var statuses = model.Status;
                         if (statusesInAppointments.Any(status => statuses.Contains(status)))
                         {
-                            var servicesInAppointments = item.Service.Split(',').Select(x => int.Parse(x)).ToList();
-
-                            foreach (var service in servicesInAppointments)
+                            if (item.Service != null)
                             {
-                                var PriceChange = PriceChangeServices.Instance.GetPriceChange(item.OnlinePriceChange);
+                                var servicesInAppointments = item.Service.Split(',').Select(x => int.Parse(x)).ToList();
 
-                                var price = ServiceServices.Instance.GetService(service).Price;
-                                ServicePrice += price;
-                                if (PriceChange != null)
+                                foreach (var service in servicesInAppointments)
                                 {
-                                    if (PriceChange.TypeOfChange == "Price Increase")
+                                    var PriceChange = PriceChangeServices.Instance.GetPriceChange(item.OnlinePriceChange);
+
+                                    var price = ServiceServices.Instance.GetService(service).Price;
+                                    ServicePrice += price;
+                                    if (PriceChange != null)
                                     {
-                                        var PriceChangeServiced = price * (PriceChange.Percentage / 100);
-                                        TotalOnlinePriceChange += PriceChangeServiced;
+                                        if (PriceChange.TypeOfChange == "Price Increase")
+                                        {
+                                            var PriceChangeServiced = price * (PriceChange.Percentage / 100);
+                                            TotalOnlinePriceChange += PriceChangeServiced;
 
+                                        }
+                                        else
+                                        {
+                                            var PriceChangeServiced = price * (PriceChange.Percentage / 100);
+                                            TotalOnlinePriceChange += PriceChangeServiced;
+
+
+
+                                        }
                                     }
-                                    else
-                                    {
-                                        var PriceChangeServiced = price * (PriceChange.Percentage / 100);
-                                        TotalOnlinePriceChange += PriceChangeServiced;
 
-
-
-                                    }
                                 }
 
+
+                                var servicesplit = item.ServiceDiscount.Split(',').Select(x => float.Parse(x)).ToList();
+                                for (int i = 0; i < servicesplit.Count; i++)
+                                {
+
+                                    var service = ServiceServices.Instance.GetService(servicesInAppointments[i]);
+                                    var serviceName = service.Name;
+                                    float discount = servicesplit[i];
+                                    var finalDiscount = discount / 100;
+
+                                    // Your calculations based on serviceId and discount here
+                                    var offlineDiscountValue = service.Price * finalDiscount;
+                                    OfflineDiscountCost += offlineDiscountValue;
+                                }
+
+                                appointmentIDs.Add(item.ID);
+
+                                var servicedurations = item.ServiceDuration.Split(',').Select(x => x.Trim()).ToList();
+                                foreach (var duration in servicedurations)
+                                {
+                                    TotalDurations += ExtractNumberFromString(duration);
+                                }
                             }
 
-                            var servicesplit = item.ServiceDiscount.Split(',').Select(x => float.Parse(x)).ToList();
-                            for (int i = 0; i < servicesplit.Count; i++)
-                            {
-
-                                var service = ServiceServices.Instance.GetService(servicesInAppointments[i]);
-                                var serviceName = service.Name;
-                                float discount = servicesplit[i];
-                                var finalDiscount = discount / 100;
-
-                                // Your calculations based on serviceId and discount here
-                                var offlineDiscountValue = service.Price * finalDiscount;
-                                OfflineDiscountCost += offlineDiscountValue;
-                            }
-
-                            appointmentIDs.Add(item.ID);
-
-                            var servicedurations = item.ServiceDuration.Split(',').Select(x => x.Trim()).ToList();
-                            foreach (var duration in servicedurations)
-                            {
-                                TotalDurations += ExtractNumberFromString(duration);
-                            }
                         }
                     }
                     else
