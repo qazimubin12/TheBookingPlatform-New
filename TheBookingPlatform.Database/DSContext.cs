@@ -85,5 +85,6 @@ namespace TheBookingPlatform.Database
         public DbSet<SaleProduct> SaleProducts { get; set; }
         public DbSet<Sale> Sales { get; set; }
         public DbSet<SumUpToken> SumUpTokens { get; set; }
+        public DbSet<FailedAppointment> FailedAppointments { get; set; }
     }
 }

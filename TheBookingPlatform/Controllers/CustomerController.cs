@@ -221,8 +221,8 @@ namespace TheBookingPlatform.Controllers
                 }
                 else
                 {
-
-                    AppointmentsListOfCustoemrs.Add(new AppointmentModel { IsCancelled = item.IsCancelled, Date = item.Date, Time = item.Time, Status = item.Status, AppointmentEndTime = item.EndTime, ID = item.ID, EmployeeName = employee2.Name, Customer = customer2, Services = serviceList2 });
+                    
+                    AppointmentsListOfCustoemrs.Add(new AppointmentModel { IsCancelled = item.IsCancelled, Date = item.Date, Time = item.Time, Status = item.Status, AppointmentEndTime = item.EndTime, ID = item.ID, EmployeeName =  employee2 != null ? employee2.Name : "--", Customer = customer2, Services = serviceList2 });
 
                 }
             }

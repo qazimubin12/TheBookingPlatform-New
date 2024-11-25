@@ -1960,6 +1960,12 @@ namespace TheBookingPlatform.Controllers
                 appointment.IsCancelled = true;
                 AppointmentServices.Instance.UpdateAppointment(appointment);
 
+                var failedAppointment = new FailedAppointment();
+                failedAppointment.AppointmentID = appointment.ID;
+                failedAppointment.Failed = true;
+                FailedAppointmentServices.Instance.SaveFailedAppointment(failedAppointment);
+
+
                 if (appointment.CouponID != 0)
                 {
                     var couponAssignment = CouponServices.Instance.GetCouponAssignmentsWRTBusinessAndCouponID(appointment.Business, appointment.CouponID, appointment.CustomerID);
@@ -2807,16 +2813,19 @@ namespace TheBookingPlatform.Controllers
                     appointment.Service = model.ServiceIDs;
 
                     // Split the ServiceDuration string by commas
-                    string[] durations = model.ServiceIDs.Split(',');
+                    var countofservices = appointment.Service.Split(',').ToList().Count();
 
-                    // Get the number of values
-                    int numberOfServices = durations.Length;
+                    List<string> zeroes = new List<string>();
 
-                    // Create a string with zeros for each service
-                    string zeros = string.Join(",", Enumerable.Repeat("0", numberOfServices));
+                    for (int i = 0; i < countofservices; i++)
+                    {
+                        zeroes.Add("0");
+                    }
+
+                    string result = string.Join(",", zeroes);
 
                     // Save the zeros string to ServiceDiscount
-                    appointment.ServiceDiscount = zeros;
+                    appointment.ServiceDiscount = result;
                     appointment.ServiceDuration = Durations;
                     appointment.TotalCost = TotalCost - appointment.Deposit;
                     appointment.Color = "#952AB2";
@@ -3203,16 +3212,19 @@ namespace TheBookingPlatform.Controllers
                     appointment.Service = model.ServiceIDs;
 
                     // Split the ServiceDuration string by commas
-                    string[] durations = model.ServiceIDs.Split(',');
+                    var countofservices = appointment.Service.Split(',').ToList().Count();
 
-                    // Get the number of values
-                    int numberOfServices = durations.Length;
+                    List<string> zeroes = new List<string>();
 
-                    // Create a string with zeros for each service
-                    string zeros = string.Join(",", Enumerable.Repeat("0", numberOfServices));
+                    for (int i = 0; i < countofservices; i++)
+                    {
+                        zeroes.Add("0");
+                    }
+
+                    string result = string.Join(",", zeroes);
 
                     // Save the zeros string to ServiceDiscount
-                    appointment.ServiceDiscount = zeros;
+                    appointment.ServiceDiscount = result;
 
                     appointment.ServiceDuration = Durations;
                     appointment.TotalCost = TotalCost - appointment.Deposit;
