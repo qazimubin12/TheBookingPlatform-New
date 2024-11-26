@@ -587,7 +587,7 @@ namespace TheBookingPlatform.Controllers
                                 ttl = "2147483647" // Max integer value (2^31 - 1 seconds, approx 68 years)
                             }
                         };
-
+                   
                         var newcontent = new StringContent(JsonConvert.SerializeObject(watchRequestBody), Encoding.UTF8, "application/json");
                         var newrequestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events/watch";
                         var newresponse = await newclient.PostAsync(newrequestUrl, newcontent);
@@ -606,6 +606,32 @@ namespace TheBookingPlatform.Controllers
                             employee.WatchChannelID = channel.Id;
                             EmployeeServices.Instance.UpdateEmployee(employee);
                             HistoryServices.Instance.SaveHistory(history);
+
+
+                            var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(employee.ID);
+                            if (employeeWatch != null)
+                            {
+                                //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                                long timestampSeconds = channel.Expiration / 1000;
+
+                                // Convert to DateTime
+                                DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                                employeeWatch.ExpirationDate = dateTime;
+                                employeeWatch.EmployeeID = employee.ID;
+                                EmployeeWatchServices.Instance.UpdateEmployeeWatch(employeeWatch);
+                            }
+                            else
+                            {
+                                employeeWatch = new EmployeeWatch();
+                                //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                                long timestampSeconds = channel.Expiration / 1000;
+
+                                // Convert to DateTime
+                                DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                                employeeWatch.ExpirationDate = dateTime;
+                                employeeWatch.EmployeeID = employee.ID;
+                                EmployeeWatchServices.Instance.SaveEmployeeWatch(employeeWatch);
+                            }
                         }
                         else
                         {
@@ -889,6 +915,31 @@ namespace TheBookingPlatform.Controllers
                                 employee.WatchChannelID = channel.Id;
                                 EmployeeServices.Instance.UpdateEmployee(employee);
                                 HistoryServices.Instance.SaveHistory(history);
+
+                                var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(employee.ID);
+                                if (employeeWatch != null)
+                                {
+                                    //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                                    long timestampSeconds = channel.Expiration / 1000;
+
+                                    // Convert to DateTime
+                                    DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                                    employeeWatch.ExpirationDate = dateTime;
+                                    employeeWatch.EmployeeID = employee.ID;
+                                    EmployeeWatchServices.Instance.UpdateEmployeeWatch(employeeWatch);
+                                }
+                                else
+                                {
+                                    employeeWatch = new EmployeeWatch();
+                                    //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                                    long timestampSeconds = channel.Expiration / 1000;
+
+                                    // Convert to DateTime
+                                    DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                                    employeeWatch.ExpirationDate = dateTime;
+                                    employeeWatch.EmployeeID = employee.ID;
+                                    EmployeeWatchServices.Instance.SaveEmployeeWatch(employeeWatch);
+                                }
                             }
                             else
                             {

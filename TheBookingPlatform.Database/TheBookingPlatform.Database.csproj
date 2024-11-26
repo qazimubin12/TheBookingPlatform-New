@@ -91,6 +91,10 @@
     <Compile Include="Migrations\202411231044301_failedappointments.Designer.cs">
       <DependentUpon>202411231044301_failedappointments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411260632241_employeewatch.cs" />
+    <Compile Include="Migrations\202411260632241_employeewatch.Designer.cs">
+      <DependentUpon>202411260632241_employeewatch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -120,6 +124,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411231044301_failedappointments.resx">
       <DependentUpon>202411231044301_failedappointments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411260632241_employeewatch.resx">
+      <DependentUpon>202411260632241_employeewatch.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

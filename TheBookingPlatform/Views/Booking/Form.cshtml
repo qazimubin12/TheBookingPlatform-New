@@ -1594,10 +1594,15 @@
         var business = '@Model.Company.Business';
         var Email = $("#Email").val();
         var CouponCode = $("#CouponCode").val();
-
+        var FirstName = $("#FirstName").val();
+        var LastName = $("#LastName").val();
+        var MobileNumber = $("#MobileNumber").val();
         $.ajax({
             url: '@Url.Action("CheckCouponCode", "Booking")',
-            data: { Business: business, CustomerEmail: Email, CouponCode: CouponCode },
+            data: {
+                Business: business, CustomerEmail: Email, CouponCode: CouponCode,
+                FirstName: FirstName, LastName: LastName, MobileNumber: MobileNumber
+            },
             type: 'GET',
             success: function (response) {
                 hideLoadingSpinner();

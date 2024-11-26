@@ -34,6 +34,7 @@ using System.Net.Http;
 using static TheBookingPlatform.Controllers.BookingController;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -41,9 +42,23 @@ namespace TheBookingPlatform.Controllers
     {
 
         [HttpGet]
-        public JsonResult CheckCouponCode(string Business, string CustomerEmail, string CouponCode)
+        public JsonResult CheckCouponCode(string Business, string CustomerEmail, string CouponCode,string FirstName,string LastName,string MobileNumber)
         {
             var customer = CustomerServices.Instance.GetCustomerWRTBusiness(Business, CustomerEmail);
+            if(customer == null)
+            {
+                customer = new Customer();
+                Random random = new Random();
+                customer.Password = new string(Enumerable.Repeat("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 8).Select(s => s[random.Next(s.Length)]).ToArray());
+                customer.FirstName = FirstName;
+                customer.LastName = LastName;
+                customer.MobileNumber = MobileNumber;
+                customer.DateOfBirth = DateTime.Now;
+                customer.DateAdded = DateTime.Now;
+                customer.Business = Business;
+                customer.Email = CustomerEmail;
+                CustomerServices.Instance.SaveCustomer(customer);
+            }
             if (customer != null)
             {
                 if (CouponCode != "")
@@ -504,6 +519,10 @@ namespace TheBookingPlatform.Controllers
         [HttpPost]
         public async Task<ActionResult> TestingGoogleToYBP()
         {
+
+            
+
+
             string jsonContent = string.Empty;
             string contentLength = Request.ContentLength.ToString();
             string contentType = Request.ContentType;
@@ -537,11 +556,15 @@ namespace TheBookingPlatform.Controllers
             try
             {
                 employee = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(uri);
+
+                
+
             }
             catch (Exception ex)
             {
                 SaveHistoryError("Error fetching employee with Calendar ID", ex);
             }
+
 
             Company company = null;
             try

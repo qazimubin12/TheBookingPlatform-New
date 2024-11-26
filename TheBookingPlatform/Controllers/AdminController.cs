@@ -11,6 +11,11 @@ using System.Web.Mvc;
 using TheBookingPlatform.Models;
 using System.Web.Routing;
 using System.Globalization;
+using Newtonsoft.Json;
+using static TheBookingPlatform.Controllers.EmployeeRequestController;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -159,13 +164,58 @@ namespace TheBookingPlatform.Controllers
                     var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, CurrentDatePrev, 30, customers.Select(x => x.ID).ToList());
                     LostClientsList = customers.Where(x => lostClientIds.Contains(x.ID)).ToList();                   
                 }
-                return Json(new { success = true, LostCustomers = LostClientsList }, JsonRequestBehavior.AllowGet);
+                var customerExport = new List<CustomerExport>();
+                foreach (var item in LostClientsList)
+                {
+                    customerExport.Add(new CustomerExport
+                    {
+                        FirstName = item.FirstName,
+                        LastName = item.LastName,
+                        AdditionalInformation = item.AdditionalInformation,
+                        AdditionalInvoiceInformation = item.AdditionalInvoiceInformation,
+                        Address = item.Address,
+                        City = item.City,
+                        DateAdded = item.DateAdded,
+                        DateOfBirth = item.DateOfBirth,
+                        Email = item.Email,
+                        Gender = item.Gender,
+                        HaveNewsLetter = item.HaveNewsLetter,
+                        IsBlocked = item.IsBlocked,
+                        MobileNumber = item.MobileNumber,
+                        PostalCode = item.PostalCode,
+                        ReferralBalance = item.ReferralBalance,
+                        ReferralCode = item.ReferralCode,
+                        WarningInformation = item.WarningInformation
+                    });
+                }
+                return Json(new { success = true, LostCustomers = customerExport }, JsonRequestBehavior.AllowGet);
             }
             else
             {
                 return Json(new { success =false }, JsonRequestBehavior.AllowGet);
 
             }
+        }
+
+        public class CustomerExport
+        {
+            public DateTime DateAdded { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Gender { get; set; }
+            public DateTime? DateOfBirth { get; set; }
+            public string Email { get; set; }
+            public string MobileNumber { get; set; }
+            public string Address { get; set; }
+            public int PostalCode { get; set; }
+            public string City { get; set; }
+            public bool HaveNewsLetter { get; set; } = true;
+            public string AdditionalInformation { get; set; }
+            public string AdditionalInvoiceInformation { get; set; }
+            public string WarningInformation { get; set; }
+            public bool IsBlocked { get; set; }
+            public string ReferralCode { get; set; }
+            public float ReferralBalance { get; set; }
         }
         static bool IsDateInRangeNew(DateTime dateToCheck, DateTime startDate)
         {
@@ -215,6 +265,86 @@ namespace TheBookingPlatform.Controllers
             return isNextTargetDayInCurrentWeek ? "YES" : "NO";
         }
 
+
+        public async Task<string> CreateWatch(Employee employee,string Company)
+        {
+            var googleCalendarnew = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(Company);
+            using (var newclient = new HttpClient())
+            {
+                newclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
+
+                var watchRequestBody = new
+                {
+                    id = Guid.NewGuid().ToString(), // A unique ID for this channel
+                    type = "web_hook",
+                    address = $"https://app.yourbookingplatform.com/Booking/TestingGoogleToYBP", // Your webhook endpoint
+                    @params = new
+                    {
+                        ttl = "2147483647" // Max integer value (2^31 - 1 seconds, approx 68 years)
+                    }
+                };
+
+                var newcontent = new StringContent(JsonConvert.SerializeObject(watchRequestBody), Encoding.UTF8, "application/json");
+                var newrequestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events/watch";
+                var newresponse =  await newclient.PostAsync(newrequestUrl, newcontent);
+                var responseBody = await newresponse.Content.ReadAsStringAsync();
+
+                if (newresponse.IsSuccessStatusCode)
+                {
+                    var history = new History
+                    {
+                        Note = "Setup Successfully watched",
+                        Business = googleCalendarnew.Business,
+                        Date = DateTime.Now
+                    };
+                    Channel channel = JsonConvert.DeserializeObject<Channel>(responseBody);
+
+                    employee.WatchChannelID = channel.Id;
+                    EmployeeServices.Instance.UpdateEmployee(employee);
+                    HistoryServices.Instance.SaveHistory(history);
+
+                    var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(employee.ID);
+                    if (employeeWatch != null)
+                    {
+                        //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                        long timestampSeconds = channel.Expiration / 1000;
+
+                        // Convert to DateTime
+                        DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                        employeeWatch.ExpirationDate = dateTime;
+                        employeeWatch.EmployeeID = employee.ID;
+                        EmployeeWatchServices.Instance.UpdateEmployeeWatch(employeeWatch);
+                    }
+                    else
+                    {
+                        employeeWatch = new EmployeeWatch();
+                        //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                        long timestampSeconds = channel.Expiration / 1000;
+
+                        // Convert to DateTime
+                        DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                        employeeWatch.ExpirationDate = dateTime;
+                        employeeWatch.EmployeeID = employee.ID;
+                        EmployeeWatchServices.Instance.SaveEmployeeWatch(employeeWatch);
+                    }
+                    return "Success";
+                }
+                else
+                {
+                    var history = new History
+                    {
+                        Note = "Failed to set up watch " + responseBody,
+                        Business = googleCalendarnew.Business,
+                        Date = DateTime.Now
+                    };
+                    HistoryServices.Instance.SaveHistory(history);
+                    return "Failed";
+                }
+
+            }
+
+        }
+
         public ActionResult Dashboard(string StartDate = "", string EndDate = "", string FilterDuration = "")
         {
             AdminViewModel model = new AdminViewModel();
@@ -222,6 +352,23 @@ namespace TheBookingPlatform.Controllers
             model.SignedInUser = user;
             if (model.SignedInUser != null)
             {
+                var employees2 = EmployeeServices.Instance.GetEmployeeWRTBusiness(model.Business, true);
+                foreach (var item in employees2)
+                {
+                    var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(item.ID);
+                    if (employeeWatch != null)
+                    {
+                        if (employeeWatch.ExpirationDate <= DateTime.Now)
+                        {
+                            CreateWatch(item,user.Company);
+                        }
+                    }
+                    else
+                    {
+                        CreateWatch(item,user.Company);
+                    }
+                }
+
                 if (StartDate != "" || EndDate != "")
                 {
                     model.StartDate = DateTime.Parse(StartDate);
