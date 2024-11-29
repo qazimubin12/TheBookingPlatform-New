@@ -87,5 +87,6 @@ namespace TheBookingPlatform.Database
         public DbSet<SumUpToken> SumUpTokens { get; set; }
         public DbSet<FailedAppointment> FailedAppointments { get; set; }
         public DbSet<EmployeeWatch> EmployeeWatches { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
     }
 }

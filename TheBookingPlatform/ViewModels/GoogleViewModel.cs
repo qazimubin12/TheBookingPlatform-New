@@ -107,10 +107,10 @@ namespace TheBookingPlatform.ViewModels
     public class NotificationSettings
     {
         [JsonProperty("notifications")]
-        public List<Notification> Notifications { get; set; }
+        public List<Notification2> Notifications { get; set; }
     }
 
-    public class Notification
+    public class Notification2
     {
         [JsonProperty("type")]
         public string Type { get; set; }

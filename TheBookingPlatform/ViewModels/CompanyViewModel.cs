@@ -52,5 +52,6 @@ namespace TheBookingPlatform.ViewModels
         public string Email { get;  set; }
         public string PAKKIDA { get;  set; }
         public float ReferralPercentage { get;  set; }
+        public string SigningSecret { get;  set; }
     }
 }

@@ -95,6 +95,14 @@
     <Compile Include="Migrations\202411260632241_employeewatch.Designer.cs">
       <DependentUpon>202411260632241_employeewatch.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411281706168_stripesigninsecret.cs" />
+    <Compile Include="Migrations\202411281706168_stripesigninsecret.Designer.cs">
+      <DependentUpon>202411281706168_stripesigninsecret.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411281719523_noneneded.cs" />
+    <Compile Include="Migrations\202411281719523_noneneded.Designer.cs">
+      <DependentUpon>202411281719523_noneneded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -127,6 +135,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411260632241_employeewatch.resx">
       <DependentUpon>202411260632241_employeewatch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411281706168_stripesigninsecret.resx">
+      <DependentUpon>202411281706168_stripesigninsecret.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411281719523_noneneded.resx">
+      <DependentUpon>202411281719523_noneneded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

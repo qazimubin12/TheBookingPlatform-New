@@ -16,6 +16,7 @@ using static TheBookingPlatform.Controllers.EmployeeRequestController;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Notification = TheBookingPlatform.Entities.Notification;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -121,7 +122,7 @@ namespace TheBookingPlatform.Controllers
         }
 
         
-        public JsonResult GetLostClietCustomers(string FilterDuration)
+        public JsonResult GetLostClietCustomers(string FilterDuration,DateTime StartDate, DateTime EndDate)
         {
             var numberOfDays = 30;
             var user = UserManager.FindById(User.Identity.GetUserId());
@@ -153,7 +154,7 @@ namespace TheBookingPlatform.Controllers
                         break;
                 }
 
-                var currentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var currentDate = StartDate;
                 var CurrentDatePrev = currentDate.AddDays(-numberOfDays);
                 List<Customer> LostClientsList = new List<Customer>();
                 if (user != null)
@@ -161,7 +162,7 @@ namespace TheBookingPlatform.Controllers
                     var customers = CustomerServices.Instance.GetCustomerWRTBusiness(user.Company);
                     var lostClients = new List<int>();
 
-                    var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, CurrentDatePrev, 30, customers.Select(x => x.ID).ToList());
+                    var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, StartDate, numberOfDays);
                     LostClientsList = customers.Where(x => lostClientIds.Contains(x.ID)).ToList();                   
                 }
                 var customerExport = new List<CustomerExport>();
@@ -175,8 +176,8 @@ namespace TheBookingPlatform.Controllers
                         AdditionalInvoiceInformation = item.AdditionalInvoiceInformation,
                         Address = item.Address,
                         City = item.City,
-                        DateAdded = item.DateAdded,
-                        DateOfBirth = item.DateOfBirth,
+                        DateAdded = item.DateAdded.ToString("yyyy-MM-dd"),
+                        DateOfBirth = item.DateOfBirth?.ToString("yyyy-MM-dd"),
                         Email = item.Email,
                         Gender = item.Gender,
                         HaveNewsLetter = item.HaveNewsLetter,
@@ -199,11 +200,11 @@ namespace TheBookingPlatform.Controllers
 
         public class CustomerExport
         {
-            public DateTime DateAdded { get; set; }
+            public string DateAdded { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public string Gender { get; set; }
-            public DateTime? DateOfBirth { get; set; }
+            public string DateOfBirth { get; set; }
             public string Email { get; set; }
             public string MobileNumber { get; set; }
             public string Address { get; set; }
@@ -411,7 +412,7 @@ namespace TheBookingPlatform.Controllers
                         var customers = CustomerServices.Instance.GetCustomerWRTBusiness(user.Company);
                         var lostClients = new List<int>();
 
-                        var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, model.StartDate, numberOfDays, customers.Select(x => x.ID).ToList());
+                        var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, model.StartDate, numberOfDays);
                         //LostClientsList = customers.Where(x=> lostClientIds.Contains(x.ID)).ToList();
 
 
@@ -1269,7 +1270,46 @@ namespace TheBookingPlatform.Controllers
             }
         }
 
+
+
+        [HttpGet]
+        public JsonResult GetNotifications()
+        {
+            var LoggedInUser= UserManager.FindById(User.Identity.GetUserId());
+            var notifications = NotificationServices.Instance.GetNotificationWRTBusiness(LoggedInUser.Company);
+            var notificationList = new List<Notification>();
+            foreach (var item in notifications)
+            {
+                if (item.ReadByUsers != null && !item.ReadByUsers.Split(',').Contains(User.Identity.GetUserId()))
+                {
+                    notificationList.Add(item);
+                }
+            }
+            return Json(new { success = true,Notifications =notifications }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult UpdateUserRead(int ID)
+        {
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+            var notification = NotificationServices.Instance.GetNotification(ID);
+            if(notification != null)
+            {
+                if(notification.ReadByUsers == null)
+                {
+                    notification.ReadByUsers = String.Join(",", LoggedInUser.Id);
+                }
+                else
+                {
+                    notification.ReadByUsers = String.Join(",",notification.ReadByUsers, LoggedInUser.Id);
+                }
+            }
+            NotificationServices.Instance.UpdateNotification(notification);
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
        
+
+        
 
 
     }

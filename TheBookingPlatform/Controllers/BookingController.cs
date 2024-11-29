@@ -515,6 +515,249 @@ namespace TheBookingPlatform.Controllers
             nhistory.Business = "Error";
             HistoryServices.Instance.SaveHistory(nhistory);
         }
+
+
+        [Route("stripe/webhook")]
+        [HttpPost]
+        public async Task<string> Webhook()
+        {
+            var json = new StreamReader(Request.InputStream).ReadToEnd();
+
+            // Parse the JSON string into a JObject
+            JObject jsonObject = JObject.Parse(json);
+            var AppointmentID = 0;
+            string Status = "";
+            // Safely extract and parse AppointmentID
+            int appointmentId;
+            if (int.TryParse(jsonObject["data"]?["object"]?["metadata"]?["AppointmentID"]?.ToString(), out appointmentId))
+            {
+                AppointmentID = appointmentId;
+            }
+            
+            // Extract status
+            string status = jsonObject["data"]?["object"]?["status"]?.ToString();
+            if (!string.IsNullOrEmpty(status))
+            {
+                Status = status;
+            }
+            var findAppointment = AppointmentServices.Instance.GetAppointment(AppointmentID);
+            var service = new PaymentIntentService();
+            var appointment = AppointmentServices.Instance.GetAppointment(findAppointment.ID);
+            var company = CompanyServices.Instance.GetCompany(appointment.Business).FirstOrDefault();
+
+            var customer = CustomerServices.Instance.GetCustomer(appointment.CustomerID);
+            var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+            string ConcatenatedServices = "";
+            foreach (var item in appointment.Service.Split(',').ToList())
+            {
+                var ServiceNew = ServiceServices.Instance.GetService(int.Parse(item));
+                if (ServiceNew != null)
+                {
+
+                    if (ConcatenatedServices == "")
+                    {
+                        ConcatenatedServices = String.Join(",", ServiceNew.Name);
+                    }
+                    else
+                    {
+                        ConcatenatedServices = String.Join(",", ConcatenatedServices, ServiceNew.Name);
+                    }
+                }
+            }
+
+            if (Status == "succeeded")
+            {
+                // Payment was successful
+                appointment.IsPaid = true;
+                appointment.IsCancelled = false;
+                AppointmentServices.Instance.UpdateAppointment(appointment);
+
+                var reminder = ReminderServices.Instance.GetReminderWRTAppID(appointment.ID);
+                reminder.IsCancelled = false;
+                reminder.Paid = true;
+                ReminderServices.Instance.UpdateReminder(reminder);
+
+                var history = new History();
+                history.EmployeeName = employee.Name;
+                history.CustomerName = customer.FirstName + " " + customer.LastName;
+                history.Note = "Online Appointment was paid for " + history.CustomerName + "";
+                history.Date = DateTime.Now;
+                history.Business = appointment.Business;
+                history.Type = "General";
+                HistoryServices.Instance.SaveHistory(history);
+
+
+                #region ConfirmationEmailSender
+                var EmailTemplate = "";
+                if (!AppointmentServices.Instance.IsNewCustomer(company.Business, appointment.CustomerID))
+                {
+                    EmailTemplate = "First Registration Email";
+                }
+                else
+                {
+                    EmailTemplate = "Appointment Confirmation";
+                }
+
+
+
+
+
+                string emailBody = "<html><body>";
+                var emailTemplate = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(appointment.Business, EmailTemplate);
+                if (emailTemplate != null)
+                {
+                    emailBody += "<h2 style='font-family: Arial, sans-serif;'>" + EmailTemplate + "</h2>";
+                    emailBody += emailTemplate.TemplateCode;
+                    emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
+                    emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
+                    emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
+                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
+                    emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
+                    emailBody = emailBody.Replace("{{employee}}", employee.Name);
+                    emailBody = emailBody.Replace("{{employee_specialization}}", employee.Specialization);
+                    emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
+
+                    emailBody = emailBody.Replace("{{services}}", ConcatenatedServices);
+                    emailBody = emailBody.Replace("{{company_name}}", company.Business);
+                    emailBody = emailBody.Replace("{{company_email}}", company.NotificationEmail);
+                    emailBody = emailBody.Replace("{{company_address}}", company.Address);
+                    emailBody = emailBody.Replace("{{company_logo}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + company.Logo}'>");
+                    emailBody = emailBody.Replace("{{company_phone}}", company.PhoneNumber);
+                    emailBody = emailBody.Replace("{{password}}", customer.Password);
+                    string cancelLink = string.Format("http://app.yourbookingplatform.com/Appointment/CancelByEmail/?AppointmentID={0}", appointment.ID);
+                    emailBody = emailBody.Replace("{{cancellink}}", $"<a href='{cancelLink}' class='btn btn-primary'>CANCEL/RESCHEDULE</a>");
+                    emailBody += "</body></html>";
+                    SendEmail(customer.Email, EmailTemplate, emailBody, company);
+                }
+                #endregion
+
+
+            }
+            else
+            {
+                // Payment was not successful
+                appointment.IsPaid = false;
+                appointment.IsCancelled = true;
+                AppointmentServices.Instance.UpdateAppointment(appointment);
+
+                var failedAppointment = new FailedAppointment();
+                failedAppointment.AppointmentID = appointment.ID;
+                failedAppointment.Failed = true;
+                FailedAppointmentServices.Instance.SaveFailedAppointment(failedAppointment);
+
+
+                if (appointment.CouponID != 0)
+                {
+                    var couponAssignment = CouponServices.Instance.GetCouponAssignmentsWRTBusinessAndCouponID(appointment.Business, appointment.CouponID, appointment.CustomerID);
+                    if (couponAssignment != null)
+                    {
+                        couponAssignment.Used -= 1;
+                        CouponServices.Instance.UpdateCouponAssignment(couponAssignment);
+                    }
+                }
+
+                var reminder = ReminderServices.Instance.GetReminderWRTAppID(appointment.ID);
+                reminder.IsCancelled = true;
+                ReminderServices.Instance.UpdateReminder(reminder);
+
+                var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(company.Business);
+                if (googleCalendar != null && !googleCalendar.Disabled)
+                {
+                    try
+                    {
+                        var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + employee.GoogleCalendarID + "/events/" + appointment.GoogleCalendarEventID);
+                        var restClient = new RestClient(url);
+                        var request = new RestRequest();
+
+                        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                        request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
+                        request.AddHeader("Accept", "application/json");
+                        var response = restClient.Delete(request);
+                        if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                        {
+                            var history = new History();
+                            history.Date = DateTime.Now;
+                            history.Note = "Appointment got deleted from GCalendar";
+                            history.Business = appointment.Business;
+                            HistoryServices.Instance.SaveHistory(history);
+                        }
+                        else
+                        {
+
+                            var history = new History();
+                            history.Date = DateTime.Now;
+                            history.Note = response.Content;
+                            history.Business = "Error";
+                            HistoryServices.Instance.SaveHistory(history);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                        var history = new History();
+                        history.Date = DateTime.Now;
+                        history.Note = ex.Message;
+                        history.Business = "Error";
+                        HistoryServices.Instance.SaveHistory(history);
+                    }
+
+
+
+                }
+              
+
+                #region ReminderMailingRegion
+
+                //var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+
+                if (customer.Password == null)
+                {
+                    Random random = new Random();
+                    customer.Password = new string(Enumerable.Repeat("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 8).Select(s => s[random.Next(s.Length)]).ToArray());
+                    CustomerServices.Instance.UpdateCustomer(customer);
+                }
+
+                var emailDetails = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(company.Business, "Appointment Payment Reminder");
+                if (emailDetails != null && emailDetails.IsActive == true)
+                {
+                    string emailBody = "<html><body>";
+                    emailBody += "<h2 style='font-family: Arial, sans-serif;'>Appointment Payment Reminder</h2>";
+                    emailBody += emailDetails.TemplateCode;
+                    emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
+                    //emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
+                    //emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
+                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
+                    //emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
+                    //emailBody = emailBody.Replace("{{employee}}", employee.Name);
+                    //emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
+                    emailBody = emailBody.Replace("{{services}}", ConcatenatedServices);
+                    emailBody = emailBody.Replace("{{company_name}}", company.Business);
+                    emailBody = emailBody.Replace("{{company_email}}", company.NotificationEmail);
+                    emailBody = emailBody.Replace("{{company_address}}", company.Address);
+                    emailBody = emailBody.Replace("{{company_logo}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + company.Logo}'>");
+                    emailBody = emailBody.Replace("{{company_phone}}", company.PhoneNumber);
+                    emailBody = emailBody.Replace("{{password}}", customer.Password);
+
+                    emailBody += "</body></html>";
+
+
+                    if (IsValidEmail(customer.Email))
+                    {
+                        SendEmail(customer.Email, "Appointment Payment Awaiting", emailBody, company);
+                    }
+
+                }
+                #endregion
+
+            }
+            return "True";
+
+        }
+
+
+
         [Route("google/webhook")]
         [HttpPost]
         public async Task<ActionResult> TestingGoogleToYBP()
@@ -1909,71 +2152,6 @@ namespace TheBookingPlatform.Controllers
 
             if (paymentIntent.Status == "succeeded")
             {
-                // Payment was successful
-                appointment.IsPaid = true;
-                appointment.IsCancelled = false;
-                AppointmentServices.Instance.UpdateAppointment(appointment);
-
-                var reminder = ReminderServices.Instance.GetReminderWRTAppID(appointment.ID);
-                reminder.IsCancelled = false;
-                reminder.Paid = true;
-                ReminderServices.Instance.UpdateReminder(reminder);
-
-                var history = new History();
-                history.EmployeeName = employee.Name;
-                history.CustomerName = customer.FirstName + " " + customer.LastName;
-                history.Note = "Online Appointment was paid for " + history.CustomerName + "";
-                history.Date = DateTime.Now;
-                history.Business = appointment.Business;
-                history.Type = "General";
-                HistoryServices.Instance.SaveHistory(history);
-
-
-                #region ConfirmationEmailSender
-                var EmailTemplate = "";
-                if (!AppointmentServices.Instance.IsNewCustomer(company.Business, appointment.CustomerID))
-                {
-                    EmailTemplate = "First Registration Email";
-                }
-                else
-                {
-                    EmailTemplate = "Appointment Confirmation";
-                }
-
-
-
-
-
-                string emailBody = "<html><body>";
-                var emailTemplate = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(appointment.Business, EmailTemplate);
-                if (emailTemplate != null)
-                {
-                    emailBody += "<h2 style='font-family: Arial, sans-serif;'>" + EmailTemplate + "</h2>";
-                    emailBody += emailTemplate.TemplateCode;
-                    emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
-                    emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
-                    emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
-                    emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
-                    emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
-                    emailBody = emailBody.Replace("{{employee}}", employee.Name);
-                    emailBody = emailBody.Replace("{{employee_specialization}}", employee.Specialization);
-                    emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
-
-                    emailBody = emailBody.Replace("{{services}}", ConcatenatedServices);
-                    emailBody = emailBody.Replace("{{company_name}}", company.Business);
-                    emailBody = emailBody.Replace("{{company_email}}", company.NotificationEmail);
-                    emailBody = emailBody.Replace("{{company_address}}", company.Address);
-                    emailBody = emailBody.Replace("{{company_logo}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + company.Logo}'>");
-                    emailBody = emailBody.Replace("{{company_phone}}", company.PhoneNumber);
-                    emailBody = emailBody.Replace("{{password}}", customer.Password);
-                    string cancelLink = string.Format("http://app.yourbookingplatform.com/Appointment/CancelByEmail/?AppointmentID={0}", appointment.ID);
-                    emailBody = emailBody.Replace("{{cancellink}}", $"<a href='{cancelLink}' class='btn btn-primary'>CANCEL/RESCHEDULE</a>");
-                    emailBody += "</body></html>";
-                    SendEmail(customer.Email, EmailTemplate, emailBody, company);
-                }
-                #endregion
-
                 return RedirectToAction("CustomerProfile", "Booking", new { CustomerID = paymentIntent.Metadata["CustomerID"], businessName = paymentIntent.Metadata["BusinessName"] });
             }
             else

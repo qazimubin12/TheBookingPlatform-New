@@ -55,7 +55,6 @@
     <script src="~/Content/MainTemplate2/assets/js/plugins/moment.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
 
-
     <!-- Nepcha Analytics (nepcha.com) -->
     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
     <style>
@@ -157,6 +156,32 @@
             width: 300px;
         }
 
+        .ui-autocomplete {
+            z-index: 1051; /* Ensure it's above other Bootstrap components */
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+            .ui-autocomplete .ui-menu-item {
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+            }
+
+                .ui-autocomplete .ui-menu-item:hover {
+                    background: #f8f9fa;
+                }
+
+            .ui-autocomplete .ui-state-focus {
+                background: #e9ecef;
+            }
+
+        .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+            padding: 0px 8px;
+            border: none;
+            vertical-align: middle;
+        }
+
         .ui-datepicker-next:hover {
             background: 0 0;
             border-left: 5px solid #fff
@@ -246,6 +271,9 @@
             background: #fff
         }
 
+        #AutoCompletecustomers::placeholder{
+            margin-left:5px;
+        }
         #ui-datepicker-div.ui-datepicker .ui-state-disabled span {
             color: #ccc
         }
@@ -283,6 +311,9 @@
             background: 0 0
         }
 
+        li.nav-item {
+            margin: 0px 5px;
+        }
 
 
         .ui-datepicker .ui-datepicker-today a {
@@ -299,6 +330,54 @@
             color: #a7b1c2;
             font-weight: 700;
             background: 0 0
+        }
+
+        .autocomplete-suggestion {
+            padding: 2px 5px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .autocomplete-no-suggestion {
+            padding: 2px 5px;
+        }
+
+        .autocomplete-selected {
+            background: #F0F0F0;
+        }
+
+        .autocomplete-suggestions strong {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .autocomplete-group {
+            padding: 2px 5px;
+            font-size: 16px;
+            color: #000;
+            display: block;
+            border-bottom: 1px solid #000;
+        }
+
+        /* Define the scrollbar thumb */
+        .autocomplete-suggestions::-webkit-scrollbar-thumb {
+            background-color: #999; /* Color of the thumb */
+            border-radius: 5px; /* Rounded corners for the thumb */
+        }
+
+            /* Define the scrollbar thumb on hover */
+            .autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+                background-color: #666; /* Color of the thumb on hover */
+            }
+
+        /* Define the scrollbar track on hover */
+        .autocomplete-suggestions::-webkit-scrollbar-track {
+            background-color: #FFF; /* Color of the track */
+        }
+
+        /* Define the scrollbar corner (optional) */
+        .autocomplete-suggestions::-webkit-scrollbar-corner {
+            background-color: #FFF; /* Color of the scrollbar corner */
         }
     </style>
 </head>
@@ -2061,34 +2140,13 @@
             </ul>
         </div>
     </aside>
-    <main class="main-content position-relative  h-100 border-radius-lg ">
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ps ps--active-y ">
         <!-- Navbar -->
-        <nav class="navbar navbar-main navbar-expand-lg position-sticky mt-4 top-1 px-0 mx-4 shadow-none border-radius-xl z-index-sticky" id="navbarBlur" data-scroll="true">
+        <nav style="z-index:1;" class="navbar navbar-main navbar-expand-lg position-sticky mt-4 top-1 px-0 mx-4 shadow-none border-radius-xl z-index-sticky" id="navbarBlur" data-scroll="true">
             <div class="container-fluid py-1 px-3">
                 <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                            <li class="breadcrumb-item text-sm">
-                                <a class="opacity-3 text-dark" href="javascript:;">
-                                    <svg width="12px" height="12px" class="mb-1" viewBox="0 0 45 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                        <title>shop </title>
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <g transform="translate(-1716.000000, -439.000000)" fill="#252f40" fill-rule="nonzero">
-                                                <g transform="translate(1716.000000, 291.000000)">
-                                                    <g transform="translate(0.000000, 148.000000)">
-                                                        <path d="M46.7199583,10.7414583 L40.8449583,0.949791667 C40.4909749,0.360605034 39.8540131,0 39.1666667,0 L7.83333333,0 C7.1459869,0 6.50902508,0.360605034 6.15504167,0.949791667 L0.280041667,10.7414583 C0.0969176761,11.0460037 -1.23209662e-05,11.3946378 -1.23209662e-05,11.75 C-0.00758042603,16.0663731 3.48367543,19.5725301 7.80004167,19.5833333 L7.81570833,19.5833333 C9.75003686,19.5882688 11.6168794,18.8726691 13.0522917,17.5760417 C16.0171492,20.2556967 20.5292675,20.2556967 23.494125,17.5760417 C26.4604562,20.2616016 30.9794188,20.2616016 33.94575,17.5760417 C36.2421905,19.6477597 39.5441143,20.1708521 42.3684437,18.9103691 C45.1927731,17.649886 47.0084685,14.8428276 47.0000295,11.75 C47.0000295,11.3946378 46.9030823,11.0460037 46.7199583,10.7414583 Z"></path>
-                                                        <path d="M39.198,22.4912623 C37.3776246,22.4928106 35.5817531,22.0149171 33.951625,21.0951667 L33.92225,21.1107282 C31.1430221,22.6838032 27.9255001,22.9318916 24.9844167,21.7998837 C24.4750389,21.605469 23.9777983,21.3722567 23.4960833,21.1018359 L23.4745417,21.1129513 C20.6961809,22.6871153 17.4786145,22.9344611 14.5386667,21.7998837 C14.029926,21.6054643 13.533337,21.3722507 13.0522917,21.1018359 C11.4250962,22.0190609 9.63246555,22.4947009 7.81570833,22.4912623 C7.16510551,22.4842162 6.51607673,22.4173045 5.875,22.2911849 L5.875,44.7220845 C5.875,45.9498589 6.7517757,46.9451667 7.83333333,46.9451667 L19.5833333,46.9451667 L19.5833333,33.6066734 L27.4166667,33.6066734 L27.4166667,46.9451667 L39.1666667,46.9451667 C40.2482243,46.9451667 41.125,45.9498589 41.125,44.7220845 L41.125,22.2822926 C40.4887822,22.4116582 39.8442868,22.4815492 39.198,22.4912623 Z"></path>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-                            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Analytics</li>
-                        </ol>
-                        <h6 class="font-weight-bolder mb-0">Analytics</h6>
-                    </nav>
+
+                </nav>
                 <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
                     <a href="javascript:;" class="nav-link text-body p-0">
                         <div class="sidenav-toggler-inner">
@@ -2100,13 +2158,25 @@
                 </div>
                 <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                     <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                        @*<div class="input-group input-group-outline">
-                                <label class="form-label">Search here</label>
-                                <input type="text" class="form-control">
+                        @if (!User.IsInRole("Calendar"))
+                        {
+                            <div class="form-group input-group-outline">
+                                    <input id="AutoCompletecustomers" placeholder="Search Customers" style="border: solid 0.2px gray; " type="text" class="form-control autocompleteCustomers">
+                                </div>
+                            @*<div class="form-group" style="margin-right:20px;">
+                                <input type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers" />
                             </div>*@
+                        }
                     </div>
-                    <ul class="navbar-nav  justify-content-end">
-                        <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                    <ul style=" display: flex; align-self: center; align-items: center; " class="navbar-nav  justify-content-end">
+                        <li class="nav-item">
+                            <a href="@Url.Action("UserProfile","Account")" class="nav-link text-body p-0 position-relative">
+                                <i style="color:darkgray;" class="material-icons me-sm-1">
+                                    account_circle
+                                </i>
+                            </a>
+                        </li>
+                        <li class="nav-item" style=" margin-bottom: 5px; ">
                             <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
                                 <div class="sidenav-toggler-inner">
                                     <i class="sidenav-toggler-line"></i>
@@ -2115,70 +2185,21 @@
                                 </div>
                             </a>
                         </li>
-                        @*<li class="nav-item">
-            <a href="~/Content/MainTemplate2/pages/authentication/signin/illustration.html" class="nav-link text-body p-0 position-relative" target="_blank">
-                <i class="material-icons me-sm-1">
-                    account_circle
-                </i>
-            </a>
-        </li>
 
-        <li class="nav-item px-3">
-            <a href="javascript:;" class="nav-link text-body p-0">
-                <i class="material-icons fixed-plugin-button-nav cursor-pointer">
-                    settings
-                </i>
-            </a>
-        </li>
-        <li class="nav-item dropdown pe-2">
-            <a href="javascript:;" class="nav-link text-body p-0 position-relative" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="material-icons cursor-pointer">
-                    notifications
-                </i>
-                <span class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
-                    <span class="small">11</span>
-                    <span class="visually-hidden">unread notifications</span>
-                </span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton">
-                <li class="mb-2">
-                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                        <div class="d-flex align-items-center py-1">
-                            <span class="material-icons">email</span>
-                            <div class="ms-2">
-                                <h6 class="text-sm font-weight-normal my-auto">
-                                    Check new messages
-                                </h6>
-                            </div>
-                        </div>
-                    </a>
-                </li>
-                <li class="mb-2">
-                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                        <div class="d-flex align-items-center py-1">
-                            <span class="material-icons">podcasts</span>
-                            <div class="ms-2">
-                                <h6 class="text-sm font-weight-normal my-auto">
-                                    Manage podcast session
-                                </h6>
-                            </div>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                        <div class="d-flex align-items-center py-1">
-                            <span class="material-icons">shopping_cart</span>
-                            <div class="ms-2">
-                                <h6 class="text-sm font-weight-normal my-auto">
-                                    Payment successfully completed
-                                </h6>
-                            </div>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </li>*@
+                        <li class="nav-item dropdown pe-2">
+                            <a href="javascript:;" class="nav-link text-body p-0 position-relative" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="material-icons cursor-pointer">
+                                    notifications
+                                </i>
+                                <span class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
+                                    <span class="small"></span>
+                                    <span class="visually-hidden">unread notifications</span>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton" id="notificationPanel">
+
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -2229,6 +2250,7 @@
             </footer>
         </div>
     </main>
+
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
     <script src="~/Content/MainTemplate2/assets/js/core/popper.min.js"></script>
@@ -2237,6 +2259,7 @@
     <!--   Core JS Files   -->
     <script src="~/Content/MainTemplate2/assets/js/plugins/smooth-scrollbar.min.js"></script>
     <!-- Kanban scripts -->
+
     <script src="~/Content/MainTemplate2/assets/js/plugins/dragula/dragula.min.js"></script>
     <script src="~/Content/MainTemplate2/assets/js/plugins/jkanban/jkanban.js"></script>
     <script src="~/Content/MainTemplate2/assets/js/plugins/chartjs.min.js"></script>
@@ -2244,46 +2267,105 @@
     <script src="~/Content/MainTemplate2/assets/js/plugins/choices.min.js"></script>
     <script type="text/javascript">
 
-    function CheckOpeningHours() {
-       showLoadingSpinner();
-        $.ajax({
-            url: '@Url.Action("GetOpeningHoursCount", "Admin")',
-            type: 'GET',
-            dataType: 'json',
 
-            success: function (data) {
-                // Handle the response here
-                var openingHoursCount = data.count;
-                // You can perform actions based on the opening hours count
-                if (openingHoursCount > 7) {
-                    $("#MainDatePickerContainer").hide();
-                } else {
-                    $("#MainDatePickerContainer").show();
+        function UpdateUserRead(ID,Link) {
+            $.ajax({
+                url: '@Url.Action("UpdateUserRead", "Admin")',
+                type: 'GET',
+                data: {ID:ID},
+                success: function (data) {
+                    // Handle the response here
+                    window.open(Link, '_blank');
+                    hideLoadingSpinner();
+                    // You might want to update the UI or perform other operations based on this count
+                },
+                error: function (error) {
+                    console.error('Error fetching opening hours count');
+                    hideLoadingSpinner();
 
+                    // Handle error scenarios here
                 }
-                $("#TextOfUser").html(data.Company);
+            });
+        }
+        function CheckOpeningHours() {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("GetOpeningHoursCount", "Admin")',
+                type: 'GET',
+                dataType: 'json',
 
-                var companies = data.Companies;
-                var dropdown = $("#SelectedOrg"); // Replace "yourDropdownID" with the actual ID of your dropdown
-                dropdown.empty(); // Clear existing options
+                success: function (data) {
+                    // Handle the response here
+                    var openingHoursCount = data.count;
+                    // You can perform actions based on the opening hours count
+                    if (openingHoursCount > 7) {
+                        $("#MainDatePickerContainer").hide();
+                    } else {
+                        $("#MainDatePickerContainer").show();
 
-                $.each(companies, function (index, company) {
-                    dropdown.append($("<option></option>").attr("value", company.ID).text(company.Business));
-                });
+                    }
+                    $("#TextOfUser").html(data.Company);
+
+                    var companies = data.Companies;
+                    var dropdown = $("#SelectedOrg"); // Replace "yourDropdownID" with the actual ID of your dropdown
+                    dropdown.empty(); // Clear existing options
+
+                    $.each(companies, function (index, company) {
+                        dropdown.append($("<option></option>").attr("value", company.ID).text(company.Business));
+                    });
 
 
-                hideLoadingSpinner();
-                // You might want to update the UI or perform other operations based on this count
-            },
-            error: function (error) {
-                console.error('Error fetching opening hours count');
-                hideLoadingSpinner();
+                    hideLoadingSpinner();
+                    // You might want to update the UI or perform other operations based on this count
+                },
+                error: function (error) {
+                    console.error('Error fetching opening hours count');
+                    hideLoadingSpinner();
 
-                // Handle error scenarios here
-            }
-        });
-    }
+                    // Handle error scenarios here
+                }
+            });
+            $.ajax({
+                url: '@Url.Action("GetNotifications", "Admin")',
+                type: 'GET',
+                success: function (data) {
+                    var notifications = data.Notifications; // Replace with actual response structure if needed
+                    var notificationListHtml = '';
 
+                    notifications.forEach(function (notification) {
+                        // Construct the HTML for each notification
+                        notificationListHtml += `
+      <li class="mb-2">
+          <span class="dropdown-item border-radius-md" onclick="${UpdateUserRead(notification.ID,notification.Link)}">
+              <div class="d-flex align-items-center py-1">
+                  <span class="material-icons">email</span>
+                  <div class="ms-2">
+                      <h6 class="text-sm font-weight-normal my-auto">
+                          ${notification.Title}
+                      </h6>
+                  </div>
+              </div>
+          </a>
+      </li>
+  `;
+                    });
+
+                    // Append the generated HTML to the notification panel
+                    var notificationPanel = document.getElementById('notificationPanel');
+                    notificationPanel.innerHTML = notificationListHtml;
+
+                    hideLoadingSpinner();
+                    // You might want to update the UI or perform other operations based on this count
+                },
+                error: function (error) {
+                    console.error('Error fetching opening hours count');
+                    hideLoadingSpinner();
+
+                    // Handle error scenarios here
+                }
+            });
+        }
+        
     $("#SwitchOrg").click(function () {
         var Business = $("#SelectedOrg").val();
 
@@ -2349,86 +2431,320 @@
                 }
             }
         }
-   $(document).ready(function () {
-        // Initialize the Datepicker
-        function getBrowserLanguage() {
-            return navigator.language || navigator.userLanguage || 'en-US';
-        }
-       // Get all elements with the class name 'choices__input'
-      
-
-        // Set the language and format based on the browser's language
-        var browserLanguage = getBrowserLanguage().toLowerCase();
-        var dateFormat = (browserLanguage.startsWith('ru')) ? 'dd.mm.yyyy' : 'mm/dd/yyyy';
-       CheckOpeningHours();
-
-        $('#datepicker-container').datepicker({
-            inline: true, // Show the datepicker inline
-            showOtherMonths: true, // Show days from other months
-            selectOtherMonths: true, // Allow selecting days from other months
-            todayHighlight: true, // Highlight today's date
-            language: browserLanguage,
-            format: dateFormat,
-            firstDay: 1, // Set Monday as the first day of the week
-            language: browserLanguage, // Language setting
-
-            beforeShowDay: function (date) {
-                // Convert the date to a string in the format yyyy-mm-dd
-                var dateString = $.datepicker.formatDate('yy-mm-dd', date);
-
-                // Add a data-date attribute to the day element
-                return [true, '', '' + dateString + '"'];
-            },
-            onSelect: function (selectedDate) {
-
-                // Handle date selection
-                showLoadingSpinner();
-                var url = '@Url.Action("Calendar","Appointment")'; // Replace with the actual URL of your full calendar page
-                var selectedDateParam = encodeURIComponent(selectedDate);
-                // Add the selected date as a query parameter
-                url += '?date=' + selectedDateParam;
-                // Navigate to the full calendar page with the selected date
-                window.location.href = url;
-            }
-
-        });
-
-        SetDadte();
-        var $sidebar = $(".sidebar");
-        var $body = $("body");
-
-
-        $("#minimizeSidebar").click(function () {
-            if ($('#MainDatePickerContainer').is(':visible')) {
-
-                if ($body.hasClass("sidebar-mini")) {
-                    // The 'sidebar-mini' class is present on the <body> element
-                    $("#datepicker-container").hide();
-                } else {
-                    // The 'sidebar-mini' class is not present on the <body> element
-                    $("#datepicker-container").show();
-                }
-            }
-        });
-
-        if ($('#MainDatePickerContainer').is(':visible')) {
-
-            $sidebar.hover(
-                function () {
-                    $("#datepicker-container").show();
+        $(document).ready(function () {
+            $("#AutoCompletecustomers").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("GetCustomers", "Customer")',  // Using Razor syntax to generate the URL
+                        type: "GET",
+                        data: {
+                            SearchTerm: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.FirstName + ' ' + item.LastName,
+                                    value: item.FirstName + ' ' + item.LastName,
+                                    url: "/Customer/CustomerProfile?ID=" + item.ID
+                                };
+                            }));
+                        }
+                    });
                 },
-                function () {
+                select: function (event, ui) {
+                    // Redirect to the URL of the selected item
+                    window.location.href = ui.item.url;
+                }
+            }).data("ui-autocomplete")._renderMenu = function (ul, items) {
+                var self = this;
+                ul.addClass("list-group"); // Add Bootstrap list group class to ul
+                $.each(items, function (index, item) {
+                    self._renderItemData(ul, item);
+                });
+            };
+            $("#AutoCompletecustomers").data("ui-autocomplete")._renderItem = function (ul, item) {
+                return $("<li class='list-group-item list-group-item-action'>")
+                    .append("<div>" + item.label + "</div>")
+                    .appendTo(ul);
+            };
+            function initializeAutocompleteForCustomers() {
+                showLoadingSpinner();
+
+                $.ajax({
+                    url: '@Url.Action("GetCustomers", "Appointment")',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        var lookup = [];
+
+                        // Iterate through the ServiceModel items
+                        data.forEach(function (customer) {
+
+                            if (customer.LastName == null) {
+                                lookup.push({
+                                    value: customer.FirstName,
+                                    CustomerInitials: customer.FirstName.charAt(0),
+                                    CustomerName: customer.FirstName,
+                                    CustomerEmail: customer.Email,
+                                    CustomerMobileNumber: customer.MobileNumber,
+                                    IsBlocked: customer.IsBlocked,
+                                    data: {
+                                        id: customer.ID // Add the service.ID to data
+                                    }
+                                });
+                            }
+                            else if (customer.FirstName == null) {
+                                lookup.push({
+                                    value: customer.LastName,
+                                    CustomerInitials: customer.LastName.charAt(0),
+                                    CustomerName: customer.LastName,
+                                    CustomerEmail: customer.Email,
+                                    CustomerMobileNumber: customer.MobileNumber,
+                                    IsBlocked: customer.IsBlocked,
+                                    data: {
+                                        id: customer.ID // Add the service.ID to data
+                                    }
+                                });
+                            } else {
+                                lookup.push({
+                                    value: customer.FirstName + " " + customer.LastName,
+                                    CustomerInitials: customer.FirstName.charAt(0) + customer.LastName.charAt(0),
+                                    CustomerName: customer.FirstName + " " + customer.LastName,
+                                    CustomerEmail: customer.Email,
+                                    CustomerMobileNumber: customer.MobileNumber,
+                                    IsBlocked: customer.IsBlocked,
+                                    data: {
+                                        id: customer.ID // Add the service.ID to data
+                                    }
+                                });
+                            }
+                        });
+                        hideLoadingSpinner();
+                        $('.autocompleteCustomers').devbridgeAutocomplete({
+                            lookup: lookup,
+                            minChars: 0,
+                            formatResult: function (suggestion, currentValue) {
+                                // Customize the rendering of each suggestion
+
+                                if (suggestion.IsBlocked) {
+                                    return '<table class="table table-hovered">' +
+                                        '<tbody>' +
+                                        '<tr>' +
+                                        '<td style="width:70px;" class="suggestion-initial">' +
+                                        '<div class="circular-box">' + suggestion.CustomerInitials + '</div>' +
+                                        '</td>' +
+                                        '<td class="suggestion-details">' +
+                                        '<div class="customer-name">' + suggestion.CustomerName + '</div>' +
+                                        '<div class="customer-email">' + suggestion.CustomerEmail + '</div>' +
+                                        '<div class="customer-mobile">' + suggestion.CustomerMobileNumber + '</div>' +
+                                        '<span class="customer-blockStatus text-danger">Customer Blocked</span>' +
+                                        '</td>' +
+                                        '</tr>' +
+                                        '</tbody>' +
+                                        '</table>';
+                                } else {
+                                    return '<table class="table table-hovered">' +
+                                        '<tbody>' +
+                                        '<tr>' +
+                                        '<td style="width:70px;" class="suggestion-initial">' +
+                                        '<div class="circular-box">' + suggestion.CustomerInitials + '</div>' +
+                                        '</td>' +
+                                        '<td class="suggestion-details">' +
+                                        '<div class="customer-name">' + suggestion.CustomerName + '</div>' +
+                                        '<div class="customer-email">' + suggestion.CustomerEmail + '</div>' +
+                                        '<div class="customer-mobile">' + suggestion.CustomerMobileNumber + '</div>' +
+                                        '</td>' +
+                                        '</tr>' +
+                                        '</tbody>' +
+                                        '</table>';
+                                }
+                            },
+                            onSelect: function (suggestion) {
+                                var selectedCustomerID = suggestion.data.id;
+                                console.log(selectedCustomerID);
+                                var $inputElement = $(this);
+                                showLoadingSpinner();
+                                $.ajax({
+                                    url: '@Url.Action("GetCustomerDetails", "Appointment")', // Replace with your controller action URL
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    data: { ID: selectedCustomerID }, // Pass the selectedServiceId as a parameter
+                                    success: function (customer) {
+                                        console.log("customer Details" + customer);
+                                        $("#MainCustomerSelectedContainer").empty();
+                                        if (customer.IsBlocked) {
+                                            var DivToBeAdded = '<div class="suggestion-container">' +
+                                                '<button  style="float:right;" onclick="ClearTheCustomer()" type="button" class="close-button" aria-label="Close">' +
+                                                '<span aria-hidden="true">&times;</span>' +
+                                                '</button>' +
+                                                '<table class="table table-hovered">' +
+                                                '<tbody>' +
+                                                '<tr>' +
+                                                '<td style="width:70px;" class="suggestion-initial">' +
+                                                '<div class="circular-box">' + customer.FirstName.charAt(0) + customer.LastName.charAt(0) + '</div>' +
+                                                '</td>' +
+                                                '<td class="suggestion-details">' +
+                                                '<input type="hidden" name="CustomerID" id="CustomerID" value=' + customer.ID + ' class="customer-id">' +
+                                                '<div class="customer-name">' + customer.FirstName + " " + customer.LastName + '</div>' +
+                                                '<div class="customer-email">' + customer.Email + '</div>' +
+                                                '<div class="customer-mobile">' + customer.MobileNumber + '</div>' +
+                                                '<span class="customer-blockStatus text-danger">Customer Blocked</span>' +
+                                                '</td>' +
+                                                '</tr>' +
+                                                '</tbody>' +
+                                                '</table>' +
+                                                '</div>';
+
+                                        } else {
+                                            var DivToBeAdded = '<div class="suggestion-container">' +
+                                                '<button  style="float:right;" onclick="ClearTheCustomer()" type="button" class="close-button" aria-label="Close">' +
+                                                '<span aria-hidden="true">&times;</span>' +
+                                                '</button>' +
+                                                '<table class="table table-hovered">' +
+                                                '<tbody>' +
+                                                '<tr>' +
+                                                '<td style="width:70px;" class="suggestion-initial">' +
+                                                '<div class="circular-box">' + customer.FirstName.charAt(0) + customer.LastName.charAt(0) + '</div>' +
+                                                '</td>' +
+                                                '<td class="suggestion-details">' +
+                                                '<input type="hidden" name="CustomerID" id="CustomerID" value=' + customer.ID + ' class="customer-id">' +
+                                                '<div class="customer-name">' + customer.FirstName + " " + customer.LastName + '</div>' +
+                                                '<div class="customer-email">' + customer.Email + '</div>' +
+                                                '<div class="customer-mobile">' + customer.MobileNumber + '</div>' +
+
+                                                '</td>' +
+                                                '</tr>' +
+                                                '</tbody>' +
+                                                '</table>' +
+                                                '</div>';
+
+                                        }
+
+                                        $("#MainCustomerSelectedContainer").append(DivToBeAdded);
+                                        if (customer.IsBlocked) {
+                                            $("#actionButton").attr("disabled", "disabled");
+
+                                        } else {
+                                            $("#actionButton").removeAttr("disabled");
+                                        }
+                                        hideLoadingSpinner();
+                                    },
+                                    error: function (error) {
+                                        console.error('Error fetching service details:', error);
+                                        hideLoadingSpinner();
+
+                                    }
+                                });
+                                // Now you can access the selected service ID (selectedServiceId)
+                                // and use it as needed.
+                            },
+                            showNoSuggestionNotice: true,
+                            onSearchComplete: function (query, suggestions) {
+                                // Show or hide the "Create Customer" button based on search results
+                                $createCustomerBtn.toggle(suggestions.length === 0);
+                                //if (suggestions.length > 0) {
+                                //    $("#CreateCustomerPanel").hide();
+                                //} else {
+                                //    $("#CreateCustomerPanel").show();
+
+                                //}
+
+                            },
+
+                            noSuggestionNotice: 'Sorry, no matching results'
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error fetching data:', error);
+                        hideLoadingSpinner();
+
+                    }
+                });
+            }
+            //initializeAutocompleteForCustomers();
+
+            // Initialize the Datepicker
+            function getBrowserLanguage() {
+                return navigator.language || navigator.userLanguage || 'en-US';
+            }
+            // Get all elements with the class name 'choices__input'
+
+
+            // Set the language and format based on the browser's language
+            var browserLanguage = getBrowserLanguage().toLowerCase();
+            var dateFormat = (browserLanguage.startsWith('ru')) ? 'dd.mm.yyyy' : 'mm/dd/yyyy';
+            CheckOpeningHours();
+
+            $('#datepicker-container').datepicker({
+                inline: true, // Show the datepicker inline
+                showOtherMonths: true, // Show days from other months
+                selectOtherMonths: true, // Allow selecting days from other months
+                todayHighlight: true, // Highlight today's date
+                language: browserLanguage,
+                format: dateFormat,
+                firstDay: 1, // Set Monday as the first day of the week
+                language: browserLanguage, // Language setting
+
+                beforeShowDay: function (date) {
+                    // Convert the date to a string in the format yyyy-mm-dd
+                    var dateString = $.datepicker.formatDate('yy-mm-dd', date);
+
+                    // Add a data-date attribute to the day element
+                    return [true, '', '' + dateString + '"'];
+                },
+                onSelect: function (selectedDate) {
+
+                    // Handle date selection
+                    showLoadingSpinner();
+                    var url = '@Url.Action("Calendar","Appointment")'; // Replace with the actual URL of your full calendar page
+                    var selectedDateParam = encodeURIComponent(selectedDate);
+                    // Add the selected date as a query parameter
+                    url += '?date=' + selectedDateParam;
+                    // Navigate to the full calendar page with the selected date
+                    window.location.href = url;
+                }
+
+            });
+
+            SetDadte();
+            var $sidebar = $(".sidebar");
+            var $body = $("body");
+
+
+            $("#minimizeSidebar").click(function () {
+                if ($('#MainDatePickerContainer').is(':visible')) {
+
                     if ($body.hasClass("sidebar-mini")) {
+                        // The 'sidebar-mini' class is present on the <body> element
                         $("#datepicker-container").hide();
                     } else {
+                        // The 'sidebar-mini' class is not present on the <body> element
                         $("#datepicker-container").show();
                     }
                 }
-            );
-        }
+            });
 
-       CheckTheEmployeePayRollSettings();
-    });
+            if ($('#MainDatePickerContainer').is(':visible')) {
+
+                $sidebar.hover(
+                    function () {
+                        $("#datepicker-container").show();
+                    },
+                    function () {
+                        if ($body.hasClass("sidebar-mini")) {
+                            $("#datepicker-container").hide();
+                        } else {
+                            $("#datepicker-container").show();
+                        }
+                    }
+                );
+            }
+
+            CheckTheEmployeePayRollSettings();
+
+            $(".ps__rail-x").hide();
+
+        });
 
     function SetDadte() {
         // Set the datepicker's date to the selected date

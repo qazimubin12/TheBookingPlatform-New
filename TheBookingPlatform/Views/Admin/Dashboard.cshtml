@@ -96,7 +96,7 @@
     {
         <div class="card">
             <div class="card-body">
-                <form>
+                <form id="actionForm">
                     <div class="row">
                         <!-- Start Date -->
                         <div class="form-group col-md-3">
@@ -133,7 +133,7 @@
 
                         <!-- Filter Button -->
                         <div class="form-group col-md-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary btn-sm">FILTER</button>
+                            <button type="submit" id="filterBtn" class="btn btn-primary btn-sm">FILTER</button>
                         </div>
                     </div>
                 </form>
@@ -154,7 +154,7 @@
                                         <p class="text-sm">New client metrics are tracked according to the booking date instead of the appointment date.</p>
                                     </div>
                                     <div class="col-5 text-end">
-                                        <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
+                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
                                     </div>
                                 </div>
                             </div>
@@ -172,7 +172,7 @@
                                         <p class="text-sm">Clients who had a booking in previous months and booked again in the current/future months.</p>
                                     </div>
                                     <div class="col-5 text-end">
-                                        <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
+                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
                                     </div>
                                 </div>
                             </div>
@@ -191,7 +191,7 @@
                                         <button id="downloadExcel" class="btn btn-primary btn-sm mt-2">Download</button>
                                     </div>
                                     <div class="col-5 text-end">
-                                        <span class="text-xs text-secondary">@firstDay.ToString("dd MMM") - @lastDayOfCurrentMonth.ToString("dd MMM")</span>
+                                        <span class="text-xs text-secondary">@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM")</span>
                                     </div>
                                 </div>
                             </div>
@@ -222,7 +222,7 @@
                                 <canvas id="chart-consumption" class="chart-canvas" height="197"></canvas>
                             </div>
                             <h4 class="font-weight-bold mt-n8">
-                                <span>@Model.EmployeeOccupancies.Where(x => x.Percentage >= 0).Select(x => x.Percentage).Average()%</span>
+                                <span>@Math.Round(Model.EmployeeOccupancies.Where(x => x.Percentage >= 0).Select(x => x.Percentage).Average(),2)%</span>
                                 <span class="d-block text-body text-sm">Calendar Bookings</span>
                             </h4>
                         </div>
@@ -285,6 +285,7 @@
 </script>
 
 <script>
+
 
     function LoadChart() {
         var ctx1 = document.getElementById("chart-consumption").getContext("2d");
@@ -362,36 +363,40 @@
 
 
     $(document).ready(function () {
+
+        $('#actionForm').on('submit', function (event) {
+            // Your function or code to execute on form submission
+            showLoadingSpinner();
+        });
         $('#downloadExcel').on('click', function () {
-            var filterDuration = prompt("Enter filter duration (e.g., 30 days, 60 days, 3 months):");
 
+            var filterDuration = $("#FilterDuration").val();
+            var StartDate = $("#StartDate").val();
+            var EndDate = $("#EndDate").val();
             // Check if the user provided a duration
-            if (filterDuration) {
-                $.ajax({
-                    url: '/Admin/GetLostClietCustomers', // Change to your controller and method
-                    type: 'GET',
-                    data: { FilterDuration: filterDuration },
-                    success: function (data) {
-                        if (data.success) {
-                            // Convert JSON data to Excel format
-                            const worksheet = XLSX.utils.json_to_sheet(data.LostCustomers);
-                            const workbook = XLSX.utils.book_new();
-                            XLSX.utils.book_append_sheet(workbook, worksheet, "Lost Clients");
+            $.ajax({
+                url: '/Admin/GetLostClietCustomers', // Change to your controller and method
+                type: 'GET',
+                data: { FilterDuration: filterDuration, StartDate: StartDate, EndDate: EndDate },
+                success: function (data) {
+                    if (data.success) {
+                        // Convert JSON data to Excel format
+                        const worksheet = XLSX.utils.json_to_sheet(data.LostCustomers);
+                        const workbook = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(workbook, worksheet, "Lost Clients");
 
-                            // Export the Excel file
-                            XLSX.writeFile(workbook, "LostClients.xlsx");
-                        } else {
-                            alert("No lost clients found or an error occurred.");
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error fetching data:', error);
-                        alert("An error occurred while downloading the data.");
+                        // Export the Excel file
+                        XLSX.writeFile(workbook, "LostClients.xlsx");
+                    } else {
+                        alert("No lost clients found or an error occurred.");
                     }
-                });
-            } else {
-                alert("Filter duration is required.");
-            }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                    alert("An error occurred while downloading the data.");
+                }
+            });
+
         });
         LoadChart();
 

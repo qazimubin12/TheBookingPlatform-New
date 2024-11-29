@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
@@ -505,6 +506,13 @@ namespace TheBookingPlatform.Services
             }
         }
 
+        public Appointment GetAppointmentUsingPS(string PaymentSession)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Appointments.Where(x=>x.PaymentSession == PaymentSession).FirstOrDefault();
+            }
+        }
         public List<Appointment> GetAppointmentsByCustomerProfile(string Business, int CustomerID, bool IsDeleted)
         {
             using (var context = new DSContext())
@@ -793,29 +801,32 @@ namespace TheBookingPlatform.Services
         }
 
 
-        public List<int> GetLostClients(string Company, bool Deleted, bool IsCancelled, DateTime FirstLimit, int DaysBehindLimit, List<int> customerIds)
+        public List<int> GetLostClients(string Company, bool Deleted, bool IsCancelled, DateTime FirstLimit, int DaysBehindLimit)
         {
             using (var context = new DSContext())
             {
-                // Calculate the date limit (FirstLimit minus DaysBehindLimit days)
+                // Calculate the DateLimit by subtracting DaysBehindLimit from FirstLimit
                 DateTime dateLimit = FirstLimit.AddDays(-DaysBehindLimit);
 
-                // Query to get lost clients based on the specified conditions
+                // Step 1: Find customers who have appointments in the time range [DateLimit, FirstLimit), 
+                // and no future appointments after FirstLimit
                 var lostClients = context.Appointments
-                    .Where(a => a.Business == Company &&
-                                a.DELETED == Deleted &&
-                                a.IsCancelled == IsCancelled &&
-                                customerIds.Contains(a.CustomerID)) // Only include specified customer IDs
+                    .Where(a => a.Business == Company
+                                && a.DELETED == Deleted
+                                && a.IsCancelled == IsCancelled)
                     .GroupBy(a => a.CustomerID)
-                    .Where(g => g.Max(a => a.Date) < FirstLimit &&         // Last appointment before FirstLimit
-                                g.Max(a => a.Date) >= dateLimit &&         // Last appointment within the date range
-                                !g.Any(a => a.Date >= FirstLimit))         // No future or current appointments from FirstLimit onwards
-                    .Select(g => g.Key)                                    // Select the CustomerID
+                    .Where(group =>
+                        // Check if this customer has appointments in the date range [DateLimit, FirstLimit)
+                        group.Any(a => a.Date >= dateLimit && a.Date < FirstLimit)
+                        // AND check that this customer does NOT have any appointments after FirstLimit
+                        && !group.Any(a => a.Date >= FirstLimit))
+                    .Select(group => group.Key)  // Select only the distinct CustomerIDs
                     .ToList();
 
                 return lostClients;
             }
         }
+
 
 
         public List<int> GetAppointmentBookingWRTBusinessNEW(string company, bool Deleted, bool isCancelled)
