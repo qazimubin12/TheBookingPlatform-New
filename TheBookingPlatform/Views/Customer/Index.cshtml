@@ -105,7 +105,7 @@
             </div>
             <div class="form-group">
                 <div class="input-group-dynamic">
-                    <input style="border:solid 1px black;border-radius:10px;" type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers" />
+                    <input style="border:solid 1px black;border-radius:10px;" type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers2" />
                 </div>
             </div>
             <div class="col-lg-12 grid-margin stretch-card">
@@ -301,16 +301,16 @@
 
 
     $(document).ready(function () {
-        $('#CustomersTable').DataTable({
-            "paging": false, // Disable pagination
-            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-            "pageLength": 100, // This will be ignored since pagination is disabled
-            responsive: true,
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Search records",
-            }
-        });
+        //$('#CustomersTable').DataTable({
+        //    "paging": false, // Disable pagination
+        //    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        //    "pageLength": 100, // This will be ignored since pagination is disabled
+        //    responsive: true,
+        //    language: {
+        //        search: "_INPUT_",
+        //        searchPlaceholder: "Search records",
+        //    }
+        //});
         $(document).on('click', '.data-btn', function () {
             $.ajax({
                 url: $(this).attr("data-href"),
@@ -321,7 +321,7 @@
                 });
         });
         initializeAutocompleteForCustomers();
-
+        $("#SearchTS").hide();
         function initializeAutocompleteForCustomers() {
             showLoadingSpinner();
             $.ajax({
@@ -374,7 +374,7 @@
                         }
                     });
                     hideLoadingSpinner();
-                    $('#AutoCompletecustomers').devbridgeAutocomplete({
+                    $('#AutoCompletecustomers2').devbridgeAutocomplete({
                         lookup: lookup,
                         minChars: 0,
                         formatResult: function (suggestion, currentValue) {

@@ -191,11 +191,12 @@
                     <input type="hidden" value="@Model.Service" name="Service" id="ConcatenatedServices" />
                     <input type="hidden" value="@Model.ServiceDuration" autocomplete="off" name="ServiceDuration" id="ServiceDuration" />
                     <input type="hidden" value="@Model.ServiceDiscount" name="ServiceDiscount" id="ServiceDiscount" />
-                    @if (Model.ServiceAlotted.Any(x => x.Service == "Break"))
+                    @if (Model.ServiceAlotted != null)
                     {
-
-
+                        if (Model.ServiceAlotted.Any(x => x.Service == "Break"))
+                        {
                         <input type="hidden" value="#Absence" id="SelectedOption" />
+                        }
                     }
                     else if (Model.CustomerID == 0)
                     {

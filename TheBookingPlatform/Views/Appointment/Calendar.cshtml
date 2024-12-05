@@ -131,7 +131,7 @@
     @if (!User.IsInRole("Calendar"))
     {
         <div class="form-group" style="margin-right:20px;">
-            <input type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers" />
+            <input type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers_Calendar" />
         </div>
     }
     <a class="btn btn-primary btn-sm" style="padding: 8px; margin-right: 5px; background-color: white; border-radius: 10px; color: black;" href="@Url.Action("Dashboard","Admin")"><i class="fa fa-arrow-left"></i></a>
@@ -435,7 +435,7 @@
     });
     $(document).ready(function () {
         $("html").removeClass("perfect-scrollbar-on");
-        $("#AutoCompletecustomers").autocomplete({
+        $("#AutoCompletecustomers_Calendar").autocomplete({
             source: function (request, response) {
                 $.ajax({
                     url: '@Url.Action("GetCustomers", "Customer")',  // Using Razor syntax to generate the URL
@@ -466,7 +466,7 @@
             });
         };
 
-        $("#AutoCompletecustomers").data("ui-autocomplete")._renderItem = function (ul, item) {
+        $("#AutoCompletecustomers_Calendar").data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li class='list-group-item list-group-item-action'>")
                 .append("<div>" + item.label + "</div>")
                 .appendTo(ul);

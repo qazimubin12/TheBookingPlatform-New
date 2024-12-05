@@ -318,7 +318,7 @@ namespace TheBookingPlatform.Controllers
                                     }
 
 
-                                    var servicesplit = item.Service.Split(',').Select(x => float.Parse(x)).ToList();
+                                    var servicesplit = item.ServiceDiscount.Split(',').Select(x => float.Parse(x)).ToList();
                                     for (int i = 0; i < servicesplit.Count; i++)
                                     {
 
@@ -370,7 +370,7 @@ namespace TheBookingPlatform.Controllers
             {
                 TotalPrice = (ServicePrice - OfflineDiscountCost - TotalOnlinePriceChange);
                 Amount = float.Parse(Math.Round((TotalPrice * model.Percentage) / 100, 2).ToString());
-                FinalAmount = Math.Round(Amount * employee.Percentage, 2) + company.Currency;
+                FinalAmount = Math.Round(TotalPrice * employee.Percentage, 2) + company.Currency;
 
             }
             else if (employee.Type == "Worked Hours")

@@ -103,6 +103,10 @@
     <Compile Include="Migrations\202411281719523_noneneded.Designer.cs">
       <DependentUpon>202411281719523_noneneded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411291228167_notificationpanel.cs" />
+    <Compile Include="Migrations\202411291228167_notificationpanel.Designer.cs">
+      <DependentUpon>202411291228167_notificationpanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -141,6 +145,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411281719523_noneneded.resx">
       <DependentUpon>202411281719523_noneneded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411291228167_notificationpanel.resx">
+      <DependentUpon>202411291228167_notificationpanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

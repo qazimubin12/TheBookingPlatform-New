@@ -271,7 +271,7 @@
             background: #fff
         }
 
-        #AutoCompletecustomers::placeholder{
+        #AutoCompletecustomers_2::placeholder{
             margin-left:5px;
         }
         #ui-datepicker-div.ui-datepicker .ui-state-disabled span {
@@ -349,6 +349,18 @@
         .autocomplete-suggestions strong {
             font-weight: bold;
             color: #000;
+        }
+
+
+
+        #mainContainerflu {
+            padding-left: 270px;
+        }
+
+        @@media screen and (max-width: 768px) { /* Adjust max-width as needed */
+            #mainContainerflu {
+                padding-left: 0;
+            }
         }
 
         .autocomplete-group {
@@ -466,7 +478,7 @@
                         if (package.Split(',').Contains("PayRoll"))
                         {
 
-                            <li class="nav-item " id="PayRollTAB">
+                            <li class="nav-item" id="PayRollTAB">
                                 <a href="@Url.Action("ViewEmployeesPayRoll", "PayRoll")">
                                     <img class="menuicons" src="~/Content/TBPContent/icons/gift.png" />
                                     <span class="sidenav-normal  ms-2  ps-1"> PayRoll </span>
@@ -476,7 +488,7 @@
                     }
                     else
                     {
-                        <li class="nav-item " id="PayRollTAB">
+                        <li class="nav-item" id="PayRollTAB">
                             <a href="@Url.Action("ViewEmployeesPayRoll", "PayRoll")">
                                 <img class="menuicons" src="~/Content/TBPContent/icons/gift.png" />
                                 <span class="sidenav-normal  ms-2  ps-1"> PayRoll </span>
@@ -2140,72 +2152,71 @@
             </ul>
         </div>
     </aside>
-    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ps ps--active-y ">
-        <!-- Navbar -->
-        <nav style="z-index:1;" class="navbar navbar-main navbar-expand-lg position-sticky mt-4 top-1 px-0 mx-4 shadow-none border-radius-xl z-index-sticky" id="navbarBlur" data-scroll="true">
-            <div class="container-fluid py-1 px-3">
-                <nav aria-label="breadcrumb">
+    <nav style="z-index:1;" class="navbar navbar-main navbar-expand-lg position-sticky mt-4 top-1 px-0 mx-4 shadow-none border-radius-xl z-index-sticky" id="navbarBlur" data-scroll="true">
+        <div class="container-fluid py-1 px-3">
+            <nav aria-label="breadcrumb">
 
-                </nav>
-                <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
-                    <a href="javascript:;" class="nav-link text-body p-0">
-                        <div class="sidenav-toggler-inner">
-                            <i class="sidenav-toggler-line"></i>
-                            <i class="sidenav-toggler-line"></i>
-                            <i class="sidenav-toggler-line"></i>
+            </nav>
+            <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
+                <a href="javascript:;" class="nav-link text-body p-0">
+                    <div class="sidenav-toggler-inner">
+                        <i class="sidenav-toggler-line"></i>
+                        <i class="sidenav-toggler-line"></i>
+                        <i class="sidenav-toggler-line"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                    @if (!User.IsInRole("Calendar"))
+                    {
+                        <div id="SearchTS" class="form-group input-group-outline">
+                            <input id="AutoCompletecustomers_2" placeholder="Search Customers" style="border: solid 0.2px gray; " type="text" class="form-control autocompleteCustomers_2">
                         </div>
-                    </a>
-                </div>
-                <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-                    <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                        @if (!User.IsInRole("Calendar"))
-                        {
-                            <div class="form-group input-group-outline">
-                                    <input id="AutoCompletecustomers" placeholder="Search Customers" style="border: solid 0.2px gray; " type="text" class="form-control autocompleteCustomers">
-                                </div>
-                            @*<div class="form-group" style="margin-right:20px;">
+                        @*<div class="form-group" style="margin-right:20px;">
                                 <input type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers" />
                             </div>*@
-                        }
-                    </div>
-                    <ul style=" display: flex; align-self: center; align-items: center; " class="navbar-nav  justify-content-end">
-                        <li class="nav-item">
-                            <a href="@Url.Action("UserProfile","Account")" class="nav-link text-body p-0 position-relative">
-                                <i style="color:darkgray;" class="material-icons me-sm-1">
-                                    account_circle
-                                </i>
-                            </a>
-                        </li>
-                        <li class="nav-item" style=" margin-bottom: 5px; ">
-                            <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                                <div class="sidenav-toggler-inner">
-                                    <i class="sidenav-toggler-line"></i>
-                                    <i class="sidenav-toggler-line"></i>
-                                    <i class="sidenav-toggler-line"></i>
-                                </div>
-                            </a>
-                        </li>
-
-                        <li class="nav-item dropdown pe-2">
-                            <a href="javascript:;" class="nav-link text-body p-0 position-relative" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="material-icons cursor-pointer">
-                                    notifications
-                                </i>
-                                <span class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
-                                    <span class="small"></span>
-                                    <span class="visually-hidden">unread notifications</span>
-                                </span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton" id="notificationPanel">
-
-                            </ul>
-                        </li>
-                    </ul>
+                    }
                 </div>
+                <ul style=" display: flex; align-self: center; align-items: center; " class="navbar-nav  justify-content-end">
+                    <li class="nav-item">
+                        <a href="@Url.Action("UserProfile","Account")" class="nav-link text-body p-0 position-relative">
+                            <i style="color:darkgray;" class="material-icons me-sm-1">
+                                account_circle
+                            </i>
+                        </a>
+                    </li>
+                    <li class="nav-item" style=" margin-bottom: 5px; ">
+                        <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                            <div class="sidenav-toggler-inner">
+                                <i class="sidenav-toggler-line"></i>
+                                <i class="sidenav-toggler-line"></i>
+                                <i class="sidenav-toggler-line"></i>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown pe-2">
+                        <a href="javascript:;" class="nav-link text-body p-0 position-relative" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="material-icons cursor-pointer">
+                                notifications
+                            </i>
+                            <span class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
+                                <span class="small"></span>
+                                <span class="visually-hidden">unread notifications</span>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton" id="notificationPanel">
+                        </ul>
+                    </li>
+                </ul>
             </div>
-        </nav>
+        </div>
+    </nav>
+    <main class="main-content position-relative  border-radius-lg ps ps--active-y ">
+        <!-- Navbar -->
         <!-- End Navbar -->
-        <div class="container-fluid py-4">
+        <div id="mainContainerflu" class="container-fluid py-4">
             <a target="_self" href="#" id="GoToLink"></a>
 
 
@@ -2365,7 +2376,7 @@
                 }
             });
         }
-        
+
     $("#SwitchOrg").click(function () {
         var Business = $("#SelectedOrg").val();
 
@@ -2432,41 +2443,7 @@
             }
         }
         $(document).ready(function () {
-            $("#AutoCompletecustomers").autocomplete({
-                source: function (request, response) {
-                    $.ajax({
-                        url: '@Url.Action("GetCustomers", "Customer")',  // Using Razor syntax to generate the URL
-                        type: "GET",
-                        data: {
-                            SearchTerm: request.term
-                        },
-                        success: function (data) {
-                            response($.map(data, function (item) {
-                                return {
-                                    label: item.FirstName + ' ' + item.LastName,
-                                    value: item.FirstName + ' ' + item.LastName,
-                                    url: "/Customer/CustomerProfile?ID=" + item.ID
-                                };
-                            }));
-                        }
-                    });
-                },
-                select: function (event, ui) {
-                    // Redirect to the URL of the selected item
-                    window.location.href = ui.item.url;
-                }
-            }).data("ui-autocomplete")._renderMenu = function (ul, items) {
-                var self = this;
-                ul.addClass("list-group"); // Add Bootstrap list group class to ul
-                $.each(items, function (index, item) {
-                    self._renderItemData(ul, item);
-                });
-            };
-            $("#AutoCompletecustomers").data("ui-autocomplete")._renderItem = function (ul, item) {
-                return $("<li class='list-group-item list-group-item-action'>")
-                    .append("<div>" + item.label + "</div>")
-                    .appendTo(ul);
-            };
+          
             function initializeAutocompleteForCustomers() {
                 showLoadingSpinner();
 
@@ -2520,7 +2497,7 @@
                             }
                         });
                         hideLoadingSpinner();
-                        $('.autocompleteCustomers').devbridgeAutocomplete({
+                        $('.AutoCompletecustomers_2').devbridgeAutocomplete({
                             lookup: lookup,
                             minChars: 0,
                             formatResult: function (suggestion, currentValue) {

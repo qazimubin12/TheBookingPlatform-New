@@ -65,10 +65,8 @@
                     </div>
                 }
 
-                @if (Model.LoggedInOwnerID != "")
+                @if (User.IsInRole("Owner"))
                 {
-                    if (Model.LoggedInOwnerID == Model.ID)
-                    {
                         <div class="form-group input-group input-group-dynamic">
                             <label>Role</label>
                             <select name="Role" class="form-control choices__input">
@@ -91,7 +89,6 @@
 
                             </select>
                         </div>
-                    }
                 }
 
                 <div class="form-group input-group input-group-dynamic">

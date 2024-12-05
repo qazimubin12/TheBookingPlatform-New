@@ -5,27 +5,22 @@
 <div style="padding-left:0px;padding-right:0px;" class="col-md-12">
     @if (Model.Employees != null)
     {
-        <div class="card">
+        <div class="card table-responsive">
 
                 <table class="table table-striped">
                     <thead>
                         <tr>
 
                             <th class="text-center">
-                                Order
-                            </th>
-                            <th class="text-center">
                                 Name
                             </th>
 
-                            <th class="text-center">
-                                Online Booking
-                            </th>
+                            
                             <th class="text-center">
                                 Calendar History
                             </th>
                             <th class="text-center">
-                                Type
+                                Payroll Type
                             </th>
                             <th class="text-center">
                                 Price Change
@@ -41,32 +36,10 @@
                         @foreach (var item in Model.Employees)
                         {
                             <tr>
-                                <td class="text-center">
-                                    <input type="number" class="form-control" value="@item.Employee.DisplayOrder" onchange="ChangeOrder('@item.Employee.ID', this.value)" />
-                                </td>
+                              
                                 <td class="text-center">@item.Employee.Name</td>
 
 
-                                @if (item.Employee.AllowOnlineBooking == true)
-                                {
-                                    <td  style="width:50px;" class="text-center">
-                                        <select class="form-control choices__input" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
-                                            <option value="True" selected>Yes</option>
-                                            <option value="False">No</option>
-                                        </select>
-                                    </td>
-
-                                }
-                                else
-                                {
-                                    <td  class="text-center" style="width:50px;"> 
-                                        <select class="form-control choices__input" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
-                                            <option value="True">Yes</option>
-                                            <option selected value="False">No</option>
-                                        </select>
-                                    </td>
-
-                                }
                                 <td class="text-center"  style="width:200px;">
                                     <select class="form-control limitAccess choices__input" id="Limit_@(item.Employee.ID)" onchange="ChangeLimitoFCalendarAccess('@item.Employee.ID')">
                                         @foreach (var access in Model.CalendarHistoryAccessList)

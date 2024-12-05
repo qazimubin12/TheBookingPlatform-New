@@ -59,6 +59,24 @@
     .card .nav-pills, .card .tab-content {
         margin-top: 0px;
     }
+    .nav.nav-pills .nav-link {
+        transition: transform 0.3s ease; /* Add transition for transform */
+    }
+
+        .nav.nav-pills .nav-link.active {
+            background: white;
+            border-radius: 5px;
+            box-shadow: lightgray 2px 2px 5px;
+        }
+
+
+   .moving-tab{
+       display:none;
+   }
+
+
+
+
 </style>
 <div class="card">
     <div class="card-body">
@@ -76,7 +94,7 @@
                         {
                             if (inTrial == "No")
                             {
-                                if (package.Split(',').Contains("Employees"))
+                                @*if (package.Split(',').Contains("Employees"))
                                 {
 
 
@@ -87,7 +105,7 @@
                                     </li>
 
 
-                                }
+                                }*@
                                 if (package.Split(',').Contains("Reviews"))
                                 {
 
@@ -127,11 +145,7 @@
                             else
                             {
 
-                                <li id="Employees" class="nav-item">
-                                    <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="true">
-                                        Emloyees
-                                    </a>
-                                </li>
+                                
 
                                 <li id="Reviews" class="nav-item">
                                     <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
@@ -329,7 +343,7 @@
 
 <div style="display:none;" id="loader"><img style="width:150px;" src="~/Content/TBPContent/Loader.gif" /></div>
 <hr />
-<div id="ActionPanel" class="max-height-vh-100">
+<div id="ActionPanel" >
 </div>
 
 <div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
@@ -801,3 +815,10 @@ else
     });
     </script>
 }
+
+<script>
+
+
+
+
+</script>

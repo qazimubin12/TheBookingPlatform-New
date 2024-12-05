@@ -17,6 +17,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Notification = TheBookingPlatform.Entities.Notification;
+using System.ComponentModel.Design;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -778,6 +779,24 @@ namespace TheBookingPlatform.Controllers
             AnalysisViewModel model = new AnalysisViewModel();
             var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
             model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company, "");
+            var Company = CompanyServices.Instance.GetCompanyByName(loggedInUser.Company);
+            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(Company.ID).ToList();
+            foreach (var item in employeeRequest)
+            {
+                if (item.Accepted)
+                {
+                    if (Company.ID == item.CompanyIDFrom)
+                    {
+                        var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                        model.Employees.Add(employee);
+                    }
+                  
+
+                }
+            }
+
+
+
             var listOfStrings = new List<string>
             {
                 "No Show",
@@ -836,11 +855,29 @@ namespace TheBookingPlatform.Controllers
             model.IsCancelled = IsCancelled;
             model.StartDate = StartDate;
             model.EndDate = EndDate;
+            var Company = CompanyServices.Instance.GetCompanyByName(loggedInUser.Company);
+
             var selectedEmployees = SelectedEmployeeIDs.Select(x => int.Parse(x)).ToList();
             var AbsenseServiceIds = ServiceServices.Instance.GetAbsenseServiceIDs(loggedInUser.Company);
 
             var AllAppointmentsWithabsenceIDsFilters = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(StartDate, EndDate, loggedInUser.Company, IsCancelled, selectedEmployees);
-            if(SelectedStatuses != null && SelectedStatuses.Count() > 0)
+            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(Company.ID).ToList();
+            foreach (var item in employeeRequest)
+            {
+                if (item.Accepted)
+                {
+                    var companyFrom = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    if (Company.ID != item.CompanyIDFrom)
+                    {
+                        var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(companyFrom.Business, false, IsCancelled, item.EmployeeID, StartDate, EndDate);
+                        AllAppointmentsWithabsenceIDsFilters.AddRange(appointment);
+                    }
+                   
+
+                }
+            }
+
+            if (SelectedStatuses != null && SelectedStatuses.Count() > 0)
             {
                 AllAppointmentsWithabsenceIDsFilters = AllAppointmentsWithabsenceIDsFilters.Where(x => SelectedStatuses.Contains(x.Status?.Trim())).ToList();
             }
