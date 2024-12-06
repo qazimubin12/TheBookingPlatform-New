@@ -309,175 +309,182 @@
 
                     </div>
                     <div class="tab-pane" id="pill2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">
-                                        Employee
-                                    </th>
-                                    <th class="text-center">
-                                        Service
-                                    </th>
-                                    <th class="text-center">
-                                        Date
-                                    </th>
-                                    <th>
-                                        Action
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.TotalAppointmentsCustomer.Where(x => x.IsCancelled == false))
-                                {
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
                                     <tr>
-                                        <td class="text-center">@item.EmployeeName</td>
-                                        <td class="text-center">
-                                            <table style="border: none; background-color: transparent;  " class="table table-borderless">
-                                                @foreach (var listofservice in item.Services)
-                                                {
-                                                    <tr style="border-color:white;">
-                                                        @if (listofservice.Discount == 0)
-                                                        {
-                                                            <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price @Model.Company.Currency  </td>
-                                                        }
-                                                        else
-                                                        {
-                                                    <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price @Model.Company.Currency (Discount: @listofservice.Discount %) </td>
-                                                        }
-                                                    </tr>
-                                                }
-                                            </table>
-
-                                        </td>
-                                        <td class="text-center">@item.Date.ToString("yyyy-MM-dd") @item.Time.ToString("HH:mm") - @item.AppointmentEndTime.ToString("HH:m")</td>
-                                        <td>
-                                            @if (item.Status == "Paid")
-                                            {
-                                                <button class="btn btn-primary btn-round btn-sm" type="button">VIEW INVOICE</button>
-                                            }
-                                            else
-                                            {
-                                                <button class="btn btn-primary btn-round btn-sm" onclick="window.location.href='@Url.Action("Action", "Appointment", new {ID=item.ID})'" type="button">EDIT APPOINTMENT</button>
-
-                                            }
-                                        </td>
+                                        <th class="text-center">
+                                            Employee
+                                        </th>
+                                        <th class="text-center">
+                                            Service
+                                        </th>
+                                        <th class="text-center">
+                                            Date
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
                                     </tr>
-                                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.TotalAppointmentsCustomer.Where(x => x.IsCancelled == false))
+                                    {
+                                        <tr>
+                                            <td class="text-center">@item.EmployeeName</td>
+                                            <td class="text-center">
+                                                <table style="border: none; background-color: transparent;  " class="table table-borderless">
+                                                    @foreach (var listofservice in item.Services)
+                                                    {
+                                                        <tr style="border-color:white;">
+                                                            @if (listofservice.Discount == 0)
+                                                            {
+                                                                <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price @Model.Company.Currency  </td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price @Model.Company.Currency (Discount: @listofservice.Discount %) </td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                </table>
 
-                            </tbody>
-                        </table>
+                                            </td>
+                                            <td class="text-center">@item.Date.ToString("yyyy-MM-dd") @item.Time.ToString("HH:mm") - @item.AppointmentEndTime.ToString("HH:m")</td>
+                                            <td>
+                                                @if (item.Status == "Paid")
+                                                {
+                                                    <button class="btn btn-primary btn-round btn-sm" type="button">VIEW INVOICE</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-primary btn-round btn-sm" onclick="window.location.href='@Url.Action("Action", "Appointment", new {ID=item.ID})'" type="button">EDIT APPOINTMENT</button>
+
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="tab-pane" id="pill3">
-                        <table class="table table-striped">
-                            @foreach (var item in Model.Histories)
-                            {
-                                <tr>
-                                    <td>◉ @item.Note  - @item.Date</td>
-                                </tr>
-                            }
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                @foreach (var item in Model.Histories)
+                                {
+                                    <tr>
+                                        <td>◉ @item.Note  - @item.Date</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
                     </div>
                     <div class="tab-pane" id="pill4">
                         <h4>Coming Soon</h4>
 
                     </div>
                     <div class="tab-pane" id="pill5">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Date
-                                    </th>
-                                    <th>
-                                        Type
-                                    </th>
-                                    <th>
-                                        Subject
-                                    </th>
-                                    <th>
-                                        Status
-                                    </th>
-                                    <th>
-                                        Channel
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                @foreach (var item in Model.Messages)
-                                {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
                                     <tr>
-                                        <td>@item.Date</td>
-                                        <td>@item.Type</td>
-                                        <td>@item.Subject</td>
-                                        <td>@item.Status</td>
-                                        <td>@item.Channel</td>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                            Type
+                                        </th>
+                                        <th>
+                                            Subject
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+                                            Channel
+                                        </th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
 
+                                    @foreach (var item in Model.Messages)
+                                    {
+                                        <tr>
+                                            <td>@item.Date</td>
+                                            <td>@item.Type</td>
+                                            <td>@item.Subject</td>
+                                            <td>@item.Status</td>
+                                            <td>@item.Channel</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="tab-pane" id="pill6">
                         <h4>Loyalty Card Assigned</h4>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">
-                                        Card Name
-                                    </th>
-                                    <th class="text-center">
-                                        Customer Name
-                                    </th>
-                                    <th class="text-center">
-                                        Mobule Number
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.LoyaltyCardAssignments != null)
-                                {
-                                    foreach (var item in Model.LoyaltyCardAssignments)
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">
+                                            Card Name
+                                        </th>
+                                        <th class="text-center">
+                                            Customer Name
+                                        </th>
+                                        <th class="text-center">
+                                            Mobule Number
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.LoyaltyCardAssignments != null)
+                                    {
+                                        foreach (var item in Model.LoyaltyCardAssignments)
+                                        {
+                                            <tr>
+                                                <td class="text-center">@item.LoyaltyCardName</td>
+                                                <td class="text-center">@item.Customer.FirstName @item.Customer.LastName</td>
+                                                <td class="text-center">@item.Customer.MobileNumber</td>
+
+                                            </tr>
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <hr />
+                        <h4>Loyalty Card Usage</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">
+                                            Name
+                                        </th>
+                                        <th class="text-center">
+                                            Cash Back
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.LoyaltyCardHistories)
                                     {
                                         <tr>
-                                            <td class="text-center">@item.LoyaltyCardName</td>
-                                            <td class="text-center">@item.Customer.FirstName @item.Customer.LastName</td>
-                                            <td class="text-center">@item.Customer.MobileNumber</td>
+                                            <td class="text-center">@item.Note  - @item.Date.ToString("yyyy-MM-dd")</td>
+
 
                                         </tr>
                                     }
 
-                                }
-                            </tbody>
-                        </table>
-
-
-                        <hr />
-                        <h4>Loyalty Card Usage</h4>
-
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">
-                                        Name
-                                    </th>
-                                    <th class="text-center">
-                                        Cash Back
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.LoyaltyCardHistories)
-                                {
-                                    <tr>
-                                        <td class="text-center">@item.Note  - @item.Date.ToString("yyyy-MM-dd")</td>
-
-
-                                    </tr>
-                                }
-
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="tab-pane" id="pill7">
                         <div class="row">
@@ -486,47 +493,49 @@
                                 <button data-href="@Url.Action("UploadFile", "Appointment", new { CustomerID = Model.Customer.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">UPLOAD NEW</button>
                             }
                         </div>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        File
-                                    </th>
-                                    <th>
-                                        Name
-                                    </th>
-                                    <th>
-                                        Size
-                                    </th>
-                                    <th>
-                                        Uploaded By
-                                    </th>
-                                    <th>
-                                        Date and Time
-                                    </th>
-                                    <th>
-                                        Action
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.Files)
-                                {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
                                     <tr>
-                                        <td><a class="btn btn-primary btn-sm btn-round" target="_blank" href="@item.URL">OPEN</a></td>
-                                        <td>@item.Name</td>
-                                        <td>@item.Size</td>
-                                        <td>@item.UploadedBy</td>
-                                        <td>@item.DateTime</td>
-                                        <td>
-                                            <button data-href="@Url.Action("UploadFile", "Appointment", new {CustomerID= item.CustomerID, ID = item.ID })" type="button" class="data-btn  btn btn-sm btn-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
-                                            <button data-href="@Url.Action("DeleteFile", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-danger btn-sm btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
-
-                                        </td>
+                                        <th>
+                                            File
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Size
+                                        </th>
+                                        <th>
+                                            Uploaded By
+                                        </th>
+                                        <th>
+                                            Date and Time
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Files)
+                                    {
+                                        <tr>
+                                            <td><a class="btn btn-primary btn-sm btn-round" target="_blank" href="@item.URL">OPEN</a></td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Size</td>
+                                            <td>@item.UploadedBy</td>
+                                            <td>@item.DateTime</td>
+                                            <td>
+                                                <button data-href="@Url.Action("UploadFile", "Appointment", new {CustomerID= item.CustomerID, ID = item.ID })" type="button" class="data-btn  btn btn-sm btn-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
+                                                <button data-href="@Url.Action("DeleteFile", "Appointment", new { ID = item.ID })" type="button" class="data-btn btn btn-danger btn-sm btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

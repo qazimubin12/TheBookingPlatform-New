@@ -97,16 +97,9 @@ namespace TheBookingPlatform.Controllers
             {
                 if (userLoggedIn.Role != "Super Admin")
                 {
-                    if (userLoggedIn.Company != null)
-                    {
-                        return RedirectToAction("Dashboard", "Admin");
-                    }
-                    else
-                    {
-                        Session["RegisteredEmail"] = userLoggedIn.Email;
-                        Session["RegisteredPAKKITA"] = userLoggedIn.Password;
-                        return RedirectToAction("RegisterCompany", "User");
-                    }
+
+                    return RedirectToAction("Dashboard", "Admin");
+
                 }
                 else
                 {
@@ -119,7 +112,11 @@ namespace TheBookingPlatform.Controllers
                 ViewBag.ReturnUrl = returnUrl;
                 return View();
             }
+            return View();
         }
+            //
+
+        
 
         //
         // POST: /Account/Login[

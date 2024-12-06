@@ -785,10 +785,13 @@ namespace TheBookingPlatform.Controllers
             {
                 if (item.Accepted)
                 {
-                    if (Company.ID == item.CompanyIDFrom)
+                    if (Company.ID == item.CompanyIDFor || Company.ID == item.CompanyIDFrom)
                     {
                         var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                        model.Employees.Add(employee);
+                        if (!model.Employees.Select(x=>x.ID).Contains(employee.ID))
+                        {
+                            model.Employees.Add(employee);
+                        }
                     }
                   
 

@@ -183,77 +183,244 @@ namespace TheBookingPlatform.Controllers
 
         }
 
+        //[HttpPost]
+        //public JsonResult PayPackage(int PackageID, string UserID)
+        //{
+        //    var package = PackageServices.Instance.GetPackage(PackageID);
+        //    var user = UserManager.FindById(UserID);
+        //    var apikey = package.APIKEY;
+        //    StripeConfiguration.SetApiKey(apikey);
+
+
+        //    var options = new SessionCreateOptions
+        //    {
+        //        PaymentMethodTypes = new List<string> { "card", "ideal" },
+        //        LineItems = new List<SessionLineItemOptions>(),
+        //        Mode = "payment", // You can use "subscription" for subscriptions.
+        //        // You can set the success and cancel URLs for redirection after payment.
+        //        SuccessUrl = "http://app.yourbookingplatform.com" + Url.Action("SavePayment", "User", new { UserID = UserID, PackageID = PackageID }),
+        //        CancelUrl = "http://app.yourbookingplatform.com" + Url.Action("Login", "Account"),
+        //    };
+
+        //    decimal amountInDollars = package.Price;
+        //    decimal vatinCents = package.Price * (package.VAT / 100);
+
+        //    // Convert the amount to cents
+        //    long amountInCents = Convert.ToInt64(amountInDollars * 100);
+        //    long vatincenters = Convert.ToInt64(vatinCents * 100);
+        //    var lineItems = new List<SessionLineItemOptions>
+        //    {
+        //        // Add a separate line item for the total amount.
+        //        new SessionLineItemOptions
+        //        {
+        //            Quantity = 1,
+        //            PriceData = new SessionLineItemPriceDataOptions
+        //            {
+        //                Currency = "eur",
+        //                UnitAmount = amountInCents,
+        //                ProductData = new SessionLineItemPriceDataProductDataOptions
+        //                {
+        //                    Name = package.Name,
+        //                    Description = package.Description
+        //                },
+        //            }
+        //        },
+
+        //         new SessionLineItemOptions
+        //         {
+        //            Quantity = 1,
+        //            PriceData = new SessionLineItemPriceDataOptions
+        //            {
+        //                Currency = "eur",
+        //                UnitAmount = vatincenters,
+        //                ProductData = new SessionLineItemPriceDataProductDataOptions
+        //                {
+        //                    Name = "VAT",
+        //                    Description = package.VAT.ToString()+"%"
+        //                },
+        //            }
+        //         }
+        //    };
+
+        //    options.LineItems = lineItems;
+        //    var serviceSession = new SessionService();
+        //    Session session = serviceSession.Create(options);
+
+
+
+
+
+
+        //    return Json(new { success = true, URL = session.Url }, JsonRequestBehavior.AllowGet);
+        //}
+
+
         [HttpPost]
         public JsonResult PayPackage(int PackageID, string UserID)
         {
-            var package = PackageServices.Instance.GetPackage(PackageID);
-            var user = UserManager.FindById(UserID);
-            var apikey = package.APIKEY;
-            StripeConfiguration.SetApiKey(apikey);
+            // Step 1: Fetch package and user details (assume these services are implemented)
+            var package = PackageServices.Instance.GetPackage(PackageID); // Your service
+            var user = UserManager.FindById(UserID); // Your user manager
+            StripeConfiguration.ApiKey = package.APIKEY; // Use your Stripe API Key
 
-
-            var options = new SessionCreateOptions
+            // Step 2: Create a Stripe Customer
+            var customerService = new CustomerService();
+            var customerOptions = new CustomerCreateOptions
             {
-                PaymentMethodTypes = new List<string> { "card", "ideal" },
-                LineItems = new List<SessionLineItemOptions>(),
-                Mode = "payment", // You can use "subscription" for subscriptions.
-                // You can set the success and cancel URLs for redirection after payment.
-                SuccessUrl = "http://app.yourbookingplatform.com" + Url.Action("SavePayment", "User", new { UserID = UserID, PackageID = PackageID }),
-                CancelUrl = "http://app.yourbookingplatform.com" + Url.Action("Login", "Account"),
+                Email = user.Email, // Ensure you have user's email
+                Name = user.Name, // User's name
+                Metadata = new Dictionary<string, string>
+            {
+                { "UserID", UserID },
+                { "PackageID", PackageID.ToString() }
+            }
             };
+            var customer = customerService.Create(customerOptions);
 
-            decimal amountInDollars = package.Price;
-            decimal vatinCents = package.Price * (package.VAT / 100);
+            // Step 3: Calculate package price and VAT
+            decimal amountInDollars = package.Price; // Base price
+            decimal vatInDollars = package.Price * (package.VAT / 100); // VAT
 
-            // Convert the amount to cents
             long amountInCents = Convert.ToInt64(amountInDollars * 100);
-            long vatincenters = Convert.ToInt64(vatinCents * 100);
-            var lineItems = new List<SessionLineItemOptions>
+            long vatInCents = Convert.ToInt64(vatInDollars * 100);
+
+            // Step 4: Create a Product in Stripe
+            var productService = new ProductService();
+            var productOptions = new ProductCreateOptions
             {
-                // Add a separate line item for the total amount.
+                Name = package.Name,
+                Description = package.Description
+            };
+            var product = productService.Create(productOptions);
+
+            // Step 5: Create a Price for the Product
+            var priceService = new PriceService();
+            var priceOptions = new PriceCreateOptions
+            {
+                UnitAmount = amountInCents + vatInCents, // Total price (including VAT)
+                Currency = "eur",
+                Recurring = new PriceRecurringOptions
+                {
+                    Interval = "month", // "month" or "year"
+                    IntervalCount = 1   // Every 1 month
+                },
+                Product = product.Id
+            };
+            var price = priceService.Create(priceOptions);
+
+            // Step 6: Create a Checkout Session
+            var sessionService = new SessionService();
+            var sessionOptions = new SessionCreateOptions
+            {
+                Customer = customer.Id, // Link to Stripe Customer
+                PaymentMethodTypes = new List<string> { "card" }, // Payment methods
+                LineItems = new List<SessionLineItemOptions>
+            {
                 new SessionLineItemOptions
                 {
-                    Quantity = 1,
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                        Currency = "eur",
-                        UnitAmount = amountInCents,
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                        {
-                            Name = package.Name,
-                            Description = package.Description
-                        },
-                    }
-                },
-
-                 new SessionLineItemOptions
-                 {
-                    Quantity = 1,
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                        Currency = "eur",
-                        UnitAmount = vatincenters,
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                        {
-                            Name = "VAT",
-                            Description = package.VAT.ToString()+"%"
-                        },
-                    }
-                 }
+                    Price = price.Id, // Use recurring price
+                    Quantity = 1      // Single subscription
+                }
+            },
+                Mode = "subscription", // Use subscription mode
+                SuccessUrl = "http://app.yourbookingplatform.com" + Url.Action("SavePayment", "User", new { UserID = UserID, PackageID = PackageID }),
+                CancelUrl = "http://app.yourbookingplatform.com" + Url.Action("Login", "Account")
             };
+            var session = sessionService.Create(sessionOptions);
 
-            options.LineItems = lineItems;
-            var serviceSession = new SessionService();
-            Session session = serviceSession.Create(options);
-
-
-
-
-
-
+            // Step 7: Return Checkout Session URL
             return Json(new { success = true, URL = session.Url }, JsonRequestBehavior.AllowGet);
         }
+        [HttpPost]
+        public ActionResult UserRegistrationWebHook()
+        {
+            try
+            {
+                // Read the raw body from the request
+                var json = Request.InputStream;
+                json.Seek(0, System.IO.SeekOrigin.Begin);
+                var jsonBody = new StreamReader(json).ReadToEnd();
 
+                // Verify the Stripe event
+                var stripeEvent = EventUtility.ConstructEvent(
+                    jsonBody,
+                    Request.Headers["Stripe-Signature"],
+                    "your_webhook_secret"
+                );
+
+                // Handle different types of Stripe events
+                if (stripeEvent.Type == "invoice.payment_succeeded")
+                {
+                    // Access the Invoice object from the event
+                    var invoice = stripeEvent.Data.Object as Stripe.Invoice;
+
+                    // Get the customer ID from the invoice
+                    string customerId = invoice.CustomerId;
+
+                    // Retrieve the customer object to access metadata
+                    var customerService = new CustomerService();
+                    var customer = customerService.Get(customerId);
+
+                    // Access metadata
+                    var UserID = customer.Metadata["UserID"];
+                    int PackageID = int.Parse(customer.Metadata["PackageID"]);
+
+
+
+                    var user = UserManager.FindById(UserID);
+                    user.Package = PackageID;
+                    user.IsPaid = true;
+                    user.LastPaymentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                    UserManager.Update(user);
+
+                    var payment = new Payment();
+                    payment.Business = user.Company;
+                    payment.LastPaidDate = DateTime.Now;
+                    payment.PackageID = PackageID;
+                    payment.UserID = UserID;
+                    PaymentServices.Instance.SavePayment(payment);
+
+
+                    var currentUsers = UserManager.Users.Where(x => x.Company == user.Company && x.Id != user.Id).ToList();
+                    foreach (var item in currentUsers)
+                    {
+                        item.Package = user.Package;
+                        item.LastPaymentDate = user.LastPaymentDate;
+                        item.IsPaid = user.IsPaid;
+                        item.IsInTrialPeriod = user.IsInTrialPeriod;
+                        UserManager.Update(item);
+                    }
+                    // Log or use metadata for further processing
+                }
+                else if (stripeEvent.Type == "invoice.payment_failed")
+                {
+                    var invoice = stripeEvent.Data.Object as Stripe.Invoice;
+                    string customerId = invoice.CustomerId;
+
+                    // Retrieve the customer object to access metadata
+                    var customerService = new CustomerService();
+                    var customer = customerService.Get(customerId);
+
+                    var userId = customer.Metadata["UserID"];
+                    var packageId = customer.Metadata["PackageID"];
+
+                    // Handle failed payment
+                    Console.WriteLine($"Payment failed for UserID: {userId}, PackageID: {packageId}");
+                }
+
+                return new HttpStatusCodeResult(200); // Acknowledge receipt of the webhook
+            }
+            catch (StripeException ex)
+            {
+                // Handle Stripe exceptions
+                return new HttpStatusCodeResult(400);
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                return new HttpStatusCodeResult(500);
+            }
+        }
 
         [HttpPost]
         public JsonResult CheckEmail(string email)

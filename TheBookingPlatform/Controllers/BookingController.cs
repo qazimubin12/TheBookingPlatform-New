@@ -4374,15 +4374,12 @@ namespace TheBookingPlatform.Controllers
         }
 
 
-        public List<string> FindAvailableSlots(DateTime employeeStartTime, DateTime employeeEndTime, List<Appointment> appointments, int durationInMinutes)
+        public List<string> FindAvailableSlots(DateTime employeeStartTime, DateTime employeeEndTime, List<Appointment> appointments, int durationInMinutes,Company Company)
         {
             List<string> availableSlots = new List<string>();
             List<string> NotavailableSlots = new List<string>();
             DateTime currentTime = DateTime.Now;
-
-            var company = appointments.FirstOrDefault().Business;
-            var Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == company).FirstOrDefault();
-
+            
            
             currentTime = TheBookingPlatform.Models.TimeZoneConverter.ConvertToTimeZone(currentTime, Company.TimeZone).AddMinutes(5);
             var FinalAppointments = new List<Appointment>();
@@ -4730,7 +4727,7 @@ namespace TheBookingPlatform.Controllers
             }
 
             var deduplicatedList = new List<TimeSlotModel>();
-
+            var company = CompanyServices.Instance.GetCompany(CompanyID);
             var ProposedDate = SelectedDate;
             var DayOfWeek = SelectedDate.DayOfWeek.ToString();
             var openingHour = OpeningHourServices.Instance.GetOpeningHourWRTBusiness(Company.Business, DayOfWeek);
@@ -4899,7 +4896,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
 
 
 
@@ -5043,12 +5040,12 @@ namespace TheBookingPlatform.Controllers
                                             {
                                                 if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
                                                 {
-                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,Company);
                                                 }
                                             }
                                             else
                                             {
-                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
                                             }
                                         }
                                         else
@@ -5059,12 +5056,12 @@ namespace TheBookingPlatform.Controllers
                                                 {
                                                     if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
                                                     {
-                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
                                                 }
 
                                             }
@@ -5081,7 +5078,7 @@ namespace TheBookingPlatform.Controllers
                                 }
                                 else
                                 {
-                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
 
                                 }
 
@@ -5265,7 +5262,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, company);
 
 
 
@@ -5534,12 +5531,12 @@ namespace TheBookingPlatform.Controllers
                                             {
                                                 if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
                                                 {
-                                                    CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes);
+                                                    CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes, company);
                                                 }
                                             }
                                             else
                                             {
-                                                CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes);
+                                                CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes,company);
                                             }
 
                                         }
@@ -5555,7 +5552,7 @@ namespace TheBookingPlatform.Controllers
                                 }
                                 else
                                 {
-                                    CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes);
+                                    CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes,company);
 
 
                                 }
@@ -5828,7 +5825,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
 
 
 
@@ -5990,12 +5987,12 @@ namespace TheBookingPlatform.Controllers
                                                                     {
                                                                         if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
                                                                         {
-                                                                            CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                                            CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, company);
                                                                         }
                                                                     }
                                                                     else
                                                                     {
-                                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
                                                                     }
                                                                     //if (CheckSlots.Count() != 0)
                                                                     //{
@@ -6009,12 +6006,12 @@ namespace TheBookingPlatform.Controllers
                                                                 {
                                                                     if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
                                                                     {
-                                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
                                                                     }
                                                                 }
                                                                 else
                                                                 {
-                                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
                                                                 }
                                                             }
 
@@ -6027,7 +6024,7 @@ namespace TheBookingPlatform.Controllers
                                                     }
                                                     else
                                                     {
-                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes,company);
 
                                                     }
 
@@ -6210,7 +6207,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                                                            CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes);
+                                                            CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, company);
 
 
 
