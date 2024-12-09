@@ -701,8 +701,15 @@ namespace TheBookingPlatform.Controllers
 
                                 }
                                 var finalSum = SumForAverage / 60;
-                                float occupancyPercentage = (WorkedHours / finalSum) * 100;
-                                DailyOccupancy.Add(occupancyPercentage);
+                                if (finalSum == 0)
+                                {
+                                    DailyOccupancy.Add(0);
+                                }
+                                else
+                                {
+                                    float occupancyPercentage = (WorkedHours / finalSum) * 100;
+                                    DailyOccupancy.Add(occupancyPercentage);
+                                }
                             }
 
 

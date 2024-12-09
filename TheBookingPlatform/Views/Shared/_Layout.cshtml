@@ -73,6 +73,10 @@
             font-size: 1rem;
         }
 
+        .autocomplete-suggestions{
+            width:35% !important;
+        }
+
         .loading-spinner-overlay {
             display: none; /* Initially hidden */
             position: fixed;
@@ -1158,12 +1162,12 @@
                                     {
 
 
-                                        <li class="nav-item " id="AnalysisTAB">
+                                        @*<li class="nav-item " id="AnalysisTAB">
                                             <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
                                                 <span class="sidenav-mini-icon"> A </span>
                                                 <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
                                             </a>
-                                        </li>
+                                        </li>*@
                                     }
                                     @if (package.Split(',').Contains("Appointments"))
                                     {
@@ -1182,12 +1186,12 @@
 
                                 <ul class="nav">
 
-                                    <li class="nav-item " id="AnalysisTAB">
+                                    @*<li class="nav-item " id="AnalysisTAB">
                                         <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
                                             <span class="sidenav-mini-icon"> A </span>
                                             <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
                                         </a>
-                                    </li>
+                                    </li>*@
                                     <li class="nav-item " id="AppointmentsTAB">
                                         <a class="nav-link text-white " href="@Url.Action("Index", "Appointment")">
                                             <span class="sidenav-mini-icon"> AP </span>

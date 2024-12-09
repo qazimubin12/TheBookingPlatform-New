@@ -1232,8 +1232,10 @@ namespace TheBookingPlatform.Controllers
                         else
                         {
                             var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-
-                            AppointmentModel.Add(new AppointmentListModel { Business = employee.Business, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = customer.LastName, EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = customer.FirstName, Services = serviceList });
+                            if (employee != null)
+                            {
+                                AppointmentModel.Add(new AppointmentListModel { Business = employee.Business, Color = item.Color, StartDate = item.Date, ID = item.ID, CustomerLastName = customer.LastName, EndTime = item.EndTime, StartTime = item.Time, CustomerFirstName = customer.FirstName, Services = serviceList });
+                            }
 
                         }
                     }
@@ -5340,7 +5342,7 @@ namespace TheBookingPlatform.Controllers
                         var history = new History();
                         history.Date = DateTime.Now;
                         history.Note = response.Content;
-                        history.Business = appointment.Business;
+                        history.Business = "Error";
                         history.Type = "Error";
                         HistoryServices.Instance.SaveHistory(history);
                         return "Error: " + response.Content;
@@ -5352,7 +5354,7 @@ namespace TheBookingPlatform.Controllers
                     var history = new History();
                     history.Date = DateTime.Now;
                     history.Note = Nresponse.Content;
-                    history.Business = appointment.Business;
+                    history.Business = "Error";
                     history.Type = "Error";
                     HistoryServices.Instance.SaveHistory(history);
                     return Nresponse.Content;
@@ -5434,7 +5436,7 @@ namespace TheBookingPlatform.Controllers
                     var history = new History();
                     history.Date = DateTime.Now;
                     history.Note = response.Content;
-                    history.Business = appointment.Business;
+                    history.Business = "Error";
                     history.Type = "Error";
                     HistoryServices.Instance.SaveHistory(history);
                     return "Error: " + response.Content;
@@ -5737,7 +5739,7 @@ namespace TheBookingPlatform.Controllers
                                         var history = new History();
                                         history.Date = DateTime.Now;
                                         history.Note = response.Content;
-                                        history.Business = appointment.Business;
+                                        history.Business = "Error";
                                         history.Type = "Error";
                                         HistoryServices.Instance.SaveHistory(history);
                                     }
@@ -5754,7 +5756,7 @@ namespace TheBookingPlatform.Controllers
                                 var history = new History();
                                 history.Date = DateTime.Now;
                                 history.Note = ex.Message;
-                                history.Business = appointment.Business;
+                                history.Business = "Error";
                                 history.Type = "Error";
                                 HistoryServices.Instance.SaveHistory(history);
                             }
@@ -6384,8 +6386,17 @@ namespace TheBookingPlatform.Controllers
                                     DataRow row = tableData.NewRow();
                                     var customer = CustomerServices.Instance.GetCustomer(Appointment.CustomerID);
                                     row["ID"] = Appointment.ID;
-                                    row["Employee"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Name;
-                                    row["Employee Specialization"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Specialization;
+                                    var employee = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID);
+                                    if (employee != null)
+                                    {
+                                        row["Employee"] = employee.Name;
+                                        row["Employee Specialization"] = employee.Specialization;
+                                    }
+                                    else
+                                    {
+                                        row["Employee"] = "--";
+                                        row["Employee Specialization"] = "--";
+                                    }
 
                                     if (customer == null)
                                     {
@@ -6460,8 +6471,17 @@ namespace TheBookingPlatform.Controllers
                                     DataRow row = tableData.NewRow();
 
                                     row["ID"] = Appointment.ID;
-                                    row["Employee"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Name;
-                                    row["Employee Specialization"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Specialization;
+                                    var employee = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID);
+                                    if (employee != null)
+                                    {
+                                        row["Employee"] = employee.Name;
+                                        row["Employee Specialization"] = employee.Specialization;
+                                    }
+                                    else
+                                    {
+                                        row["Employee"] = "--";
+                                        row["Employee Specialization"] = "--";
+                                    }
                                     var customer = CustomerServices.Instance.GetCustomer(Appointment.CustomerID);
                                     if (customer == null)
                                     {
@@ -6540,8 +6560,17 @@ namespace TheBookingPlatform.Controllers
                     DataRow row = tableData.NewRow();
                     var customer = CustomerServices.Instance.GetCustomer(Appointment.CustomerID);
                     row["ID"] = Appointment.ID;
-                    row["Employee"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Name;
-                    row["Employee Specialization"] = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID).Specialization;
+                    var employee = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID);
+                    if (employee != null)
+                    {
+                        row["Employee"] = employee.Name;
+                        row["Employee Specialization"] = employee.Specialization;
+                    }
+                    else
+                    {
+                        row["Employee"] = "--";
+                        row["Employee Specialization"] = "--";
+                    }
 
                     if (customer == null)
                     {

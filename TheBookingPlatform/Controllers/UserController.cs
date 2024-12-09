@@ -21,6 +21,7 @@ using System.Net.Http.Headers;
 using System.Net;
 using System.Text;
 using Microsoft.Owin.Security.Twitter.Messages;
+using System.Text.Json.Nodes;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -334,6 +335,8 @@ namespace TheBookingPlatform.Controllers
         [HttpPost]
         public ActionResult UserRegistrationWebHook()
         {
+           
+
             try
             {
                 // Read the raw body from the request
@@ -345,7 +348,7 @@ namespace TheBookingPlatform.Controllers
                 var stripeEvent = EventUtility.ConstructEvent(
                     jsonBody,
                     Request.Headers["Stripe-Signature"],
-                    "your_webhook_secret"
+                    "whsec_NQWM7ywtGrokkKrVZ5llUfeRESZhMt7u"
                 );
 
                 // Handle different types of Stripe events
@@ -413,12 +416,15 @@ namespace TheBookingPlatform.Controllers
             catch (StripeException ex)
             {
                 // Handle Stripe exceptions
+                System.Diagnostics.Debug.WriteLine($"StripeException: {ex.Message}");
                 return new HttpStatusCodeResult(400);
             }
             catch (Exception ex)
             {
-                // Handle other exceptions
-                return new HttpStatusCodeResult(500);
+                // Log the error for debugging
+                System.Diagnostics.Debug.WriteLine($"StripeException: {ex.Message}");
+                return new HttpStatusCodeResult(400); // Bad Request
+                                                      // return new HttpStatusCodeResult(500);
             }
         }
 
