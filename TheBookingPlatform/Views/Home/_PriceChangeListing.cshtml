@@ -130,6 +130,7 @@
     });
 
     function SendEmailToClients(ID) {
+        
         showLoadingSpinner();
         $.ajax({
             url: '@Url.Action("SendEmailToClients","PriceChange")',

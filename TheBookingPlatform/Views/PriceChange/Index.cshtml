@@ -108,6 +108,28 @@
 </div>
 
 <script>
+    function SendEmailToClients(ID) {
+
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("SendEmailToClients","PriceChange")',
+            type: 'POST',
+            data: { ID: ID }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    alert("Price Change are being notified in the background, You can start using the system.");
+                } else {
+                    alert(response.Message);
+                }
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.log("Failed to send email to clients: " + errorThrown);
+            })
+            .always(function () {
+                hideLoadingSpinner();
+            });
+    }
 
     $("#SearchBtn").click(function () {
         var SearchTerm = $("#Search").val();

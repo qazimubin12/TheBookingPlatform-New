@@ -548,6 +548,14 @@ namespace TheBookingPlatform.Services
             {
                 Appointment.Status = "Pending";
             }
+            if (Appointment.Service != null && Appointment.Service != "")
+            {
+                if (Appointment.Service.Split(',').ToList().Count() != Appointment.ServiceDiscount.Split(',').ToList().Count())
+                {
+                    Appointment.ServiceDiscount = string.Join(",", Enumerable.Repeat("0", Appointment.Service.Count(c => c == ',') + 1));
+
+                }
+            }
             using (var context = new DSContext())
             {
 
@@ -563,6 +571,14 @@ namespace TheBookingPlatform.Services
                 if (Appointment.Status == null || Appointment.Status == "")
                 {
                     Appointment.Status = "Pending";
+                }
+                if (Appointment.Service != null && Appointment.Service != "")
+                {
+                    if (Appointment.Service.Split(',').ToList().Count() != Appointment.ServiceDiscount.Split(',').ToList().Count())
+                    {
+                        Appointment.ServiceDiscount = string.Join(",", Enumerable.Repeat("0", Appointment.Service.Count(c => c == ',') + 1));
+
+                    }
                 }
                 using (var context = new DSContext())
                 {
@@ -584,6 +600,14 @@ namespace TheBookingPlatform.Services
             {
                 appointment.Status = "Pending";
             }
+            if (appointment.Service != null && appointment.Service != "")
+            {
+                if (appointment.Service.Split(',').ToList().Count() != appointment.ServiceDiscount.Split(',').ToList().Count())
+                {
+                    appointment.ServiceDiscount = string.Join(",", Enumerable.Repeat("0", appointment.Service.Count(c => c == ',') + 1));
+
+                }
+            }
             try
             {
                 using (var context = new DSContext())
@@ -592,6 +616,7 @@ namespace TheBookingPlatform.Services
                     context.Appointments.Attach(appointment);
 
                     // Mark only the properties that need updating
+                    context.Entry(appointment).Property(a => a.Status).IsModified = true;
                     context.Entry(appointment).Property(a => a.IsCancelled).IsModified = true;
                     context.Entry(appointment).Property(a => a.IsPaid).IsModified = true;
                     // Repeat for any other properties that need to be updated

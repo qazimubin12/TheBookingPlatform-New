@@ -168,7 +168,7 @@ namespace TheBookingPlatform.Controllers
             }
             if (user != null)
             {
-                var result = await SignInManager.PasswordSignInAsync(user.UserName, user.Password, model.RememberMe, shouldLockout: false);
+                var result = await SignInManager.PasswordSignInAsync(user.UserName, user.PasswordHash, model.RememberMe, shouldLockout: false);
                 switch (result)
                 {
                     case SignInStatus.Success:
@@ -652,19 +652,24 @@ namespace TheBookingPlatform.Controllers
             {
                 var token = await UserManager.GeneratePasswordResetTokenAsync(model.ID);
                 var result = await UserManager.ResetPasswordAsync(model.ID, token, model.Password);
+
+
+                user.Id = model.ID;
+                user.Name = model.Name;
+                user.PhoneNumber = model.Contact;
+                user.UserName = model.Email;
+                user.Email = model.Email;
+                user.Password = model.Password;
+                await UserManager.UpdateAsync(user);
+                model.Company = CompanyServices.Instance.GetCompany(user.Company).FirstOrDefault();
+                return View(model);
+            }
+            else
+            {
+                return View(model);
             }
 
 
-
-            user.Id = model.ID;
-            user.Name = model.Name;
-            user.PhoneNumber = model.Contact;
-            user.UserName = model.Email;
-            user.Email = model.Email;
-            user.Password = model.Password;
-            await UserManager.UpdateAsync(user);
-            model.Company = CompanyServices.Instance.GetCompany(user.Company).FirstOrDefault();
-            return View(model);
         }
 
         //

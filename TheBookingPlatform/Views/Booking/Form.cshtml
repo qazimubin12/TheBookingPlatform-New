@@ -1713,6 +1713,7 @@
         document.getElementById('loadingSpinner').style.display = 'none';
     }
     $("#NextToPayment").click(function () {
+        showLoadingSpinner();
         $("#pills-payment-tab").removeAttr("disabled");
         $("#pills-payment-tab").click();
         $("#pills-payment-tab").attr("disabled","disabled");
@@ -1748,6 +1749,7 @@
             $("#AddToWaitingList").hide();
             $("#PayNow").show();
         }
+        hideLoadingSpinner();
     });
     $("#PayNow").click(function () {
 

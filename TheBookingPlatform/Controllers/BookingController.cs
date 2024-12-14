@@ -572,7 +572,7 @@ namespace TheBookingPlatform.Controllers
                 // Payment was successful
                 appointment.IsPaid = true;
                 appointment.IsCancelled = false;
-                AppointmentServices.Instance.UpdateAppointment(appointment);
+                AppointmentServices.Instance.UpdateAppointmentNew(appointment);
 
                 var reminder = ReminderServices.Instance.GetReminderWRTAppID(appointment.ID);
                 reminder.IsCancelled = false;
@@ -646,6 +646,7 @@ namespace TheBookingPlatform.Controllers
                 var failedAppointment = new FailedAppointment();
                 failedAppointment.AppointmentID = appointment.ID;
                 failedAppointment.Failed = true;
+                failedAppointment.Business = appointment.Business;
                 FailedAppointmentServices.Instance.SaveFailedAppointment(failedAppointment);
 
 
