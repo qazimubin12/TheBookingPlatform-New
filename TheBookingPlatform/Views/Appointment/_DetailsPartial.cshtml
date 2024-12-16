@@ -158,78 +158,82 @@
                     }
                 </div>
                 <div class="tab-pane" id="pill2">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th class="text-center">
-                                    Employee
-                                </th>
-                                <th class="text-center">
-                                    Service
-                                </th>
-                                <th class="text-center">
-                                    Date
-                                </th>
-                                <th>
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.TotalAppointmentsCustomer)
-                            {
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td class="text-center">@item.EmployeeName</td>
-                                    <td class="text-center">
-                                        <table style="border: none; background-color: transparent;  " class="table table-borderless">
-                                            @foreach (var listofservice in item.Services)
+                                    <th class="text-center">
+                                        Employee
+                                    </th>
+                                    <th class="text-center">
+                                        Service
+                                    </th>
+                                    <th class="text-center">
+                                        Date
+                                    </th>
+                                    <th>
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.TotalAppointmentsCustomer)
+                                {
+                                    <tr>
+                                        <td class="text-center">@item.EmployeeName</td>
+                                        <td class="text-center">
+                                            <table style="border: none; background-color: transparent;  " class="table table-borderless">
+                                                @foreach (var listofservice in item.Services)
+                                                {
+                                                    <tr>
+                                                        @if (listofservice.Discount == 0)
+                                                        {
+                                                            <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price  </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price (Discount: @listofservice.Discount %) </td>
+                                                        }
+                                                    </tr>
+                                                }
+                                            </table>
+
+                                        </td>
+                                        <td class="text-center">@item.Date.ToString("yyyy-MM-dd") @item.Time.ToString("H:mm") - @item.AppointmentEndTime.ToString("H:mm")</td>
+                                        <td>
+                                            @if (item.Status == "Paid")
                                             {
-                                                <tr>
-                                                    @if (listofservice.Discount == 0)
-                                                    {
-                                                        <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price  </td>
-                                                    }
-                                                    else
-                                                    {
-                                                        <td>- @listofservice.Name - @listofservice.Duration - @listofservice.Price (Discount: @listofservice.Discount %) </td>
-                                                    }
-                                                </tr>
+
+
+                                                <button onclick="window.location.href='@Url.Action("Invoice", "Appointment", new {ID = item.ID})'" class="btn btn-primary btn-round btn-sm" type="button">VIEW  </button>
                                             }
-                                        </table>
+                                            else
+                                            {
+                                                <button class="btn btn-primary btn-round btn-sm" onclick="window.location.href='@Url.Action("Action", "Appointment", new {ID=item.ID})'" type="button">EDIT APPOINTMENT</button>
 
-                                    </td>
-                                    <td class="text-center">@item.Date.ToString("yyyy-MM-dd") @item.Time.ToString("H:mm") - @item.AppointmentEndTime.ToString("H:mm")</td>
-                                    <td>
-                                        @if (item.Status == "Paid")
-                                        {
+                                            }
+                                        </td>
+                                    </tr>
+                                }
 
-
-                                            <button onclick="window.location.href='@Url.Action("Invoice", "Appointment", new {ID = item.ID})'" class="btn btn-primary btn-round btn-sm" type="button">VIEW  </button>
-                                        }
-                                        else
-                                        {
-                                            <button class="btn btn-primary btn-round btn-sm" onclick="window.location.href='@Url.Action("Action", "Appointment", new {ID=item.ID})'" type="button">EDIT APPOINTMENT</button>
-
-                                        }
-                                    </td>
-                                </tr>
-                            }
-
-                        </tbody>
-                    </table>
-                </div>
+                            </tbody>
+                        </table>
+                    </div>
+                    </div>
                 <div class="tab-pane" id="pill3">
-                    <table class="table">
-                        @if (Model.Histories != null)
-                        {
-                            foreach (var item in Model.Histories)
+                    <div class="table-responsive">
+                        <table class="table">
+                            @if (Model.Histories != null)
                             {
-                                <tr>
-                                    <td>◉ @item.Note  - @item.Date.ToString("yyyy-MM-dd HH:mm")</td>
-                                </tr>
+                                foreach (var item in Model.Histories)
+                                {
+                                    <tr>
+                                        <td>◉ @item.Note  - @item.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                                    </tr>
+                                }
                             }
-                        }
-                    </table>
+                        </table>
+                    </div>
                 </div>
                 <div class="tab-pane" id="pill4">
                     <h4>Coming Soon</h4>
@@ -276,6 +280,7 @@
                 </div>
                 <div class="tab-pane" id="pill6">
                     <h4>Loyalty Card Assigned</h4>
+
                     <table class="table">
                         <thead>
                             <tr>

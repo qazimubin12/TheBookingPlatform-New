@@ -952,6 +952,7 @@ namespace TheBookingPlatform.Controllers
                                 {
                                     var history = new History();
                                     history.Date = DateTime.Now;
+                                    history.AppointmentID = item.ID;
                                     history.Note = "Appointment got deleted from GCalendar";
                                     history.Business = item.Business;
                                     HistoryServices.Instance.SaveHistory(history);
@@ -1696,7 +1697,7 @@ namespace TheBookingPlatform.Controllers
             {
                 //Pill Three
                 model.Files = FileServices.Instance.GetFileWRTBusiness(appointment.Business, appointment.CustomerID);
-                model.Histories = HistoryServices.Instance.GetHistoriesWRTBusinessandCustomer(LoggedInUser.Company, customer.FirstName + " " + customer.LastName);
+                model.Histories = HistoryServices.Instance.GetHistoriesWRTToAppointmentID(appointment.ID);
                 model.Messages = MessageServices.Instance.GetMessageWRTBusiness(appointment.Business, appointment.CustomerID);
                 var listOfLoyaltyCardDetails = new List<History>();
                 var LCAssigned = LoyaltyCardServices.Instance.GetLoyaltyCardAssignmentByCustomerID(customer.ID);
@@ -2568,6 +2569,8 @@ namespace TheBookingPlatform.Controllers
             var history = new History();
             history.Business = appointment.Business;
             history.CustomerName = "Walk In";
+            history.AppointmentID = appointment.ID;
+
             history.Date = DateTime.Now;
             appointment = AppointmentServices.Instance.GetAppointment(int.Parse(id));
             history.EmployeeName = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID).Name;
@@ -2678,6 +2681,7 @@ namespace TheBookingPlatform.Controllers
                     historyNew.Date = DateTime.Now;
                     historyNew.Note = "Appointment was moved by " + LoggedInUser.Name + " Previous Date:" + oldDate.ToString("yyyy-MM-dd") + "Time was " + oldtime.ToString("HH:mm") + "to new Date:" + appointment.Date.ToString("yyyy-MM-dd") + "and New Time is: " + appointment.Time.ToString("HH:mm");
                     historyNew.EmployeeName = employee.Name;
+                    history.AppointmentID = appointment.ID;
                     HistoryServices.Instance.SaveHistory(historyNew);
 
                     var emailDetails = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(LoggedInUser.Company, "Appointment Moved");
@@ -3862,6 +3866,7 @@ namespace TheBookingPlatform.Controllers
                 historyNew.Business = appointment.Business;
                 historyNew.CustomerName = customer.FirstName + " " + customer.LastName;
                 historyNew.Date = DateTime.Now;
+                historyNew.AppointmentID = appointment.ID;
                 historyNew.Note = "Appointment was cancelled by Email for the client:" + historyNew.CustomerName;
                 historyNew.EmployeeName = employee.Name;
                 HistoryServices.Instance.SaveHistory(historyNew);
@@ -4358,6 +4363,7 @@ namespace TheBookingPlatform.Controllers
                                 history.Business = LoggedInUser.Company;
                                 history.CustomerName = "Walk In";
                                 history.Date = DateTime.Now;
+                                history.AppointmentID = appointment.ID;
                                 history.Note = "Appointment Updated for:" + history.CustomerName + "by " + LoggedInUser.Name;
                                 history.EmployeeName = EmployeeServices.Instance.GetEmployee(emp.ID).Name;
                                 HistoryServices.Instance.SaveHistory(history);
@@ -4551,6 +4557,7 @@ namespace TheBookingPlatform.Controllers
                                 history.CustomerName = "Walk In";
                             }
                             history.Date = DateTime.Now;
+                            history.AppointmentID = appointment.ID;
                             history.Note = "Offline Appointment Created for " + history.CustomerName + "by:" + LoggedInUser.Name;
                             history.EmployeeName = employee.Name;
                             HistoryServices.Instance.SaveHistory(history);
@@ -4597,6 +4604,7 @@ namespace TheBookingPlatform.Controllers
                                 historyNew.Date = DateTime.Now;
                                 historyNew.Note = "Appointment Booked for:" + historyNew.CustomerName;
                                 historyNew.EmployeeName = employee.Name;
+                                history.AppointmentID = appointment.ID;
                                 HistoryServices.Instance.SaveHistory(historyNew);
                             }
                             try
@@ -4800,6 +4808,7 @@ namespace TheBookingPlatform.Controllers
                             var history = new History();
                             history.Business = LoggedInUser.Company;
                             history.CustomerName = "Walk In";
+                            history.AppointmentID = appointment.ID;
                             history.Date = DateTime.Now;
                             history.Note = "Appointment Updated for:" + history.CustomerName + "by " + LoggedInUser.Name;
                             history.EmployeeName = EmployeeServices.Instance.GetEmployee(emp.ID).Name;
@@ -4988,6 +4997,7 @@ namespace TheBookingPlatform.Controllers
                             history.Business = LoggedInUser.Company;
                             history.CustomerName = customer.FirstName + " " + customer.LastName;
                             history.Date = DateTime.Now;
+                            history.AppointmentID = appointment.ID;
                             history.Note = "Appointment Updated for:" + history.CustomerName + "by " + LoggedInUser.Name;
                             history.EmployeeName = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID).Name;
                             HistoryServices.Instance.SaveHistory(history);
@@ -4998,6 +5008,7 @@ namespace TheBookingPlatform.Controllers
                             history.Business = LoggedInUser.Company;
                             history.CustomerName = "Walk In";
                             history.Date = DateTime.Now;
+                            history.AppointmentID = appointment.ID;
                             history.Note = "Appointment Updated for:" + history.CustomerName + "by " + LoggedInUser.Name;
                             history.EmployeeName = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID).Name;
                             HistoryServices.Instance.SaveHistory(history);
@@ -5837,6 +5848,7 @@ namespace TheBookingPlatform.Controllers
                         historyNew.Business = appointment.Business;
                         historyNew.CustomerName = customer.FirstName + " " + customer.LastName;
                         historyNew.Date = DateTime.Now;
+                        historyNew.AppointmentID = appointment.ID;
                         historyNew.Note = "Appointment was deleted:" + historyNew.CustomerName + "By :" + LoggedInUser.Name;
                         historyNew.EmployeeName = employee.Name;
                         HistoryServices.Instance.SaveHistory(historyNew);
@@ -5848,6 +5860,7 @@ namespace TheBookingPlatform.Controllers
                         historyNew.Business = appointment.Business;
                         historyNew.CustomerName = "";
                         historyNew.Date = DateTime.Now;
+                        historyNew.AppointmentID = appointment.ID;
                         historyNew.Note = "Appointment was deleted:" + historyNew.CustomerName + "By :" + LoggedInUser.Name;
                         historyNew.EmployeeName = employee.Name;
                         HistoryServices.Instance.SaveHistory(historyNew);
@@ -5956,6 +5969,7 @@ namespace TheBookingPlatform.Controllers
                 history.CustomerName = customer.FirstName + " " + customer.LastName;
                 history.EmployeeName = employee.Name;
                 history.Business = company.Business;
+                history.AppointmentID = appointment.ID;
                 history.Date = DateTime.Now;
                 history.Note = "Appointment was marked as no show by the employee:" + LoggedInUser.Name;
                 HistoryServices.Instance.SaveHistory(history);
@@ -6060,6 +6074,7 @@ namespace TheBookingPlatform.Controllers
             historyNew.Business = appointment.Business;
             historyNew.CustomerName = customer.FirstName + " " + customer.LastName;
             historyNew.Date = DateTime.Now;
+            historyNew.AppointmentID = appointment.ID;
             historyNew.Note = "Appointment was permanently deleted:" + historyNew.CustomerName + "By :" + LoggedInUser.Name;
             historyNew.EmployeeName = employee.Name;
             HistoryServices.Instance.SaveHistory(historyNew);
@@ -6081,6 +6096,7 @@ namespace TheBookingPlatform.Controllers
             var history = new History();
             history.Note = "Deleted Appointment was Restored by: " + LoggedInUser.Name;
             history.Date = DateTime.Now;
+            history.AppointmentID = appointment.ID;
             history.Business = LoggedInUser.Company;
             if (customer != null)
             {
@@ -6113,6 +6129,7 @@ namespace TheBookingPlatform.Controllers
             history.CustomerName = customer.FirstName + " " + customer.LastName;
             history.EmployeeName = employee.Name;
             history.Business = LoggedInUser.Company;
+            history.AppointmentID = Appointment.ID;
             history.Note = "Appointment was deleted by the employee: " + LoggedInUser.Name;
             HistoryServices.Instance.SaveHistory(history);
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
@@ -6141,6 +6158,7 @@ namespace TheBookingPlatform.Controllers
                 history.Business = LoggedInUser.Company;
                 history.CustomerName = customer.FirstName + " " + customer.LastName;
                 history.EmployeeName = employee.Name;
+                history.AppointmentID = Appointment.ID;
                 HistoryServices.Instance.SaveHistory(history);
 
                 if (googleCalendar != null && !googleCalendar.Disabled)
@@ -6178,6 +6196,7 @@ namespace TheBookingPlatform.Controllers
                 history.Business = LoggedInUser.Company;
                 history.CustomerName = "Walk In";
                 history.EmployeeName = employee.Name;
+                history.AppointmentID = Appointment.ID;
                 HistoryServices.Instance.SaveHistory(history);
 
 
@@ -6772,6 +6791,7 @@ namespace TheBookingPlatform.Controllers
             history.CustomerName = "Walk In";
             history.Date = DateTime.Now;
             history.Type = "Absense";
+            history.AppointmentID = appointment.ID;
             history.EmployeeName = EmployeeServices.Instance.GetEmployee(employeeId).Name;
             history.Note = $"Event Saved for: {history.EmployeeName} by {loggedInUser.Name}";
 
@@ -7215,7 +7235,7 @@ namespace TheBookingPlatform.Controllers
             history.Business = LoggedInUser.Company;
             history.CustomerName = "Walk In";
             history.Type = "Absense";
-
+            history.AppointmentID = appointment.ID;
             history.Date = DateTime.Now;
             history.EmployeeName = EmployeeServices.Instance.GetEmployee(EmployeeID).Name;
             history.Note = "Event Update for:" + history.EmployeeName + "by " + LoggedInUser.Name;

@@ -586,6 +586,7 @@ namespace TheBookingPlatform.Controllers
                 history.Date = DateTime.Now;
                 history.Business = appointment.Business;
                 history.Type = "General";
+                history.AppointmentID = appointment.ID;
                 HistoryServices.Instance.SaveHistory(history);
 
 
@@ -683,6 +684,7 @@ namespace TheBookingPlatform.Controllers
                             history.Date = DateTime.Now;
                             history.Note = "Appointment got deleted from GCalendar";
                             history.Business = appointment.Business;
+                            history.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(history);
                         }
                         else
@@ -921,8 +923,7 @@ namespace TheBookingPlatform.Controllers
                                                 string appointmentJson = JsonConvert.SerializeObject(appointment);
                                                 var nhistory = new History();
                                                 nhistory.Date = DateTime.Now;
-                                                nhistory.Note = ex.Message;
-                                                nhistory.Type = appointmentJson;
+                                                nhistory.Note = ex.Message + appointmentJson;
                                                 nhistory.Type = "Error by Qmubin";
                                                 HistoryServices.Instance.SaveHistory(nhistory);
                                             }
@@ -936,8 +937,7 @@ namespace TheBookingPlatform.Controllers
                                         string appointmentJson = JsonConvert.SerializeObject(appointment);
                                         var nhistory = new History();
                                         nhistory.Date = DateTime.Now;
-                                        nhistory.Note = ex.Message;
-                                        nhistory.Type = appointmentJson;
+                                        nhistory.Note = ex.Message + appointmentJson;
                                         nhistory.Type = "Error by Qmubin";
                                         HistoryServices.Instance.SaveHistory(nhistory);
                                     }
@@ -980,8 +980,7 @@ namespace TheBookingPlatform.Controllers
                                 string appointmentJson = JsonConvert.SerializeObject(appointment);
                                 var nhistory = new History();
                                 nhistory.Date = DateTime.Now;
-                                nhistory.Note = ex.Message;
-                                nhistory.Type = appointmentJson;
+                                nhistory.Note = ex.Message + appointmentJson;
                                 nhistory.Type = "Error by Qmubin";
                                 HistoryServices.Instance.SaveHistory(nhistory);
                             }
@@ -1400,6 +1399,7 @@ namespace TheBookingPlatform.Controllers
             historyNew.Date = DateTime.Now;
             historyNew.Note = "Appointment was cancelled on Customer Profile for :" + historyNew.CustomerName;
             historyNew.EmployeeName = employee.Name;
+            historyNew.AppointmentID = appointment.ID;
             HistoryServices.Instance.SaveHistory(historyNew);
             var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
             if (googleCalendar != null && !googleCalendar.Disabled)
@@ -2203,6 +2203,7 @@ namespace TheBookingPlatform.Controllers
                             history.Date = DateTime.Now;
                             history.Note = "Appointment got deleted from GCalendar";
                             history.Business = appointment.Business;
+                            history.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(history);
                         }
                         else
@@ -2333,6 +2334,7 @@ namespace TheBookingPlatform.Controllers
                         history.Date = DateTime.Now;
                         history.Note = "Appointment got deleted from GCalendar";
                         history.Business = appointment.Business;
+                        history.AppointmentID = appointment.ID;
                         HistoryServices.Instance.SaveHistory(history);
                     }
                     else
@@ -2655,6 +2657,8 @@ namespace TheBookingPlatform.Controllers
                 historyNew.Date = DateTime.Now;
                 historyNew.Note = "Appointment was reschedule by " + historyNew.CustomerName + " Previous Date:" + oldDate + "Time was " + oldTime + "to new Date:" + appointment.Date.ToString("yyyy-MM-dd") + "and New Time is: " + appointment.Time.ToString("HH:mm");
                 historyNew.EmployeeName = employee.Name;
+                historyNew.AppointmentID = appointment.ID;
+
                 HistoryServices.Instance.SaveHistory(historyNew);
 
                 var emailDetails = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(appointment.Business, "Appointment Moved");
@@ -3089,6 +3093,7 @@ namespace TheBookingPlatform.Controllers
                         history.Date = DateTime.Now;
                         history.Business = appointment.Business;
                         history.Type = "General";
+                    history.AppointmentID = appointment.ID;
                         HistoryServices.Instance.SaveHistory(history);
 
                         long totalAmountDeposit = (long)appointment.Deposit;
@@ -3157,6 +3162,7 @@ namespace TheBookingPlatform.Controllers
                                 historyn.Date = DateTime.Now;
                                 historyn.Business = appointment.Business;
                                 historyn.Type = "General";
+                            historyn.AppointmentID = appointment.ID;
                                 HistoryServices.Instance.SaveHistory(historyn);
 
                                 #region ConfirmationEmailSender
@@ -3229,6 +3235,7 @@ namespace TheBookingPlatform.Controllers
                             historyn.Date = DateTime.Now;
                             historyn.Business = appointment.Business;
                             historyn.Type = "General";
+                        historyn.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(historyn);
 
                             #region ConfirmationEmailSender
@@ -3485,6 +3492,7 @@ namespace TheBookingPlatform.Controllers
                         history.Date = DateTime.Now;
                         history.Business = appointment.Business;
                         history.Type = "General";
+                    history.AppointmentID = appointment.ID;
                         HistoryServices.Instance.SaveHistory(history);
                         var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                         if (googleCalendar != null && !googleCalendar.Disabled)
@@ -3561,6 +3569,7 @@ namespace TheBookingPlatform.Controllers
                                 historyn.Date = DateTime.Now;
                                 historyn.Business = appointment.Business;
                                 historyn.Type = "General";
+                            historyn.AppointmentID = appointment.ID;
                                 HistoryServices.Instance.SaveHistory(historyn);
 
                                 #region ConfirmationEmailSender
@@ -3623,6 +3632,7 @@ namespace TheBookingPlatform.Controllers
                             historyn.Date = DateTime.Now;
                             historyn.Business = appointment.Business;
                             historyn.Type = "General";
+                        historyn.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(historyn);
 
                             #region ConfirmationEmailSender

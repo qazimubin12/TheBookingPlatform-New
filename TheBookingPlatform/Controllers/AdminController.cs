@@ -315,6 +315,7 @@ namespace TheBookingPlatform.Controllers
                         DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
                         employeeWatch.ExpirationDate = dateTime;
                         employeeWatch.EmployeeID = employee.ID;
+                        employeeWatch.Business = employee.Business;
                         EmployeeWatchServices.Instance.UpdateEmployeeWatch(employeeWatch);
                     }
                     else
@@ -327,6 +328,7 @@ namespace TheBookingPlatform.Controllers
                         DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
                         employeeWatch.ExpirationDate = dateTime;
                         employeeWatch.EmployeeID = employee.ID;
+                        employeeWatch.Business = employee.Business;
                         EmployeeWatchServices.Instance.SaveEmployeeWatch(employeeWatch);
                     }
                     return "Success";
@@ -354,7 +356,10 @@ namespace TheBookingPlatform.Controllers
             model.SignedInUser = user;
             if (model.SignedInUser != null)
             {
-                var employees2 = EmployeeServices.Instance.GetEmployeeWRTBusiness(model.Business, true);
+
+
+
+                var employees2 = EmployeeServices.Instance.GetEmployeeWRTBusiness(user.Company, true);
                 foreach (var item in employees2)
                 {
                     var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(item.ID);
@@ -1318,18 +1323,27 @@ namespace TheBookingPlatform.Controllers
         }
 
 
+        public class NotificationModel
+        {
+            public int ID { get; set; }
+            public string Link { get; set; }
+            public string Title { get; set; }
+            public string Date { get; set; }
+
+        }
 
         [HttpGet]
         public JsonResult GetNotifications()
         {
             var LoggedInUser= UserManager.FindById(User.Identity.GetUserId());
             var notifications = NotificationServices.Instance.GetNotificationWRTBusiness(LoggedInUser.Company);
-            var notificationList = new List<Notification>();
+            var notificationList = new List<NotificationModel>();
             foreach (var item in notifications)
             {
-                if (item.ReadByUsers != null && !item.ReadByUsers.Split(',').Contains(User.Identity.GetUserId()))
+                if (LoggedInUser.ReadNotifications != null && LoggedInUser.ReadNotifications.Split(',').ToList().Contains(item.ID.ToString()))
                 {
-                    notificationList.Add(item);
+
+                    notificationList.Add(new NotificationModel {ID=item.ID, Date = item.Date.ToString("yyyy-MM-dd"),Link = item.Link,Title = item.Title});
                 }
             }
             return Json(new { success = true,Notifications =notifications }, JsonRequestBehavior.AllowGet);
@@ -1340,23 +1354,23 @@ namespace TheBookingPlatform.Controllers
         {
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
             var notification = NotificationServices.Instance.GetNotification(ID);
-            if(notification != null)
+            if (notification != null)
             {
-                if(notification.ReadByUsers == null)
+                if (LoggedInUser.ReadNotifications == null)
                 {
-                    notification.ReadByUsers = String.Join(",", LoggedInUser.Id);
+                    LoggedInUser.ReadNotifications = String.Join(",", notification.ID);
                 }
                 else
                 {
-                    notification.ReadByUsers = String.Join(",",notification.ReadByUsers, LoggedInUser.Id);
+                    LoggedInUser.ReadNotifications = String.Join(",", LoggedInUser.ReadNotifications, notification.ID);
                 }
             }
-            NotificationServices.Instance.UpdateNotification(notification);
+            UserManager.Update(LoggedInUser);
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
-       
 
-        
+
+
 
 
     }

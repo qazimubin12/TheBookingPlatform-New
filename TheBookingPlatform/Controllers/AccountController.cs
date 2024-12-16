@@ -168,7 +168,7 @@ namespace TheBookingPlatform.Controllers
             }
             if (user != null)
             {
-                var result = await SignInManager.PasswordSignInAsync(user.UserName, user.PasswordHash, model.RememberMe, shouldLockout: false);
+                var result = await SignInManager.PasswordSignInAsync(user.UserName, user.Password, model.RememberMe, shouldLockout: false);
                 switch (result)
                 {
                     case SignInStatus.Success:

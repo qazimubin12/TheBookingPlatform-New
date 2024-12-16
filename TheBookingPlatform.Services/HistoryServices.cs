@@ -53,6 +53,15 @@ namespace TheBookingPlatform.Services
 
             }
         }
+        public List<History> GetHistoriesWRTToAppointmentID(int appointmentID)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Histories.AsNoTracking().Where(x => x.AppointmentID == appointmentID).ToList();
+
+            }
+        }
 
         public List<History> GetHistoriesWRTBusiness(string Business,string SearchTerm = "")
         {

@@ -314,33 +314,34 @@
                     <input type="hidden" id="Notes" />
                 </div>
             </div>
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th>
-                            Item
-                        </th>
-                        <th>
-                            Price
-                        </th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Services)
-                    {
+            <div class="table-responsive">
+                <table class="table table-condensed">
+                    <thead>
                         <tr>
-                            @if (item.Discount != 0)
-                            {
-                                <td>@item.Service - @item.Duration - ( Discount @item.Discount %)</td>
-                            }
-                            else
-                            {
-                                <td>@item.Service - @item.Duration</td>
+                            <th>
+                                Item
+                            </th>
+                            <th>
+                                Price
+                            </th>
 
-                            }
-                            <td class="price-data">@item.Price @Model.Company.Currency</td>
-                            @*<td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Services)
+                        {
+                            <tr>
+                                @if (item.Discount != 0)
+                                {
+                                    <td>@item.Service - @item.Duration - ( Discount @item.Discount %)</td>
+                                }
+                                else
+                                {
+                                    <td>@item.Service - @item.Duration</td>
+
+                                }
+                                <td class="price-data">@item.Price @Model.Company.Currency</td>
+                                @*<td>
 
 
                             <button class="btndelete btn btn-danger btn-sm btn-round">
@@ -348,10 +349,11 @@
                             </button>
                         </td>*@
 
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
             <h4 class="card-title">Deposit: @Model.Company.Currency<span id="deposit">@depositAmount</span></h4><br />
             @if (Model.SaleOnCheckOut != null)
             {

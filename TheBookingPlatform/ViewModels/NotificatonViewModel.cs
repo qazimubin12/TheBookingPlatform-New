@@ -12,10 +12,8 @@ namespace TheBookingPlatform.ViewModels
     }
     public class NotificationActionViewModel
     {
-        public List<Company> Companies { get; set; }
         public int ID { get; set; }
         public string Link { get; set; }
         public string Title { get; set; }
-        public bool ResetRead { get; set; }
     }
 }

@@ -1,0 +1,116 @@
+﻿@model TheBookingPlatform.ViewModels.NotificationActionViewModel
+@{
+    ViewBag.Title = "Action";
+
+}
+
+
+
+<style>
+
+
+    
+</style>
+<form id="actionForm">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                @if (Model.ID != 0)
+                {
+                    <h4 class="card-title">
+                        Edit Notification
+                    </h4>
+                }
+                else
+                {
+                    <h4 class="card-title">
+                        Create Notification
+                    </h4>
+                }
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="hidden" id="ID" value="@Model.ID" />
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+                                <label>
+                                    Title
+                                </label>
+                                <input type="text" value="@Model.Title" class="form-control" name="Title" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Link
+                                </label>
+                                <input type="text" value="@Model.Link" class="form-control" name="Link" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-md-12">
+                    @if (Model.ID == 0)
+                    {
+
+
+                        <button id="ActionBtn" type="button" class="btn btn-primary  btn-rounded">SAVE</button>
+                    }
+                    else
+                    {
+                        <button id="ActionBtn" type="button" class="btn btn-secondary btn-rounded">UPDATE</button>
+
+                    }
+                    <a href="@Url.Action("Index","Notification")" class="btn btn-secondary  btn-rounded">CLOSE</a>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+</form>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+    </div>
+</div>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#ActionBtn").click(function () {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("Action", "Notification")',
+                type: "post",
+                data: $("#actionForm").serialize()
+            })
+                .done(function (response) {
+                    if (response.success) {
+                        window.location.href = '@Url.Action("Index", "Notification")';
+                    } else {
+                        $(".errorDiv").html(response.Message);
+                    }
+                })
+                .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("FAIL");
+                })
+                .always(function () {
+                    hideLoadingSpinner(); // Move hideLoadingSpinner inside .done() or .fail() to ensure it's executed at the right time
+                });
+        });
+
+
+
+    });
+
+</script>

@@ -13,5 +13,6 @@ namespace TheBookingPlatform.Entities
         public string Note { get; set; }
         public DateTime Date { get; set; }
         public string Type { get; set; } = "General";
+        public int AppointmentID { get; set; }
     }
 }

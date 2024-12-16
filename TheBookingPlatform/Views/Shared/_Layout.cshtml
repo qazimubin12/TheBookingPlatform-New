@@ -1163,11 +1163,11 @@
 
 
                                         @*<li class="nav-item " id="AnalysisTAB">
-                                            <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
-                                                <span class="sidenav-mini-icon"> A </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
-                                            </a>
-                                        </li>*@
+                                    <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
+                                        <span class="sidenav-mini-icon"> A </span>
+                                        <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
+                                    </a>
+                                </li>*@
                                     }
                                     @if (package.Split(',').Contains("Appointments"))
                                     {
@@ -1187,11 +1187,11 @@
                                 <ul class="nav">
 
                                     @*<li class="nav-item " id="AnalysisTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
-                                            <span class="sidenav-mini-icon"> A </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
-                                        </a>
-                                    </li>*@
+                                <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
+                                    <span class="sidenav-mini-icon"> A </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
+                                </a>
+                            </li>*@
                                     <li class="nav-item " id="AppointmentsTAB">
                                         <a class="nav-link text-white " href="@Url.Action("Index", "Appointment")">
                                             <span class="sidenav-mini-icon"> AP </span>
@@ -2136,14 +2136,17 @@
 
                     <li class="nav-item " id="CompaniesTAB">
                         <a class="nav-link text-white " href="@Url.Action("Index", "Company")">
-                            <img class="menuicons" src="~/Content/TBPContent/icons/company.png" />
                             <span class="sidenav-normal  ms-2  ps-1"> Companies </span>
                         </a>
                     </li>
 
+                    <li class="nav-item " id="CompaniesTAB">
+                        <a class="nav-link text-white " href="@Url.Action("Index", "Notification")">
+                            <span class="sidenav-normal  ms-2  ps-1"> Notifications </span>
+                        </a>
+                    </li>
                     <li class="nav-item" id="PackagesTAB">
                         <a class="nav-link text-white" href="@Url.Action("Index", "Package")">
-                            <img class="menuicons" src="~/Content/TBPContent/icons/gift.png" />
                             <span class="sidenav-normal  ms-2  ps-1"> Packages </span>
                         </a>
                     </li>
@@ -2205,7 +2208,7 @@
                             <i class="material-icons cursor-pointer">
                                 notifications
                             </i>
-                            <span class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
+                            <span id="unreadBadge" style="display:none;" class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
                                 <span class="small"></span>
                                 <span class="visually-hidden">unread notifications</span>
                             </span>
@@ -2283,14 +2286,67 @@
     <script type="text/javascript">
 
 
-        function UpdateUserRead(ID,Link) {
+        function UpdateUserRead(ID, Link) {
+            
             $.ajax({
                 url: '@Url.Action("UpdateUserRead", "Admin")',
-                type: 'GET',
+                type: 'POST',
                 data: {ID:ID},
                 success: function (data) {
                     // Handle the response here
+                    if (!Link.startsWith('http://') && !Link.startsWith('https://')) {
+                        Link = 'https://' + Link;
+                    }
+
+                    console.log("Opening link:", Link); // Debugging output
+
+                    // Open the link in a new tab
                     window.open(Link, '_blank');
+                    hideLoadingSpinner();
+                    // You might want to update the UI or perform other operations based on this count
+                },
+                error: function (error) {
+                    console.error('Error fetching opening hours count');
+                    hideLoadingSpinner();
+
+                    // Handle error scenarios here
+                }
+            });
+        }
+        function GetNotifications() {
+            
+            $.ajax({
+                url: '@Url.Action("GetNotifications", "Admin")',
+                type: 'GET',
+                success: function (data) {
+                    var notifications = data.Notifications; // Replace with actual response structure if needed
+                    var notificationListHtml = '';
+
+                    notifications.forEach(function (notification) {
+                        // Construct the HTML for each notification
+                        notificationListHtml += `
+        <li class="mb-2">
+            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}')">
+                <div class="d-flex align-items-center py-1">
+                    <span class="material-icons">email</span>
+                    <div class="ms-2">
+                        <h6 class="text-sm font-weight-normal my-auto">
+                            ${notification.Title}
+                        </h6>
+                        <p class="text-muted">${notification.Date}</p>
+                    </div>
+                </div>
+            </span>
+        </li>
+    `;
+
+                        $("#unreadBadge").show();
+                    });
+
+                    // Append the generated HTML to the notification panel
+                    var notificationPanel = document.getElementById('notificationPanel');
+                    notificationPanel.innerHTML = notificationListHtml;
+
                     hideLoadingSpinner();
                     // You might want to update the UI or perform other operations based on this count
                 },
@@ -2340,45 +2396,7 @@
                     // Handle error scenarios here
                 }
             });
-            $.ajax({
-                url: '@Url.Action("GetNotifications", "Admin")',
-                type: 'GET',
-                success: function (data) {
-                    var notifications = data.Notifications; // Replace with actual response structure if needed
-                    var notificationListHtml = '';
 
-                    notifications.forEach(function (notification) {
-                        // Construct the HTML for each notification
-                        notificationListHtml += `
-      <li class="mb-2">
-          <span class="dropdown-item border-radius-md" onclick="${UpdateUserRead(notification.ID,notification.Link)}">
-              <div class="d-flex align-items-center py-1">
-                  <span class="material-icons">email</span>
-                  <div class="ms-2">
-                      <h6 class="text-sm font-weight-normal my-auto">
-                          ${notification.Title}
-                      </h6>
-                  </div>
-              </div>
-          </a>
-      </li>
-  `;
-                    });
-
-                    // Append the generated HTML to the notification panel
-                    var notificationPanel = document.getElementById('notificationPanel');
-                    notificationPanel.innerHTML = notificationListHtml;
-
-                    hideLoadingSpinner();
-                    // You might want to update the UI or perform other operations based on this count
-                },
-                error: function (error) {
-                    console.error('Error fetching opening hours count');
-                    hideLoadingSpinner();
-
-                    // Handle error scenarios here
-                }
-            });
         }
 
     $("#SwitchOrg").click(function () {
@@ -2447,7 +2465,7 @@
             }
         }
         $(document).ready(function () {
-          
+
             function initializeAutocompleteForCustomers() {
                 showLoadingSpinner();
 
@@ -2655,7 +2673,7 @@
             var browserLanguage = getBrowserLanguage().toLowerCase();
             var dateFormat = (browserLanguage.startsWith('ru')) ? 'dd.mm.yyyy' : 'mm/dd/yyyy';
             CheckOpeningHours();
-
+            GetNotifications();
             $('#datepicker-container').datepicker({
                 inline: true, // Show the datepicker inline
                 showOtherMonths: true, // Show days from other months

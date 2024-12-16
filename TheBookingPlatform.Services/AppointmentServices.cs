@@ -550,11 +550,12 @@ namespace TheBookingPlatform.Services
             }
             if (Appointment.Service != null && Appointment.Service != "")
             {
-                if (Appointment.Service.Split(',').ToList().Count() != Appointment.ServiceDiscount.Split(',').ToList().Count())
+                if ((Appointment.Service?.Split(',').ToList() ?? new List<string>()).Count !=
+                    (Appointment.ServiceDiscount?.Split(',').ToList() ?? new List<string>()).Count)
                 {
                     Appointment.ServiceDiscount = string.Join(",", Enumerable.Repeat("0", Appointment.Service.Count(c => c == ',') + 1));
-
                 }
+               
             }
             using (var context = new DSContext())
             {
