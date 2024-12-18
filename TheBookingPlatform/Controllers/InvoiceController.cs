@@ -166,6 +166,8 @@ namespace TheBookingPlatform.Controllers
                             history.Business = Customer.Business;
                             history.CustomerName = Customer.FirstName + " " + Customer.LastName;
                             history.Date = DateTime.Now;
+                            history.AppointmentID = invoice.AppointmentID;
+                            history.Name = "Loyalty Card Cash Back";
                             history.Note = "Received Loyalty Card Cash Back  " + RecievedCashBack + " Total Cash Back is:  " + lcAssignment.CashBack + " Received having Loyalty Card:" + LoyaltyCard.Name;
                             history.Type = lcAssignment.LoyaltyCardID + "LoyaltyCard";
                             HistoryServices.Instance.SaveHistory(history);
@@ -232,6 +234,8 @@ namespace TheBookingPlatform.Controllers
                                 history.Business = Customer.Business;
                                 history.CustomerName = Customer.FirstName + " " + Customer.LastName;
                                 history.Date = DateTime.Now;
+                                history.AppointmentID = invoice.AppointmentID;
+                                history.Name = "Gift Card Used";
                                 history.Note = "Gift Card was used, Card Name:" + giftCard.Name + "Amount used: " + Amountused + " Services: " + ConcatenatedServices;
                                 history.Type = giftCard.ID + "GiftCard";
                                 HistoryServices.Instance.SaveHistory(history);
@@ -317,6 +321,8 @@ namespace TheBookingPlatform.Controllers
                         history.CustomerName = Customer.FirstName + " " + Customer.LastName;
                         history.Date = DateTime.Now;
                         history.Note = "Loyalty Card was used, Card Number:" + LcAssignment.CardNumber + "Amount used: " + Amountused + " Services: " + ConcatenatedServices;
+                        history.AppointmentID = invoice.AppointmentID;
+                        history.Name = "Loyalty Card Cash Back";
                         history.Type = LcAssignment.ID + "LoyaltyCard";
                         HistoryServices.Instance.SaveHistory(history);
                     }

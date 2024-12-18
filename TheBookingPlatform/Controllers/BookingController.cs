@@ -585,6 +585,7 @@ namespace TheBookingPlatform.Controllers
                 history.Note = "Online Appointment was paid for " + history.CustomerName + "";
                 history.Date = DateTime.Now;
                 history.Business = appointment.Business;
+                history.Name = "Online Appointment Created";
                 history.Type = "General";
                 history.AppointmentID = appointment.ID;
                 HistoryServices.Instance.SaveHistory(history);
@@ -684,6 +685,7 @@ namespace TheBookingPlatform.Controllers
                             history.Date = DateTime.Now;
                             history.Note = "Appointment got deleted from GCalendar";
                             history.Business = appointment.Business;
+                            history.Name = "Appointment Deleted";
                             history.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(history);
                         }
@@ -1399,6 +1401,8 @@ namespace TheBookingPlatform.Controllers
             historyNew.Date = DateTime.Now;
             historyNew.Note = "Appointment was cancelled on Customer Profile for :" + historyNew.CustomerName;
             historyNew.EmployeeName = employee.Name;
+            historyNew.Name = "Appointment Cancelled";
+
             historyNew.AppointmentID = appointment.ID;
             HistoryServices.Instance.SaveHistory(historyNew);
             var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
@@ -1585,8 +1589,8 @@ namespace TheBookingPlatform.Controllers
                     IsCancelled = item.IsCancelled,
                     IsPaid = item.IsPaid,
                     ID = item.ID,
-                    EmployeeName = employee.Name,
-                    EmployeeSpecialization = employee.Specialization,
+                    EmployeeName = employee?.Name,
+                    EmployeeSpecialization = employee?.Specialization,
                     Customer = model.Customer,
                     Services = serviceList,
                     TotalDuration = TotalDuration
@@ -2203,6 +2207,8 @@ namespace TheBookingPlatform.Controllers
                             history.Date = DateTime.Now;
                             history.Note = "Appointment got deleted from GCalendar";
                             history.Business = appointment.Business;
+                            history.Name = "Appointment Deleted";
+
                             history.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(history);
                         }
@@ -2334,6 +2340,7 @@ namespace TheBookingPlatform.Controllers
                         history.Date = DateTime.Now;
                         history.Note = "Appointment got deleted from GCalendar";
                         history.Business = appointment.Business;
+                        history.Name = "Appointment Deleted";
                         history.AppointmentID = appointment.ID;
                         HistoryServices.Instance.SaveHistory(history);
                     }
@@ -2658,6 +2665,7 @@ namespace TheBookingPlatform.Controllers
                 historyNew.Note = "Appointment was reschedule by " + historyNew.CustomerName + " Previous Date:" + oldDate + "Time was " + oldTime + "to new Date:" + appointment.Date.ToString("yyyy-MM-dd") + "and New Time is: " + appointment.Time.ToString("HH:mm");
                 historyNew.EmployeeName = employee.Name;
                 historyNew.AppointmentID = appointment.ID;
+                historyNew.Name = "Appointment Rescheduled";
 
                 HistoryServices.Instance.SaveHistory(historyNew);
 
@@ -3093,6 +3101,8 @@ namespace TheBookingPlatform.Controllers
                         history.Date = DateTime.Now;
                         history.Business = appointment.Business;
                         history.Type = "General";
+                    history.Name = "Online Appointment Created";
+
                     history.AppointmentID = appointment.ID;
                         HistoryServices.Instance.SaveHistory(history);
 
@@ -3161,7 +3171,9 @@ namespace TheBookingPlatform.Controllers
                                 historyn.Note = "Online Appointment was paid for " + historyn.CustomerName + "";
                                 historyn.Date = DateTime.Now;
                                 historyn.Business = appointment.Business;
-                                historyn.Type = "General";
+                            historyn.Name = "Appointment Paid";
+
+                            historyn.Type = "General";
                             historyn.AppointmentID = appointment.ID;
                                 HistoryServices.Instance.SaveHistory(historyn);
 
@@ -3234,7 +3246,9 @@ namespace TheBookingPlatform.Controllers
                             historyn.Note = "Online Appointment was paid for " + historyn.CustomerName + "";
                             historyn.Date = DateTime.Now;
                             historyn.Business = appointment.Business;
-                            historyn.Type = "General";
+                        historyn.Name = "Appointment Paid";
+
+                        historyn.Type = "General";
                         historyn.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(historyn);
 
@@ -3492,6 +3506,8 @@ namespace TheBookingPlatform.Controllers
                         history.Date = DateTime.Now;
                         history.Business = appointment.Business;
                         history.Type = "General";
+                    history.Name = "Online Appointment Created";
+
                     history.AppointmentID = appointment.ID;
                         HistoryServices.Instance.SaveHistory(history);
                         var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
@@ -3568,7 +3584,9 @@ namespace TheBookingPlatform.Controllers
                                 historyn.Note = "Online Appointment was paid for " + historyn.CustomerName + "";
                                 historyn.Date = DateTime.Now;
                                 historyn.Business = appointment.Business;
-                                historyn.Type = "General";
+                            historyn.Name = "Appointment Paid";
+
+                            historyn.Type = "General";
                             historyn.AppointmentID = appointment.ID;
                                 HistoryServices.Instance.SaveHistory(historyn);
 
@@ -3631,7 +3649,8 @@ namespace TheBookingPlatform.Controllers
                             historyn.Note = "Online Appointment was paid for " + historyn.CustomerName + "";
                             historyn.Date = DateTime.Now;
                             historyn.Business = appointment.Business;
-                            historyn.Type = "General";
+                        historyn.Name = "Appointment Paid";
+                        historyn.Type = "General";
                         historyn.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(historyn);
 
@@ -4130,7 +4149,7 @@ namespace TheBookingPlatform.Controllers
                     DateTime currentMonthStart = new DateTime(FinalSelectedDate.Year, FinalSelectedDate.Month, 1);
                     DateTime currentMonthEnd = currentMonthStart.AddMonths(1).AddDays(-1);
                     var roster = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(EmployeeID);
-                    var holidays = HolidayServices.Instance.GetHolidayWRTBusiness(businessName, "").Select(X => X.Date);
+                    var holidays = HolidayServices.Instance.GetHolidayWRTBusiness(businessName, "").Select(X => X.Date).ToList();
 
                     for (DateTime FirtIT = currentMonthStart; FirtIT <= currentMonthEnd; FirtIT = FirtIT.AddDays(1))
                     {

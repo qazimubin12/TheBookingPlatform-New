@@ -90,6 +90,7 @@ namespace TheBookingPlatform.ViewModels
 
     public class UserActionModel
     {
+        public string passkaka { get; set; }
 
         public List<Company> Companies { get; set; }
         public string LoggedInOwnerID { get; set; }
@@ -101,6 +102,7 @@ namespace TheBookingPlatform.ViewModels
         public string UserName { get; set; }
         public string Contact { get; set; }
         public string Password { get; set; }
+        public User LoggedInUser { get; set; }
         public List<IdentityRole> Roles { get; set; }
         public string Company { get;  set; }
     }

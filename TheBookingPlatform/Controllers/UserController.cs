@@ -660,6 +660,7 @@ namespace TheBookingPlatform.Controllers
                 model.Companies = CompanyServices.Instance.GetCompany();
             }
             var owner = UserManager.FindById(User.Identity.GetUserId());
+            model.LoggedInUser = owner;
             if (owner != null)
             {
                 if (owner.Role == "Owner" || owner.Role == "Super Admin")
@@ -681,7 +682,7 @@ namespace TheBookingPlatform.Controllers
                 model.Email = user.Email;
                 model.IntervalCalendar = user.IntervalCalendar;
                 model.Role = user.Role;
-                model.Password = user.Password;
+                model.passkaka = user.Password;
             }
             return PartialView("_Action", model);
         }
@@ -699,27 +700,45 @@ namespace TheBookingPlatform.Controllers
             IdentityResult result = null;
             if (!string.IsNullOrEmpty(model.ID)) //update record
             {
-                var user = await UserManager.FindByIdAsync(model.ID);
-                await UserManager.RemoveFromRoleAsync(user.Id, model.Role);
-                var role = RolesManager.FindById(model.Role);
-                user.Id = model.ID;
-                user.Name = model.Name;
-                user.PhoneNumber = model.Contact;
-                user.Email = model.Email;
-                user.UserName = model.Email;
-                user.IntervalCalendar = model.IntervalCalendar;
-                user.Role = role.Name;
-                user.Password = model.Password;
-                var token = await UserManager.GeneratePasswordResetTokenAsync(model.ID);
-                var result2 = await UserManager.ResetPasswordAsync(model.ID, token, model.Password);
-
-                if (User.IsInRole("Super Admin"))
+                try
                 {
-                    user.Company = model.Company;
-                }
+                    var user = await UserManager.FindByIdAsync(model.ID);
+                    var role = RolesManager.FindById(model.Role);
+                    if (role == null)
+                    {
+                        role = RolesManager.FindByName(model.Role);
+                    }
+                    var roles = RolesManager.Roles.ToList();
+                    foreach (var item in roles)
+                    {
 
-                await UserManager.AddToRoleAsync(user.Id, user.Role);
-                result = await UserManager.UpdateAsync(user);
+                        await UserManager.RemoveFromRoleAsync(user.Id, item.Name);
+                    }
+                    user.Id = model.ID;
+                    user.Name = model.Name;
+                    user.PhoneNumber = model.Contact;
+                    user.Email = model.Email;
+                    user.UserName = model.Email;
+                    user.IntervalCalendar = model.IntervalCalendar;
+                    user.Role = role.Name;
+                    user.Password = model.passkaka;
+                    var token = await UserManager.GeneratePasswordResetTokenAsync(model.ID);
+                    var result2 = await UserManager.ResetPasswordAsync(model.ID, token, model.passkaka);
+
+                    if (User.IsInRole("Super Admin"))
+                    {
+                        user.Company = model.Company;
+                    }
+
+                    await UserManager.AddToRoleAsync(user.Id, user.Role);
+                    result = await UserManager.UpdateAsync(user);
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+               
                 json.Data = new { Success = result.Succeeded, Message = string.Join(", ", result.Errors) };
 
 

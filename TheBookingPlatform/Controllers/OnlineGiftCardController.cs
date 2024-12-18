@@ -189,14 +189,14 @@ namespace TheBookingPlatform.Controllers
             Random random = new Random();
             customer.Password = new string(Enumerable.Repeat("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 8).Select(s => s[random.Next(s.Length)]).ToArray());
 
-            if(!CustomerServices.Instance.GetCustomer().Where(x=>x.Business == Company && x.Email == Email).Any())
+            if (CustomerServices.Instance.GetCustomerWRTBusiness(Company, Email) == null)
             {
                 customer.DateAdded = DateTime.Now;
                 CustomerServices.Instance.SaveCustomer(customer);
             }
             else
             {
-                customer = CustomerServices.Instance.GetCustomer().Where(x => x.Business == Company && x.Email == Email).FirstOrDefault();
+                customer = CustomerServices.Instance.GetCustomersWRTBusiness(Company, Email).FirstOrDefault();
             }
 
             float totalAmount = GetNumericPartFromString(Amount);

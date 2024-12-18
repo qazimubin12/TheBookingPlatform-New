@@ -27,6 +27,10 @@
         background: #fff;
         margin-bottom: 0px;
     }
+    .timeline-one-side .timeline-step {
+        left: 1rem;
+        z-index: 0;
+    }
     label {
         width: 100%;
         margin-left: 0px;
@@ -221,19 +225,340 @@
                     </div>
                     </div>
                 <div class="tab-pane" id="pill3">
-                    <div class="table-responsive">
-                        <table class="table">
-                            @if (Model.Histories != null)
+                    <div class="row">
+                        <!-- First Column -->
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="timeline timeline-one-side" data-timeline-axis-style="dotted">
+                                        @if (Model.Histories != null)
+                                        {
+                                            foreach (var item in Model.Histories.Take(10)) // First 10 steps
+                                            {
+                                                string Name = item.Name;
+                                                string Date = item.Date.ToString("yyyy-MM-dd HH:mm");
+                                                string Note = item.Note;
+                                                string Icon = "";
+                                                string Class = "";
+
+                                                switch (item.Name)
+                                                {
+                                                    case "Moved":
+                                                        Icon = "redo";
+                                                        Class = "bg-secondary";
+                                                        break;
+
+                                                    case "Cancelled":
+                                                        Icon = "cancel";
+                                                        Class = "bg-danger";
+                                                        break;
+
+                                                    case "Waiting List Created":
+                                                        Icon = "hourglass_empty";
+                                                        Class = "bg-info";
+                                                        break;
+
+                                                    case "Updated":
+                                                        Icon = "update";
+                                                        Class = "bg-success";
+                                                        break;
+
+                                                    case "Offline Appointment Created":
+                                                        Icon = "calendar_today";
+                                                        Class = "bg-success";
+                                                        break;
+
+                                                    case "Appointment Updated":
+                                                        Icon = "event_note";
+                                                        Class = "bg-success";
+                                                        break;
+
+                                                    case "Appointment Deleted":
+                                                        Icon = "delete";
+                                                        Class = "bg-danger";
+                                                        break;
+
+                                                    case "No Show":
+                                                        Icon = "visibility_off";
+                                                        Class = "bg-warning";
+                                                        break;
+
+                                                    case "Restored":
+                                                        Icon = "restore";
+                                                        Class = "bg-success";
+                                                        break;
+
+                                                    case "Online Appointment Created":
+                                                        Icon = "computer";
+                                                        Class = "bg-primary";
+                                                        break;
+
+                                                    case "Appointment Paid":
+                                                        Icon = "payment";
+                                                        Class = "bg-success";
+                                                        break;
+
+                                                    case "Loyalty Card Cash Back":
+                                                        Icon = "card_giftcard";
+                                                        Class = "bg-warning";
+                                                        break;
+
+                                                    case "Gift Card Used":
+                                                        Icon = "redeem";
+                                                        Class = "bg-info";
+                                                        break;
+
+                                                    default:
+                                                        Icon = "notifications";
+                                                        Class = "bg-dark";
+                                                        break;
+                                                }
+
+                                                <div class="timeline-block mb-3">
+                                                    <span class="timeline-step @Class p-3">
+                                                        <i class="material-icons text-white text-sm opacity-10">
+                                                            @Icon
+                                                        </i>
+                                                    </span>
+                                                    <div class="timeline-content pt-1">
+                                                        <h6 class="text-dark text-sm font-weight-bold mb-0">@Name</h6>
+                                                        <p class="text-secondary text-xs mt-1 mb-0">@Date</p>
+                                                        <p class="text-sm text-dark mt-3 mb-2">
+                                                            @Note
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Second Column -->
+                        @if (Model.Histories != null)
+                        {
+                            if (Model.Histories.Skip(10).Take(10).Count() != 0)
                             {
-                                foreach (var item in Model.Histories)
-                                {
-                                    <tr>
-                                        <td>◉ @item.Note  - @item.Date.ToString("yyyy-MM-dd HH:mm")</td>
-                                    </tr>
-                                }
+                                <div class="col-lg-4">
+                                    <div class="card">
+                                        <div class="card-body p-3">
+                                            <div class="timeline timeline-one-side" data-timeline-axis-style="dotted">
+
+                                                @foreach (var item in Model.Histories.Skip(10).Take(10)) // Next 10 steps
+                                                {
+                                                    string Name = item.Name;
+                                                    string Date = item.Date.ToString("yyyy-MM-dd HH:mm");
+                                                    string Note = item.Note;
+                                                    string Icon = "";
+                                                    string Class = "";
+
+                                                    switch (item.Name)
+                                                    {
+                                                        case "Moved":
+                                                            Icon = "redo";
+                                                            Class = "bg-secondary";
+                                                            break;
+
+                                                        case "Cancelled":
+                                                            Icon = "cancel";
+                                                            Class = "bg-danger";
+                                                            break;
+
+                                                        case "Waiting List Created":
+                                                            Icon = "hourglass_empty";
+                                                            Class = "bg-info";
+                                                            break;
+
+                                                        case "Updated":
+                                                            Icon = "update";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Offline Appointment Created":
+                                                            Icon = "calendar_today";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Appointment Updated":
+                                                            Icon = "event_note";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Appointment Deleted":
+                                                            Icon = "delete";
+                                                            Class = "bg-danger";
+                                                            break;
+
+                                                        case "No Show":
+                                                            Icon = "visibility_off";
+                                                            Class = "bg-warning";
+                                                            break;
+
+                                                        case "Restored":
+                                                            Icon = "restore";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Online Appointment Created":
+                                                            Icon = "computer";
+                                                            Class = "bg-primary";
+                                                            break;
+
+                                                        case "Appointment Paid":
+                                                            Icon = "payment";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Loyalty Card Cash Back":
+                                                            Icon = "card_giftcard";
+                                                            Class = "bg-warning";
+                                                            break;
+
+                                                        case "Gift Card Used":
+                                                            Icon = "redeem";
+                                                            Class = "bg-info";
+                                                            break;
+
+                                                        default:
+                                                            Icon = "notifications";
+                                                            Class = "bg-dark";
+                                                            break;
+                                                    }
+
+                                                    <div class="timeline-block mb-3">
+                                                        <span class="timeline-step @Class p-3">
+                                                            <i class="material-icons text-white text-sm opacity-10">
+                                                                @Icon
+                                                            </i>
+                                                        </span>
+                                                        <div class="timeline-content pt-1">
+                                                            <h6 class="text-dark text-sm font-weight-bold mb-0">@Name</h6>
+                                                            <p class="text-secondary text-xs mt-1 mb-0">@Date</p>
+                                                            <p class="text-sm text-dark mt-3 mb-2">
+                                                                @Note
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             }
-                        </table>
-                    </div>
+                            if (Model.Histories.Skip(20).Count() != 0)
+                            {
+                                <div class="col-lg-4">
+                                    <div class="card">
+                                        <div class="card-body p-3">
+                                            <div class="timeline timeline-one-side" data-timeline-axis-style="dotted">
+
+                                                @foreach (var item in Model.Histories.Skip(20)) // Next 10 steps
+                                                {
+                                                    string Name = item.Name;
+                                                    string Date = item.Date.ToString("yyyy-MM-dd HH:mm");
+                                                    string Note = item.Note;
+                                                    string Icon = "";
+                                                    string Class = "";
+
+                                                    switch (item.Name)
+                                                    {
+                                                        case "Moved":
+                                                            Icon = "redo";
+                                                            Class = "bg-secondary";
+                                                            break;
+
+                                                        case "Cancelled":
+                                                            Icon = "cancel";
+                                                            Class = "bg-danger";
+                                                            break;
+
+                                                        case "Waiting List Created":
+                                                            Icon = "hourglass_empty";
+                                                            Class = "bg-info";
+                                                            break;
+
+                                                        case "Updated":
+                                                            Icon = "update";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Offline Appointment Created":
+                                                            Icon = "calendar_today";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Appointment Updated":
+                                                            Icon = "event_note";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Appointment Deleted":
+                                                            Icon = "delete";
+                                                            Class = "bg-danger";
+                                                            break;
+
+                                                        case "No Show":
+                                                            Icon = "visibility_off";
+                                                            Class = "bg-warning";
+                                                            break;
+
+                                                        case "Restored":
+                                                            Icon = "restore";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Online Appointment Created":
+                                                            Icon = "computer";
+                                                            Class = "bg-primary";
+                                                            break;
+
+                                                        case "Appointment Paid":
+                                                            Icon = "payment";
+                                                            Class = "bg-success";
+                                                            break;
+
+                                                        case "Loyalty Card Cash Back":
+                                                            Icon = "card_giftcard";
+                                                            Class = "bg-warning";
+                                                            break;
+
+                                                        case "Gift Card Used":
+                                                            Icon = "redeem";
+                                                            Class = "bg-info";
+                                                            break;
+
+                                                        default:
+                                                            Icon = "notifications";
+                                                            Class = "bg-dark";
+                                                            break;
+                                                    }
+
+                                                    <div class="timeline-block mb-3">
+                                                        <span class="timeline-step @Class p-3">
+                                                            <i class="material-icons text-white text-sm opacity-10">
+                                                                @Icon
+                                                            </i>
+                                                        </span>
+                                                        <div class="timeline-content pt-1">
+                                                            <h6 class="text-dark text-sm font-weight-bold mb-0">@Name</h6>
+                                                            <p class="text-secondary text-xs mt-1 mb-0">@Date</p>
+                                                            <p class="text-sm text-dark mt-3 mb-2">
+                                                                @Note
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        </div>
+
                 </div>
                 <div class="tab-pane" id="pill4">
                     <h4>Coming Soon</h4>

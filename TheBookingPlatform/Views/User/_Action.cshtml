@@ -65,7 +65,7 @@
                     </div>
                 }
 
-                @if (User.IsInRole("Owner"))
+                @if (Model.LoggedInUser.Role == "Owner")
                 {
                         <div class="form-group input-group input-group-dynamic">
                             <label>Role</label>
@@ -128,7 +128,7 @@
 
                 <div class="form-group input-group input-group-dynamic">
                     <label>Password</label>
-                    <input class="form-control common-field" id="Password" name="Password" type="password" placeholder="Enter Password." value="@Model.Password">
+                    <input class="form-control common-field" id="passkaka" name="passkaka" type="password" placeholder="Enter Password." value="@Model.passkaka">
                 </div>
 
 
@@ -171,7 +171,7 @@
             var name = $("#Name").val().trim();
             var email = $("#Email").val().trim();
             var contact = $("#Contact").val().trim();
-            var password = $("#Password").val().trim();
+            var password = $("#passkaka").val().trim();
 
             if (name === '' || email === '' || contact === '' || password === '' ) {
                 $("#RegisterBtn").attr("disabled", "disabled");
@@ -179,7 +179,7 @@
                 $("#Name").css("border", name === '' ? "0.5px solid red" : "none");
                 $("#Email").css("border", email === '' ? "0.5px solid red" : "none");
                 $("#Contact").css("border", contact === '' ? "0.5px solid red" : "none");
-                $("#Password").css("border", password === '' || password.length < 8 ? "0.5px solid red" : "none");
+                $("#passkaka").css("border", password === '' || password.length < 8 ? "0.5px solid red" : "none");
             } else {
                 $("#RegisterBtn").removeAttr("disabled");
                 $(".common-field").css("border", "none"); // Remove border from all fields

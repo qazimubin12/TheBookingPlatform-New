@@ -8,6 +8,7 @@ namespace TheBookingPlatform.Entities
 {
     public class History:BaseEntity
     {
+        public string Name { get; set; }
         public string CustomerName { get; set; }
         public string EmployeeName { get; set; }
         public string Note { get; set; }
