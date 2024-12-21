@@ -762,6 +762,20 @@ namespace TheBookingPlatform.Controllers
             return "True";
 
         }
+        public async Task<Appointment> HandleRequestAsync(string googleCalEventId)
+        {
+            // Log the start of delay (optional)
+            Console.WriteLine($"Request for {googleCalEventId} received. Processing will start after 5 minutes.");
+
+            // Wait for 5 minutes (non-blocking)
+            await Task.Delay(TimeSpan.FromMinutes(5));
+
+            // Fetch the appointment after the delay
+            var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(googleCalEventId);
+
+            // Log the completion (optional)
+            return appointment;
+        }
 
 
 
@@ -867,7 +881,9 @@ namespace TheBookingPlatform.Controllers
 
                             string Json = "";
 
-                            var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
+                            var appointment =  HandleRequestAsync(item.Id).Result;
+
+                            //var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
 
                             try
                             {

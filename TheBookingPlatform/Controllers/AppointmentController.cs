@@ -2567,30 +2567,7 @@ namespace TheBookingPlatform.Controllers
             var result = AppointmentServices.Instance.UpdateEvent(id, start, end, int.Parse(EmployeeID));
 
 
-            var history = new History();
-            history.Business = appointment.Business;
-            history.CustomerName = "Walk In";
-            history.AppointmentID = appointment.ID;
-
-            history.Date = DateTime.Now;
-            appointment = AppointmentServices.Instance.GetAppointment(int.Parse(id));
-            history.EmployeeName = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID).Name;
-
-            if (appointment.Color == "darkgray")
-            {
-                history.Type = "Absense";
-                history.Note = "Absense Updated from Date: " + oldDate.ToString("yyyy-MM-dd") + " Time: " + oldtime.ToString("HH:mm") + " To  Date: " + appointment.Date.ToString("yyyy-MM-dd") + " Time: " + appointment.Time.ToString("HH:mm") + "" +
-                    " by " + history.EmployeeName + "";
-            }
-            else
-            {
-                history.Type = "General";
-                history.Note = "Appointment Updated from Date: " + oldDate.ToString("yyyy-MM-dd") + " Time: " + oldtime.ToString("HH:mm") + " To  Date: " + appointment.Date.ToString("yyyy-MM-dd") + " Time: " + appointment.Time.ToString("HH:mm") + "" +
-                 " by " + history.EmployeeName + "";
-
-            }
-            history.Name = "Moved";
-            HistoryServices.Instance.SaveHistory(history);
+            
 
             var appointmentAgain = AppointmentServices.Instance.GetAppointment(int.Parse(id));
             int year = appointmentAgain.Date.Year;

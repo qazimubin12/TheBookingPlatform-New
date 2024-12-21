@@ -100,6 +100,7 @@
     .day.disabled {
         background-color: gainsboro;
         color: darkgrey;
+        cursor:not-allowed;
     }
 
     .header {
@@ -900,7 +901,24 @@
             emptyDayElement.classList.add("empty");
             daysContainer.appendChild(emptyDayElement);
         }
-        const monthYearDate = new Date(monthYear.textContent);
+
+
+        const monthYearText = monthYear.textContent.trim();  // Get the text content and trim any extra spaces
+        const [monthName, year] = monthYearText.split(' ');  // Split the month and year parts
+
+        // Map month names to their respective month number (0-based index)
+        const monthNames = {
+            January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
+            July: 6, August: 7, September: 8, October: 9, November: 10, December: 11
+        };
+
+        const monthIndex = monthNames[monthName];  // Get the month index
+
+        // Create a new date using the year and month, setting the day to 1
+        const monthYearDate = new Date(year, monthIndex, 1);
+
+        console.log(monthYearDate);  // This will output a Date object representing the 1st of the month
+
         if (finalSelectedDate != null) {
 
             const parsedTimestamp = finalSelectedDate.match(/\d+/);
@@ -910,9 +928,10 @@
                 const currentDate = new Date(monthYearDate.getFullYear(), monthYearDate.getMonth(), day);
                 createDayElement(day, data, currentDate, selectedDate);
             }
-        } else {
+        }
+        else {
             for (let day = 1; day <= lastDay.getDate(); day++) {
-                createDayElement(day, currentDate, data);
+                createDayElement(day, data, currentDate);
             }
         }
         positionCalendar();
@@ -963,6 +982,7 @@
 
     // Function to check if two dates have the same year, month, and day
     function isSameDate(date1, date2) {
+        
         const iteratedMilliseconds = parseInt(date2.match(/\/Date\((\d+)\)\//)[1]);
         const finalDate2 = new Date(iteratedMilliseconds);
 
@@ -971,7 +991,7 @@
             date1.getDate() === finalDate2.getDate();
     }
     function createDayElement(day, data, iteratedDate, finalSelectedDate) {
-
+        
         const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
         const dayElement = document.createElement("div");
         dayElement.classList.add("day");
@@ -1009,8 +1029,8 @@
         // Disable days based on received disabled days
         const dayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
 
-        if (data.length >  0) {
-
+        if (data.length > 0) {
+            
             if (data && data.some(date => isSameDate(iteratedDate, date))) {
                 dayElement.classList.add("disabled");
             }
@@ -1284,7 +1304,6 @@
             dataType: 'json',
             data: { CompanyID: companyID, SelectedDate: selectedDate, ServiceIDs: serviceIDs, EmployeeID: selectedEmployee, DoesSelected: DoesSelected },
             success: function (data) {
-                debugger
                 var ListOfTimeSlotsWithDiscount = data.ListOfTimeSlotsWithDiscount;
                 // Update your UI with the retrieved time slots
                 var timeSlotsContainer = $('#TimeSlots'); // Get the timeSlots div by its ID
