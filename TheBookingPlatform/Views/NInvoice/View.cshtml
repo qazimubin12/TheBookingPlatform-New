@@ -5,20 +5,22 @@
     float TotalAmount = 0;
     float TotalAmountwithVAT = 0;
     float VAT = 0;
-    foreach (var item in Model.Items)
+    if (Model.Items != null)
     {
-        if (item.Amount == "0.00" || item.Amount == "0")
+        foreach (var item in Model.Items)
         {
-            var amoubt = (float.Parse(item.Duration) * float.Parse(item.Price));
-            TotalAmount += amoubt;
+            if (item.Amount == "0.00" || item.Amount == "0")
+            {
+                var amoubt = (float.Parse(item.Duration) * float.Parse(item.Price));
+                TotalAmount += amoubt;
+            }
+            else
+            {
+                TotalAmount += float.Parse(item.Amount);
+            }
         }
-        else
-        {
-            TotalAmount += float.Parse(item.Amount);
-        }
+        VAT = (TotalAmount * Model.VATFULL.Percentage / 100);
     }
-    VAT = (TotalAmount * Model.VATFULL.Percentage / 100);
-
 
     if (Model.VATFULL != null)
     {
@@ -209,8 +211,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.Items)
+                            @if (Model.Items != null)
                             {
+                                foreach (var item in Model.Items)
+                                {
                                 <tr>
                                     <td>@item.Service</td>
                                     <td>@item.Duration</td>
@@ -226,6 +230,7 @@
                                     }
 
                                 </tr>
+                                }
                             }
 
 
