@@ -77,13 +77,14 @@ namespace TheBookingPlatform.Controllers
             NInvoiceListingViewModel model = new NInvoiceListingViewModel();
             var listofNInvocies = new List<NInvoiceModel>();
             var ninvoices = new List<NInvoice>();
+            var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
+
             if (User.IsInRole("Super Admin"))
             {
                 ninvoices = NInvoiceServices.Instance.GetNInvoice();
             }
             else
             {
-                var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
                 ninvoices = NInvoiceServices.Instance.GetNInvoiceWRTBusiness(loggedInUser.Company);
             }
             foreach (var item in ninvoices)
@@ -202,7 +203,8 @@ namespace TheBookingPlatform.Controllers
             model.CompanyEmail = ninvoice.CompanyEmail;
             model.CompanyPhone = ninvoice.CompanyPhone;
             model.CompanyAddress = ninvoice.CompanyAddress;
-
+            var company = CompanyServices.Instance.GetCompany(ninvoice.Business).FirstOrDefault();
+            model.Currency = company.Currency;
             model.VATFULL = VatServices.Instance.GetVat(ninvoice.VAT);
             var NInvoiceItemModelList = new List<NInvoiceItemModel>();
             if (ninvoice.ItemDetails != null)

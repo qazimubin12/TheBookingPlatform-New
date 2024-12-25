@@ -56,6 +56,14 @@ namespace TheBookingPlatform.Services
             }
         }
 
+        public async Task<Appointment> GetAppointmentWithGCalEventIDAsync(string GCalEventID)
+        {
+            using (var context = new DSContext())
+            {
+                return await context.Appointments.AsNoTracking().Where(x => x.GoogleCalendarEventID == GCalEventID).FirstOrDefaultAsync();
+            }
+        }
+
         public List<Appointment> OtherRecurrencesAppointments(int RepeatedAppointmentID)
         {
             using (var context = new DSContext())

@@ -52,5 +52,6 @@ namespace TheBookingPlatform.ViewModels
         public List<NInvoiceItemModel> Items { get; set; }
         public string ItemDetails { get; set; } //Service ID and Qty and Total _ separated.
         public string Remarks { get; set; }
+        public string Currency { get;  set; }
     }
 }

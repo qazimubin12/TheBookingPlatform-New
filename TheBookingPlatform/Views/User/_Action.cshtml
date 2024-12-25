@@ -65,7 +65,7 @@
                     </div>
                 }
 
-                @if (Model.LoggedInUser.Role == "Owner")
+                @if (Model.LoggedInUser.Role == "Owner" || Model.LoggedInUser.Role == "Super Admin")
                 {
                         <div class="form-group input-group input-group-dynamic">
                             <label>Role</label>

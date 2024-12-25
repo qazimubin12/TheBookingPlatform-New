@@ -271,81 +271,85 @@ namespace TheBookingPlatform.Controllers
         public async Task<string> CreateWatch(Employee employee,string Company)
         {
             var googleCalendarnew = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(Company);
-            using (var newclient = new HttpClient())
+            if (googleCalendarnew != null)
             {
-                newclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
-
-                var watchRequestBody = new
+                using (var newclient = new HttpClient())
                 {
-                    id = Guid.NewGuid().ToString(), // A unique ID for this channel
-                    type = "web_hook",
-                    address = $"https://app.yourbookingplatform.com/Booking/TestingGoogleToYBP", // Your webhook endpoint
-                    @params = new
-                    {
-                        ttl = "2147483647" // Max integer value (2^31 - 1 seconds, approx 68 years)
-                    }
-                };
+                    newclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
 
-                var newcontent = new StringContent(JsonConvert.SerializeObject(watchRequestBody), Encoding.UTF8, "application/json");
-                var newrequestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events/watch";
-                var newresponse =  await newclient.PostAsync(newrequestUrl, newcontent);
-                var responseBody = await newresponse.Content.ReadAsStringAsync();
-
-                if (newresponse.IsSuccessStatusCode)
-                {
-                    var history = new History
+                    var watchRequestBody = new
                     {
-                        Note = "Setup Successfully watched",
-                        Business = googleCalendarnew.Business,
-                        Date = DateTime.Now
+                        id = Guid.NewGuid().ToString(), // A unique ID for this channel
+                        type = "web_hook",
+                        address = $"https://app.yourbookingplatform.com/Booking/TestingGoogleToYBP", // Your webhook endpoint
+                        @params = new
+                        {
+                            ttl = "2147483647" // Max integer value (2^31 - 1 seconds, approx 68 years)
+                        }
                     };
-                    Channel channel = JsonConvert.DeserializeObject<Channel>(responseBody);
 
-                    employee.WatchChannelID = channel.Id;
-                    EmployeeServices.Instance.UpdateEmployee(employee);
-                    HistoryServices.Instance.SaveHistory(history);
+                    var newcontent = new StringContent(JsonConvert.SerializeObject(watchRequestBody), Encoding.UTF8, "application/json");
+                    var newrequestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events/watch";
+                    var newresponse = await newclient.PostAsync(newrequestUrl, newcontent);
+                    var responseBody = await newresponse.Content.ReadAsStringAsync();
 
-                    var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(employee.ID);
-                    if (employeeWatch != null)
+                    if (newresponse.IsSuccessStatusCode)
                     {
-                        //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
-                        long timestampSeconds = channel.Expiration / 1000;
+                        var history = new History
+                        {
+                            Note = "Setup Successfully watched",
+                            Business = googleCalendarnew.Business,
+                            Date = DateTime.Now
+                        };
+                        Channel channel = JsonConvert.DeserializeObject<Channel>(responseBody);
 
-                        // Convert to DateTime
-                        DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
-                        employeeWatch.ExpirationDate = dateTime;
-                        employeeWatch.EmployeeID = employee.ID;
-                        employeeWatch.Business = employee.Business;
-                        EmployeeWatchServices.Instance.UpdateEmployeeWatch(employeeWatch);
+                        employee.WatchChannelID = channel.Id;
+                        EmployeeServices.Instance.UpdateEmployee(employee);
+                        HistoryServices.Instance.SaveHistory(history);
+
+                        var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(employee.ID);
+                        if (employeeWatch != null)
+                        {
+                            //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                            long timestampSeconds = channel.Expiration / 1000;
+
+                            // Convert to DateTime
+                            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                            employeeWatch.ExpirationDate = dateTime;
+                            employeeWatch.EmployeeID = employee.ID;
+                            employeeWatch.Business = employee.Business;
+                            EmployeeWatchServices.Instance.UpdateEmployeeWatch(employeeWatch);
+                        }
+                        else
+                        {
+                            employeeWatch = new EmployeeWatch();
+                            //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                            long timestampSeconds = channel.Expiration / 1000;
+
+                            // Convert to DateTime
+                            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                            employeeWatch.ExpirationDate = dateTime;
+                            employeeWatch.EmployeeID = employee.ID;
+                            employeeWatch.Business = employee.Business;
+                            EmployeeWatchServices.Instance.SaveEmployeeWatch(employeeWatch);
+                        }
+                        return "Success";
                     }
                     else
                     {
-                        employeeWatch = new EmployeeWatch();
-                        //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
-                        long timestampSeconds = channel.Expiration / 1000;
-
-                        // Convert to DateTime
-                        DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
-                        employeeWatch.ExpirationDate = dateTime;
-                        employeeWatch.EmployeeID = employee.ID;
-                        employeeWatch.Business = employee.Business;
-                        EmployeeWatchServices.Instance.SaveEmployeeWatch(employeeWatch);
+                        var history = new History
+                        {
+                            Note = "Failed to set up watch " + responseBody,
+                            Business = googleCalendarnew.Business,
+                            Date = DateTime.Now
+                        };
+                        HistoryServices.Instance.SaveHistory(history);
+                        return "Failed";
                     }
-                    return "Success";
-                }
-                else
-                {
-                    var history = new History
-                    {
-                        Note = "Failed to set up watch " + responseBody,
-                        Business = googleCalendarnew.Business,
-                        Date = DateTime.Now
-                    };
-                    HistoryServices.Instance.SaveHistory(history);
-                    return "Failed";
-                }
 
+                }
             }
+            return "Success";
 
         }
 
@@ -1329,6 +1333,7 @@ namespace TheBookingPlatform.Controllers
             public string Link { get; set; }
             public string Title { get; set; }
             public string Date { get; set; }
+            public string BG_Color { get; set; }
 
         }
 
@@ -1336,17 +1341,22 @@ namespace TheBookingPlatform.Controllers
         public JsonResult GetNotifications()
         {
             var LoggedInUser= UserManager.FindById(User.Identity.GetUserId());
-            var notifications = NotificationServices.Instance.GetNotificationWRTBusiness(LoggedInUser.Company);
+            var notifications = NotificationServices.Instance.GetNotificationWRTBusiness2(LoggedInUser.Company);
             var notificationList = new List<NotificationModel>();
             foreach (var item in notifications)
             {
-                if (LoggedInUser.ReadNotifications != null && LoggedInUser.ReadNotifications.Split(',').ToList().Contains(item.ID.ToString()))
+                if (LoggedInUser.ReadNotifications == null || LoggedInUser.ReadNotifications.Split(',').ToList().Contains(item.ID.ToString()) == false)
                 {
 
-                    notificationList.Add(new NotificationModel {ID=item.ID, Date = item.Date.ToString("yyyy-MM-dd"),Link = item.Link,Title = item.Title});
+                    notificationList.Add(new NotificationModel {ID=item.ID, Date = item.Date.ToString("yyyy-MM-dd"),Link = item.Link,Title = item.Title, BG_Color = "UNREAD"});
+                }
+                else
+                {
+                    notificationList.Add(new NotificationModel { ID = item.ID, Date = item.Date.ToString("yyyy-MM-dd"), Link = item.Link, Title = item.Title,BG_Color = "READ" });
+
                 }
             }
-            return Json(new { success = true,Notifications =notifications }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true,Notifications = notificationList }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

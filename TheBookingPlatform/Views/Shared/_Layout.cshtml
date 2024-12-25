@@ -2200,7 +2200,7 @@
                                 notifications
                             </i>
                             <span id="unreadBadge" style="display:none;" class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
-                                <span class="small"></span>
+                                <span id="unreadcount" class="small"></span>
                                 <span class="visually-hidden">unread notifications</span>
                             </span>
                         </a>
@@ -2312,10 +2312,11 @@
                 success: function (data) {
                     var notifications = data.Notifications; // Replace with actual response structure if needed
                     var notificationListHtml = '';
-
+                    var count = 0;
                     notifications.forEach(function (notification) {
-                        // Construct the HTML for each notification
-                        notificationListHtml += `
+                        if (notification.BG_Color == "UNREAD") {
+                            // Construct the HTML for each notification
+                            notificationListHtml += `
         <li class="mb-2">
             <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}')">
                 <div class="d-flex align-items-center py-1">
@@ -2330,13 +2331,33 @@
             </span>
         </li>
     `;
+                            count++;
+                        } else {
+                            notificationListHtml += `
+        <li class="mb-2">
+            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}')">
+                <div class="d-flex align-items-center py-1">
+                    <span class="material-icons">drafts</span>
+                    <div class="ms-2">
+                        <h6 class="text-sm font-weight-normal my-auto">
+                            ${notification.Title}
+                        </h6>
+                        <p class="text-muted">${notification.Date}</p>
+                    </div>
+                </div>
+            </span>
+        </li>
+    `;
 
+                        }
+  
                         $("#unreadBadge").show();
                     });
 
                     // Append the generated HTML to the notification panel
                     var notificationPanel = document.getElementById('notificationPanel');
                     notificationPanel.innerHTML = notificationListHtml;
+                    $("#unreadcount").text(count);
 
                     hideLoadingSpinner();
                     // You might want to update the UI or perform other operations based on this count

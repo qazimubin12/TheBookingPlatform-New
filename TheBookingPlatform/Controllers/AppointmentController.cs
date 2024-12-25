@@ -33,6 +33,8 @@ using System.IO;
 using File = TheBookingPlatform.Entities.File;
 using Service = TheBookingPlatform.Entities.Service;
 using System.Data.Entity.Migrations.History;
+using Microsoft.Office.Interop.Word;
+
 
 namespace TheBookingPlatform.Controllers
 {
@@ -2247,7 +2249,7 @@ namespace TheBookingPlatform.Controllers
 
                 int Port = int.Parse(ConfigurationManager.AppSettings["portforSmtp"]);
                 string Host = ConfigurationManager.AppSettings["hostForSmtp"];
-                MailMessage mail = new MailMessage();
+                System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage();
                 mail.To.Add(toEmail);
                 MailAddress ccAddress = new MailAddress(company.NotificationEmail, company.Business);
 
@@ -2627,7 +2629,7 @@ namespace TheBookingPlatform.Controllers
                 //{
                 //}
                 RefreshToken(appointment.Business);
-                if (oldEmployee.ID != appointment.EmployeeID)
+                if (oldEmployee.ID != appointmentAgain.EmployeeID)
                 {
                     GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployee.ID);
 
@@ -5213,6 +5215,7 @@ namespace TheBookingPlatform.Controllers
         }
 
 
+
         public string GenerateonGoogleCalendar(int ID, string Services, int oldEmployeeID = 0)
         {
             // Retrieve appointment
@@ -5253,13 +5256,101 @@ namespace TheBookingPlatform.Controllers
             Nrequest.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
             Nrequest.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
             Nrequest.AddHeader("Accept", "application/json");
-            var Nresponse = NrestClient.Delete(Nrequest);
-            if (oldEmployeeID != 0)
+            try
             {
+                var Nresponse = NrestClient.Delete(Nrequest);
 
-                if (Nresponse.StatusCode == System.Net.HttpStatusCode.NoContent)
+                if (oldEmployeeID != 0)
                 {
+
+
                     RefreshToken(appointment.Business);
+                    int year = appointment.Date.Year;
+                    int month = appointment.Date.Month;
+                    int day = appointment.Date.Day;
+                    int starthour = appointment.Time.Hour;
+                    int startminute = appointment.Time.Minute;
+                    int startseconds = appointment.Time.Second;
+
+                    int endhour = appointment.EndTime.Hour;
+                    int endminute = appointment.EndTime.Minute;
+                    int endseconds = appointment.EndTime.Second;
+
+                    DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
+                    DateTime endDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
+
+                    DateTime currentDateTime = DateTime.Now;
+                    TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
+
+
+
+                    // Retrieve Google Calendar services
+
+
+                    // Retrieve company
+                    var company = CompanyServices.Instance.GetCompany().FirstOrDefault(x => x.Business == loggedInUser.Company);
+                    if (company == null)
+                    {
+                        return "Error: Company not found.";
+                    }
+
+                    // Retrieve employee
+                    var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                    if (employee == null)
+                    {
+                        return "Error: Employee not found.";
+                    }
+                    var url = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events";
+                    var finalUrl = new Uri(url);
+
+                    RestClient restClient = new RestClient(finalUrl);
+                    RestRequest request = new RestRequest();
+                    var calendarEvent = new Event
+                    {
+                        Summary = "Appointment at: " + loggedInUser.Company,
+                        Description = Services,
+                        Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone },
+                        End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone }
+                    };
+
+                    var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    });
+
+                    request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                    request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
+                    request.AddHeader("Accept", "application/json");
+                    request.AddHeader("Content-Type", "application/json");
+                    request.AddParameter("application/json", model, ParameterType.RequestBody);
+
+                    var response = restClient.Post(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        JObject jsonObj = JObject.Parse(response.Content);
+                        appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+                        AppointmentServices.Instance.UpdateAppointment(appointment);
+                        return "Saved";
+                    }
+                    else
+                    {
+                        var history = new History();
+                        history.Date = DateTime.Now;
+                        history.Note = response.Content;
+                        history.Business = "Error";
+                        history.Type = "Error";
+                        HistoryServices.Instance.SaveHistory(history);
+                        return "Error: " + response.Content;
+
+                    }
+
+                }
+                else
+                {
+
+
+
                     int year = appointment.Date.Year;
                     int month = appointment.Date.Month;
                     int day = appointment.Date.Day;
@@ -5340,101 +5431,188 @@ namespace TheBookingPlatform.Controllers
                         return "Error: " + response.Content;
 
                     }
+
                 }
-                else
-                {
-                    var history = new History();
-                    history.Date = DateTime.Now;
-                    history.Note = Nresponse.Content;
-                    history.Business = "Error";
-                    history.Type = "Error";
-                    HistoryServices.Instance.SaveHistory(history);
-                    return Nresponse.Content;
-                }
+                return "success";
             }
-            else
+            catch (Exception ex)
             {
-                int year = appointment.Date.Year;
-                int month = appointment.Date.Month;
-                int day = appointment.Date.Day;
-                int starthour = appointment.Time.Hour;
-                int startminute = appointment.Time.Minute;
-                int startseconds = appointment.Time.Second;
-
-                int endhour = appointment.EndTime.Hour;
-                int endminute = appointment.EndTime.Minute;
-                int endseconds = appointment.EndTime.Second;
-
-                DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
-                DateTime endDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
-
-                DateTime currentDateTime = DateTime.Now;
-                TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
-
-
-
-                // Retrieve Google Calendar services
-
-
-                // Retrieve company
-                var company = CompanyServices.Instance.GetCompany().FirstOrDefault(x => x.Business == loggedInUser.Company);
-                if (company == null)
+                if (oldEmployeeID != 0)
                 {
-                    return "Error: Company not found.";
-                }
 
-                // Retrieve employee
-                var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
-                if (employee == null)
-                {
-                    return "Error: Employee not found.";
-                }
 
-                var url = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events";
-                var finalUrl = new Uri(url);
+                    RefreshToken(appointment.Business);
+                    int year = appointment.Date.Year;
+                    int month = appointment.Date.Month;
+                    int day = appointment.Date.Day;
+                    int starthour = appointment.Time.Hour;
+                    int startminute = appointment.Time.Minute;
+                    int startseconds = appointment.Time.Second;
 
-                RestClient restClient = new RestClient(finalUrl);
-                RestRequest request = new RestRequest();
-                var calendarEvent = new Event
-                {
-                    Summary = "Appointment at: " + loggedInUser.Company,
-                    Description = Services,
-                    Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone },
-                    End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone }
-                };
+                    int endhour = appointment.EndTime.Hour;
+                    int endminute = appointment.EndTime.Minute;
+                    int endseconds = appointment.EndTime.Second;
 
-                var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                });
+                    DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
+                    DateTime endDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
 
-                request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
-                request.AddHeader("Accept", "application/json");
-                request.AddHeader("Content-Type", "application/json");
-                request.AddParameter("application/json", model, ParameterType.RequestBody);
+                    DateTime currentDateTime = DateTime.Now;
+                    TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
 
-                var response = restClient.Post(request);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    JObject jsonObj = JObject.Parse(response.Content);
-                    appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
-                    AppointmentServices.Instance.UpdateAppointment(appointment);
-                    return "Saved";
+
+                    // Retrieve Google Calendar services
+
+
+                    // Retrieve company
+                    var company = CompanyServices.Instance.GetCompany().FirstOrDefault(x => x.Business == loggedInUser.Company);
+                    if (company == null)
+                    {
+                        return "Error: Company not found.";
+                    }
+
+                    // Retrieve employee
+                    var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                    if (employee == null)
+                    {
+                        return "Error: Employee not found.";
+                    }
+                    var url = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events";
+                    var finalUrl = new Uri(url);
+
+                    RestClient restClient = new RestClient(finalUrl);
+                    RestRequest request = new RestRequest();
+                    var calendarEvent = new Event
+                    {
+                        Summary = "Appointment at: " + loggedInUser.Company,
+                        Description = Services,
+                        Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone },
+                        End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone }
+                    };
+
+                    var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    });
+
+                    request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                    request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
+                    request.AddHeader("Accept", "application/json");
+                    request.AddHeader("Content-Type", "application/json");
+                    request.AddParameter("application/json", model, ParameterType.RequestBody);
+
+                    var response = restClient.Post(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        JObject jsonObj = JObject.Parse(response.Content);
+                        appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+                        AppointmentServices.Instance.UpdateAppointment(appointment);
+                        return "Saved";
+                    }
+                    else
+                    {
+                        var history = new History();
+                        history.Date = DateTime.Now;
+                        history.Note = response.Content;
+                        history.Business = "Error";
+                        history.Type = "Error";
+                        HistoryServices.Instance.SaveHistory(history);
+                        return "Error: " + response.Content;
+
+                    }
+
                 }
                 else
                 {
-                    var history = new History();
-                    history.Date = DateTime.Now;
-                    history.Note = response.Content;
-                    history.Business = "Error";
-                    history.Type = "Error";
-                    HistoryServices.Instance.SaveHistory(history);
-                    return "Error: " + response.Content;
+
+
+
+                    int year = appointment.Date.Year;
+                    int month = appointment.Date.Month;
+                    int day = appointment.Date.Day;
+                    int starthour = appointment.Time.Hour;
+                    int startminute = appointment.Time.Minute;
+                    int startseconds = appointment.Time.Second;
+
+                    int endhour = appointment.EndTime.Hour;
+                    int endminute = appointment.EndTime.Minute;
+                    int endseconds = appointment.EndTime.Second;
+
+                    DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
+                    DateTime endDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
+
+                    DateTime currentDateTime = DateTime.Now;
+                    TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
+
+
+
+                    // Retrieve Google Calendar services
+
+
+                    // Retrieve company
+                    var company = CompanyServices.Instance.GetCompany().FirstOrDefault(x => x.Business == loggedInUser.Company);
+                    if (company == null)
+                    {
+                        return "Error: Company not found.";
+                    }
+
+                    // Retrieve employee
+                    var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                    if (employee == null)
+                    {
+                        return "Error: Employee not found.";
+                    }
+
+                    var url = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events";
+                    var finalUrl = new Uri(url);
+
+                    RestClient restClient = new RestClient(finalUrl);
+                    RestRequest request = new RestRequest();
+                    var calendarEvent = new Event
+                    {
+                        Summary = "Appointment at: " + loggedInUser.Company,
+                        Description = Services,
+                        Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone },
+                        End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone }
+                    };
+
+                    var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    });
+
+                    request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                    request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
+                    request.AddHeader("Accept", "application/json");
+                    request.AddHeader("Content-Type", "application/json");
+                    request.AddParameter("application/json", model, ParameterType.RequestBody);
+
+                    var response = restClient.Post(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        JObject jsonObj = JObject.Parse(response.Content);
+                        appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+                        AppointmentServices.Instance.UpdateAppointment(appointment);
+                        return "Saved";
+                    }
+                    else
+                    {
+                        var history = new History();
+                        history.Date = DateTime.Now;
+                        history.Note = response.Content;
+                        history.Business = "Error";
+                        history.Type = "Error";
+                        HistoryServices.Instance.SaveHistory(history);
+                        return "Error: " + response.Content;
+
+                    }
 
                 }
+                throw;
             }
+         
 
 
         }
@@ -6297,7 +6475,7 @@ namespace TheBookingPlatform.Controllers
                 var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == loggedInUser.Company).FirstOrDefault();
                 int Port = int.Parse(ConfigurationManager.AppSettings["portforSmtp"]);
                 string Host = ConfigurationManager.AppSettings["hostForSmtp"];
-                MailMessage mail = new MailMessage();
+                System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage();
                 mail.To.Add(toEmail);
                 MailAddress ccAddress = new MailAddress(company.NotificationEmail, loggedInUser.Company);
 

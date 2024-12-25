@@ -47,9 +47,7 @@
                                             <th class="text-center">
                                                 Link
                                             </th>
-                                            <th class="text-center">
-                                                Business
-                                            </th>
+                                           
                                            <th>
                                                Date
                                            </th>
@@ -65,12 +63,11 @@
                                             <tr>
                                                 <td class="text-center">@item.Title</td>
                                                 <td class="text-center"><a class="btn btn-primary" target="_blank" href="@item.Link">LINK</a></td>
-                                                <td class="text-center">@item.Business</td>
                                                 <td class="text-center">@item.Date</td>
                                                 <td class="text-center">
 
-                                                    <a href="@Url.Action("Action", "Notification", new { ID = item.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
-                                                    <button data-href="@Url.Action("Delete", "Notification", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                    <a href="@Url.Action("Action", "Notification", new { Code = item.Code })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                    <button data-href="@Url.Action("Delete", "Notification", new { Code = item.Code })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
 
                                                 </td>
                                             </tr>

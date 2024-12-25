@@ -14,10 +14,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-
 using System.Web.Mvc;
 using System.Web.Routing;
-
 using TheBookingPlatform.Entities;
 using TheBookingPlatform.Services;
 using TheBookingPlatform.ViewModels;
@@ -37,6 +35,7 @@ using System.Text;
 using System.Security.Cryptography;
 using NodaTime;
 using TheBookingPlatform.Models;
+using System.Collections.Concurrent;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -527,22 +526,24 @@ namespace TheBookingPlatform.Controllers
 
             // Parse the JSON string into a JObject
             JObject jsonObject = JObject.Parse(json);
-            var AppointmentID = 0;
+            string Paymentsession = "";
             string Status = "";
+
             // Safely extract and parse AppointmentID
-            int appointmentId;
-            if (int.TryParse(jsonObject["data"]?["object"]?["metadata"]?["AppointmentID"]?.ToString(), out appointmentId))
+            var paymentSessionObj = jsonObject["data"]?["object"]?["id"];
+            if (paymentSessionObj != null)
             {
-                AppointmentID = appointmentId;
+                Paymentsession = paymentSessionObj.ToString();
             }
-            
+
+
             // Extract status
             string status = jsonObject["data"]?["object"]?["status"]?.ToString();
             if (!string.IsNullOrEmpty(status))
             {
                 Status = status;
             }
-            var findAppointment = AppointmentServices.Instance.GetAppointment(AppointmentID);
+            var findAppointment = AppointmentServices.Instance.GetAppointmentUsingPS(Paymentsession);
             var service = new PaymentIntentService();
             var appointment = AppointmentServices.Instance.GetAppointment(findAppointment.ID);
             var company = CompanyServices.Instance.GetCompany(appointment.Business).FirstOrDefault();
@@ -762,23 +763,9 @@ namespace TheBookingPlatform.Controllers
             return "True";
 
         }
-        public async Task<Appointment> HandleRequestAsync(string googleCalEventId)
-        {
-            // Log the start of delay (optional)
-            Console.WriteLine($"Request for {googleCalEventId} received. Processing will start after 5 minutes.");
+        private static ConcurrentQueue<Func<Task>> _delayedQueue = new ConcurrentQueue<Func<Task>>();
 
-            // Wait for 5 minutes (non-blocking)
-            await Task.Delay(TimeSpan.FromMinutes(5));
-
-            // Fetch the appointment after the delay
-            var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(googleCalEventId);
-
-            // Log the completion (optional)
-            return appointment;
-        }
-
-
-
+     
         [Route("google/webhook")]
         [HttpPost]
         public async Task<ActionResult> TestingGoogleToYBP()
@@ -881,7 +868,7 @@ namespace TheBookingPlatform.Controllers
 
                             string Json = "";
 
-                            var appointment =  HandleRequestAsync(item.Id).Result;
+                            var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
 
                             //var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
 
@@ -1013,7 +1000,7 @@ namespace TheBookingPlatform.Controllers
                         {
 
                             var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
-                            if (appointment != null && appointment.FromGCAL) //From GCal is because it's deleting the appoiintment which was created on YBP
+                            if (appointment != null && appointment.Color != "#dff0e3") //From GCal is because it's deleting the appoiintment which was created on YBP
                             {
                                 appointment.DELETED = true;
                                 appointment.GoogleCalendarEventID = "CANCELLED";
@@ -2187,6 +2174,7 @@ namespace TheBookingPlatform.Controllers
                 var failedAppointment = new FailedAppointment();
                 failedAppointment.AppointmentID = appointment.ID;
                 failedAppointment.Failed = true;
+                failedAppointment.Business = appointment.Business;
                 FailedAppointmentServices.Instance.SaveFailedAppointment(failedAppointment);
 
 

@@ -371,7 +371,7 @@
 
                     <div class="row">
 
-                        <div id="DepositPanel" class="col-md-12">
+                        <div id="DepositPanel" class="row">
                             <div class="form-group col-md-6">
                                 <div class="input-group input-group-dynamic">
 
@@ -428,7 +428,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="row">
 
                             <div class="form-group col-md-6">
                                 <div class="input-group input-group-dynamic">
@@ -456,12 +456,12 @@
                                     </label>
                                     @if (Model.ID == 0)
                                     {
-                                        <input type="text" id="Time" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="Time">
+                                        <input type="time" id="Time" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="Time">
 
                                     }
                                     else
                                     {
-                                        <input type="text" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
+                                        <input type="time" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
                                     }
                                 </div>
                             </div>

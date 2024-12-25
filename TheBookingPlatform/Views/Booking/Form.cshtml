@@ -858,6 +858,9 @@
             dateInput.value = formattedDate;
             updateTimeSlots();
         }
+        else {
+            dayeleme.classList.remove("selected"); // Fixed from removeClass to remove
+        }
     }
     function renderCalendar(data, finalSelectedDate) {
 
@@ -997,26 +1000,13 @@
         dayElement.classList.add("day");
         dayElement.textContent = day;
 
-        if (finalSelectedDate != null) {
-            if (finalSelectedDate && date.toDateString() === finalSelectedDate.toDateString()) {
-                dayElement.classList.add("selected");
-
-                handleDayClick(dayElement); // Call handleDayClick if the day is selected
-
-            }
-        }
         const today = new Date(); // Get the current date
 
         var resetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0); // Reset time values
         var resetToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0); // Reset time values for today
 
-        if (resetDate < resetToday) {
-            dayElement.classList.add("disabled");
-        } else {
-            dayElement.addEventListener("click", () => {
-                handleDayClick(dayElement);
-            });
-        }
+
+        
 
         if (date.toDateString() === new Date().toDateString()) {
         //    dayElement.classList.add("current");
@@ -1036,6 +1026,22 @@
             }
         }
         daysContainer.appendChild(dayElement);
+        if (resetDate < resetToday) {
+            dayElement.classList.add("disabled");
+        } else {
+            dayElement.addEventListener("click", () => {
+                handleDayClick(dayElement);
+            });
+        }
+        if (finalSelectedDate != null) {
+            if (finalSelectedDate && date.toDateString() === finalSelectedDate.toDateString()) {
+                dayElement.classList.add("selected");
+
+                handleDayClick(dayElement); // Call handleDayClick if the day is selected
+
+            }
+        }
+      
     }
     prevBtn.addEventListener("click", () => {
             currentDate.setMonth(currentDate.getMonth() - 1);

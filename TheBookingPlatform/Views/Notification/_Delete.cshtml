@@ -11,7 +11,7 @@
         </div>
         <div class="modal-body">
             <form id="actionForm">
-                <input type="hidden" name="ID" value="@Model.ID" />
+                <input type="hidden" name="Code" value="@Model.Code" />
             </form>
             <div class="alert alert-danger" role="alert"><span class="text-white">
     Are you sure you want to delete this Notification ?
@@ -32,11 +32,9 @@
 			type: "post",
 			data: $("#actionForm").serialize()
 		})
-		.done(function (response) {
-            alert(response.Message);
-            if (response.Message == "Deleted Successfully") {
+            .done(function (response) {
                 location.reload();
-            }
+
 		});
 	});
 </script>

@@ -36,7 +36,15 @@ namespace TheBookingPlatform.Services
             }
         }
 
-        public List<Notification> GetNotificationWRTBusiness(string Business)
+        public List<Notification> GetNotificationWRTBusiness(string Code)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Notifications.Where(x => x.Code == Code).ToList();
+            }
+        }
+
+       public List<Notification> GetNotificationWRTBusiness2(string Business)
         {
             using (var context = new DSContext())
             {
