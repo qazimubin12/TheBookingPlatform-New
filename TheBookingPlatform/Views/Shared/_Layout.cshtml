@@ -2216,6 +2216,27 @@
         <!-- End Navbar -->
         <div id="mainContainerflu" class="container-fluid py-4">
             <a target="_self" href="#" id="GoToLink"></a>
+            <div id="myModal" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitle"></h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="modalDescription"></p>
+                            <div id="modalButtonContainer" style="display: none;">
+                                <a id="modalLinkButton" href="#" target="_blank" class="btn btn-primary">Go to Link</a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
             <form id="form"></form>
@@ -2276,36 +2297,42 @@
     <script src="~/Content/MainTemplate2/assets/js/plugins/choices.min.js"></script>
     <script type="text/javascript">
 
-
-        function UpdateUserRead(ID, Link) {
-            
+        function UpdateUserRead(ID, Link,Title,Description) {
             $.ajax({
                 url: '@Url.Action("UpdateUserRead", "Admin")',
                 type: 'POST',
-                data: {ID:ID},
+                data: { ID: ID },
                 success: function (data) {
-                    // Handle the response here
+                    // If the Link does not start with http or https, prepend it
                     if (!Link.startsWith('http://') && !Link.startsWith('https://')) {
                         Link = 'https://' + Link;
                     }
 
-                    console.log("Opening link:", Link); // Debugging output
+                    // Set modal title and description
+                    $('#modalTitle').text(Title); // Set a title for the modal
+                    $('#modalDescription').text(Description);
 
-                    // Open the link in a new tab
-                    window.open(Link, '_blank');
-                    hideLoadingSpinner();
-                    // You might want to update the UI or perform other operations based on this count
+                    // Show or hide the button based on the Link
+                    if (Link) {
+                        $('#modalButtonContainer').show();
+                        $('#modalLinkButton').attr('href', Link);
+                    } else {
+                        $('#modalButtonContainer').hide();
+                    }
+
+                    // Display the modal
+                    $('#myModal').modal('show');
+
+                    hideLoadingSpinner(); // Hide any loading spinner if necessary
                 },
                 error: function (error) {
-                    console.error('Error fetching opening hours count');
-                    hideLoadingSpinner();
-
-                    // Handle error scenarios here
+                    console.error('Error fetching data');
+                    hideLoadingSpinner(); // Handle error scenario
                 }
             });
         }
         function GetNotifications() {
-            
+
             $.ajax({
                 url: '@Url.Action("GetNotifications", "Admin")',
                 type: 'GET',
@@ -2318,7 +2345,7 @@
                             // Construct the HTML for each notification
                             notificationListHtml += `
         <li class="mb-2">
-            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}')">
+            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}','${notification.Title}','${notification.Description}')">
                 <div class="d-flex align-items-center py-1">
                     <span class="material-icons">email</span>
                     <div class="ms-2">
@@ -2335,7 +2362,7 @@
                         } else {
                             notificationListHtml += `
         <li class="mb-2">
-            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}')">
+            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}','${notification.Title}','${notification.Description}')">
                 <div class="d-flex align-items-center py-1">
                     <span class="material-icons">drafts</span>
                     <div class="ms-2">
@@ -2350,7 +2377,7 @@
     `;
 
                         }
-  
+
                         $("#unreadBadge").show();
                     });
 

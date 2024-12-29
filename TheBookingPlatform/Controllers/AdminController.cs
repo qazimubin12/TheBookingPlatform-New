@@ -1334,7 +1334,7 @@ namespace TheBookingPlatform.Controllers
             public string Title { get; set; }
             public string Date { get; set; }
             public string BG_Color { get; set; }
-
+            public string Description { get;  set; }
         }
 
         [HttpGet]
@@ -1348,11 +1348,11 @@ namespace TheBookingPlatform.Controllers
                 if (LoggedInUser.ReadNotifications == null || LoggedInUser.ReadNotifications.Split(',').ToList().Contains(item.ID.ToString()) == false)
                 {
 
-                    notificationList.Add(new NotificationModel {ID=item.ID, Date = item.Date.ToString("yyyy-MM-dd"),Link = item.Link,Title = item.Title, BG_Color = "UNREAD"});
+                    notificationList.Add(new NotificationModel {Description = item.Description, ID=item.ID, Date = item.Date.ToString("yyyy-MM-dd"),Link = item.Link,Title = item.Title, BG_Color = "UNREAD"});
                 }
                 else
                 {
-                    notificationList.Add(new NotificationModel { ID = item.ID, Date = item.Date.ToString("yyyy-MM-dd"), Link = item.Link, Title = item.Title,BG_Color = "READ" });
+                    notificationList.Add(new NotificationModel { Description = item.Description, ID = item.ID, Date = item.Date.ToString("yyyy-MM-dd"), Link = item.Link, Title = item.Title,BG_Color = "READ" });
 
                 }
             }

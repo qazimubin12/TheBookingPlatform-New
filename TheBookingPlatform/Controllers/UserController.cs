@@ -269,12 +269,7 @@ namespace TheBookingPlatform.Controllers
             var customerOptions = new CustomerCreateOptions
             {
                 Email = user.Email, // Ensure you have user's email
-                Name = user.Name, // User's name
-                Metadata = new Dictionary<string, string>
-            {
-                { "UserID", UserID },
-                { "PackageID", PackageID.ToString() }
-            }
+                Name = user.Name
             };
             var customer = customerService.Create(customerOptions);
 
@@ -314,7 +309,7 @@ namespace TheBookingPlatform.Controllers
             var sessionOptions = new SessionCreateOptions
             {
                 Customer = customer.Id, // Link to Stripe Customer
-                PaymentMethodTypes = new List<string> { "card" }, // Payment methods
+                PaymentMethodTypes = new List<string> { "card", "ideal" }, // Payment methods
                 LineItems = new List<SessionLineItemOptions>
             {
                 new SessionLineItemOptions
@@ -325,7 +320,12 @@ namespace TheBookingPlatform.Controllers
             },
                 Mode = "subscription", // Use subscription mode
                 SuccessUrl = "http://app.yourbookingplatform.com" + Url.Action("SavePayment", "User", new { UserID = UserID, PackageID = PackageID }),
-                CancelUrl = "http://app.yourbookingplatform.com" + Url.Action("Login", "Account")
+                CancelUrl = "http://app.yourbookingplatform.com" + Url.Action("Login", "Account"),
+                Metadata = new Dictionary<string, string> // Add metadata
+        {
+            { "UserID", UserID },
+            { "PackageID", PackageID.ToString() }
+        }
             };
             var session = sessionService.Create(sessionOptions);
 

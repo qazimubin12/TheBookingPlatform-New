@@ -36,6 +36,7 @@ using System.Security.Cryptography;
 using NodaTime;
 using TheBookingPlatform.Models;
 using System.Collections.Concurrent;
+using System.Management.Instrumentation;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -1102,7 +1103,8 @@ namespace TheBookingPlatform.Controllers
                         }
 
                     }
-                   
+
+                    JustAChecking(employee.GoogleCalendarID, googleCalendar.ApiKEY, company.TimeZone);
                 }
                 catch (Exception ex)
                 {
@@ -1126,7 +1128,119 @@ namespace TheBookingPlatform.Controllers
             return Json(new { success = true, Message = "Its Done" }, JsonRequestBehavior.AllowGet);
         }
 
+        public class CalendarEvent
+        {
+            [JsonProperty("kind")]
+            public string Kind { get; set; }
 
+            [JsonProperty("etag")]
+            public string ETag { get; set; }
+
+            [JsonProperty("id")]
+            public string Id { get; set; }
+
+            [JsonProperty("status")]
+            public string Status { get; set; }
+
+            [JsonProperty("htmlLink")]
+            public string HtmlLink { get; set; }
+
+            [JsonProperty("created")]
+            public DateTime Created { get; set; }
+
+            [JsonProperty("updated")]
+            public DateTime Updated { get; set; }
+
+            [JsonProperty("summary")]
+            public string Summary { get; set; }
+
+            [JsonProperty("description")]
+            public string Description { get; set; }
+
+            [JsonProperty("creator")]
+            public Creator Creator { get; set; }
+
+            [JsonProperty("organizer")]
+            public Organizer Organizer { get; set; }
+
+            [JsonProperty("start")]
+            public EventDateTime Start { get; set; }
+
+            [JsonProperty("end")]
+            public EventDateTime End { get; set; }
+
+            [JsonProperty("iCalUID")]
+            public string ICalUID { get; set; }
+
+            [JsonProperty("sequence")]
+            public int Sequence { get; set; }
+
+            [JsonProperty("reminders")]
+            public Reminders Reminders { get; set; }
+
+            [JsonProperty("eventType")]
+            public string EventType { get; set; }
+        }
+
+        public class CalendarEvents
+        {
+            [JsonProperty("items")]
+            public List<CalendarEvent> Items { get; set; }
+        }
+        public void JustAChecking(string googleCalendarID,string AccessToken,string TimeZone)
+        {
+
+            var events = GetEventsForCurrentMonth(googleCalendarID, AccessToken, TimeZone);
+            foreach (var item in events)
+            {
+
+                if (item.Status == "cancelled")
+                {
+                    var appo =  AppointmentServices.Instance.GetAllAppointmentWithGCalEventID(item.Id);
+                    if (appo != null)
+                    {
+                        appo.IsCancelled = true;
+                        AppointmentServices.Instance.UpdateAppointment(appo);
+                    }
+                }
+
+            }
+        }
+
+
+        private List<CalendarEvent> GetEventsForCurrentMonth(string googleCalendarID, string accessToken, string TimeZone)
+        {
+            var client = new RestClient("https://www.googleapis.com/calendar/v3");
+            var request = new RestRequest($"calendars/{googleCalendarID}/events", Method.Get);
+
+            // Add authentication (e.g., OAuth token)
+            //request.AddHeader("Authorization", "Bearer " + accessToken);
+            request.AddParameter("key", accessToken, ParameterType.QueryString);
+
+            var now = DateTime.Now;
+            var currentTime = TimeZoneConverter.ConvertToTimeZone(now, TimeZone).AddDays(-1);
+
+            var startOfMonth = currentTime.ToString("yyyy-MM-ddTHH:mm:ssZ");
+            var startOfNextMonth = currentTime.AddDays(3).ToString("yyyy-MM-ddTHH:mm:ssZ");
+
+            request.AddParameter("timeMin", startOfMonth);
+            request.AddParameter("timeMax", startOfNextMonth);
+
+            request.AddParameter("showDeleted", true); // Include canceled events
+
+            var response = client.Execute(request);
+
+            if (response.IsSuccessful)
+            {
+                // Parse and return the events
+                var calendarEvents = JsonConvert.DeserializeObject<CalendarEvents>(response.Content).Items;
+
+                //var calendarEvents = JsonConvert.DeserializeObject(response.Content);
+                return calendarEvents;
+            }
+
+            throw new Exception("Failed to fetch events for the current month");
+        }
 
 
         [HttpGet]
@@ -4344,67 +4458,77 @@ namespace TheBookingPlatform.Controllers
 
         public string GenerateonGoogleCalendar(Appointment appointment, string Services, string Business)
         {
-            int year = appointment.Date.Year;
-            int month = appointment.Date.Month;
-            int day = appointment.Date.Day;
-            int starthour = appointment.Time.Hour;
-            int startminute = appointment.Time.Minute;
-            int startseconds = appointment.Time.Second;
-
-            int endhour = appointment.EndTime.Hour;
-            int endminute = appointment.EndTime.Minute;
-            int endseconds = appointment.EndTime.Second;
-
-            DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
-            DateTime EndDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
-
-            DateTime currentDateTime = DateTime.Now;
-            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
-
-            var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(Business);
-            var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == Business).FirstOrDefault();
-            var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
-            var url = "https://www.googleapis.com/calendar/v3/calendars/primary/events".Replace("primary", employee.GoogleCalendarID);
-            var finalUrl = new System.Uri(url);
-            RestClient restClient = new RestClient(finalUrl);
-            RestRequest request = new RestRequest();
-            var calendarEvent = new Event();
-            calendarEvent.Summary = "Appointment at: " + Business;
-            calendarEvent.Description = Services;
-            var TimeZone = TimeZoneInfo.Local.Id;
-            calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone };
-            calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone };
-
-            var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
+            try
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
+                RefreshToken(Business);
+                int year = appointment.Date.Year;
+                int month = appointment.Date.Month;
+                int day = appointment.Date.Day;
+                int starthour = appointment.Time.Hour;
+                int startminute = appointment.Time.Minute;
+                int startseconds = appointment.Time.Second;
 
-            request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-            request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
-            request.AddHeader("Accept", "application/json");
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("application/json", model, ParameterType.RequestBody);
+                int endhour = appointment.EndTime.Hour;
+                int endminute = appointment.EndTime.Minute;
+                int endseconds = appointment.EndTime.Second;
 
-            var response = restClient.Post(request);
+                DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
+                DateTime EndDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                JObject jsonObj = JObject.Parse(response.Content);
-                appointment.GoogleCalendarEventID = jsonObj["id"].ToString();
-                AppointmentServices.Instance.UpdateAppointment(appointment);
-                return "Saved";
+                DateTime currentDateTime = DateTime.Now;
+                TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
+
+                var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(Business);
+                var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == Business).FirstOrDefault();
+                var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                var url = "https://www.googleapis.com/calendar/v3/calendars/primary/events".Replace("primary", employee.GoogleCalendarID);
+                var finalUrl = new System.Uri(url);
+                RestClient restClient = new RestClient(finalUrl);
+                RestRequest request = new RestRequest();
+                var calendarEvent = new Event();
+                calendarEvent.Summary = "Appointment at: " + Business;
+                calendarEvent.Description = Services;
+                var TimeZone = TimeZoneInfo.Local.Id;
+                calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone };
+                calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone };
+
+                var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
+
+                request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
+                request.AddHeader("Accept", "application/json");
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", model, ParameterType.RequestBody);
+
+                var response = restClient.Post(request);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    JObject jsonObj = JObject.Parse(response.Content);
+                    appointment.GoogleCalendarEventID = jsonObj["id"].ToString();
+                    AppointmentServices.Instance.UpdateAppointment(appointment);
+                    return "Saved";
+                }
+                else
+                {
+                    var history = new History();
+                    history.Note = "Error" + response.Content;
+                    history.Business = "Error";
+                    history.Date = DateTime.Now;
+                    HistoryServices.Instance.SaveHistory(history);
+                    return "Error" + response.Content;
+
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var history = new History();
-                history.Note = "Error" + response.Content;
-                history.Business = "Error";
-                history.Date = DateTime.Now;
-                HistoryServices.Instance.SaveHistory(history);
-                return "Error" + response.Content;
 
+                return "Error" + ex.Message;
             }
+
         }
 
 

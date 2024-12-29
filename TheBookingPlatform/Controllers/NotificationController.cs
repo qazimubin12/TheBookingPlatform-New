@@ -21,7 +21,7 @@ namespace TheBookingPlatform.Controllers
             {
                 if (listofNotifications.Select(x => x.Code).Contains(item.Code) == false)
                 {
-                    listofNotifications.Add(new NotificationModel { Code = item.Code, Link = item.Link, Title = item.Title,Date = item.Date.ToString("yyyy-MM-dd HH:mm") });
+                    listofNotifications.Add(new NotificationModel {Description = item.Description, Code = item.Code, Link = item.Link, Title = item.Title,Date = item.Date.ToString("yyyy-MM-dd HH:mm") });
                 }
             }
             model.Notifications = listofNotifications;
@@ -37,7 +37,8 @@ namespace TheBookingPlatform.Controllers
                 var notification = NotificationServices.Instance.GetNotificationWRTBusiness(Code).FirstOrDefault();
                 model.Title = notification.Title;
                 model.Code = notification.Code;
-                model.Link = notification.Link; 
+                model.Link = notification.Link;
+                model.Description = notification.Description;
             }
             return View(model);
         }
@@ -56,6 +57,7 @@ namespace TheBookingPlatform.Controllers
                 notification.Link = model.Link;
                 notification.Date = DateTime.Now;
                 notification.Code = code;
+                notification.Description = model.Description;
                 NotificationServices.Instance.SaveNotification(notification);
 
             }
@@ -85,6 +87,7 @@ namespace TheBookingPlatform.Controllers
             {
                 notification.Title = model.Title;
                 notification.Link = model.Link;
+                notification.Description = model.Description;
                 notification.Date = DateTime.Now;
                 NotificationServices.Instance.UpdateNotification(notification);
 

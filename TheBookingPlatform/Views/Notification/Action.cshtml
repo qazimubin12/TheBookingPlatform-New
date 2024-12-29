@@ -32,32 +32,43 @@
                         Create Notification
                     </h4>
                 }
-                <div class="row">
-                    <div class="col-md-6">
-                        <input type="hidden" id="ID" value="@Model.ID" />
-                        <div class="form-group">
-                            <div class="input-group input-group-dynamic">
-                                <label>
-                                    Title
-                                </label>
-                                <input type="text" value="@Model.Title" class="form-control" name="Title" />
-                            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="hidden" id="ID" value="@Model.ID" />
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+                            <label>
+                                Title
+                            </label>
+                            <input type="text" value="@Model.Title" class="form-control" name="Title" />
                         </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <div class="input-group input-group-dynamic">
-
-                                <label>
-                                    Link
-                                </label>
-                                <input type="text" value="@Model.Link" class="form-control" name="Link" />
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
+                            <label>
+                                Description
+                            </label>
+                            <textarea class="form-control" id="Description" name="Description">@Model.Description</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="input-group input-group-dynamic">
+
+                            <label>
+                                Link
+                            </label>
+                            <input type="text" value="@Model.Link" class="form-control" name="Link" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 
                 <div class="col-md-12 mt-5" >
                     @if (Model.ID == 0)

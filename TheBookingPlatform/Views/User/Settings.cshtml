@@ -88,24 +88,81 @@
                 <div class="nav-wrapper position-relative end-0 mb-2">
                     <ul class="nav nav-pills nav-fill p-1" role="tablist">
 
+                        @if (User.IsInRole("Super Admin"))
+                        {
+                            <li id="Services" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#services-1" role="tab" aria-controls="services" aria-selected="false">
+                                    Services
+                                </a>
+                            </li>
 
 
+                            <li id="Employees" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="false">
+                                    Emloyees
+                                </a>
+                            </li>
+
+                            <li id="Reviews" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
+                                    Reviews
+                                </a>
+                            </li>
+
+
+
+
+
+                            <li id="Logs" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#logs-2" role="tab" aria-controls="logs" aria-selected="false">
+                                    Logs
+                                </a>
+                            </li>
+
+                            <li id="RebookReminders" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#rebookreminders-2" role="tab" aria-controls="rebook-reminders" aria-selected="false">
+                                    Rebook Reminders
+                                </a>
+                            </li>
+
+                            <li id="EmailTemplate" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#emailtemplate-2" role="tab" aria-controls="email-template" aria-selected="false">
+                                    Email Template
+                                </a>
+                            </li>
+
+
+
+                            <li id="OpeningHours" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#openinghours-2" role="tab" aria-controls="opening-hours" aria-selected="false">
+                                    Opening Hours
+                                </a>
+                            </li>
+
+
+
+                            <li id="PriceChange" class="nav-item">
+                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pricechanges-2" role="tab" aria-controls="price-change" aria-selected="false">
+                                    Price Changes
+                                </a>
+                            </li>
+                        }
                         @if (User.IsInRole("Admin"))
                         {
                             if (inTrial == "No")
                             {
                                 @*if (package.Split(',').Contains("Employees"))
-                                {
+                {
 
 
-                                    <li id="Employees" class="nav-item">
-                                        <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="true">
-                                            Emloyees
-                                        </a>
-                                    </li>
+                    <li id="Employees" class="nav-item">
+                        <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="true">
+                            Emloyees
+                        </a>
+                    </li>
 
 
-                                }*@
+                }*@
                                 if (package.Split(',').Contains("Reviews"))
                                 {
 
@@ -145,7 +202,7 @@
                             else
                             {
 
-                                
+
 
                                 <li id="Reviews" class="nav-item">
                                     <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
