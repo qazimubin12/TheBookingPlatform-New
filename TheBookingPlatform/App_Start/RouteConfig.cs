@@ -19,6 +19,11 @@ namespace TheBookingPlatform
           defaults: new { controller = "Booking", action = "Index" }
       );
             routes.MapRoute(
+    name: "PushNotification",
+    url: "PushNotification/{action}/{id}",
+    defaults: new { controller = "PushNotification", action = "GetVapidPublicKey", id = UrlParameter.Optional }
+);
+            routes.MapRoute(
           name: "GiftCardRoute",
             url: "{businessName}/OnlineGiftCard/{action}",
           defaults: new { controller = "OnlineGiftCard", action = "Index" }

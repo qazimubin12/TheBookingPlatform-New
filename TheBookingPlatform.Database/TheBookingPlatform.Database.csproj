@@ -127,6 +127,14 @@
     <Compile Include="Migrations\202412291905306_notifciationdescription.Designer.cs">
       <DependentUpon>202412291905306_notifciationdescription.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202412301059532_notificationsnewo.cs" />
+    <Compile Include="Migrations\202412301059532_notificationsnewo.Designer.cs">
+      <DependentUpon>202412301059532_notificationsnewo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202412301705200_removedsomes.cs" />
+    <Compile Include="Migrations\202412301705200_removedsomes.Designer.cs">
+      <DependentUpon>202412301705200_removedsomes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -183,6 +191,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202412291905306_notifciationdescription.resx">
       <DependentUpon>202412291905306_notifciationdescription.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412301059532_notificationsnewo.resx">
+      <DependentUpon>202412301059532_notificationsnewo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412301705200_removedsomes.resx">
+      <DependentUpon>202412301705200_removedsomes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

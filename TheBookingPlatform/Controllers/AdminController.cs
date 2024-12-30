@@ -18,6 +18,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Notification = TheBookingPlatform.Entities.Notification;
 using System.ComponentModel.Design;
+using System.Configuration;
+using System.Web.Configuration;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -352,10 +354,11 @@ namespace TheBookingPlatform.Controllers
             return "Success";
 
         }
-
+      
         public ActionResult Dashboard(string StartDate = "", string EndDate = "", string FilterDuration = "")
         {
             AdminViewModel model = new AdminViewModel();
+
             var user = UserManager.FindById(User.Identity.GetUserId()); 
             model.SignedInUser = user;
             if (model.SignedInUser != null)

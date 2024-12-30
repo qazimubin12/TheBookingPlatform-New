@@ -34,6 +34,7 @@ using File = TheBookingPlatform.Entities.File;
 using Service = TheBookingPlatform.Entities.Service;
 using System.Data.Entity.Migrations.History;
 using Microsoft.Office.Interop.Word;
+using Microsoft.AspNet.SignalR;
 
 
 namespace TheBookingPlatform.Controllers
@@ -91,6 +92,12 @@ namespace TheBookingPlatform.Controllers
         #endregion
         // GET: Appointment
 
+        public ActionResult SendNotification(string message)
+        {
+            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+            context.Clients.All.receiveNotification(message); // Trigger the notification
+            return Content("Notification sent: " + message);
+        }
         public JsonResult SendAppointmentReminder(int ID)
         {
             var apppointment = AppointmentServices.Instance.GetAppointment(ID);

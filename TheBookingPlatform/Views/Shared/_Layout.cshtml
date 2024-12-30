@@ -73,8 +73,8 @@
             font-size: 1rem;
         }
 
-        .autocomplete-suggestions{
-            width:35% !important;
+        .autocomplete-suggestions {
+            width: 35% !important;
         }
 
         .loading-spinner-overlay {
@@ -275,9 +275,10 @@
             background: #fff
         }
 
-        #AutoCompletecustomers_2::placeholder{
-            margin-left:5px;
+        #AutoCompletecustomers_2::placeholder {
+            margin-left: 5px;
         }
+
         #ui-datepicker-div.ui-datepicker .ui-state-disabled span {
             color: #ccc
         }
@@ -1163,11 +1164,11 @@
 
 
                                         @*<li class="nav-item " id="AnalysisTAB">
-                                    <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
-                                        <span class="sidenav-mini-icon"> A </span>
-                                        <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
-                                    </a>
-                                </li>*@
+                                                <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
+                                                    <span class="sidenav-mini-icon"> A </span>
+                                                    <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
+                                                </a>
+                                            </li>*@
                                     }
                                     @if (package.Split(',').Contains("Appointments"))
                                     {
@@ -1187,11 +1188,11 @@
                                 <ul class="nav">
 
                                     @*<li class="nav-item " id="AnalysisTAB">
-                                <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
-                                    <span class="sidenav-mini-icon"> A </span>
-                                    <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
-                                </a>
-                            </li>*@
+                                            <a class="nav-link text-white " href="@Url.Action("Analysis", "Admin")">
+                                                <span class="sidenav-mini-icon"> A </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
+                                            </a>
+                                        </li>*@
                                     <li class="nav-item " id="AppointmentsTAB">
                                         <a class="nav-link text-white " href="@Url.Action("Index", "Appointment")">
                                             <span class="sidenav-mini-icon"> AP </span>
@@ -2290,11 +2291,163 @@
     <script src="~/Content/MainTemplate2/assets/js/plugins/smooth-scrollbar.min.js"></script>
     <!-- Kanban scripts -->
 
-    <script src="~/Content/MainTemplate2/assets/js/plugins/dragula/dragula.min.js"></script>
-    <script src="~/Content/MainTemplate2/assets/js/plugins/jkanban/jkanban.js"></script>
     <script src="~/Content/MainTemplate2/assets/js/plugins/chartjs.min.js"></script>
-    <script src="~/Content/MainTemplate2/assets/js/plugins/world.js"></script>
     <script src="~/Content/MainTemplate2/assets/js/plugins/choices.min.js"></script>
+
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="/signalr/hubs"></script>
+
+    <script>
+        // Register the Service Worker
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function (registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(function (error) {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            } else {
+                console.log('Service Workers are not supported in this browser.');
+            }
+        }
+
+        // Ask for Notification Permission (only once)
+        //function requestNotificationPermission() {
+        //    // Check if the user has already been prompted
+        //    if (localStorage.getItem('notificationPermission')) {
+        //        console.log('Notification permission already handled.');
+        //        return;
+        //    }
+
+        //    if ('Notification' in window) {
+        //        Notification.requestPermission().then(function (permission) {
+        //            // Save permission status in localStorage
+        //            localStorage.setItem('notificationPermission', permission);
+
+        //            if (permission === 'granted') {
+        //                console.log('User granted notification permission.');
+        //            } else if (permission === 'denied') {
+        //                console.log('User denied notification permission.');
+        //            } else {
+        //                console.log('User dismissed the notification prompt.');
+        //            }
+        //        });
+        //    } else {
+        //        console.log('Notifications are not supported in this browser.');
+        //    }
+        //}
+       
+        // Initialize Service Worker and Request Notification Permission
+        registerServiceWorker();
+
+
+        // Fetch the VAPID public key from the server
+        function getVapidPublicKey() {
+            $.ajax({
+                url: '/PushNotification/GetVapidPublicKey',
+                method: 'GET',
+                success: function (publicKey) {
+                    console.log("VAPID Public Key:", publicKey);
+
+                    // Use the retrieved public key in your push subscription logic
+                    subscribeToPush(publicKey);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching VAPID Public Key:", error);
+                }
+            });
+        }
+
+        function subscribeToPush(publicKey) {
+            if (!publicKey) {
+                console.error("Public Key is undefined.");
+                return;
+            }
+
+            const applicationServerKey = urlBase64ToUint8Array(publicKey);
+
+            navigator.serviceWorker.ready.then(function (registration) {
+                registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: applicationServerKey
+                }).then(function (subscription) {
+                    console.log("Subscription:", subscription);
+
+                    // Send subscription to server using AJAX
+                    $.ajax({
+                        url: '/PushNotification/Subscribe',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(subscription),
+                        success: function () {
+                            console.log("Subscription saved on server.");
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error saving subscription on server:", error);
+                        }
+                    });
+                }).catch(function (error) {
+                    console.error("Push subscription failed:", error);
+                });
+            });
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+
+
+        // Utility to convert the public key to a Uint8Array
+        function urlBase64ToUint8Array(base64String) {
+            const padding = "=".repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+            const rawData = window.atob(base64);
+            return new Uint8Array(rawData.split("").map((char) => char.charCodeAt(0)));
+        }
+
+        // Call the function to retrieve the public key and set up push notifications
+        getVapidPublicKey();
+
+        //$(function () {
+        //    var notificationHub = $.connection.notificationHub;
+
+        //    // Define what happens when the server sends a message
+        //    notificationHub.client.receiveNotification = function (message) {
+        //        if (Notification.permission === 'granted' && navigator.serviceWorker) {
+        //            navigator.serviceWorker.ready.then(function (registration) {
+        //                registration.showNotification('New Notification', {
+        //                    body: message,
+        //                    icon: '/Content/TBPContent/v2color.png', // Optional icon
+        //                    tag: 'signalr-push' // Optional grouping tag
+        //                });
+        //            });
+        //        } else {
+        //            console.log('Notifications are not allowed or service worker is not ready.');
+        //        }
+        //    };
+
+        //    // Start the SignalR connection
+        //    $.connection.hub.start().done(function () {
+        //        console.log("SignalR connected");
+        //    });
+        //});
+    </script>
+
+
     <script type="text/javascript">
 
         function UpdateUserRead(ID, Link,Title,Description) {
@@ -2331,6 +2484,15 @@
                 }
             });
         }
+
+        function escapeString(str) {
+            return str
+                .replace(/'/g, "\\'") // Escape single quotes
+                .replace(/"/g, '\\"') // Escape double quotes
+                .replace(/\n/g, '\\n') // Escape newlines
+                .replace(/\r/g, '\\r'); // Escape carriage returns
+        }
+
         function GetNotifications() {
 
             $.ajax({
@@ -2345,7 +2507,7 @@
                             // Construct the HTML for each notification
                             notificationListHtml += `
         <li class="mb-2">
-            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}','${notification.Title}','${notification.Description}')">
+            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}','${notification.Title}','${escapeString(notification.Description)} ')">
                 <div class="d-flex align-items-center py-1">
                     <span class="material-icons">email</span>
                     <div class="ms-2">
@@ -2693,6 +2855,7 @@
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
     </script>
+
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
