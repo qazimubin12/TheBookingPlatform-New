@@ -23,6 +23,7 @@ namespace TheBookingPlatform.Entities
         public string LastPaymentDate { get; set; }
         public DateTime RegisteredDate { get; set; }
         public string ReadNotifications { get; set; }
+        public string PlayerID { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

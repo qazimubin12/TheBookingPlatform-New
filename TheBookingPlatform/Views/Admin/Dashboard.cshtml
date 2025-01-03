@@ -40,7 +40,7 @@
     }
     <h3 style="font-size:1.6rem;">Dashboard - Welcome @Model.SignedInUser.Name  - (@Model.SignedInUser.Company)</h3>
     <hr />
-
+    <button class="btn btn-primary" type="button" onclick="sendPushNotification('this is test','hello this is notifc')">TEST</button>
     @if (Model.Company != null)
     {
         if (Model.OpeningHours.Count() > 7)
@@ -91,12 +91,7 @@
 </div>
 
 <div class="row" style="padding-left: 0; padding-right: 0;">
-    <button id="sendNotificationBtn">Send Test Notification</button>
-    <script>
-        document.getElementById("sendNotificationBtn").addEventListener("click", function () {
-            fetch('/PushNotification/SendNotification?message=Hello from Server');
-        });
-    </script>
+    
 
     @if (!User.IsInRole("Calendar"))
     {
@@ -404,12 +399,135 @@
             });
 
         });
+
+        
+        
+        
         LoadChart();
 
 
     });
 
 
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(function () {
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function () {
+            OneSignal.init({
+                appId: "7bd124a0-dd61-43bf-82b3-23c469448c73",
+                safari_web_id: "web.onesignal.auto.0654afc0-ce06-4b31-9757-37165e976417",
+                notifyButton: {
+                    enable: true, // Enables the notification subscription bell
+                },
+            });
+
+        });
+    });
+    const playerData = {
+        app_id: "7bd124a0-dd61-43bf-82b3-23c469448c73",
+        device_type: getDeviceType()
+    };
+    sendOneSignalPlayerData(playerData);
+
+
+    function sendOneSignalPlayerData(data) {
+        $.ajax({
+            url: 'https://onesignal.com/api/v1/players',
+            type: 'POST',
+            contentType: 'application/json',
+            accept: 'application/json',
+            data: JSON.stringify(data),
+            success: function (response) {
+                console.log("Success:", response);
+                updatePlayerID(response.id);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+            }
+        });
+    }
+
+    // Example usage:
+    function getDeviceType() {
+        const userAgent = navigator.userAgent;
+
+        if (/iPhone|iPad|iPod/i.test(userAgent)) {
+            return 0; // iOS
+        } else if (/Android/i.test(userAgent)) {
+            return 1; // Android
+        } else if (/Linux/i.test(userAgent) && /Silk/i.test(userAgent)) {
+            return 2; // Amazon (Silk browser)
+        } else if (/Windows Phone/i.test(userAgent)) {
+            return 3; // WindowsPhone
+        } else if (/Chrome/i.test(userAgent) && /Apps/i.test(userAgent)) {
+            return 4; // Chrome Apps / Extensions
+        } else if (/Chrome/i.test(userAgent) && /Web Push/i.test(userAgent)) {
+            return 5; // Chrome Web Push
+        } else if (/Windows NT/i.test(userAgent) && /Edge/i.test(userAgent)) {
+            return 6; // Windows (WNS)
+        } else if (/Safari/i.test(userAgent) && /AppleWebKit/i.test(userAgent)) {
+            return 7; // Safari
+        } else if (/Firefox/i.test(userAgent)) {
+            return 8; // Firefox
+        } else if (/Macintosh/i.test(userAgent)) {
+            return 9; // MacOS
+        } else if (/Alexa/i.test(userAgent)) {
+            return 10; // Alexa
+        } else {
+            return 0; // Default to iOS if not detected
+        }
+    }
+    function updatePlayerID(playerID) {
+        $.ajax({
+            url: '/Admin/UpdatePlayerID', // Change to your controller and method
+            type: 'POST',
+            data: { PlayerID: playerID },
+            success: function (data) {
+                if (data.success) {
+                    console.log(data.Message);
+                } else {
+                    console.log(data.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(data.Message);
+            }
+        });
+    }
+
+    function sendPushNotification(heading, description) {
+        const url = "https://onesignal.com/api/v1/notifications";
+        const appId = "7bd124a0-dd61-43bf-82b3-23c469448c73"; // Replace with your OneSignal App ID
+        const apiKey = "os_v2_app_ppisjig5mfb37avtepcgsremomxrpknpvhvusan2nb2bl6bpskegnslatebc6ka2rdtb4xgt5hbqhbbwzhqpt6ambmlybr6pl46oedy"; // Replace with your REST API Key
+
+        const payload = {
+            app_id: appId,
+            included_segments: ["All"], // Target subscribed users
+            headings: { en: "Hello!" }, // Notification title
+            contents: { en: "This is a test push notification." }, // Notification content
+            url: "https://app.yourbookingplatform.com", // Optional: Link to open when clicked
+        };
+        try {
+            const response = fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: `Basic ${apiKey}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                const data = response.json();
+                console.log("Notification sent successfully:", data);
+            } else {
+                console.error("Failed to send notification:", response.status, response.statusText);
+            }
+        }
+        catch (error) {
+            console.error("Error sending push notification:", error);
+        }
+    }
 
 
 </script>

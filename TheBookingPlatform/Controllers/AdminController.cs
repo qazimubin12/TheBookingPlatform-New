@@ -792,6 +792,49 @@ namespace TheBookingPlatform.Controllers
 
         }
 
+        [HttpPost]
+        public JsonResult UpdatePlayerID(string PlayerID)
+        {
+            var user = UserManager.FindById(User.Identity.GetUserId());
+            if(user != null)
+            {
+                user.PlayerID = PlayerID;
+                UserManager.Update(user);
+            }
+            return Json(new { success = true, Message = "Player ID Update Success" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        private const string OneSignalApiUrl = "https://onesignal.com/api/v1/notifications";
+
+        public async Task<bool> SendNotificationToUsers(string heading, string message)
+        {
+            var playerIds = UserManager.Users.Select(u => u.PlayerID).ToList(); // Example: Retrieve Player IDs from the database
+
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", "Basic " + "os_v2_app_ppisjig5mfb37avtepcgsremomxrpknpvhvusan2nb2bl6bpskegnslatebc6ka2rdtb4xgt5hbqhbbwzhqpt6ambmlybr6pl46oedy");
+
+                var data = new
+                {
+                    app_id = "7bd124a0-dd61-43bf-82b3-23c469448c73",
+                    headings = new { en = heading },
+                    contents = new { en = message },
+                    include_player_ids = playerIds // List of Player IDs
+                };
+
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(OneSignalApiUrl, httpContent);
+                return response.IsSuccessStatusCode;
+            }
+
+        }
+
+
+
         [HttpGet]
         public ActionResult Analysis()
         {

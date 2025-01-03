@@ -54,7 +54,65 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
     <script src="~/Content/MainTemplate2/assets/js/plugins/moment.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
+    @*<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>*@
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/OneSignalSDKWorker.js')
+                .then(function (registration) {
+                    console.log('ServiceWorker registration successful with scope:', registration.scope);
+                }).catch(function (error) {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        } else {
+            console.warn('Service workers are not supported by this browser.');
+        }
+
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(function () {
+            window.OneSignal = window.OneSignal || [];
+            OneSignal.push(function () {
+                OneSignal.init({
+                    appId: "7bd124a0-dd61-43bf-82b3-23c469448c73",
+                    safari_web_id: "web.onesignal.auto.0654afc0-ce06-4b31-9757-37165e976417",
+                    notifyButton: {
+                        enable: true, // Enables the notification subscription bell
+                    },
+                });
+
+            });
+        });
+        // Check if permission has already been granted or denied
+        if (localStorage.getItem('notificationPermission') !== 'granted') {
+            // Check current permission status
+            if (Notification.permission === 'granted') {
+                console.log('Notification permission already granted.');
+                localStorage.setItem('notificationPermission', 'granted');
+            } else if (Notification.permission !== 'denied') {
+                // If permission is not denied, request it
+                OneSignal.Notifications.requestPermission()
+                    .then((permission) => {
+                        if (permission === 'granted') {
+                            console.log('Notification permission granted.');
+                            localStorage.setItem('notificationPermission', 'granted');
+                        } else {
+                            console.log('Notification permission denied.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error requesting notification permission:', error);
+                    });
+            } else {
+                console.log('Notification permission was denied previously.');
+            }
+        } else {
+            console.log('Notification permission already granted (cached).');
+        }
+        
+
+
+    </script>
     <!-- Nepcha Analytics (nepcha.com) -->
     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
     <style>
@@ -2294,157 +2352,9 @@
     <script src="~/Content/MainTemplate2/assets/js/plugins/chartjs.min.js"></script>
     <script src="~/Content/MainTemplate2/assets/js/plugins/choices.min.js"></script>
 
-    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
-    <script src="/signalr/hubs"></script>
 
     <script>
-        // Register the Service Worker
-        function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function (registration) {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(function (error) {
-                        console.error('Service Worker registration failed:', error);
-                    });
-            } else {
-                console.log('Service Workers are not supported in this browser.');
-            }
-        }
-
-        // Ask for Notification Permission (only once)
-        //function requestNotificationPermission() {
-        //    // Check if the user has already been prompted
-        //    if (localStorage.getItem('notificationPermission')) {
-        //        console.log('Notification permission already handled.');
-        //        return;
-        //    }
-
-        //    if ('Notification' in window) {
-        //        Notification.requestPermission().then(function (permission) {
-        //            // Save permission status in localStorage
-        //            localStorage.setItem('notificationPermission', permission);
-
-        //            if (permission === 'granted') {
-        //                console.log('User granted notification permission.');
-        //            } else if (permission === 'denied') {
-        //                console.log('User denied notification permission.');
-        //            } else {
-        //                console.log('User dismissed the notification prompt.');
-        //            }
-        //        });
-        //    } else {
-        //        console.log('Notifications are not supported in this browser.');
-        //    }
-        //}
-       
-        // Initialize Service Worker and Request Notification Permission
-        registerServiceWorker();
-
-
-        // Fetch the VAPID public key from the server
-        function getVapidPublicKey() {
-            $.ajax({
-                url: '/PushNotification/GetVapidPublicKey',
-                method: 'GET',
-                success: function (publicKey) {
-                    console.log("VAPID Public Key:", publicKey);
-
-                    // Use the retrieved public key in your push subscription logic
-                    subscribeToPush(publicKey);
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error fetching VAPID Public Key:", error);
-                }
-            });
-        }
-
-        function subscribeToPush(publicKey) {
-            if (!publicKey) {
-                console.error("Public Key is undefined.");
-                return;
-            }
-
-            const applicationServerKey = urlBase64ToUint8Array(publicKey);
-
-            navigator.serviceWorker.ready.then(function (registration) {
-                registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: applicationServerKey
-                }).then(function (subscription) {
-                    console.log("Subscription:", subscription);
-
-                    // Send subscription to server using AJAX
-                    $.ajax({
-                        url: '/PushNotification/Subscribe',
-                        method: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify(subscription),
-                        success: function () {
-                            console.log("Subscription saved on server.");
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("Error saving subscription on server:", error);
-                        }
-                    });
-                }).catch(function (error) {
-                    console.error("Push subscription failed:", error);
-                });
-            });
-        }
-
-        function urlBase64ToUint8Array(base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding)
-                .replace(/\-/g, '+')
-                .replace(/_/g, '/');
-
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-
-            for (let i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
-        }
-
-
-
-        // Utility to convert the public key to a Uint8Array
-        function urlBase64ToUint8Array(base64String) {
-            const padding = "=".repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-            const rawData = window.atob(base64);
-            return new Uint8Array(rawData.split("").map((char) => char.charCodeAt(0)));
-        }
-
-        // Call the function to retrieve the public key and set up push notifications
-        getVapidPublicKey();
-
-        //$(function () {
-        //    var notificationHub = $.connection.notificationHub;
-
-        //    // Define what happens when the server sends a message
-        //    notificationHub.client.receiveNotification = function (message) {
-        //        if (Notification.permission === 'granted' && navigator.serviceWorker) {
-        //            navigator.serviceWorker.ready.then(function (registration) {
-        //                registration.showNotification('New Notification', {
-        //                    body: message,
-        //                    icon: '/Content/TBPContent/v2color.png', // Optional icon
-        //                    tag: 'signalr-push' // Optional grouping tag
-        //                });
-        //            });
-        //        } else {
-        //            console.log('Notifications are not allowed or service worker is not ready.');
-        //        }
-        //    };
-
-        //    // Start the SignalR connection
-        //    $.connection.hub.start().done(function () {
-        //        console.log("SignalR connected");
-        //    });
-        //});
+      
     </script>
 
 

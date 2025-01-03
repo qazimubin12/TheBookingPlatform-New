@@ -456,12 +456,12 @@
                                     </label>
                                     @if (Model.ID == 0)
                                     {
-                                        <input type="time" id="Time" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="Time">
+                                        <input type="text" id="Time" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="Time">
 
                                     }
                                     else
                                     {
-                                        <input type="time" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
+                                        <input type="text" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
                                     }
                                 </div>
                             </div>

@@ -34,7 +34,7 @@ using File = TheBookingPlatform.Entities.File;
 using Service = TheBookingPlatform.Entities.Service;
 using System.Data.Entity.Migrations.History;
 using Microsoft.Office.Interop.Word;
-using Microsoft.AspNet.SignalR;
+using Stripe;
 
 
 namespace TheBookingPlatform.Controllers
@@ -91,13 +91,7 @@ namespace TheBookingPlatform.Controllers
 
         #endregion
         // GET: Appointment
-
-        public ActionResult SendNotification(string message)
-        {
-            var context = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-            context.Clients.All.receiveNotification(message); // Trigger the notification
-            return Content("Notification sent: " + message);
-        }
+        
         public JsonResult SendAppointmentReminder(int ID)
         {
             var apppointment = AppointmentServices.Instance.GetAppointment(ID);
@@ -3941,11 +3935,64 @@ namespace TheBookingPlatform.Controllers
                         SendEmail(customer.Email, "Appointment Cancellation", emailBody);
                     }
                 }
+                var Message =  HandleRefund(appointment.PaymentSession,company.APIKEY,appointment.ID);
+                var history = new History();
+                history.Note = Message;
+                history.CustomerName = customer.FirstName + " " + customer.LastName;
+                history.AppointmentID = appointment.ID;
+                history.Type = "General";
+                history.Business = appointment.Business;
+                history.Date = DateTime.Now;
+                history.EmployeeName = employee?.Name;
+                history.Name = "Appointment Refunded";
+                HistoryServices.Instance.SaveHistory(history);
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
             else
             {
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public string HandleRefund(string PaymentSession,string APIKEY,int appointmentID)
+        {
+            try
+            {
+                // Set your secret API key
+                StripeConfiguration.ApiKey = APIKEY;
+
+                // Retrieve the PaymentIntent
+                var paymentIntentService = new PaymentIntentService();
+                var paymentIntent = paymentIntentService.Get(PaymentSession);
+
+                // Get the associated Charge ID
+                var chargeId = paymentIntent.LatestChargeId;
+
+                if (string.IsNullOrEmpty(chargeId))
+                {
+                    return "No charge found for this appointment."+"AppointmentID: "+appointmentID;
+                }
+
+                // Create a refund for the charge
+                var refundService = new RefundService();
+                var refundOptions = new RefundCreateOptions
+                {
+                    Charge = chargeId,
+                };
+
+                // Optionally set the amount (in cents)
+
+                refundOptions.Amount = paymentIntent.Amount;
+
+
+
+                var refund = refundService.Create(refundOptions);
+
+                return  "Refund successful for Appointment ID: "+appointmentID;
+            }
+            catch (StripeException ex)
+            {
+                return "Refund Failed with Error: " + ex.Message + " AppointmentID : "+appointmentID;
             }
         }
 

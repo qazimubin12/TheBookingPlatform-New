@@ -109,7 +109,7 @@
     </div>
 </div>
 
-<div id="myModal" class="modal">
+<div id="myModal2" class="modal">
     <div class="modal-content">
         <div class="col-md-12">
             <button class="close-button btn btn-danger btn-sm btn-round" id="closeModal" style="padding-top: 0px;padding-left: 10px;float:right;padding-right: 10px;padding-bottom: 0px;font-size: large;">&times;</button>
@@ -148,7 +148,7 @@
 <script>
 
     function ShowGenerateNumberPopup(ID) {
-        $("#myModal").fadeIn();
+        $("#myModal2").fadeIn();
         $("#Customer").val($("#CustomerID").val());
         $("#LoyaltyCardIDModal").val(ID);
         var randomNumber = Math.floor(100000000000 + Math.random() * 900000000000);
@@ -177,7 +177,7 @@
     $(document).ready(function () {
 
         $("#closeModal").on("click", function () {
-            $("#myModal").hide(); // You may need to use the appropriate method to hide the modal based on your modal library (e.g., Bootstrap modal).
+            $("#myModal2").hide(); // You may need to use the appropriate method to hide the modal based on your modal library (e.g., Bootstrap modal).
         });
         var Customer = $("#Customer").val();
 

@@ -136,7 +136,7 @@ namespace TheBookingPlatform.Controllers
         }
 
 
-        
+
 
 
         [HttpPost]
@@ -335,7 +335,7 @@ namespace TheBookingPlatform.Controllers
         [HttpPost]
         public ActionResult UserRegistrationWebHook()
         {
-           
+
 
             try
             {
@@ -458,6 +458,9 @@ namespace TheBookingPlatform.Controllers
                 return RedirectToAction("Register", "Account");
             }
         }
+
+
+
 
         [HttpPost]
         public ActionResult UpdateIsActiveStatus(string ID)
@@ -738,7 +741,7 @@ namespace TheBookingPlatform.Controllers
 
                     throw;
                 }
-               
+
                 json.Data = new { Success = result.Succeeded, Message = string.Join(", ", result.Errors) };
 
 
