@@ -498,24 +498,24 @@
                         bool ShiftAdded = false;
 
                         <text>
-                        {
-                           id: '@item.Employee.ID',
-                           displayorder: @item.Employee.DisplayOrder,
-                           title: '@item.Employee.Name',
-                           image: '@item.Employee.Photo',
+                {
+                    id: '@item.Employee.ID',
+                    displayorder: @item.Employee.DisplayOrder,
+                    title: '@item.Employee.Name',
+                    image: '@item.Employee.Photo',
                     Specialization: '@item.Employee.Specialization',
-                              pricechangePercentage: '@(item.PriceChange != null ? item.PriceChange.Percentage : '0')',
-   pricechangeType: '@(item.PriceChange != null ? item.PriceChange.TypeOfChange : "")',
-   pricechangeID: '@(item.PriceChange != null ? item.PriceChange.ID : 0)',
-                           businessHours:
-                            [
+                    pricechangePercentage: '@(item.PriceChange != null ? item.PriceChange.Percentage : '0')',
+                    pricechangeType: '@(item.PriceChange != null ? item.PriceChange.TypeOfChange : "")',
+                    pricechangeID: '@(item.PriceChange != null ? item.PriceChange.ID : 0)',
+                    businessHours:
+                        [
                             @if (item.Shifts.Count() == 0 || Model.TodayOff)
                             {
                             <text>
                             {
-                            startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             }
                             </text>
                                 ShiftAdded = true;
@@ -541,10 +541,10 @@
                                                         if (shiftExceptionShift.ShiftID == shift.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == Model.SelectedDate.ToString("yyyy-MM-dd") && shiftExceptionShift.IsNotWorking == true)
                                                         {
                                                                  <text>{
-                                                                 startTime: '00:00',
-                                                                 endTime: '23:59',
-                                                                 daysOfWeek: []
-                                                                 },
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
+                            },
                                                                  </text>
                                                             ShiftAdded = true;
                                                             exceptionFound = true;
@@ -553,8 +553,8 @@
                                                         else if ((shiftExceptionShift.ShiftID == shift.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == Model.SelectedDate.ToString("yyyy-MM-dd") && shiftExceptionShift.IsNotWorking == false))
                                                         {
                                                              <text>{
-                                                startTime: '@shiftExceptionShift.StartTime.Trim()',
-                                                endTime: '@shiftExceptionShift.EndTime.Trim()',
+                                startTime: '@shiftExceptionShift.StartTime.Trim()',
+                                endTime: '@shiftExceptionShift.EndTime.Trim()',
                                                 @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
                                                 {
                                                 <text>daysOfWeek: [1]</text>
@@ -590,7 +590,7 @@
 
 
 
-                                                },</text>
+                            },</text>
                                                             exceptionFound = true;
                                                             ShiftAdded = true;
                                                             break; // Break if an exception is found
@@ -602,8 +602,8 @@
                                                         if (shift.RecurShift.RecurEnd == "Custom Date" && DateTime.Parse(shift.RecurShift.RecurEndDate).Date >= Model.SelectedDate.Date)
                                                         {
                                                                         <text>{
-startTime: '@shift.Shift.StartTime.Trim()',
-endTime: '@shift.Shift.EndTime.Trim()',
+                                startTime: '@shift.Shift.StartTime.Trim()',
+                                endTime: '@shift.Shift.EndTime.Trim()',
 @if (shift.Shift.Day == "Monday")
 {
 <text>daysOfWeek: [1]</text>
@@ -639,7 +639,7 @@ else
 
 
 
-},</text>
+                            },</text>
                                                                         ShiftAdded = true;
                                                         }
                                                         else if (shift.RecurShift.RecurEnd == "Never")
@@ -647,8 +647,8 @@ else
                                                                     if (shift.Shift.IsRecurring)
                                                                     {
                                                                         <text>{
-startTime: '@shift.Shift.StartTime.Trim()',
-endTime: '@shift.Shift.EndTime.Trim()',
+                                startTime: '@shift.Shift.StartTime.Trim()',
+                                endTime: '@shift.Shift.EndTime.Trim()',
 @if (shift.Shift.Day == "Monday")
 {
 <text>daysOfWeek: [1]</text>
@@ -684,16 +684,16 @@ else
 
 
 
-},</text>
+                            },</text>
                                                                         ShiftAdded = true;
                                                                     }
                                                                        else
                                                                        {
                                                                          <text>{
-    startTime: '00:00',
-    endTime: '23:59',
-    daysOfWeek: []
-    },
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
+                            },
                                                                             </text>
                                                                            ShiftAdded = true;
                                                                        }
@@ -701,10 +701,10 @@ else
                                                         else
                                                 {
                                                                      <text>{
-startTime: '00:00',
-endTime: '23:59',
-daysOfWeek: []
-},
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
+                            },
                                                                         </text>
                                                                        ShiftAdded = true;
                                                 }
@@ -719,8 +719,8 @@ daysOfWeek: []
                                                         if (shift.RecurShift.RecurEnd == "Never")
                                                         {
                                                             <text>{
-                                                startTime: '@shift.Shift.StartTime.Trim()',
-                                                endTime: '@shift.Shift.EndTime.Trim()',
+                                startTime: '@shift.Shift.StartTime.Trim()',
+                                endTime: '@shift.Shift.EndTime.Trim()',
                                                 @if (shift.Shift.Day == "Monday")
                                                 {
                                                 <text>daysOfWeek: [1]</text>
@@ -756,14 +756,14 @@ daysOfWeek: []
 
 
 
-                                                },</text>
+                            },</text>
                                                             ShiftAdded = true;
                                                         }
                                                         else if (DateTime.Parse(shift.RecurShift.RecurEndDate) >= Model.SelectedDate)
                                                         {
                                                             <text>{
-                                                startTime: '@shift.Shift.StartTime.Trim()',
-                                                endTime: '@shift.Shift.EndTime.Trim()',
+                                startTime: '@shift.Shift.StartTime.Trim()',
+                                endTime: '@shift.Shift.EndTime.Trim()',
                                                 @if (shift.Shift.Day == "Monday")
                                                 {
                                                 <text>daysOfWeek: [1]</text>
@@ -799,16 +799,16 @@ daysOfWeek: []
 
 
 
-                                                },</text>
+                            },</text>
                                                             ShiftAdded = true;
                                                         }
                                                         else
                                                         {
                                                              <text>{
-                                                    startTime: '00:00',
-                                                    endTime: '23:59',
-                                                    daysOfWeek: []
-                                                    },
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
+                            },
                                                              </text>
                                                             ShiftAdded = true;
                                                         }
@@ -816,10 +816,10 @@ daysOfWeek: []
                                                     else
                                                     {
                                                      <text>{
-                                                    startTime: '00:00',
-                                                    endTime: '23:59',
-                                                    daysOfWeek: []
-                                                    },
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
+                            },
                                                       </text>
                                                         ShiftAdded = true;
                                                     }
@@ -840,9 +840,9 @@ daysOfWeek: []
                                                                 if (shiftExceptionShift.IsNotWorking)
                                                                 {
                                                                  <text>{
-                            startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             },
                                                                  </text>
                                                                  ShiftAdded = true;
@@ -851,8 +851,8 @@ daysOfWeek: []
                                                                 else
                                                                 {
                                                                     <text>{
-                                                     startTime: '@shiftExceptionShift.StartTime.Trim()',
-                                                     endTime: '@shiftExceptionShift.EndTime.Trim()',
+                                startTime: '@shiftExceptionShift.StartTime.Trim()',
+                                endTime: '@shiftExceptionShift.EndTime.Trim()',
                                                      @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
                                                      {
                                                      <text>daysOfWeek: [1]</text>
@@ -887,7 +887,7 @@ daysOfWeek: []
 
 
                                                          }
-                                                     },</text>
+                            },</text>
                                                                     ShiftAdded = true;
 
                                                                 }
@@ -897,9 +897,9 @@ daysOfWeek: []
                                                             else
                                                             {
                                                                    <text>{
-                                        startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             },
                                                                     </text>
                                                                 ShiftAdded = true;
@@ -910,9 +910,9 @@ daysOfWeek: []
                                                         if (!exceptionFound)
                                                         {
                                                                      <text>{
-                                        startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             },
                                                                     </text>
                                                                 ShiftAdded = true;
@@ -929,8 +929,8 @@ daysOfWeek: []
                                                     if (shift.Shift.Date.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd"))
                                                     {
                                                         <text>{
-                                                startTime: '@shift.Shift.StartTime.Trim()',
-                                                        endTime: '@shift.Shift.EndTime.Trim()',
+                                startTime: '@shift.Shift.StartTime.Trim()',
+                                endTime: '@shift.Shift.EndTime.Trim()',
                                                 @if (shift.Shift.Day == "Monday")
                                                     {
                             <text>daysOfWeek: [1]</text>
@@ -964,16 +964,16 @@ daysOfWeek: []
                                                 <text>daysOfWeek: []</text>
 
                                             }
-                                                },</text>
+                            },</text>
                                                         ShiftAdded = true;
 
                                                     }
                                                     else
                                                     {
                                                           <text>{
-                                        startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             },
                                                           </text>
                                                         ShiftAdded = true;
@@ -985,9 +985,9 @@ daysOfWeek: []
                                         else
                                         {
                                           <text>{
-                                        startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             },
                                           </text>
                                             ShiftAdded = true;
@@ -997,9 +997,9 @@ daysOfWeek: []
                                 else
                                 {
                                      <text>{
-                                        startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             },
                                      </text>
                                     ShiftAdded = true;
@@ -1008,18 +1008,18 @@ daysOfWeek: []
                                 if(ShiftAdded == false)
                                 {
                                    <text>{
-                                        startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             },
                                     </text>
                                    ShiftAdded = true;
                                 }
                             }
 
-                            ]
+                        ]
 
-                        },
+                },
                         </text>
 
                     }
@@ -1032,25 +1032,25 @@ daysOfWeek: []
                     foreach (var item in Model.Employees.Where(x => x.Employee.ID == Model.EmployeeID).OrderBy(n => n.DisplayOrder).ToList())
                     {
                          <text>
-                         {
-                            id: '@item.Employee.ID',
-                             title: '@item.Employee.Name',
+                {
+                    id: '@item.Employee.ID',
+                    title: '@item.Employee.Name',
                     displayorder: @item.Employee.DisplayOrder,
 
-                            image: '@item.Employee.Photo',
-                             Specialization: '@item.Employee.Specialization',
-                               pricechangePercentage: '@(item.PriceChange != null ? item.PriceChange.Percentage : '0')',
-   pricechangeType: '@(item.PriceChange != null ? item.PriceChange.TypeOfChange : "")',
-   pricechangeID: '@(item.PriceChange != null ? item.PriceChange.ID : 0)',
-                            businessHours:
-                            [
+                    image: '@item.Employee.Photo',
+                    Specialization: '@item.Employee.Specialization',
+                    pricechangePercentage: '@(item.PriceChange != null ? item.PriceChange.Percentage : '0')',
+                    pricechangeType: '@(item.PriceChange != null ? item.PriceChange.TypeOfChange : "")',
+                    pricechangeID: '@(item.PriceChange != null ? item.PriceChange.ID : 0)',
+                    businessHours:
+                        [
                                 @if (item.Shifts.Count() == 0)
                             {
                             <text>
                             {
-                            startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             }
                             </text>
                             }
@@ -1068,8 +1068,8 @@ daysOfWeek: []
                                                     if (ttExceptionShift.ShiftID == tt.Shift.ID && ttExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd") && ttExceptionShift.IsNotWorking == false)
                                                     {
                                                      <text>{
-                                                     startTime: '@ttExceptionShift.StartTime.Trim()',
-                                                     endTime: '@ttExceptionShift.EndTime.Trim()',
+                                startTime: '@ttExceptionShift.StartTime.Trim()',
+                                endTime: '@ttExceptionShift.EndTime.Trim()',
                                                      @if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
                                                         {
                             <text>daysOfWeek: [1]</text>
@@ -1103,7 +1103,7 @@ daysOfWeek: []
                                                 <text>daysOfWeek: []</text>
 
                                             }
-                                                    },</text>
+                            },</text>
                                                     exceptionFound = true;
                                                     break; // Break if an exception is found
 
@@ -1112,10 +1112,10 @@ daysOfWeek: []
                                                     else if (ttExceptionShift.ShiftID == tt.Shift.ID && ttExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd") && ttExceptionShift.IsNotWorking == true)
                                                 {
                                                     <text>{
-                                                         startTime: '00:00',
-                                                         endTime: '23:59',
-                                                         daysOfWeek: []
-                                                     },
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
+                            },
                                                     </text>
                                                     exceptionFound = true;
                                                     break; // Break if an exception is found
@@ -1124,8 +1124,8 @@ daysOfWeek: []
                                             if (!exceptionFound)
                                             {
                                                 <text>{
-                                                startTime: '@tt.Shift.StartTime.Trim()',
-                                                        endTime: '@tt.Shift.EndTime.Trim()',
+                                startTime: '@tt.Shift.StartTime.Trim()',
+                                endTime: '@tt.Shift.EndTime.Trim()',
                                                 @if (tt.Shift.Day == "Monday")
                                                     {
                             <text>daysOfWeek: [1]</text>
@@ -1159,7 +1159,7 @@ daysOfWeek: []
                                                 <text>daysOfWeek: []</text>
 
                                             }
-                                                },</text>
+                            },</text>
 
                                             }
 
@@ -1169,8 +1169,8 @@ daysOfWeek: []
                                             if (tt.Shift.Day == DateTime.Parse(Model.GoToDate).DayOfWeek.ToString())
                                             {
                                                 <text>{
-                                             startTime: '@tt.Shift.StartTime.Trim()',
-                                                        endTime: '@tt.Shift.EndTime.Trim()',
+                                startTime: '@tt.Shift.StartTime.Trim()',
+                                endTime: '@tt.Shift.EndTime.Trim()',
                                              @if (tt.Shift.Day == "Monday")
                                                     {
                                              <text>daysOfWeek: [1]</text>
@@ -1204,7 +1204,7 @@ daysOfWeek: []
                                                 <text>daysOfWeek: []</text>
 
                                             }
-                                             },</text>
+                            },</text>
                                             }
 
                                         }
@@ -1214,8 +1214,8 @@ daysOfWeek: []
                                         if (tt.Shift.IsRecurring && tt.RecurShift != null && DateTime.Parse(tt.RecurShift.RecurEndDate) >= DateTime.Parse(Model.GoToDate))
                                         {
                                                 <text>{
-                                                startTime: '@tt.Shift.StartTime.Trim()',
-                                                endTime: '@tt.Shift.EndTime.Trim()',
+                                startTime: '@tt.Shift.StartTime.Trim()',
+                                endTime: '@tt.Shift.EndTime.Trim()',
                                                 @if (tt.Shift.Day == "Monday")
                                                 {
                             <text>daysOfWeek: [1]</text>
@@ -1246,7 +1246,7 @@ daysOfWeek: []
                                                 }
 
 
-                                                },</text>
+                            },</text>
                                         }
                                         else
                                         {
@@ -1262,18 +1262,18 @@ daysOfWeek: []
                                                                 if (shiftExceptionShift.IsNotWorking)
                                                                 {
                                                                        <text>
-                                                                       {
-                            startTime: '00:00',
-                            endTime: '23:59',
-                            daysOfWeek: []
+                            {
+                                startTime: '00:00',
+                                endTime: '23:59',
+                                daysOfWeek: []
                             },
                                                                        </text>
                                                                 }
                                                                 else
                                                                 {
                                                                        <text>{
-                                                startTime: '@shiftExceptionShift.StartTime.Trim()',
-                                                endTime: '@shiftExceptionShift.EndTime.Trim()',
+                                startTime: '@shiftExceptionShift.StartTime.Trim()',
+                                endTime: '@shiftExceptionShift.EndTime.Trim()',
                                                 @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
                                                 {
                                                     <text>daysOfWeek: [1]</text>
@@ -1308,7 +1308,7 @@ daysOfWeek: []
 
                                             }
 
-                                                },</text>
+                            },</text>
                                                             }
                                                         }
                                                     }
@@ -1319,8 +1319,8 @@ daysOfWeek: []
                                                 if (tt.Shift.Date.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd"))
                                                 {
                                                       <text>{
-                                                startTime: '@tt.Shift.StartTime.Trim()',
-                                                endTime: '@tt.Shift.EndTime.Trim()',
+                                startTime: '@tt.Shift.StartTime.Trim()',
+                                endTime: '@tt.Shift.EndTime.Trim()',
                                                 @if (tt.Shift.Day == "Monday")
                                                 {
                             <text>daysOfWeek: [1]</text>
@@ -1355,15 +1355,15 @@ daysOfWeek: []
 
                                             }
 
-                                                },</text>
+                            },</text>
                                                 }
                                             }
                                         }
                                     }
                                      }
                                 }
-                            ]
-                         },
+                        ]
+                },
                          </text>
 
                     }
@@ -1374,83 +1374,98 @@ daysOfWeek: []
             editable: true,  // Allow general event editing globally
 
             resourceOrder: 'displayorder', // Sorting resources by title
-
+            loading: function (isLoading) {
+                console.log("Calendar loading:", isLoading);
+            },
             events: function (info, successCallback, failureCallback) {
                 var startDate = info.startStr;
                 var events = [];
                 $.ajax({
-                    url: '@Url.Action("GetTheDateEvents","Appointment")', // Replace with your actual API endpoint
+                    url: '@Url.Action("GetTheDateEvents", "Appointment")', // Replace with your actual API endpoint
                     method: 'GET',
                     data: { startDate: startDate },
                     success: function (data) {
-                        data.Appointments.forEach(function (appointment) {
-                            var services = appointment.Services.map(s => "- " + s.Name);
-                            var serviceList = services.join(",");
-                            var title = appointment.CustomerFirstName + " " + appointment.CustomerLastName;
-                            var eventId = appointment.ID;
-                            var FromGCAL = appointment.FromGCAL;
-                            var customer = "";
-                            if (FromGCAL) {
-                                var customer = "Appointment from Google Calendar";
+                        if (data && data.Appointments) {
+                            console.log('Received Appointments:', data.Appointments);
+                            data.Appointments.forEach(function (appointment) {
+                                var services = appointment.Services.map(s => "- " + s.Name);
+                                var serviceList = services.join(",");
+                                var title = appointment.CustomerFirstName + " " + appointment.CustomerLastName;
+                                var eventId = appointment.ID;
+                                var FromGCAL = appointment.FromGCAL;
+                                var customer = FromGCAL
+                                    ? "Appointment from Google Calendar"
+                                    : appointment.Services.some(x => x.Category === "ABSENSE") ? "Walk In" : title;
 
-                            } else {
-                                var customer = appointment.Services.some(x => x.Category === "ABSENSE") ? "Walk In" : title;
-                            }
-                            var customerPhone = "";
-                            var IsRepeat = appointment.IsRepeat;
-                            var reminderSent = appointment.ReminderSent;
-                            if (appointment.MobileNumber != null) {
-                                customerPhone = appointment.MobileNumber;
-                            }
-                            var notes = "";
-                            if (appointment.Notes != null) {
-                                notes = appointment.Notes.replace("\r\n", "").replace("\n", " ")
-                            }
-                            var startDate = parseDotNetDate(appointment.Date);
-                            var startTime = parseDotNetDate(appointment.Time);
-                            startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+                                var customerPhone = appointment.MobileNumber || "";
+                                var notes = appointment.Notes ? appointment.Notes.replace("\r\n", "").replace("\n", " ") : "";
+                                var startDate = parseDotNetDate(appointment.Date);
+                                var startTime = parseDotNetDate(appointment.Time);
+                                startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+                                var endDate = addMinutes(startDate, appointment.TotalDuration);
 
-                            var endDate = addMinutes(startDate, appointment.TotalDuration);
-                            events.push({
-                                id: eventId,
-                                title: title,
-                                content: serviceList,
-                                customer: customer,
-                                customerphone: customerPhone,
-                                start: startDate,
-                                reminderSent: reminderSent,
-                                end: endDate,
-                                editable: !FromGCAL,
-                                description: serviceList,
-                                notes: notes,
-                                isPaid: appointment.IsPaid,
-                                allday: false,
-                                IsRepeat: IsRepeat,
-                                resourceId: appointment.EmployeeID,
-                                FromGCAL: FromGCAL,
-                                backgroundColor: appointment.Color,
-                                testingEnd: endDate,
-                                NewCustomer: appointment.NewCustomer,
-                                AnyEmployeeSelected: appointment.AnyEmployeeSelected
+                                events.push({
+                                    id: eventId,
+                                    title: title,
+                                    content: serviceList,
+                                    customer: customer,
+                                    customerphone: customerPhone,
+                                    start: startDate,
+                                    reminderSent: appointment.ReminderSent,
+                                    end: endDate,
+                                    editable: !FromGCAL,
+                                    description: serviceList,
+                                    notes: notes,
+                                    isPaid: appointment.IsPaid,
+                                    allday: false,
+                                    IsRepeat: appointment.IsRepeat,
+                                    resourceId: appointment.EmployeeID,
+                                    FromGCAL: FromGCAL,
+                                    backgroundColor: appointment.Color,
+                                    testingEnd: endDate,
+                                    NewCustomer: appointment.NewCustomer,
+                                    AnyEmployeeSelected: appointment.AnyEmployeeSelected
+                                });
                             });
-                        });
-                        data.WaitingLists.forEach(function (waitingList) {
+                        }
 
-                            var startDate = parseDotNetDateForWaitingList(waitingList.Date);
-                            events.push({
-                                id: '000',
-                                start: startDate,
-                                description: "Waiting List (" + waitingList.Count + ")",
-                                allday: true,
-                                resourceId: waitingList.EmployeeID,
-                                employeeID: waitingList.EmployeeID,
-                                backgroundColor: 'cadetblue'
+                        // Handle Waiting Lists
+                        if (data && data.WaitingLists) {
+                            console.log('Received WaitingLists:', data.WaitingLists);
+                            data.WaitingLists.forEach(function (waitingList) {
+                                var startDate = parseDotNetDateForWaitingList(waitingList.Date);
+                                events.push({
+                                    id: '000',
+                                    start: startDate,
+                                    description: "Waiting List (" + waitingList.Count + ")",
+                                    allday: true,
+                                    resourceId: waitingList.EmployeeID,
+                                    employeeID: waitingList.EmployeeID,
+                                    backgroundColor: 'cadetblue'
+                                });
                             });
-                        });
+                        }
 
-                        successCallback(events);
+                        // Debugging: Confirm events array before passing to callback
+                        console.log('Events array before callback:', events);
+                        try {
+                            successCallback(events);
+
+                        } catch (e) {
+                            debugger
+                        }
+                        console.log('Events array after callback:', events);
+
+                        // Utility Functions
                         function addMinutes(date, minutes) {
                             return new Date(date.getTime() + minutes * 60000);
+                        }
+                        function parseDotNetDate(dotNetDate) {
+                            var match = dotNetDate.match(/\d+/);  // Extract the numeric part
+                            if (match) {
+                                return new Date(parseInt(match[0], 10)); // Convert to Date object
+                            }
+                            return null; // Or handle invalid format as needed
                         }
                         function parseDotNetDateForWaitingList(dotNetDate) {
                             var match = dotNetDate.match(/\d+/);  // Extract the numeric part
@@ -1467,77 +1482,68 @@ daysOfWeek: []
                             }
                             return null; // Or handle invalid format as needed
                         }
-                        function parseDotNetDate(dotNetDate) {
-                            var match = dotNetDate.match(/\d+/);  // Extract the numeric part
-                            if (match) {
-                                return new Date(parseInt(match[0], 10)); // Convert to Date object
-                            }
-                            return null; // Or handle invalid format as needed
-                        }
-
-
                     },
                     error: function (error) {
                         console.error('Error fetching events: ', error);
-                        hideLoadingSpinner();
+                        failureCallback(error);
                     },
                     complete: function () {
-                        hideLoadingSpinner(); // Hide loading spinner after the AJAX request is complete
+                        console.log('AJAX request complete.');
+                        hideLoadingSpinner();
                     }
-
                 });
             },
             dateClick: function (info) {
 
-                        var referenceId = '0';
+                var referenceId = '0';
 
-                        if (info.resource == null) {
+                if (info.resource == null) {
 
-                        } else {
-                            referenceId = info.resource._resource.id;
-                        }
-                        var dateObject = new Date(info.date);
-                        // Extract the date and time components separately
-                        var date = dateObject.toString().split('T')[0]; // Get the date (YYYY-MM-DD)
+                } else {
+                    referenceId = info.resource._resource.id;
+                }
+                var dateObject = new Date(info.date);
+                // Extract the date and time components separately
+                var date = dateObject.toString().split('T')[0]; // Get the date (YYYY-MM-DD)
 
-                        var clientDate = new Date();
-                        var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
-                        var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
-                                                                 // Create a DateTimeFormat object for the desired time zone
-                        var timeFormatter = new Intl.DateTimeFormat('en-US', {
+                var clientDate = new Date();
+                var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
+                var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
+                // Create a DateTimeFormat object for the desired time zone
+                var timeFormatter = new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false, // Set hour12 to false for 24-hour format
                     timeZone: targetTimeZone
                 });
-                    var startTime = timeFormatter.format(dateObject);
+                var startTime = timeFormatter.format(dateObject);
 
-                    //if (selectedDate == "") {
-                    CreateNewAppointment(dateObject, startTime, referenceId);
-                    //} else {
-                    //    CreateNewAppointment(date, startTime, referenceId);
-                    //}
+                //if (selectedDate == "") {
+                CreateNewAppointment(dateObject, startTime, referenceId);
+                //} else {
+                //    CreateNewAppointment(date, startTime, referenceId);
+                //}
 
-                },
+            },
             resourceClick: function (info) {
-            // Handle the resource click event here
-            // You can access the resource ID using info.resource.id
-        },
+                // Handle the resource click event here
+                // You can access the resource ID using info.resource.id
+            },
             slotLabelFormat: {
-        hour: 'numeric',
+                hour: 'numeric',
                 minute: '2-digit',
                 omitZeroMinute: false,
                 hour12: false
             },
             eventContent: function (arg) {
 
-            showLoadingSpinner();
-            var clientDate = new Date();
-            var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
-            var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
+                showLoadingSpinner();
+                var clientDate = new Date();
+                var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
+                var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
 
-            // Create a DateTimeFormat object for the desired time zone
-            var timeFormatter = new Intl.DateTimeFormat('en-US', {
+                // Create a DateTimeFormat object for the desired time zone
+                var timeFormatter = new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false, // Set hour12 to false for 24-hour format
@@ -1546,8 +1552,8 @@ daysOfWeek: []
 
                 const timeString = arg.event.extendedProps.testingEnd;
 
-        var eventContent = document.createElement('div');
-        eventContent.classList.add('fc-event-main');
+                var eventContent = document.createElement('div');
+                eventContent.classList.add('fc-event-main');
                 if (arg.event.id == "000") {
 
                     var description = arg.event.extendedProps.description;
@@ -1681,18 +1687,18 @@ daysOfWeek: []
                 hideLoadingSpinner();
                 return { domNodes: [eventContent] };
 
-        },
+            },
 
             eventsSet: function (events) {
-            // This callback fires after events are initially rendered or when events are added/changed/removed
-            checkForEventOverlaps(events);
-        },
+                // This callback fires after events are initially rendered or when events are added/changed/removed
+                checkForEventOverlaps(events);
+            },
 
             eventMouseover: function (event, jsEvent, view) {
-            // You can add custom hover behavior here if needed
-        },
+                // You can add custom hover behavior here if needed
+            },
             eventClick: function (calEvent, jsEvent, view) {
-            showLoadingSpinner();
+                showLoadingSpinner();
 
                 if (calEvent.event.id == '000') {
                     var Date = calEvent.event.startStr;
@@ -1816,8 +1822,7 @@ daysOfWeek: []
                                 $('#HalfSideDetails2').hide();
 
                             }
-                            else
-                            {
+                            else {
                                 if (appointmentDetails.CustomerFirstName != "Walk In") {
                                     var callLink = 'tel:' + appointmentDetails.MobileNumber;
                                     $('#CallCustomerButton').attr('href', callLink);
@@ -1890,13 +1895,14 @@ daysOfWeek: []
                 }
             },
             eventDrop: function (event, delta, revertFunc) {
-            // This function will be called when an event is dropped
-
-            // Prepare the data to be sent to the server for updating
+                // This function will be called when an event is dropped
+                var startDate = event.event.start.toISOString();
+                var endDate = event.event.end.toISOString();
+                // Prepare the data to be sent to the server for updating
                 var eventData = {
                     id: event.event.id,
-                    start: event.event.start, // Format the start date and time
-                    end: event.event.end,
+                    start: startDate, // Format the start date and time
+                    end: endDate,
                     EmployeeID: event.event._def.resourceIds[0]// Format the end date and time
                 };
                 if (event.event.backgroundColor == "#5DAF4D") {
@@ -1944,14 +1950,14 @@ daysOfWeek: []
             },
             resourceLabelDidMount: function (info) {
 
-            var resource = info.resource;
-            var resourceCellElement = info.el;
+                var resource = info.resource;
+                var resourceCellElement = info.el;
 
-            // Add a click event listener to the resource cell element
-            resourceCellElement.addEventListener('click', function () {
-                // Handle the click event here
-                updateCalendar(resource.id);
-            });
+                // Add a click event listener to the resource cell element
+                resourceCellElement.addEventListener('click', function () {
+                    // Handle the click event here
+                    updateCalendar(resource.id);
+                });
                 if (resource.extendedProps.pricechangeType != "") {
 
                     var pricechangeelem = document.createElement('div');
@@ -1972,44 +1978,43 @@ daysOfWeek: []
                     info.el.appendChild(pricechangeelem); // Appending the specialization after the employee's name
                 }
 
-            if (resource.extendedProps.image) {
-                var imageElement = document.createElement('img');
-                imageElement.src = resource.extendedProps.image;
-                imageElement.alt = resource.title;
-                imageElement.className = 'employee-image';
+                if (resource.extendedProps.image) {
+                    var imageElement = document.createElement('img');
+                    imageElement.src = resource.extendedProps.image;
+                    imageElement.alt = resource.title;
+                    imageElement.className = 'employee-image';
 
 
-                // Appending the image before the resource's title (assuming it's the first child)
-                info.el.insertBefore(imageElement, info.el.firstChild);
-            }
-            if (resource.extendedProps.Specialization) {
-                var specializationElement = document.createElement('div');
-                specializationElement.innerText = resource.extendedProps.Specialization;
-                specializationElement.className = 'employee-specialization';
-
-                info.el.appendChild(specializationElement); // Appending the specialization after the employee's name
-            }
-
-
-        },
-            eventDidMount: function (info) {
-            let overlapCounts = checkForEventOverlaps(calendar.getEvents());
-            let eventId = info.event.id;
-
-            if (overlapCounts[eventId]) {
-                let widthPercentage = 100 / Math.max(1, overlapCounts[eventId].count);
-                //if (info.el.style.width != "50%") {
-                if (widthPercentage == 100) {
-                    info.el.style.width = 100 + '%';
-                } else {
-                    info.el.style.width = 50 + '%';
-
+                    // Appending the image before the resource's title (assuming it's the first child)
+                    info.el.insertBefore(imageElement, info.el.firstChild);
                 }
-                //   }
-            }
-        }
-        });
+                if (resource.extendedProps.Specialization) {
+                    var specializationElement = document.createElement('div');
+                    specializationElement.innerText = resource.extendedProps.Specialization;
+                    specializationElement.className = 'employee-specialization';
 
+                    info.el.appendChild(specializationElement); // Appending the specialization after the employee's name
+                }
+
+
+            },
+            eventDidMount: function (info) {
+                let overlapCounts = checkForEventOverlaps(calendar.getEvents());
+                let eventId = info.event.id;
+
+                if (overlapCounts[eventId]) {
+                    let widthPercentage = 100 / Math.max(1, overlapCounts[eventId].count);
+                    //if (info.el.style.width != "50%") {
+                    if (widthPercentage == 100) {
+                        info.el.style.width = 100 + '%';
+                    } else {
+                        info.el.style.width = 50 + '%';
+
+                    }
+                    //   }
+                }
+            }
+        });
         //setInterval(function () {
         //    var scrollerElement = $('.fc-scroller.fc-scroller-liquid-absolute');
         //    var scrolledPosition = scrollerElement.scrollTop();

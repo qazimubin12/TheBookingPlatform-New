@@ -390,15 +390,15 @@
             <div style="display: flex; align-items: center; justify-content: center;" class="row">
                 @if (Model.Coupon != null)
                 {
-                    <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@ServiceTotalMinusOfflineDiscount</span> <span id="Total"> @Total</span></h4>
+                    <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@ServiceTotalMinusOfflineDiscount</span> <span id="Total"> @Math.Round(Total,2)</span></h4>
 
                 }
                 else
                 {
-                    <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@Total</span></h4>
+                    <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@Math.Round(Total,2)</span></h4>
 
                 }
-                <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@Total</span></h4>
+                <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@Math.Round(Total,2)</span></h4>
 
                 @if (Model.Appointment.Status == "Paid")
                 {

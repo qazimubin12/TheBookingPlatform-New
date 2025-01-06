@@ -146,7 +146,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody += "</body></html>";
                     if (IsValidEmail(customer.Email))
                     {
-                        SendEmail(customer.Email, "Appointment Reminder", emailBody);
+                        SendEmail(customer.Email, "Appointment Reminder", emailBody,company);
                     }
                 }
             }
@@ -434,7 +434,7 @@ namespace TheBookingPlatform.Controllers
                 emailBody += "</body></html>";
                 if (IsValidEmail(customer.Email))
                 {
-                    SendEmail(customer.Email, "Waiting List", emailBody);
+                    SendEmail(customer.Email, "Waiting List", emailBody,company);
                 }
             }
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
@@ -2240,47 +2240,47 @@ namespace TheBookingPlatform.Controllers
             return Json(appointmentModel, JsonRequestBehavior.AllowGet);
         }
 
-        public string SendEmail(string toEmail, string subject, string emailBody, Company company)
-        {
+        //public string SendEmail(string toEmail, string subject, string emailBody, Company company)
+        //{
 
-            try
-            {
-                string senderEmail = "support@yourbookingplatform.com";
-                string senderPassword = "ttpa fcbl mpbn fxdl";
+        //    try
+        //    {
+        //        string senderEmail = "support@yourbookingplatform.com";
+        //        string senderPassword = "ttpa fcbl mpbn fxdl";
 
-                int Port = int.Parse(ConfigurationManager.AppSettings["portforSmtp"]);
-                string Host = ConfigurationManager.AppSettings["hostForSmtp"];
-                System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage();
-                mail.To.Add(toEmail);
-                MailAddress ccAddress = new MailAddress(company.NotificationEmail, company.Business);
+        //        int Port = int.Parse(ConfigurationManager.AppSettings["portforSmtp"]);
+        //        string Host = ConfigurationManager.AppSettings["hostForSmtp"];
+        //        System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage();
+        //        mail.To.Add(toEmail);
+        //        MailAddress ccAddress = new MailAddress(company.NotificationEmail, company.Business);
 
-                mail.CC.Add(ccAddress);
-                mail.From = new MailAddress(company.NotificationEmail, company.Business, System.Text.Encoding.UTF8);
-                mail.Subject = subject;
-                mail.SubjectEncoding = System.Text.Encoding.UTF8;
-                mail.ReplyTo = new MailAddress(company.NotificationEmail); // Set the ReplyTo address
+        //        mail.CC.Add(ccAddress);
+        //        mail.From = new MailAddress(company.NotificationEmail, company.Business, System.Text.Encoding.UTF8);
+        //        mail.Subject = subject;
+        //        mail.SubjectEncoding = System.Text.Encoding.UTF8;
+        //        mail.ReplyTo = new MailAddress(company.NotificationEmail); // Set the ReplyTo address
 
-                mail.Body = emailBody;
-                mail.BodyEncoding = System.Text.Encoding.UTF8;
-                mail.IsBodyHtml = true;
+        //        mail.Body = emailBody;
+        //        mail.BodyEncoding = System.Text.Encoding.UTF8;
+        //        mail.IsBodyHtml = true;
 
-                mail.Priority = MailPriority.High;
-                SmtpClient client = new SmtpClient();
-                client.Credentials = new System.Net.NetworkCredential(senderEmail, senderPassword);
-                client.Port = Port;
-                client.Host = Host;
-                client.EnableSsl = true;
-                client.Send(mail);
-                return "Done";
-            }
-            catch (Exception ex)
-            {
-                Session["EmailStatus"] = ex.ToString();
-                return "Failed";
-            }
+        //        mail.Priority = MailPriority.High;
+        //        SmtpClient client = new SmtpClient();
+        //        client.Credentials = new System.Net.NetworkCredential(senderEmail, senderPassword);
+        //        client.Port = Port;
+        //        client.Host = Host;
+        //        client.EnableSsl = true;
+        //        client.Send(mail);
+        //        return "Done";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Session["EmailStatus"] = ex.ToString();
+        //        return "Failed";
+        //    }
 
 
-        }
+        //}
 
 
         [HttpGet]
@@ -2566,8 +2566,16 @@ namespace TheBookingPlatform.Controllers
             var oldDate = appointment.Date;
             var oldtime = appointment.Time;
             var oldEmployee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+            var ID = int.Parse(id);
+            var StartDate = DateTime.Parse(start);
+            var EndDate = DateTime.Parse(end);
 
-            var result = AppointmentServices.Instance.UpdateEvent(id, start, end, int.Parse(EmployeeID));
+            appointment.Time = StartDate;
+            appointment.EndTime = EndDate;
+            appointment.EmployeeID = int.Parse(EmployeeID);
+            AppointmentServices.Instance.UpdateAppointment(appointment);
+            
+            //var result = AppointmentServices.Instance.UpdateEvent(ID, start, end, int.Parse(EmployeeID));
 
 
             
@@ -2643,8 +2651,8 @@ namespace TheBookingPlatform.Controllers
 
                 }
             }
-            if (result == "Success")
-            {
+            //if (result == "Success")
+            //{
                 #region MailingRegion
 
                 var customer = CustomerServices.Instance.GetCustomer(appointment.CustomerID);
@@ -2697,7 +2705,7 @@ namespace TheBookingPlatform.Controllers
                         emailBody += "</body></html>";
                         if (IsValidEmail(customer.Email))
                         {
-                            SendEmail(customer.Email, "Appointment Moved", emailBody);
+                            SendEmail(customer.Email, "Appointment Moved", emailBody,company);
                         }
                     }
                 }
@@ -2705,13 +2713,13 @@ namespace TheBookingPlatform.Controllers
                 var response = new { success = true, message = "Event updated successfully" };
 
                 return Json(response);
-            }
-            else
-            {
-                var response = new { success = false, message = "Error updating event" };
+            //}
+            //else
+            //{
+            //    var response = new { success = false, message = "Error updating event" };
 
-                return Json(response);
-            }
+            //    return Json(response);
+            //}
 
 
         }
@@ -3932,7 +3940,7 @@ namespace TheBookingPlatform.Controllers
 
                     if (IsValidEmail(customer.Email))
                     {
-                        SendEmail(customer.Email, "Appointment Cancellation", emailBody);
+                        SendEmail(customer.Email, "Appointment Cancellation", emailBody,company);
                     }
                 }
                 var Message =  HandleRefund(appointment.PaymentSession,company.APIKEY,appointment.ID);
@@ -4620,7 +4628,7 @@ namespace TheBookingPlatform.Controllers
 
                                     if (IsValidEmail(customer.Email))
                                     {
-                                        SendEmail(customer.Email, "Appointment Confirmation", emailBody);
+                                        SendEmail(customer.Email, "Appointment Confirmation", emailBody,company);
                                     }
                                 }
 
@@ -5186,7 +5194,7 @@ namespace TheBookingPlatform.Controllers
                             emailBody += "</body></html>";
                             if (IsValidEmail(customer.Email))
                             {
-                                SendEmail(customer.Email, "Appointment Moved", emailBody);
+                                SendEmail(customer.Email, "Appointment Moved", emailBody, company);
                             }
                         }
                     }
@@ -5354,49 +5362,52 @@ namespace TheBookingPlatform.Controllers
                     {
                         return "Error: Employee not found.";
                     }
-                    var url = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events";
-                    var finalUrl = new Uri(url);
-
-                    RestClient restClient = new RestClient(finalUrl);
-                    RestRequest request = new RestRequest();
-                    var calendarEvent = new Event
+                    if (employee.GoogleCalendarID != null && employee.GoogleCalendarID != "")
                     {
-                        Summary = "Appointment at: " + loggedInUser.Company,
-                        Description = Services,
-                        Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone },
-                        End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone }
-                    };
+                        var url = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events";
+                        var finalUrl = new Uri(url);
 
-                    var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
+                        RestClient restClient = new RestClient(finalUrl);
+                        RestRequest request = new RestRequest();
+                        var calendarEvent = new Event
+                        {
+                            Summary = "Appointment at: " + loggedInUser.Company,
+                            Description = Services,
+                            Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone },
+                            End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone }
+                        };
 
-                    request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                    request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
-                    request.AddHeader("Accept", "application/json");
-                    request.AddHeader("Content-Type", "application/json");
-                    request.AddParameter("application/json", model, ParameterType.RequestBody);
+                        var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
+                        {
+                            ContractResolver = new CamelCasePropertyNamesContractResolver()
+                        });
 
-                    var response = restClient.Post(request);
+                        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                        request.AddHeader("Authorization", "Bearer " + googleCalendar.AccessToken);
+                        request.AddHeader("Accept", "application/json");
+                        request.AddHeader("Content-Type", "application/json");
+                        request.AddParameter("application/json", model, ParameterType.RequestBody);
 
-                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    {
-                        JObject jsonObj = JObject.Parse(response.Content);
-                        appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
-                        AppointmentServices.Instance.UpdateAppointment(appointment);
-                        return "Saved";
-                    }
-                    else
-                    {
-                        var history = new History();
-                        history.Date = DateTime.Now;
-                        history.Note = response.Content;
-                        history.Business = "Error";
-                        history.Type = "Error";
-                        HistoryServices.Instance.SaveHistory(history);
-                        return "Error: " + response.Content;
+                        var response = restClient.Post(request);
 
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            JObject jsonObj = JObject.Parse(response.Content);
+                            appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+                            AppointmentServices.Instance.UpdateAppointment(appointment);
+                            return "Saved";
+                        }
+                        else
+                        {
+                            var history = new History();
+                            history.Date = DateTime.Now;
+                            history.Note = response.Content;
+                            history.Business = "Error";
+                            history.Type = "Error";
+                            HistoryServices.Instance.SaveHistory(history);
+                            return "Error: " + response.Content;
+
+                        }
                     }
 
                 }
@@ -6176,7 +6187,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody += "</body></html>";
                     if (IsValidEmail(customer.Email))
                     {
-                        SendEmail(customer.Email, "No Show", emailBody);
+                        SendEmail(customer.Email, "No Show", emailBody,company);
                     }
                 }
 
@@ -6518,23 +6529,21 @@ namespace TheBookingPlatform.Controllers
             }
 
         }
-        public bool SendEmail(string toEmail, string subject, string emailBody)
+        public bool SendEmail(string toEmail, string subject, string emailBody,Company company)
         {
             try
             {
                 string senderEmail = "support@yourbookingplatform.com";
                 string senderPassword = "ttpa fcbl mpbn fxdl";
 
-                var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
-                var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == loggedInUser.Company).FirstOrDefault();
                 int Port = int.Parse(ConfigurationManager.AppSettings["portforSmtp"]);
                 string Host = ConfigurationManager.AppSettings["hostForSmtp"];
                 System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage();
                 mail.To.Add(toEmail);
-                MailAddress ccAddress = new MailAddress(company.NotificationEmail, loggedInUser.Company);
+                MailAddress ccAddress = new MailAddress(company.NotificationEmail, company.Business);
 
                 mail.CC.Add(ccAddress);
-                mail.From = new MailAddress(company.NotificationEmail, loggedInUser.Company, System.Text.Encoding.UTF8);
+                mail.From = new MailAddress(company.NotificationEmail, company.Business, System.Text.Encoding.UTF8);
                 mail.Subject = subject;
                 mail.SubjectEncoding = System.Text.Encoding.UTF8;
                 mail.Body = emailBody;
