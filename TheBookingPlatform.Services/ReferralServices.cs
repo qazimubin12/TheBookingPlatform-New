@@ -32,6 +32,13 @@ namespace TheBookingPlatform.Services
             {
                 return context.Referrals.Where(X => X.Business == Business && X.ReferredBy == ReferredBy).ToList();
             }
+        } 
+        public List<Referral> GetReferralWRTBusiness(string Business)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Referrals.Where(X => X.Business == Business).ToList();
+            }
         }
 
         public List<Referral> GetReferralWRTBusiness(string Business, int CustomerID)

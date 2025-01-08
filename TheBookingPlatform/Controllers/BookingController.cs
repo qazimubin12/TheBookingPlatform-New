@@ -3195,7 +3195,7 @@ namespace TheBookingPlatform.Controllers
                             {
                                 Durations = String.Join(",", Durations, item.Duration);
                             }
-                      
+
 
 
                         }
@@ -3229,29 +3229,53 @@ namespace TheBookingPlatform.Controllers
                     {
                         appointment.IsPaid = true;
                     }
-                    //var appointmentmightbeconflicting = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(company.Business, false, false, appointment.EmployeeID)
-                    //    .Where(x => x.Date.ToString("yyyy-MM-dd") == appointment.Date.ToString("yyyy-MM-dd")
-                    //    && x.Time.ToString("HH:mm") == appointment.Time.ToString("HH:mm")).ToList();
-                    //if (appointmentmightbeconflicting.Count() > 0)
-                    //{
-                    //    return Json(new { success = false, Message = "The Time Slot was just booked by someone else, kindly change the timeslot selected" }, JsonRequestBehavior.AllowGet);
-                    //}
-                    //else
-                    //{                    //var appointmentmightbeconflicting = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(company.Business, false, false, appointment.EmployeeID)
-                    //    .Where(x => x.Date.ToString("yyyy-MM-dd") == appointment.Date.ToString("yyyy-MM-dd")
-                    //    && x.Time.ToString("HH:mm") == appointment.Time.ToString("HH:mm")).ToList();
-                    //if (appointmentmightbeconflicting.Count() > 0)
-                    //{
-                    //    return Json(new { success = false, Message = "The Time Slot was just booked by someone else, kindly change the timeslot selected" }, JsonRequestBehavior.AllowGet);
-                    //}
-                    //else
-                    //{
+                 
+                    AppointmentServices.Instance.SaveAppointment(appointment);
+                    if (CustomerFound == false)
+                    {
+                        if (model.ReferralCode != "" && model.ReferralCode != null)
+                        {
+                            var refercustomer = CustomerServices.Instance.GetCustomerWRTBusinessAndReferral(appointment.Business, model.ReferralCode);
+                            if (refercustomer != null)
+                            {
+                                var referral = new Referral();
+                                referral.Business = appointment.Business;
+                                referral.ReferralCode = model.ReferralCode;
+                                referral.ReferredBy = refercustomer.ID; //The customer whos referral code is being used
+                                referral.AppointmentID = appointment.ID;
+                                referral.CustomerID = appointment.CustomerID;
+                                referral.GrandTotal = appointment.TotalCost;
+                                ReferralServices.Instance.SaveReferral(referral);
+
+                                var referhistory = new History();
+                                referhistory.Note = "Referral was saved using the code:" + model.ReferralCode;
+                                referhistory.Business = appointment.Business;
+                                referhistory.Date = DateTime.Now;
+                                referhistory.Name = "Referrals";
+                                referhistory.AppointmentID = appointment.ID;
+                                referhistory.CustomerName = customer.FirstName + " " + customer.LastName;
+                                referhistory.Type = "Referrals";
+                                HistoryServices.Instance.SaveHistory(referhistory);
+
+                                var balancetoadd = referral.GrandTotal * (company.ReferralPercentage / 100);
+                                refercustomer.ReferralBalance += balancetoadd;
+                                CustomerServices.Instance.UpdateCustomer(refercustomer);
+
+                                referhistory.Note = "Referral balance was updated to:" + refercustomer.ReferralBalance + " of CustomerID: " + refercustomer.ID;
+                                referhistory.Business = appointment.Business;
+                                referhistory.Date = DateTime.Now;
+                                referhistory.Name = "Referrals";
+                                referhistory.AppointmentID = appointment.ID;
+                                referhistory.CustomerName = refercustomer.FirstName + " " + refercustomer.LastName;
+                                referhistory.Type = "Referrals";
+                                HistoryServices.Instance.SaveHistory(referhistory);
 
 
-                        AppointmentServices.Instance.SaveAppointment(appointment);
 
-
-                        var reminder = new TheBookingPlatform.Entities.Reminder();
+                            }
+                        }
+                    }
+                    var reminder = new TheBookingPlatform.Entities.Reminder();
                         reminder.Service = appointment.Service;
                         reminder.Business = appointment.Business;
                         reminder.AppointmentID = appointment.ID;
@@ -3290,142 +3314,67 @@ namespace TheBookingPlatform.Controllers
                             GenerateonGoogleCalendar(appointment, ConcatenatedServices, appointment.Business);
                         }
 
-                        if (company.PaymentMethodIntegration)
-                        {
-                            long totalAmount = 0;
-                            //foreach (var item in model.ServicesOnly)
-                            //{
-                            //    totalAmount += Convert.ToInt64(item.Price * 100);
-                            //}
+                    if (company.PaymentMethodIntegration)
+                    {
+                        long totalAmount = 0;
+                        //foreach (var item in model.ServicesOnly)
+                        //{
+                        //    totalAmount += Convert.ToInt64(item.Price * 100);
+                        //}
 
-                            totalAmount = Convert.ToInt64(appointment.Deposit * 100);
-                            if (totalAmount > 50)
+                        totalAmount = Convert.ToInt64(appointment.Deposit * 100);
+                        if (totalAmount > 50)
+                        {
+                            var options = new PaymentIntentCreateOptions
                             {
-                                var options = new PaymentIntentCreateOptions
-                                {
-                                    Amount = totalAmount,
-                                    Currency = company.Currency,
-                                    PaymentMethodTypes = new List<string> { "card", "ideal" },
-                                    Metadata = new Dictionary<string, string>
+                                Amount = totalAmount,
+                                Currency = company.Currency,
+                                PaymentMethodTypes = new List<string> { "card", "ideal" },
+                                Metadata = new Dictionary<string, string>
                                 {
                                     { "CustomerID", customer.ID.ToString() },
                                     { "AppointmentID", appointment.ID.ToString() },
                                     { "BusinessName", company.Business }
                                 }
-                                };
+                            };
 
-                                var service = new PaymentIntentService();
-                                var paymentIntent = service.Create(options);
-                                appointment.PaymentSession = paymentIntent.Id;
-                                AppointmentServices.Instance.UpdateAppointment(appointment);
-                                var scheme = Request.Url.Scheme;
-                                var successUrl = Url.Action("PaymentSuccess", "Booking", new { paymentIntentId = paymentIntent.Id, AppointmentID = appointment.ID }, scheme);
-                                var cancelUrl = Url.Action("PaymentCancel", "Booking", new { paymentIntentId = paymentIntent.Id, AppointmentID = appointment.ID }, scheme);
+                            var service = new PaymentIntentService();
+                            var paymentIntent = service.Create(options);
+                            appointment.PaymentSession = paymentIntent.Id;
+                            AppointmentServices.Instance.UpdateAppointment(appointment);
+                            var scheme = Request.Url.Scheme;
+                            var successUrl = Url.Action("PaymentSuccess", "Booking", new { paymentIntentId = paymentIntent.Id, AppointmentID = appointment.ID }, scheme);
+                            var cancelUrl = Url.Action("PaymentCancel", "Booking", new { paymentIntentId = paymentIntent.Id, AppointmentID = appointment.ID }, scheme);
 
-                                // Return the URLs and client secret to the view
-                                ViewBag.ClientSecret = paymentIntent.ClientSecret;
-                                ViewBag.SuccessUrl = successUrl;
-                                ViewBag.CancelUrl = cancelUrl;
-                                // Generate the URLs for redirection
-
-
-                                AppointmentServices.Instance.UpdateAppointment(appointment);
-                                var profilelink = "http://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
-                                var request = HttpContext.Request;
-                                var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
-                                var paymenturl = baseUrl + Url.Action("ProcessPayment", "Booking", new { businessName = company.Business, SuccessURL = successUrl, CancelURL = cancelUrl, PaymentSecret = paymentIntent.ClientSecret, AppointmentID = appointment.ID });
-                                return Json(new { session = paymenturl, ProfileLink = profilelink });
-                            }
-                            else
-                            {
-                                appointment.IsPaid = true;
-                                AppointmentServices.Instance.UpdateAppointment(appointment);
-
-                                var historyn = new History();
-                                historyn.EmployeeName = employee.Name;
-                                historyn.CustomerName = customer.FirstName + " " + customer.LastName;
-                                historyn.Note = "Online Appointment was paid for " + historyn.CustomerName + "";
-                                historyn.Date = DateTime.Now;
-                                historyn.Business = appointment.Business;
-                            historyn.Name = "Appointment Paid";
-
-                            historyn.Type = "General";
-                            historyn.AppointmentID = appointment.ID;
-                                HistoryServices.Instance.SaveHistory(historyn);
-
-                                #region ConfirmationEmailSender
-                                var EmailTemplate = "";
-                                if (!AppointmentServices.Instance.IsNewCustomer(company.Business, appointment.CustomerID))
-                                {
-                                    EmailTemplate = "First Registration Email";
-                                }
-                                else
-                                {
-                                    EmailTemplate = "Appointment Confirmation";
-                                }
+                            // Return the URLs and client secret to the view
+                            ViewBag.ClientSecret = paymentIntent.ClientSecret;
+                            ViewBag.SuccessUrl = successUrl;
+                            ViewBag.CancelUrl = cancelUrl;
+                            // Generate the URLs for redirection
 
 
-
-
-
-                                string emailBody = "<html><body>";
-                                var emailTemplate = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(appointment.Business, EmailTemplate);
-                                if (emailTemplate != null)
-                                {
-                                    emailBody += "<h2 style='font-family: Arial, sans-serif;'>" + EmailTemplate + "</h2>";
-                                    emailBody += emailTemplate.TemplateCode;
-                                    emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
-                                    emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
-                                    emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
-                                    emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
-                                    emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
-                                    emailBody = emailBody.Replace("{{employee}}", employee.Name);
-                                    emailBody = emailBody.Replace("{{employee_specialization}}", employee.Specialization);
-                                    emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
-
-                                    emailBody = emailBody.Replace("{{services}}", ConcatenatedServices);
-                                    emailBody = emailBody.Replace("{{company_name}}", company.Business);
-                                    emailBody = emailBody.Replace("{{company_email}}", company.NotificationEmail);
-                                    emailBody = emailBody.Replace("{{company_address}}", company.Address);
-                                    emailBody = emailBody.Replace("{{company_logo}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + company.Logo}'>");
-                                    emailBody = emailBody.Replace("{{company_phone}}", company.PhoneNumber);
-                                    emailBody = emailBody.Replace("{{password}}", customer.Password);
-                                    string cancelLink = string.Format("http://app.yourbookingplatform.com/Appointment/CancelByEmail/?AppointmentID={0}", appointment.ID);
-                                    emailBody = emailBody.Replace("{{cancellink}}", $"<a href='{cancelLink}' class='btn btn-primary'>CANCEL/RESCHEDULE</a>");
-                                    emailBody += "</body></html>";
-                                    SendEmail(customer.Email, EmailTemplate, emailBody, company);
-                                }
-                                #endregion
-
-
-                                var request = HttpContext.Request;
-                                var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
-                                var link = baseUrl + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
-                                return Json(new { session = link, });
-
-                            }
-
+                            AppointmentServices.Instance.UpdateAppointment(appointment);
+                            var profilelink = "http://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
+                            var request = HttpContext.Request;
+                            var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
+                            var paymenturl = baseUrl + Url.Action("ProcessPayment", "Booking", new { businessName = company.Business, SuccessURL = successUrl, CancelURL = cancelUrl, PaymentSecret = paymentIntent.ClientSecret, AppointmentID = appointment.ID });
+                            return Json(new { session = paymenturl, ProfileLink = profilelink });
                         }
                         else
                         {
+                            appointment.IsPaid = true;
+                            AppointmentServices.Instance.UpdateAppointment(appointment);
+
                             var historyn = new History();
-                            if (employee != null)
-                            {
-                                historyn.EmployeeName = employee.Name;
-                            }
-                            else
-                            {
-                                historyn.EmployeeName = "Any Available Specialist";
-                            }
+                            historyn.EmployeeName = employee.Name;
                             historyn.CustomerName = customer.FirstName + " " + customer.LastName;
                             historyn.Note = "Online Appointment was paid for " + historyn.CustomerName + "";
                             historyn.Date = DateTime.Now;
                             historyn.Business = appointment.Business;
-                        historyn.Name = "Appointment Paid";
+                            historyn.Name = "Appointment Paid";
 
-                        historyn.Type = "General";
-                        historyn.AppointmentID = appointment.ID;
+                            historyn.Type = "General";
+                            historyn.AppointmentID = appointment.ID;
                             HistoryServices.Instance.SaveHistory(historyn);
 
                             #region ConfirmationEmailSender
@@ -3472,24 +3421,99 @@ namespace TheBookingPlatform.Controllers
                                 SendEmail(customer.Email, EmailTemplate, emailBody, company);
                             }
                             #endregion
-                            if (CustomerFound)
-                            {
 
-                                var request = HttpContext.Request;
-                                var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
-                                var link = baseUrl + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
-                                return Json(new { session = link, });
-                            }
-                            else
-                            {
-                                var request = HttpContext.Request;
-                                var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
-                                var link = baseUrl + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
-                                return Json(new { session = link });
 
-                            }
+                            var request = HttpContext.Request;
+                            var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
+                            var link = baseUrl + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
+                            return Json(new { session = link, });
 
                         }
+
+                    }
+                    else
+                    {
+                        var historyn = new History();
+                        if (employee != null)
+                        {
+                            historyn.EmployeeName = employee.Name;
+                        }
+                        else
+                        {
+                            historyn.EmployeeName = "Any Available Specialist";
+                        }
+                        historyn.CustomerName = customer.FirstName + " " + customer.LastName;
+                        historyn.Note = "Online Appointment was paid for " + historyn.CustomerName + "";
+                        historyn.Date = DateTime.Now;
+                        historyn.Business = appointment.Business;
+                        historyn.Name = "Appointment Paid";
+
+                        historyn.Type = "General";
+                        historyn.AppointmentID = appointment.ID;
+                        HistoryServices.Instance.SaveHistory(historyn);
+
+                        #region ConfirmationEmailSender
+                        var EmailTemplate = "";
+                        if (!AppointmentServices.Instance.IsNewCustomer(company.Business, appointment.CustomerID))
+                        {
+                            EmailTemplate = "First Registration Email";
+                        }
+                        else
+                        {
+                            EmailTemplate = "Appointment Confirmation";
+                        }
+
+
+
+
+
+                        string emailBody = "<html><body>";
+                        var emailTemplate = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(appointment.Business, EmailTemplate);
+                        if (emailTemplate != null)
+                        {
+                            emailBody += "<h2 style='font-family: Arial, sans-serif;'>" + EmailTemplate + "</h2>";
+                            emailBody += emailTemplate.TemplateCode;
+                            emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
+                            emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
+                            emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
+                            emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                            emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
+                            emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
+                            emailBody = emailBody.Replace("{{employee}}", employee.Name);
+                            emailBody = emailBody.Replace("{{employee_specialization}}", employee.Specialization);
+                            emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
+
+                            emailBody = emailBody.Replace("{{services}}", ConcatenatedServices);
+                            emailBody = emailBody.Replace("{{company_name}}", company.Business);
+                            emailBody = emailBody.Replace("{{company_email}}", company.NotificationEmail);
+                            emailBody = emailBody.Replace("{{company_address}}", company.Address);
+                            emailBody = emailBody.Replace("{{company_logo}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + company.Logo}'>");
+                            emailBody = emailBody.Replace("{{company_phone}}", company.PhoneNumber);
+                            emailBody = emailBody.Replace("{{password}}", customer.Password);
+                            string cancelLink = string.Format("http://app.yourbookingplatform.com/Appointment/CancelByEmail/?AppointmentID={0}", appointment.ID);
+                            emailBody = emailBody.Replace("{{cancellink}}", $"<a href='{cancelLink}' class='btn btn-primary'>CANCEL/RESCHEDULE</a>");
+                            emailBody += "</body></html>";
+                            SendEmail(customer.Email, EmailTemplate, emailBody, company);
+                        }
+                        #endregion
+                        if (CustomerFound)
+                        {
+
+                            var request = HttpContext.Request;
+                            var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
+                            var link = baseUrl + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
+                            return Json(new { session = link, });
+                        }
+                        else
+                        {
+                            var request = HttpContext.Request;
+                            var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
+                            var link = baseUrl + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
+                            return Json(new { session = link });
+
+                        }
+
+                    }
                     //}
                 }
                 else
@@ -3659,8 +3683,8 @@ namespace TheBookingPlatform.Controllers
                     //{
 
                         AppointmentServices.Instance.SaveAppointment(appointment);
-                        
-                        var reminder = new TheBookingPlatform.Entities.Reminder();
+                    
+                    var reminder = new TheBookingPlatform.Entities.Reminder();
                         reminder.Service = appointment.Service;
                         reminder.Business = appointment.Business;
                         reminder.AppointmentID = appointment.ID;

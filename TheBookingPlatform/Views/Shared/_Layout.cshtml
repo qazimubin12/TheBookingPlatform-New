@@ -1030,6 +1030,16 @@
                                         </li>
 
                                     }
+                                    @if (package.Split(',').Contains("Referrals"))
+                                    {
+                                        <li class="nav-item " id="ReferralsTAB">
+                                            <a class="nav-link text-white " href="@Url.Action("Index", "Referral")">
+                                                <span class="sidenav-mini-icon"> R </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Referrals </span>
+                                            </a>
+                                        </li>
+
+                                    }
                                     @if (package.Split(',').Contains("Coupons"))
                                     {
                                         <li class="nav-item " id="CouponTAB">
@@ -1055,37 +1065,46 @@
                             }
                             else
                             {
-                                <ul class="nav">
+                        <ul class="nav">
 
 
-                                    <li class="nav-item " id="CustomersTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "Customer")">
-                                            <span class="sidenav-mini-icon"> C </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Customers </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="GiftCardTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "GiftCard")">
-                                            <span class="sidenav-mini-icon"> GC </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Gift Cards </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="CouponTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "Coupon")">
-                                            <span class="sidenav-mini-icon"> C </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Coupons </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="LoyaltyCardsTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "LoyaltyCard")">
-                                            <span class="sidenav-mini-icon"> LC </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Loyalty Cards </span>
-                                        </a>
-                                    </li>
+                            <li class="nav-item " id="CustomersTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Customer")">
+                                    <span class="sidenav-mini-icon"> C </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Customers </span>
+                                </a>
+                            </li>
+                            <li class="nav-item " id="GiftCardTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "GiftCard")">
+                                    <span class="sidenav-mini-icon"> GC </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Gift Cards </span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item " id="ReferralsTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Referral")">
+                                    <span class="sidenav-mini-icon"> R </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Referrals </span>
+                                </a>
+                            </li>
+
+
+                            <li class="nav-item " id="CouponTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Coupon")">
+                                    <span class="sidenav-mini-icon"> C </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Coupons </span>
+                                </a>
+                            </li>
+                            <li class="nav-item " id="LoyaltyCardsTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "LoyaltyCard")">
+                                    <span class="sidenav-mini-icon"> LC </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Loyalty Cards </span>
+                                </a>
+                            </li>
 
 
 
-                                </ul>
+                        </ul>
                             }
 
                         </div>
@@ -1530,6 +1549,16 @@
                                         </li>
 
                                     }
+                                    @if (package.Split(',').Contains("Referrals"))
+                                    {
+                                        <li class="nav-item " id="ReferralsTAB">
+                                            <a class="nav-link text-white " href="@Url.Action("Index", "Referral")">
+                                                <span class="sidenav-mini-icon"> R </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Referrals </span>
+                                            </a>
+                                        </li>
+
+                                    }
                                     @if (package.Split(',').Contains("Coupons"))
                                     {
                                         <li class="nav-item " id="CouponTAB">
@@ -1555,37 +1584,44 @@
                             }
                             else
                             {
-                                <ul class="nav">
+                        <ul class="nav">
 
 
-                                    <li class="nav-item " id="CustomersTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "Customer")">
-                                            <span class="sidenav-mini-icon"> C </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Customers </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="GiftCardTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "GiftCard")">
-                                            <span class="sidenav-mini-icon"> GC </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Gift Cards </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="CouponTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "Coupon")">
-                                            <span class="sidenav-mini-icon"> C </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Coupons </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="LoyaltyCardsTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "LoyaltyCard")">
-                                            <span class="sidenav-mini-icon"> LC </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Loyalty Cards </span>
-                                        </a>
-                                    </li>
+                            <li class="nav-item " id="CustomersTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Customer")">
+                                    <span class="sidenav-mini-icon"> C </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Customers </span>
+                                </a>
+                            </li>
+                            <li class="nav-item " id="GiftCardTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "GiftCard")">
+                                    <span class="sidenav-mini-icon"> GC </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Gift Cards </span>
+                                </a>
+                            </li>
+                            <li class="nav-item " id="ReferralsTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Referral")">
+                                    <span class="sidenav-mini-icon"> R </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Referrals </span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item " id="CouponTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Coupon")">
+                                    <span class="sidenav-mini-icon"> C </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Coupons </span>
+                                </a>
+                            </li>
+                            <li class="nav-item " id="LoyaltyCardsTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "LoyaltyCard")">
+                                    <span class="sidenav-mini-icon"> LC </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Loyalty Cards </span>
+                                </a>
+                            </li>
 
 
 
-                                </ul>
+                        </ul>
                             }
 
                         </div>
@@ -2058,6 +2094,16 @@
                                         </li>
 
                                     }
+                                    @if (package.Split(',').Contains("Referrals"))
+                                    {
+                                        <li class="nav-item " id="ReferralsTAB">
+                                            <a class="nav-link text-white " href="@Url.Action("Index", "Referral")">
+                                                <span class="sidenav-mini-icon"> R </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Referrals </span>
+                                            </a>
+                                        </li>
+
+                                    }
                                     @if (package.Split(',').Contains("Coupons"))
                                     {
                                         <li class="nav-item " id="CouponTAB">
@@ -2083,37 +2129,46 @@
                             }
                             else
                             {
-                                <ul class="nav">
+                        <ul class="nav">
 
 
-                                    <li class="nav-item " id="CustomersTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "Customer")">
-                                            <span class="sidenav-mini-icon"> C </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Customers </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="GiftCardTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "GiftCard")">
-                                            <span class="sidenav-mini-icon"> GC </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Gift Cards </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="CouponTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "Coupon")">
-                                            <span class="sidenav-mini-icon"> C </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Coupons </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="LoyaltyCardsTAB">
-                                        <a class="nav-link text-white " href="@Url.Action("Index", "LoyaltyCard")">
-                                            <span class="sidenav-mini-icon"> LC </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Loyalty Cards </span>
-                                        </a>
-                                    </li>
+                            <li class="nav-item " id="CustomersTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Customer")">
+                                    <span class="sidenav-mini-icon"> C </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Customers </span>
+                                </a>
+                            </li>
+                            <li class="nav-item " id="GiftCardTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "GiftCard")">
+                                    <span class="sidenav-mini-icon"> GC </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Gift Cards </span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item " id="ReferralsTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Referral")">
+                                    <span class="sidenav-mini-icon"> R </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Referrals </span>
+                                </a>
+                            </li>
+
+
+                            <li class="nav-item " id="CouponTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "Coupon")">
+                                    <span class="sidenav-mini-icon"> C </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Coupons </span>
+                                </a>
+                            </li>
+                            <li class="nav-item " id="LoyaltyCardsTAB">
+                                <a class="nav-link text-white " href="@Url.Action("Index", "LoyaltyCard")">
+                                    <span class="sidenav-mini-icon"> LC </span>
+                                    <span class="sidenav-normal  ms-2  ps-1"> Loyalty Cards </span>
+                                </a>
+                            </li>
 
 
 
-                                </ul>
+                        </ul>
                             }
 
                         </div>

@@ -3944,6 +3944,7 @@ namespace TheBookingPlatform.Controllers
                     }
                 }
                 var Message =  HandleRefund(appointment.PaymentSession,company.APIKEY,appointment.ID);
+
                 var history = new History();
                 history.Note = Message;
                 history.CustomerName = customer.FirstName + " " + customer.LastName;

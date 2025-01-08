@@ -94,6 +94,7 @@ namespace TheBookingPlatform.Controllers
                 "Reviews",
                 "Logs",
                 "Rebook Reminders",
+                "Referrals",
                 "Email Template",
                 "Employee Price Changes",
                 "Employee Requests",

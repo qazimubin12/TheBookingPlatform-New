@@ -82,6 +82,15 @@ namespace TheBookingPlatform.Controllers
             newAssignment.Days = giftCard.Days;
             GiftCardServices.Instance.SaveGiftCardAssignment(newAssignment);
 
+            var history = new History();
+            history.Name = "Gift Card Purchased";
+            history.Note = "Gift card was purchased of ID: " + giftCard.ID + " by Customer:" + customer.FirstName + " " + customer.LastName;
+            history.Business = businessName;
+            history.Date  = DateTime.Now;
+            history.CustomerName = customer.FirstName + " " + customer.LastName;
+            history.Type = giftCard.ID + "GiftCard";
+            HistoryServices.Instance.SaveHistory(history);
+
             var company = CompanyServices.Instance.GetCompany().Where(x=>x.Business == businessName).FirstOrDefault();
             var emailDetails = EmailTemplateServices.Instance.GetEmailTemplate().Where(x => x.Name == "Gift Card Issue Notification" && x.Business == businessName).FirstOrDefault();
             if (emailDetails != null && emailDetails.IsActive == true)

@@ -163,6 +163,15 @@ namespace TheBookingPlatform.Services
 
             }
         }
+        public Customer GetCustomerWRTBusinessAndReferral(string Business,string ReferralCode)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Customers.AsNoTracking().Where(x => x.Business == Business && x.ReferralCode == ReferralCode ).FirstOrDefault();
+
+            }
+        }
 
        
         public int GetCustomerCount(string business)
