@@ -1434,6 +1434,8 @@ namespace TheBookingPlatform.Controllers
                 AppointmentServices.Instance.UpdateAppointment(appointment);
 
 
+
+
                 var reminder = ReminderServices.Instance.GetReminderWRTAppID(appointment.ID);
                 reminder.IsCancelled = true;
                 ReminderServices.Instance.UpdateReminder(reminder);

@@ -23,21 +23,31 @@
                                     Referral Code
                                 </th>
                                 <th class="text-center">
-                                    Referred By
-                                </th>
-                                <th class="text-center">
                                     Customer
                                 </th>
                                 <th class="text-center">
-                                    Appointment
+                                    Balance
                                 </th>
-
-
-
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                           
+                            @foreach (var item in Model.ReferralCustomers)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.ReferralCode
+                                    </td>
+                                    <td>
+                                        @item.FirstName @item.LastName
+                                    </td>
+                                    <td>
+                                        @item.ReferralBalance
+                                    </td>
+                                    <td><a href="@Url.Action("ReferralLists", "Referral", new {ID= item.ID})" class="btn btn-primary btn-round btn-sm">VIEW REFERRALS</a></td>
+                                </tr>
+                            }
+
                         </tbody>
                     </table>
                 </div>

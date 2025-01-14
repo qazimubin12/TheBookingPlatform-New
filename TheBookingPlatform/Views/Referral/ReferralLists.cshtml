@@ -1,0 +1,42 @@
+﻿@model TheBookingPlatform.ViewModels.ReferralFurherListViewModel
+@{
+    ViewBag.Title = "ReferralLists";
+}
+
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">
+                Referrals of @Model.Customer.FirstName @Model.Customer.LastName
+            </h2>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Customer
+                            </th>
+                            <th>
+                                Appointment 
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Referrals)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Customer.FirstName @item.Customer.LastName
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("AppointmentDetails", "Appointment", new {AppointmentID= item.Referral.AppointmentID})" class="btn btn-primary btn-round btn-sm">VIEW REFERRALS</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

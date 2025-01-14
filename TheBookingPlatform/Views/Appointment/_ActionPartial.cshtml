@@ -92,12 +92,18 @@
     #Notes::-webkit-scrollbar-corner {
         background-color: #FFF; /* Color of the scrollbar corner */
     }
-
     .autocomplete-suggestion {
-        padding: 2px 5px;
-        white-space: nowrap;
-        overflow: hidden;
+    padding: 2px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+    @@media (max-width: 768px) {
+        .autocomplete-suggestion {
+            white-space: normal;
+        }
     }
+
 
     .autocomplete-no-suggestion {
         padding: 2px 5px;

@@ -2,106 +2,93 @@
 @{
     ViewBag.Title = "Index";
 }
-<div style="padding-left:0px;padding-right:0px;" class="col-md-12">
+<div class="col-md-12 p-0">
     @if (Model.Employees != null)
     {
-        <div class="card table-responsive">
-
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-
-                            <th class="text-center">
-                                Name
-                            </th>
-
-                            
-                            <th class="text-center">
-                                Calendar History <a href="https://yourbookingplatform.com/how-to-use-employee-calendar-history/" target="_blank"><i class="fa fa-info-circle"></i></a>
-                            </th>
-                            <th class="text-center">
-                                Payroll Type <a href="https://yourbookingplatform.com/how-to-set-up-payroll-types-for-employees-in-ybp/" target="_blank"><i class="fa fa-info-circle"></i></a>
-                            </th>
-                            <th class="text-center">
-                                Price Change
-                            </th>
-
-                            <th class="text-center">
-                                Amount
-                            </th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Employees)
-                        {
-                            <tr>
-                              
-                                <td class="text-center">@item.Employee.Name</td>
-
-
-                                <td class="text-center"  style="width:200px;">
-                                    <select class="form-control limitAccess choices__input" id="Limit_@(item.Employee.ID)" onchange="ChangeLimitoFCalendarAccess('@item.Employee.ID')">
-                                        @foreach (var access in Model.CalendarHistoryAccessList)
-                                        {
-                                            if (access == item.Employee.LimitCalendarHistory)
-                                            {
-                                                <option selected value="@access">@access</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@access">@access</option>
-
-                                            }
-                                        }
-                                    </select>
-                                </td>
-
-                                <td class="text-center" style="width:200px;">
-                                    <select class="form-control changeType choices__input " data-id="@item.Employee.ID" id="Type_@(item.Employee.ID)">
-                                        @foreach (var access in Model.Types)
-                                        {
-                                            if (access == item.Employee.Type)
-                                            {
-                                                <option selected value="@access">@access</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@access">@access</option>
-
-                                            }
-                                        }
-                                    </select>
-
-                                </td>
-                                <td class="text-center">
-                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Index", "EmployeePriceChange", new {EmployeeID = item.Employee.ID})">Price Change</a>
-                                </td>
-                                <td style="display:flex;">
-                                    <div class="input-group input-group-dynamic">
-
-                                        <input type="text" class="form-control numberPercentage" data-id="@item.Employee.ID" value="@item.Employee.Percentage" name="Number" id="Number_@(item.Employee.ID)" />
-                                    </div>
-                                        <button class="btn btn-primary btn-sm" onclick="ChangeTypeOfEmployee('@item.Employee.ID')" type="button">
-                                            <i class="material-icons">payments</i>
-                                        </button>
-                                </td>
-
-
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title text-center">Employee Details</h5>
             </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover m-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="text-center">Name</th>
+                                <th class="text-center">
+                                    Calendar History
+                                    <a href="https://yourbookingplatform.com/how-to-use-employee-calendar-history/" target="_blank">
+                                        <i class="fa fa-info-circle"></i>
+                                    </a>
+                                </th>
+                                <th class="text-center">
+                                    Payroll Type
+                                    <a href="https://yourbookingplatform.com/how-to-set-up-payroll-types-for-employees-in-ybp/" target="_blank">
+                                        <i class="fa fa-info-circle"></i>
+                                    </a>
+                                </th>
+                                <th class="text-center">Price Change</th>
+                                <th class="text-center">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Employees)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.Employee.Name</td>
+                                    <td class="text-center">
+                                        <select class="form-select limitAccess " id="Limit_@(item.Employee.ID)" onchange="ChangeLimitoFCalendarAccess('@item.Employee.ID')">
+                                            @foreach (var access in Model.CalendarHistoryAccessList)
+                                            {
+                                                <option value="@access" @(access == item.Employee.LimitCalendarHistory ? "selected" : "")>
+                                                    @access
+                                                </option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select changeType " data-id="@item.Employee.ID" id="Type_@(item.Employee.ID)">
+                                            @foreach (var access in Model.Types)
+                                            {
+                                                <option value="@access" @(access == item.Employee.Type ? "selected" : "")>
+                                                    @access
+                                                </option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <a class="btn btn-primary btn-sm" href="@Url.Action("Index", "EmployeePriceChange", new { EmployeeID = item.Employee.ID })">
+                                            Price Change
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <div class="input-group input-group-dynamic">
+                                                <input type="text" class="form-control numberPercentage" data-id="@item.Employee.ID" value="@item.Employee.Percentage" name="Number" id="Number_@(item.Employee.ID)" />
+                                            </div>
+                                            <button class="btn btn-primary btn-sm ml-2" onclick="ChangeTypeOfEmployee('@item.Employee.ID')" type="button">
+                                                <i class="material-icons">payments</i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     }
     else
     {
-
-        <div class="alert alert-warning col-md-12" role="alert">
+        <div class="alert alert-warning" role="alert">
             Sorry! No records exist.
         </div>
     }
 </div>
+
+
+
 
 
 <script>

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TheBookingPlatform.Entities;
 using TheBookingPlatform.Services;
 using TheBookingPlatform.ViewModels;
 
@@ -68,12 +69,41 @@ namespace TheBookingPlatform.Controllers
             var listofreferrals = new List<ReferralListModel>();
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
             var referrals = ReferralServices.Instance.GetReferralWRTBusiness(LoggedInUser.Company);
+            model.Company = CompanyServices.Instance.GetCompanyByName(LoggedInUser.Company);
+            var listofReferralCustomers = new List<Customer>();
             foreach ( var item in referrals)
             {
-                var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
                 var referredby = CustomerServices.Instance.GetCustomer(item.ReferredBy);
-                listofreferrals.Add(new ReferralListModel { Customer = customer,ReferredCustomer = referredby,Referral = item });
+                if(referredby != null)
+                {
+                    if (!listofReferralCustomers.Contains(referredby))
+                    {
+                        listofReferralCustomers.Add(referredby);
+                    }
+                }
             }
+            model.ReferralCustomers = listofReferralCustomers;
+            return View(model);
+        }
+
+
+        public ActionResult ReferralLists(int ID)
+        {
+            var customer = CustomerServices.Instance.GetCustomer(ID);
+
+            ReferralFurherListViewModel model = new ReferralFurherListViewModel();
+            model.Customer = customer;
+            var listofreferrls = new List<ReferralListModel>();
+            var referrals = ReferralServices.Instance.GetReferralWRTBusinessREF(customer.Business, customer.ID);
+            foreach (var item in referrals)
+            {
+                listofreferrls.Add(new ReferralListModel
+                {
+                    Referral = item,
+                    Customer = CustomerServices.Instance.GetCustomer(item.CustomerID)
+                });
+            }
+            model.Referrals = listofreferrls;
             return View(model);
         }
     }
