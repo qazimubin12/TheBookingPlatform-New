@@ -52,5 +52,6 @@ namespace TheBookingPlatform.Entities
         public int CouponID { get; set; }
         public int CouponAssignmentID { get; set; }
         public bool FromGCAL { get; set; }
+        public bool CancelledByEmail { get; set; }
     }
 }

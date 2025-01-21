@@ -56,6 +56,15 @@ namespace TheBookingPlatform.Services
             }
         }
 
+
+        public Appointment GetAppointments(string Business)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Appointments.AsNoTracking().Where(x => x.Business == Business).FirstOrDefault();
+            }
+        }
+
         public async Task<Appointment> GetAppointmentWithGCalEventIDAsync(string GCalEventID)
         {
             using (var context = new DSContext())

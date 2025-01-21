@@ -62,6 +62,16 @@ namespace TheBookingPlatform.Services
             }
         }
 
+        public List<EmployeePriceChange> GetEmployeePriceChangeWRTBusiness(string Business)
+        {
+            using (var context = new DSContext())
+            {
+                
+                    return context.EmployeePriceChanges.Where(X =>  X.Business == Business).OrderBy(x => x.TypeOfChange).ToList();
+                
+            }
+        }
+
         public EmployeePriceChange GetEmployeePriceChange(int ID)
         {
             using (var context = new DSContext())

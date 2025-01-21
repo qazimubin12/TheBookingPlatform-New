@@ -12,6 +12,8 @@ using TheBookingPlatform.Models;
 using TheBookingPlatform.Services;
 using TheBookingPlatform.ViewModels;
 using TheBookingPlatform.Entities;
+using NodaTime;
+using static TheBookingPlatform.Controllers.BookingController;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -88,6 +90,8 @@ namespace TheBookingPlatform.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+
+
             if (returnUrl != null)
             {
                 RedirectToLocal(returnUrl);

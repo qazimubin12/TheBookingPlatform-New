@@ -22,6 +22,7 @@ using System.Net;
 using System.Text;
 using Microsoft.Owin.Security.Twitter.Messages;
 using System.Text.Json.Nodes;
+using System.Net.NetworkInformation;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -335,80 +336,71 @@ namespace TheBookingPlatform.Controllers
         [HttpPost]
         public ActionResult UserRegistrationWebHook()
         {
-
-
             try
             {
                 // Read the raw body from the request
-                var json = Request.InputStream;
-                json.Seek(0, System.IO.SeekOrigin.Begin);
-                var jsonBody = new StreamReader(json).ReadToEnd();
+                Request.InputStream.Seek(0, System.IO.SeekOrigin.Begin);
+                var jsonBody = new StreamReader(Request.InputStream).ReadToEnd();
 
+                // Save the raw body to history for debugging
+             
                 // Verify the Stripe event
-                var stripeEvent = EventUtility.ConstructEvent(
-                    jsonBody,
-                    Request.Headers["Stripe-Signature"],
-                    "whsec_NQWM7ywtGrokkKrVZ5llUfeRESZhMt7u"
-                );
-
+          
+                var history = new History
+                {
+                    Business = "STRIPE_WEBHOOK",
+                    Note = jsonBody,
+                    Date = DateTime.Now
+                };
+                HistoryServices.Instance.SaveHistory(history);
+                JObject parsedJson = JObject.Parse(jsonBody);
+                bool isPaid = (bool)parsedJson["data"]["object"]["paid"];
+                string type = (string)parsedJson["type"];
+                string userId = (string)parsedJson["data"]["object"]["lines"]["data"][0]["metadata"]["UserID"];
+                int packageId = (int)parsedJson["data"]["object"]["lines"]["data"][0]["metadata"]["PackageID"];
                 // Handle different types of Stripe events
-                if (stripeEvent.Type == "invoice.payment_succeeded")
+                if (type == "invoice.payment_succeeded")
                 {
-                    // Access the Invoice object from the event
-                    var invoice = stripeEvent.Data.Object as Stripe.Invoice;
 
-                    // Get the customer ID from the invoice
-                    string customerId = invoice.CustomerId;
-
-                    // Retrieve the customer object to access metadata
-                    var customerService = new CustomerService();
-                    var customer = customerService.Get(customerId);
-
-                    // Access metadata
-                    var UserID = customer.Metadata["UserID"];
-                    int PackageID = int.Parse(customer.Metadata["PackageID"]);
-
-
-
-                    var user = UserManager.FindById(UserID);
-                    user.Package = PackageID;
-                    user.IsPaid = true;
-                    user.LastPaymentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-                    UserManager.Update(user);
-
-                    var payment = new Payment();
-                    payment.Business = user.Company;
-                    payment.LastPaidDate = DateTime.Now;
-                    payment.PackageID = PackageID;
-                    payment.UserID = UserID;
-                    PaymentServices.Instance.SavePayment(payment);
-
-
-                    var currentUsers = UserManager.Users.Where(x => x.Company == user.Company && x.Id != user.Id).ToList();
-                    foreach (var item in currentUsers)
+                    var user = UserManager.FindById(userId);
+                    if (user != null)
                     {
-                        item.Package = user.Package;
-                        item.LastPaymentDate = user.LastPaymentDate;
-                        item.IsPaid = user.IsPaid;
-                        item.IsInTrialPeriod = user.IsInTrialPeriod;
-                        UserManager.Update(item);
+                        user.Package = packageId;
+                        user.IsPaid = true;
+                        user.LastPaymentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                        UserManager.Update(user);
+
+                        // Save payment details
+                        var payment = new Payment
+                        {
+                            Business = user.Company,
+                            LastPaidDate = DateTime.Now,
+                            PackageID = packageId,
+                            UserID = userId
+                        };
+                        PaymentServices.Instance.SavePayment(payment);
+
+                        // Update other users in the same company
+                        var currentUsers = UserManager.Users
+                            .Where(x => x.Company == user.Company && x.Id != user.Id)
+                            .ToList();
+
+                        foreach (var item in currentUsers)
+                        {
+                            item.Package = user.Package;
+                            item.LastPaymentDate = user.LastPaymentDate;
+                            item.IsPaid = user.IsPaid;
+                            item.IsInTrialPeriod = user.IsInTrialPeriod;
+                            UserManager.Update(item);
+                        }
                     }
-                    // Log or use metadata for further processing
+
+
                 }
-                else if (stripeEvent.Type == "invoice.payment_failed")
+                else if (type == "invoice.payment_failed")
                 {
-                    var invoice = stripeEvent.Data.Object as Stripe.Invoice;
-                    string customerId = invoice.CustomerId;
+                    System.Diagnostics.Debug.WriteLine($"Payment failed for UserID: {userId}, PackageID: {packageId}");
 
-                    // Retrieve the customer object to access metadata
-                    var customerService = new CustomerService();
-                    var customer = customerService.Get(customerId);
-
-                    var userId = customer.Metadata["UserID"];
-                    var packageId = customer.Metadata["PackageID"];
-
-                    // Handle failed payment
-                    Console.WriteLine($"Payment failed for UserID: {userId}, PackageID: {packageId}");
                 }
 
                 return new HttpStatusCodeResult(200); // Acknowledge receipt of the webhook
@@ -417,14 +409,13 @@ namespace TheBookingPlatform.Controllers
             {
                 // Handle Stripe exceptions
                 System.Diagnostics.Debug.WriteLine($"StripeException: {ex.Message}");
-                return new HttpStatusCodeResult(400);
+                return new HttpStatusCodeResult(400); // Bad Request
             }
             catch (Exception ex)
             {
-                // Log the error for debugging
-                System.Diagnostics.Debug.WriteLine($"StripeException: {ex.Message}");
+                // Handle general exceptions
+                System.Diagnostics.Debug.WriteLine($"Exception: {ex.Message}");
                 return new HttpStatusCodeResult(400); // Bad Request
-                                                      // return new HttpStatusCodeResult(500);
             }
         }
 

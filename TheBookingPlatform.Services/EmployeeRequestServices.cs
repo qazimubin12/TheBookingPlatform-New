@@ -46,6 +46,17 @@ namespace TheBookingPlatform.Services
             }
         }
 
+        public List<EmployeeRequest> GetEmployeeRequestsWRTBusiness(string Business)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.EmployeeRequests.Where(x=>x.Business == Business).OrderBy(x => x.Business).ToList();
+            }
+            
+        }
+
+
 
 
 

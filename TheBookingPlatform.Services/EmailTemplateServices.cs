@@ -59,6 +59,15 @@ namespace TheBookingPlatform.Services
                 
             }
         }
+        public List<EmailTemplate> GetEmailTemplateWRTBusiness(string Business)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.EmailTemplates.Where(x => x.Business == Business).ToList();
+
+            }
+        }
 
         public EmailTemplate GetEmailTemplate(int ID)
         {

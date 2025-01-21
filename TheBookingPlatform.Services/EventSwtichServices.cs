@@ -44,6 +44,15 @@ namespace TheBookingPlatform.Services
         }
 
 
+        public List<EventSwitch> GetEventSwitchWRTBusiness(string Business)
+        {
+            using (var context = new DSContext())
+            {
+                
+                    return context.EventSwitches.Where(x=>x.Business == Business).ToList();
+                
+            }
+        }
         public EventSwitch GetEventSwitchbyEventID(int AppointmentID)
         {
             using (var context = new DSContext())

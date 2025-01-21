@@ -342,9 +342,10 @@ namespace TheBookingPlatform.Controllers
         public ActionResult Delete(CompanyActionViewModel model)
         {
             var company = CompanyServices.Instance.GetCompany(model.ID);
+            var Users = UserManager.Users.ToList().Where(x => x.Company == company.Business).ToList();
+           
             CompanyServices.Instance.DeleteCompany(company.ID);
 
-            var Users = UserManager.Users.ToList().Where(x => x.Company == company.Business).ToList();
             foreach (var item in Users)
             {
                 item.Company = "";

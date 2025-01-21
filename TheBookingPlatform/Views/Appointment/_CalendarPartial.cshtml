@@ -443,6 +443,7 @@
 
             initialView: 'resourceTimeGridDay',
             nowIndicator: 'true',
+
             //timeZone: clientTimeZoneNameToBeUsed, //NEED TO COMMENT THIS
             scrollTime: '09:00',
             dayMinWidth: 150,
@@ -1896,8 +1897,8 @@ else
             },
             eventDrop: function (event, delta, revertFunc) {
                 // This function will be called when an event is dropped
-                var startDate = event.event.start.toISOString();
-                var endDate = event.event.end.toISOString();
+                var startDate = event.event.start.toString();
+                var endDate = event.event.end.toString();
                 // Prepare the data to be sent to the server for updating
                 var eventData = {
                     id: event.event.id,
@@ -1926,7 +1927,12 @@ else
                             data: eventData,
                             type: 'POST', // Use POST or PUT depending on your API
                             dataType: 'json',
+                            beforeSend: function () {
+                                // Show loading spinner before the AJAX request is sent
+                                showLoadingSpinner();
+                            },
                             success: function (response) {
+                                debugger
                                 if (response.success) {
                                     // Event updated successfully
                                     showSuccessAlert();
@@ -1936,11 +1942,17 @@ else
                                 }
                             },
                             error: function (error) {
-                                // Handle error if the Ajax request fails
+                                // Handle error if the AJAX request fails
                                 console.error('Error updating event:', error);
                                 revertFunc(); // Revert the event to its original position
+                            },
+                            complete: function () {
+                                // Hide loading spinner once the AJAX request is completed
+                                hideLoadingSpinner();
+
                             }
                         });
+
                     }
                     else {
                         // If the user cancels the update, revert the event to its original position
@@ -2134,19 +2146,20 @@ else
             $("#IntervalFinal").val('00:15:00');
             ViewCalendar();
         }
-        else if (interval == "30")
-        {
+        else if (interval == "30") {
             $("#IntervalFinal").val('00:30:00');
             ViewCalendar();
 
 
 
         }
-        else if (interval == "60")
-        {
+        else if (interval == "60") {
 
             //setSlotDuration('00:30:00'); // 30 minutes
             $("#IntervalFinal").val('01:00:00');
+            ViewCalendar();
+
+        } else {
             ViewCalendar();
 
         }
@@ -2181,7 +2194,6 @@ else
     }
     $(document).ready(function () {
         CheckInterval();
-        ViewCalendar();
         //demo.initFullCalendar();
         $(".navbar-transparent").hide();
         adjustMent();

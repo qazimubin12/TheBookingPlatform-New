@@ -28,8 +28,10 @@ namespace TheBookingPlatform
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
 
+
+
         }
-      
+
 
     }
 }

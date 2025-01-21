@@ -44,6 +44,14 @@ namespace TheBookingPlatform.Services
         }
 
 
+        public List<EmployeeWatch> GetEmployeeWatchesWRTBusiness(string Business)
+        {
+            using (var context = new DSContext())
+            {
+                    return context.EmployeeWatches.Where(x=>x.Business == Business).ToList();
+                
+            }
+        }
         public EmployeeWatch GetEmployeeWatchByEmployeeID(int EmployeeID)
         {
             using (var context = new DSContext())
