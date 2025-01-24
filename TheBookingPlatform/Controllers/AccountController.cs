@@ -91,7 +91,6 @@ namespace TheBookingPlatform.Controllers
         public ActionResult Login(string returnUrl)
         {
 
-
             if (returnUrl != null)
             {
                 RedirectToLocal(returnUrl);

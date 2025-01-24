@@ -178,8 +178,8 @@ namespace TheBookingPlatform.Controllers
             {
                 Summary = "Appointment at: " + loggedInUser.Company,
                 Description = Services,
-                Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone },
-                End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone }
+                Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone },
+                End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone }
             };
 
             var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings

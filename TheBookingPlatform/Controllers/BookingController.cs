@@ -873,12 +873,13 @@ namespace TheBookingPlatform.Controllers
 
                                 string Json = "";
 
-                                var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
+                                var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id,true);
 
                                 //var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
 
                                 try
                                 {
+                                    var againcheck = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
                                     if (appointment != null)
                                     {
                                         try
@@ -911,10 +912,9 @@ namespace TheBookingPlatform.Controllers
                                                     if (calendarEvent.Organizer == null)
                                                     {
 
-
-                                                        appointment.Date = DateTime.Parse(calendarEvent.Start.DateTime);
-                                                        appointment.Time = DateTime.Parse(calendarEvent.Start.DateTime);
-                                                        appointment.EndTime = DateTime.Parse(calendarEvent.End.DateTime);
+                                                        appointment.Date = DateTime.Parse(calendarEvent.Start.DateTime.Substring(0, calendarEvent.Start.DateTime.Length - 6));
+                                                        appointment.Time = DateTime.Parse(calendarEvent.Start.DateTime.Substring(0, calendarEvent.Start.DateTime.Length - 6));
+                                                        appointment.EndTime = DateTime.Parse(calendarEvent.End.DateTime.Substring(0, calendarEvent.End.DateTime.Length - 6));
                                                         appointment.GoogleCalendarEventID = item.Id;
                                                         AppointmentServices.Instance.UpdateAppointment(appointment);
                                                     }
@@ -923,11 +923,9 @@ namespace TheBookingPlatform.Controllers
                                                         string organizerEmail = calendarEvent.Organizer.Email;
                                                         var newemployee = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(organizerEmail);
 
-
-
-                                                        appointment.Date = DateTime.Parse(calendarEvent.Start.DateTime);
-                                                        appointment.Time = DateTime.Parse(calendarEvent.Start.DateTime);
-                                                        appointment.EndTime = DateTime.Parse(calendarEvent.End.DateTime);
+                                                        appointment.Date = DateTime.Parse(calendarEvent.Start.DateTime.Substring(0, calendarEvent.Start.DateTime.Length - 6));
+                                                        appointment.Time = DateTime.Parse(calendarEvent.Start.DateTime.Substring(0, calendarEvent.Start.DateTime.Length - 6));
+                                                        appointment.EndTime = DateTime.Parse(calendarEvent.End.DateTime.Substring(0, calendarEvent.End.DateTime.Length - 6));
                                                         appointment.EmployeeID = newemployee.ID;
                                                         appointment.GoogleCalendarEventID = item.Id;
                                                         AppointmentServices.Instance.UpdateAppointment(appointment);
@@ -967,30 +965,33 @@ namespace TheBookingPlatform.Controllers
                                     }
                                     else
                                     {
-
-                                        appointment = new Appointment();
-                                        appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
-                                        appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
-                                        appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);
-                                        appointment.DepositMethod = "Pin";
-                                        appointment.Notes = fullEvent.Summary;
-                                        TimeSpan duration = appointment.EndTime - appointment.Time;
-                                        var service = ServiceServices.Instance.GetService(employee.Business, "ABSENSE", "").FirstOrDefault();
-                                        if (service != null)
+                                        if (againcheck == null)
                                         {
-                                            appointment.Service = service.ID.ToString();
-                                        }
-                                        appointment.Status = "Pending";
-                                        appointment.Color = "#dff0e3";
-                                        appointment.Business = employee.Business;
-                                        appointment.EmployeeID = employee.ID;
-                                        appointment.FromGCAL = true;
-                                        appointment.IsPaid = true;
-                                        appointment.ServiceDuration = duration.TotalMinutes + "mins";
-                                        appointment.BookingDate = DateTime.Now;
-                                        appointment.GoogleCalendarEventID = item.Id;
-                                        AppointmentServices.Instance.SaveAppointment(appointment);
 
+                                            appointment = new Appointment();
+                                            appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
+                                            appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
+                                            appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);
+                                            appointment.DepositMethod = "Pin";
+                                            appointment.Notes = fullEvent.Summary;
+                                            TimeSpan duration = appointment.EndTime - appointment.Time;
+                                            var service = ServiceServices.Instance.GetService(employee.Business, "ABSENSE", "").FirstOrDefault();
+                                            if (service != null)
+                                            {
+                                                appointment.Service = service.ID.ToString();
+                                            }
+                                            appointment.Status = "Pending";
+                                            appointment.Color = "#dff0e3";
+                                            appointment.Business = employee.Business;
+                                            appointment.EmployeeID = employee.ID;
+                                            appointment.FromGCAL = true;
+                                            appointment.IsPaid = true;
+                                            appointment.ServiceDuration = duration.TotalMinutes + "mins";
+                                            appointment.BookingDate = DateTime.Now;
+                                            appointment.GoogleCalendarEventID = item.Id;
+                                            AppointmentServices.Instance.SaveAppointment(appointment);
+
+                                        }
 
                                     }
                                 }
@@ -2770,8 +2771,9 @@ namespace TheBookingPlatform.Controllers
                 {
                     Summary = "Appointment at: " + appointment.Business,
                     Description = ConcatenatedServices,
-                    Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone },
-                    End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone }
+
+                    Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone },
+                    End = new EventDateTime() { DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone }
                 };
 
                 var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
@@ -4589,8 +4591,8 @@ namespace TheBookingPlatform.Controllers
                 calendarEvent.Summary = "Appointment at: " + Business;
                 calendarEvent.Description = Services;
                 var TimeZone = TimeZoneInfo.Local.Id;
-                calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone };
-                calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), TimeZone = company.TimeZone };
+                calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+                calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
 
                 var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
                 {

@@ -189,24 +189,22 @@ namespace TheBookingPlatform.Controllers
             var secretKey = company.APIKEY;
             StripeConfiguration.ApiKey = secretKey;
 
-            var customer = new Entities.Customer();
-            customer.Business = Company;
-            customer.FirstName = FirstName;
-            customer.LastName = LastName;
-            customer.Email = Email;
-            customer.MobileNumber = MobileNumber;
+            var customer = CustomerServices.Instance.GetCustomerWRTBusiness(Company, Email);
+        
             Random random = new Random();
             customer.Password = new string(Enumerable.Repeat("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 8).Select(s => s[random.Next(s.Length)]).ToArray());
-
-            if (CustomerServices.Instance.GetCustomerWRTBusiness(Company, Email) == null)
+            
+            if (customer == null)
             {
                 customer.DateAdded = DateTime.Now;
+                customer.Business = Company;
+                customer.FirstName = FirstName;
+                customer.LastName = LastName;
+                customer.Email = Email;
+                customer.MobileNumber = MobileNumber;
                 CustomerServices.Instance.SaveCustomer(customer);
             }
-            else
-            {
-                customer = CustomerServices.Instance.GetCustomersWRTBusiness(Company, Email).FirstOrDefault();
-            }
+          
 
             float totalAmount = GetNumericPartFromString(Amount);
             var options = new SessionCreateOptions

@@ -5741,12 +5741,12 @@ namespace TheBookingPlatform.Controllers
                     Description = Services + " ID: " + appointment.ID,
                     Start = new EventDateTime()
                     {
-                        DateTime = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), // UTC with offset
+                        DateTime = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
                         TimeZone = company.TimeZone
                     },
                     End = new EventDateTime()
                     {
-                        DateTime = endDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), // UTC with offset
+                        DateTime = endDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
                         TimeZone = company.TimeZone
                     }
                 };
@@ -5794,12 +5794,12 @@ namespace TheBookingPlatform.Controllers
                         Description = Services +" ID: "+appointment.ID,
                         Start = new EventDateTime()
                         {
-                            DateTime = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), // UTC with offset
+                            DateTime = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
                             TimeZone = company.TimeZone
                         },
                         End = new EventDateTime()
                         {
-                            DateTime = endDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK"), // UTC with offset
+                            DateTime = endDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
                             TimeZone = company.TimeZone
                         }
                     };

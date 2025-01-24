@@ -55,6 +55,13 @@ namespace TheBookingPlatform.Services
                 return context.Appointments.AsNoTracking().Where(x=>x.GoogleCalendarEventID == GCalEventID).FirstOrDefault();
             }
         }
+          public Appointment GetAppointmentWithGCalEventID(string GCalEventID,bool FromGCal)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Appointments.AsNoTracking().Where(x=>x.GoogleCalendarEventID == GCalEventID && x.FromGCAL == FromGCal).FirstOrDefault();
+            }
+        }
 
 
         public Appointment GetAppointments(string Business)
