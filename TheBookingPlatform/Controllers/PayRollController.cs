@@ -70,7 +70,7 @@ namespace TheBookingPlatform.Controllers
         {
             PayRollViewModel model = new PayRollViewModel();
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
-            if(LoggedInUser == null)
+            if (LoggedInUser == null)
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -110,6 +110,7 @@ namespace TheBookingPlatform.Controllers
                 var appointmentIDs = new List<int>();
                 float TotalAmount = 0;
                 float TimeSpend = 0;
+                float tip = 0;
                 int TotalDurations = 0;
                 double TotalPrice = 0;
                 var TotalOnlinePriceChange = 0.0;
@@ -196,6 +197,7 @@ namespace TheBookingPlatform.Controllers
                     }
                 }
                 var invoices = InvoiceServices.Instance.GetInvoice().Where(x => appointmentIDs.Contains(x.AppointmentID)).ToList();
+                tip = invoices.Where(x => x.Tip && x.TipType == "Employee").Sum(x => x.TipAmount);
                 TotalAmount = invoices.Select(x => x.GrandTotal).Sum();
                 float Amount = 0;
                 string FinalAmount = "";
@@ -219,11 +221,12 @@ namespace TheBookingPlatform.Controllers
                 else if (employee.Type == "Time to Time")
                 {
                     Amount = float.Parse(Math.Round(TimeSpend / 60.0, 2).ToString());
-                    FinalAmount = Math.Round(Amount * employee.Percentage,2) + company.Currency;
+                    FinalAmount = Math.Round(Amount * employee.Percentage, 2) + company.Currency;
                     model.Amount = Amount;
                     model.FinalAmount = FinalAmount;
 
                 }
+                model.Tips = tip;
 
             }
             return View(model);
@@ -264,7 +267,7 @@ namespace TheBookingPlatform.Controllers
             var ServicePrice = 0.0;
             if (employee.Type == "Time to Time")
             {
-                appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, model.EmployeeID, model.StartDate, model.EndDate, model.isCancelled).Where(x => x.Color != "darkgray" && model.Status.Contains(x.Status?.Trim())).OrderBy(X=>X.Date.Day).ThenBy(x => x.Time.TimeOfDay).ToList();
+                appointments = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(LoggedInUser.Company, false, model.EmployeeID, model.StartDate, model.EndDate, model.isCancelled).Where(x => x.Color != "darkgray" && model.Status.Contains(x.Status?.Trim())).OrderBy(X => X.Date.Day).ThenBy(x => x.Time.TimeOfDay).ToList();
                 var groupedByDate = appointments
        .GroupBy(a => a.Date.Date);
                 foreach (var item in groupedByDate)
@@ -274,6 +277,7 @@ namespace TheBookingPlatform.Controllers
                     TimeSpan duration = lastAppointmentEndTime.TimeOfDay - firstAppointmentTime.TimeOfDay;
                     TimeSpend += float.Parse(duration.TotalMinutes.ToString());
                 }
+                appointmentIDs = appointments.Select(x => x.ID).ToList();
             }
             else
             {
@@ -364,6 +368,8 @@ namespace TheBookingPlatform.Controllers
 
             var invoices = InvoiceServices.Instance.GetInvoices(LoggedInUser.Company, appointmentIDs);
             TotalAmount = invoices.Select(x => x.GrandTotal).Sum();
+            var tip = invoices.Where(x => x.Tip).Sum(x => x.TipAmount);
+
             float Amount = 0;
             string FinalAmount = "";
             if (employee.Type == "Percentage")
@@ -387,9 +393,9 @@ namespace TheBookingPlatform.Controllers
             model.Amount = Amount;
             model.Employee = employee;
             model.FinalAmount = FinalAmount;
-            
-          
-            return Json(new { success = true,Company=company, Amount = Amount, Employee = employee,Percentage= model.Percentage,FinalAmount=FinalAmount,StartDate=model.StartDate.ToString("yyyy-MM-dd"),EndDate=model.EndDate.ToString("yyyy-MM-dd") }, JsonRequestBehavior.AllowGet);
+            model.Tips = tip;
+
+            return Json(new { success = true, Company = company, Amount = Amount, Employee = employee, Percentage = model.Percentage, FinalAmount = FinalAmount, StartDate = model.StartDate.ToString("yyyy-MM-dd"), EndDate = model.EndDate.ToString("yyyy-MM-dd"), Tips = tip, ID = model.Employee.ID }, JsonRequestBehavior.AllowGet);
             // Generate the URL for the view
 
             // Return the URL as a JSON response
@@ -397,13 +403,13 @@ namespace TheBookingPlatform.Controllers
 
         public ActionResult ViewEmployeesPayRoll()
         {
-            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); 
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
             var company = CompanyServices.Instance.GetCompany().Where(X => X.Business == LoggedInUser.Company).FirstOrDefault();
             var StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var EndDate = DateTime.Now;
             var employee = new Employee();
             employee = EmployeeServices.Instance.GetEmployeeWithLinkedUserID(LoggedInUser.Id);
-            if(employee == null)
+            if (employee == null)
             {
                 var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
                 foreach (var item in employeeRequest)
@@ -418,6 +424,7 @@ namespace TheBookingPlatform.Controllers
             var serviceIDList = new List<int>();
             var appointmentIDs = new List<int>();
             float TotalAmount = 0;
+
             float TimeSpend = 0;
             int TotalDurations = 0;
             double TotalPrice = 0;
@@ -522,6 +529,8 @@ namespace TheBookingPlatform.Controllers
             }
 
             var invoices = InvoiceServices.Instance.GetInvoices(LoggedInUser.Company, appointmentIDs);
+            var tip = invoices.Where(x => x.Tip).Sum(x => x.TipAmount);
+
             TotalAmount = invoices.Select(x => x.GrandTotal).Sum();
             float Amount = 0;
             string FinalAmount = "";
@@ -559,11 +568,13 @@ namespace TheBookingPlatform.Controllers
             model.Company = company;
             model.VStartDate = StartDate.ToString("yyyy-MM-dd");
             model.VEndDate = EndDate.ToString("yyyy-MM-dd");
+            model.Tips = tip;
+            model.Employee = employee;
             return View("ViewPayRoll", model);
         }
 
 
-        public ActionResult ViewPayRoll(string employeeName, string employeeSpecialization, float amount, string finalAmount, float percentage, string companyName, string companyPhoneNumber, string companyAddress,string companyLogo,string StartDate,string EndDate,string Type)
+        public ActionResult ViewPayRoll(string employeeName, string employeeSpecialization, float amount, string finalAmount, float percentage, string companyName, string companyPhoneNumber, string companyAddress, string companyLogo, string StartDate, string EndDate, string Type, float Tips, int ID)
         {
             PayRollViewModel model = new PayRollViewModel();
             model.EmployeeName = employeeName;
@@ -579,6 +590,9 @@ namespace TheBookingPlatform.Controllers
             model.Company = CompanyServices.Instance.GetCompany(companyName).FirstOrDefault();
             model.VStartDate = StartDate;
             model.VEndDate = EndDate;
+            model.Employee = EmployeeServices.Instance.GetEmployee(ID);
+
+            model.Tips = Tips;
             return View("ViewPayRoll", model);
         }
 

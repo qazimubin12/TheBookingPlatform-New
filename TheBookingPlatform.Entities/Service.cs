@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TheBookingPlatform.Entities
 {
-    public class Service:BaseEntity
+    public class Service : BaseEntity
     {
         public string Name { get; set; }
         public string Category { get; set; }
@@ -26,7 +26,6 @@ namespace TheBookingPlatform.Entities
         /// <summary>
         /// ////////////////
         /// </summary>
-        public string BufferTime { get; set; }
 
 
         //If Tools Needed

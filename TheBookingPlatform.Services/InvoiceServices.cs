@@ -45,18 +45,18 @@ namespace TheBookingPlatform.Services
         }
 
 
-        public List<Invoice> GetInvoices(string business,List<int> AppointmentIDs)
+        public List<Invoice> GetInvoices(string business, List<int> AppointmentIDs)
         {
             using (var context = new DSContext())
             {
-               
-                
-                    return context.Invoices.Where(x=>x.Business == business && AppointmentIDs.Contains(x.AppointmentID)).ToList();
-                
+
+
+                return context.Invoices.Where(x => x.Business == business && AppointmentIDs.Contains(x.AppointmentID)).ToList();
+
             }
 
         }
-        public List<Invoice> GetInvoice(string Business,int CustomerID ,string SearchTerm = "")
+        public List<Invoice> GetInvoice(string Business, int CustomerID, string SearchTerm = "")
         {
             using (var context = new DSContext())
             {
@@ -69,7 +69,7 @@ namespace TheBookingPlatform.Services
                 }
                 else
                 {
-                    return context.Invoices.Where(x=>x.Business == Business && x.CustomerID == CustomerID).ToList();
+                    return context.Invoices.Where(x => x.Business == Business && x.CustomerID == CustomerID).ToList();
                 }
             }
         }

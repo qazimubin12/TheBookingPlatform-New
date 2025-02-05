@@ -33,7 +33,7 @@ namespace TheBookingPlatform.ViewModels
 
         public string CompanyAddress { get; set; }
         public string CompanyLogo { get;  set; }
-        
+        public float Tips { get;  set; }
     }
 
     public class PayRollNewViewModel
@@ -60,5 +60,6 @@ namespace TheBookingPlatform.ViewModels
         public string FinalAmount { get; set; }
         public List<string> Status { get; set; }
         public bool isCancelled { get; set; }
+        public float Tips { get;  set; }
     }
 }

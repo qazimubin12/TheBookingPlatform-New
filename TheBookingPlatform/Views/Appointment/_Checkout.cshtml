@@ -47,28 +47,6 @@
     }
 
 
-
-
-
-
-    //if (Model.EmployeePriceChange != null)
-    //{
-    //    if (Model.EmployeePriceChange.TypeOfChange == "Discount")
-    //    {
-    //        TotalOfServicesMinusDiscount -= TotalOfServicesMinusDiscount * (Model.EmployeePriceChange.Percentage / 100);
-    //    }
-    //    else
-    //    {
-    //        TotalOfServicesMinusDiscount += TotalOfServicesMinusDiscount * (Model.EmployeePriceChange.Percentage / 100);
-
-    //    }
-    //}
-    //BeforePrice = TotalOfServicesMinusDiscount;
-    //if (Model.Coupon != null)
-    //{
-    //    TotalOfServicesMinusDiscount = TotalOfServicesMinusDiscount - (TotalOfServicesMinusDiscount * Model.Coupon.Discount / 100);
-    //}
-    //AfterPrice = TotalOfServicesMinusDiscount;
 }
 
 <style>
@@ -92,7 +70,6 @@
         margin-bottom: 0px;
         margin-top: 10px;
     }
-
 </style>
 <div class="card">
     <div class="card-body">
@@ -107,22 +84,22 @@
                     @if (Model.SaleOnCheckOut != null)
                     {
                         <a title="Add Products" class="btn btn-success" href="@Url.Action("CreateSale", "Sale", new {SaleID=Model.SaleOnCheckOut.Sale.ID, AppointmentID = Model.Appointment.ID })">
-                            <i class="material-icons">category</i>
+                            <i class="material-icons w-100">category</i>
+                            <span>Add Products</span>
                         </a>
                     }
                     else
                     {
                         <a title="Add Products" class="btn btn-success" href="@Url.Action("CreateSale", "Sale", new { AppointmentID = Model.Appointment.ID })">
-                            <i class="material-icons">category</i>
+                            <i class="material-icons w-100">category</i>
+                            <span>Add Products</span>
+
                         </a>
                     }
+
                     <h4>Payment Method</h4>
                     <ul id="ListOfThings" class="list-group">
-                        @*<li class="list-group-item">
-                <button style="white-space:nowrap;" id="Pin" class="btn btn-block btn-primary" type="button">
-                    <i class="material-icons">password</i>  Pin
-                </button>
-            </li>*@
+
 
                         <li class="list-group-item">
                             <button style="white-space:nowrap;" id="Card" class="btn btn-block btn-primary" type="button">
@@ -153,270 +130,288 @@
                     </ul>
                 </div>
             }
-        <div class="col-md-10">
-            <div class="form-group">
-                <div class="input-group input-group-dynamic">
-                    <label>Payment Method</label>
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-3">
+                        <button class="btn btn-primary btn-sm btn-round" id="addTipBtn" type="button">
+                            ADD TIPS?
+                        </button>
+                    </div>
+                    <div id="TipTypeDIV" style="display:@(Model.Appointment.Tip ? "block":"none" )" class="col-md-4">
+                        <label>Tip is for:</label>
+                        <select class="form-select" name="TipType" id="TipType">
+                            <option @(Model.Appointment.TipType == "Employee" ? "selected" : "") value="Employee">Employee</option>
+                            <option @(Model.Appointment.TipType == "Company" ? "selected" : "") value="Company">Company</option>
+                        </select>
+                    </div>
+                    <div id="TIPAmountDIV" style="display:@(Model.Appointment.Tip ? "block":"none" )" class="col-md-4">
+                        <label>Tip Amount:</label>
+                        <input class="form-control" type="number" value="@Model.Appointment.TipAmount" id="TipAmount" name="TipAmount" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group input-group-dynamic">
+                        <label>Payment Method</label>
+                        @if (Model.Appointment.Status == "Paid")
+                        {
+                            <input style=" background-color: blueviolet; color:white; " class="form-control" value="@Model.Appointment.Status" name="PaymentMethod" id="PaymentMethod" readonly />
+
+                        }
+                        else
+                        {
+                            <input class="form-control" name="PaymentMethod" id="PaymentMethod" readonly />
+                        }
+                    </div>
+                </div>
+                <input type="hidden" id="CHECKCARDS" />
+                <div style="display:none;" id="GiftCardRow" class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Gift Card Code</label>
+                                <input type="text" class="form-control" name="GiftCardCode" id="GiftCardCode" placeholder="Enter Gift Card Code" />
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" type="button" id="CheckGiftCardBtn">CHECK GIFT CARD</button>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Balance
+                                    </th>
+                                    <th>
+                                        Deduction
+                                    </th>
+                                    <th id="CheckTheDD">
+                                        To Be Paid
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="text-center" id="BalanceGiftCard"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="DeductionGiftCard"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="AfterDeductionGiftCard"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div style="display:none;" id="ReferralCardRow" class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Balance
+                                    </th>
+                                    <th>
+                                        Deduction
+                                    </th>
+                                    <th id="CheckTheDDReferral">
+                                        To Be Paid
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="text-center" id="ReferralBalance"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="DeductionReferral"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="AfterDeductionReferral"></span>
+                                        <span style="display:none;" class="text-center" id="AfterDeductionReferralToSend"></span>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <div style="display:none;" id="LoyaltyCardRow" class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Loyalty Card Number</label>
+                                <input type="text" class="form-control" name="LoyaltyCardCode" id="LoyaltyCardCode" placeholder="Enter Loyalty Card Number" />
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" type="button" id="CheckLoyaltyCardBtn">CHECK LOYALTY CARD</button>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Balance
+                                    </th>
+                                    <th>
+                                        Deduction
+                                    </th>
+                                    <th id="CheckTheDL">
+                                        To Be Paid
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+
+                                    <td>
+                                        <span class="text-center" id="BalanceLoyaltyCard"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="DeductionLoyaltyCard"></span>
+                                    </td>
+                                    <td>
+                                        <span class="text-center" id="AfterDeductionLoyaltyCard"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group input-group-dynamic">
+
+                        <label>Customer</label>
+                        @if (Model.Customer != null)
+                        {
+                            <input hidden id="CustomerID" value="@Model.Customer.ID" />
+                            <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
+                            <input hidden id="EmployeeID" value="@Model.Employee.ID" />
+                            <input class="form-control" name="Customer" id="Customer" value="@Model.Customer.FirstName @Model.Customer.LastName" readonly />
+                        }
+                        else
+                        {
+                            <input hidden id="CustomerID" value="0" />
+                            <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
+                            <input hidden id="EmployeeID" value="@Model.Employee.ID" />
+                            <input class="form-control" name="Customer" id="Customer" value="Walk In" readonly />
+                        }
+                        <input type="hidden" id="Notes" />
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Item
+                                </th>
+                                <th>
+                                    Price
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Services)
+                            {
+                                <tr>
+                                    @if (item.Discount != 0)
+                                    {
+                                        <td>@item.Service - @item.Duration - ( Discount @item.Discount %)</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@item.Service - @item.Duration</td>
+
+                                    }
+                                    <td class="price-data">@item.Price @Model.Company.Currency</td>
+                                    @*<td>
+
+
+                                            <button class="btndelete btn btn-danger btn-sm btn-round">
+                                                <i class="material-icons">delete</i> Delete
+                                            </button>
+                                        </td>*@
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <h4 class="card-title">Deposit: @Model.Company.Currency<span id="deposit">@depositAmount</span></h4><br />
+                @if (Model.SaleOnCheckOut != null)
+                {
+                    <h4 class="card-title">Products: @Model.Company.Currency<span id="product">@totalAmountOfProducts</span></h4><br />
+
+                }
+                @if (Model.PriceChange != null)
+                {
+                    if (Model.PriceChange.TypeOfChange == "Discount")
+                    {
+                        <h4 class="card-title">Price Change: <span id="">- @Model.PriceChange.Percentage %</span></h4><br />
+
+                    }
+                    else
+                    {
+                        <h4 class="card-title">Price Change: <span id="">+ @Model.PriceChange.Percentage %</span></h4><br />
+
+                    }
+                }
+                @if (Model.EmployeePriceChange != null)
+                {
+                    if (Model.EmployeePriceChange.TypeOfChange == "Discount")
+                    {
+                        <h4 class="card-title">Employee Price Change: <span id="">- @Model.EmployeePriceChange.Percentage %</span></h4><br />
+
+                    }
+                    else
+                    {
+                        <h4 class="card-title">Employee Price Change: <span id="">+ @Model.EmployeePriceChange.Percentage %</span></h4><br />
+
+                    }
+                }
+
+                <div style="display: flex; align-items: center; justify-content: center;" class="row">
+                    @if (Model.Coupon != null)
+                    {
+                        <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@ServiceTotalMinusOfflineDiscount</span> <span id="Total"> @Math.Round(Total, 2)</span></h4>
+
+                    }
+                    else
+                    {
+                        <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@Math.Round(Total, 2)</span></h4>
+
+                    }
+                    <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@Math.Round(Total, 2)</span></h4>
+
                     @if (Model.Appointment.Status == "Paid")
                     {
-                        <input style=" background-color: blueviolet; color:white; " class="form-control" value="@Model.Appointment.Status" name="PaymentMethod" id="PaymentMethod" readonly />
 
+                        <div class="col-md-12">
+                            <a style=" margin: 30px;" id="InvoiceView" href='@Url.Action("Invoice", "Appointment", new {ID=Model.Appointment.ID})' target="_blank" class="btn btn-success  btn-round">VIEW INVOICE</a>
+                            <button style=" margin: 30px;" type="button" id="SendInvoiceBtn" class="btn btn-info  btn-round">SEND INVOICE TO CUSTOMER</button>
+                            <button style=" margin: 30px;" id="Rebook" onclick="window.location.href='@Url.Action("Calendar", "Appointment")'" class="btn btn-primary  btn-round">REBOOK</button>
+                        </div>
                     }
                     else
                     {
-                        <input class="form-control" name="PaymentMethod" id="PaymentMethod" readonly />
+                        <button style=" margin: 30px; " id="PayButton" class="btn btn-success  btn-round">PAY</button>
+                        <span class="text-danger" id="Error"></span>
+
                     }
                 </div>
             </div>
-            <input type="hidden" id="CHECKCARDS" />
-            <div style="display:none;" id="GiftCardRow" class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div class="input-group input-group-dynamic">
-
-                            <label>Gift Card Code</label>
-                            <input type="text" class="form-control" name="GiftCardCode" id="GiftCardCode" placeholder="Enter Gift Card Code" />
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" type="button" id="CheckGiftCardBtn">CHECK GIFT CARD</button>
-                </div>
-                <div class="col-md-6">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Balance
-                                </th>
-                                <th>
-                                    Deduction
-                                </th>
-                                <th id="CheckTheDD">
-                                    To Be Paid
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <span class="text-center" id="BalanceGiftCard"></span>
-                                </td>
-                                <td>
-                                    <span class="text-center" id="DeductionGiftCard"></span>
-                                </td>
-                                <td>
-                                    <span class="text-center" id="AfterDeductionGiftCard"></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
-            <div style="display:none;" id="ReferralCardRow" class="row">
-                <div class="col-md-6">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Balance
-                                </th>
-                                <th>
-                                    Deduction
-                                </th>
-                                <th id="CheckTheDDReferral">
-                                    To Be Paid
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <span class="text-center" id="ReferralBalance"></span>
-                                </td>
-                                <td>
-                                    <span class="text-center" id="DeductionReferral"></span>
-                                </td>
-                                <td>
-                                    <span class="text-center" id="AfterDeductionReferral"></span>
-                                    <span style="display:none;" class="text-center" id="AfterDeductionReferralToSend"></span>
-
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
-
-            <div style="display:none;" id="LoyaltyCardRow" class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div class="input-group input-group-dynamic">
-
-                            <label>Loyalty Card Number</label>
-                            <input type="text" class="form-control" name="LoyaltyCardCode" id="LoyaltyCardCode" placeholder="Enter Loyalty Card Number" />
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" type="button" id="CheckLoyaltyCardBtn">CHECK LOYALTY CARD</button>
-                </div>
-                <div class="col-md-6">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Balance
-                                </th>
-                                <th>
-                                    Deduction
-                                </th>
-                                <th id="CheckTheDL">
-                                    To Be Paid
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-
-                                <td>
-                                    <span class="text-center" id="BalanceLoyaltyCard"></span>
-                                </td>
-                                <td>
-                                    <span class="text-center" id="DeductionLoyaltyCard"></span>
-                                </td>
-                                <td>
-                                    <span class="text-center" id="AfterDeductionLoyaltyCard"></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group input-group-dynamic">
-
-                    <label>Customer</label>
-                    @if (Model.Customer != null)
-                    {
-                        <input hidden id="CustomerID" value="@Model.Customer.ID" />
-                        <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
-                        <input hidden id="EmployeeID" value="@Model.Employee.ID" />
-                        <input class="form-control" name="Customer" id="Customer" value="@Model.Customer.FirstName @Model.Customer.LastName" readonly />
-                    }
-                    else
-                    {
-                        <input hidden id="CustomerID" value="0" />
-                        <input hidden id="AppointmentID" value="@Model.Appointment.ID" />
-                        <input hidden id="EmployeeID" value="@Model.Employee.ID" />
-                        <input class="form-control" name="Customer" id="Customer" value="Walk In" readonly />
-                    }
-                    <input type="hidden" id="Notes" />
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-condensed">
-                    <thead>
-                        <tr>
-                            <th>
-                                Item
-                            </th>
-                            <th>
-                                Price
-                            </th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Services)
-                        {
-                            <tr>
-                                @if (item.Discount != 0)
-                                {
-                                    <td>@item.Service - @item.Duration - ( Discount @item.Discount %)</td>
-                                }
-                                else
-                                {
-                                    <td>@item.Service - @item.Duration</td>
-
-                                }
-                                <td class="price-data">@item.Price @Model.Company.Currency</td>
-                                @*<td>
-
-
-                            <button class="btndelete btn btn-danger btn-sm btn-round">
-                                <i class="material-icons">delete</i> Delete
-                            </button>
-                        </td>*@
-
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <h4 class="card-title">Deposit: @Model.Company.Currency<span id="deposit">@depositAmount</span></h4><br />
-            @if (Model.SaleOnCheckOut != null)
-            {
-                <h4 class="card-title">Products: @Model.Company.Currency<span id="product">@totalAmountOfProducts</span></h4><br />
-
-            }
-            @if (Model.PriceChange != null)
-            {
-                if (Model.PriceChange.TypeOfChange == "Discount")
-                {
-                    <h4 class="card-title">Price Change: <span id="">- @Model.PriceChange.Percentage %</span></h4><br />
-
-                }
-                else
-                {
-                    <h4 class="card-title">Price Change: <span id="">+ @Model.PriceChange.Percentage %</span></h4><br />
-
-                }
-            }
-            @if (Model.EmployeePriceChange != null)
-            {
-                if (Model.EmployeePriceChange.TypeOfChange == "Discount")
-                {
-                    <h4 class="card-title">Employee Price Change: <span id="">- @Model.EmployeePriceChange.Percentage %</span></h4><br />
-
-                }
-                else
-                {
-                    <h4 class="card-title">Employee Price Change: <span id="">+ @Model.EmployeePriceChange.Percentage %</span></h4><br />
-
-                }
-            }
-
-            <div style="display: flex; align-items: center; justify-content: center;" class="row">
-                @if (Model.Coupon != null)
-                {
-                    <h4 class="card-title">Grand Total (Coupon Applied): @Model.Company.Currency<span style="text-decoration:line-through">@ServiceTotalMinusOfflineDiscount</span> <span id="Total"> @Math.Round(Total,2)</span></h4>
-
-                }
-                else
-                {
-                    <h4 class="card-title">Grand Total: @Model.Company.Currency<span id="Total">@Math.Round(Total,2)</span></h4>
-
-                }
-                <h4 style="display:none;" class="card-title">Final Grand Total: @Model.Company.Currency<span id="FinalGrandTotal">@Math.Round(Total,2)</span></h4>
-
-                @if (Model.Appointment.Status == "Paid")
-                {
-
-                    <div class="col-md-12">
-                        <a style=" margin: 30px;" id="InvoiceView" href='@Url.Action("Invoice", "Appointment", new {ID=Model.Appointment.ID})' target="_blank" class="btn btn-success  btn-round">VIEW INVOICE</a>
-                        <button style=" margin: 30px;" type="button" id="SendInvoiceBtn" class="btn btn-info  btn-round">SEND INVOICE TO CUSTOMER</button>
-                        <button style=" margin: 30px;" id="Rebook" onclick="window.location.href='@Url.Action("Calendar", "Appointment")'" class="btn btn-primary  btn-round">REBOOK</button>
-                    </div>
-                }
-                else
-                {
-                    <button style=" margin: 30px; " id="PayButton" class="btn btn-success  btn-round">PAY</button>
-                    <span class="text-danger" id="Error"></span>
-
-                }
-            </div>
-        </div>
 
 
         </div>
@@ -467,7 +462,46 @@
         });
     });
 
+    $("#TipType").on("change", function () {
+        $("#TipAmount").val("0");
+        CalcTotal();
+    });
+
+    function CalcTotal() {
+        var TipType = $("#TipType").val();
+        var TipAmount = $("#TipAmount").val();
+        var ORIGINALTOTAL = '@Total';
+
+        if (TipAmount != "") {
+            var total = parseFloat(ORIGINALTOTAL);
+            var finalwithtip = parseFloat(TipAmount) + total;
+            $("#Total").text(finalwithtip);
+
+
+        } else {
+            TipAmount = 0;
+            var total = parseFloat(ORIGINALTOTAL);
+            var finalwithtip = parseFloat(TipAmount) + total;
+            $("#Total").text(finalwithtip);
+
+
+        }
+    }
+    $("#TipAmount").on("change", function () {
+        CalcTotal();
+    });
+
+
+
+
+    $("#addTipBtn").on("click", function () {
+        $("#TIPAmountDIV").toggle();
+        $("#TipTypeDIV").toggle();
+    });
+
     $(document).ready(function () {
+
+
         // Add a click event handler to all buttons within the list
         $('.list-group-item button').click(function () {
             // Reset all button styles to primary
@@ -883,6 +917,8 @@
 
         showLoadingSpinner();
         var PaymentMethod = $("#PaymentMethod").val();
+        var TipType = $("#TipType").val();
+        var TipAmount = $("#TipAmount").val();
         var CustomerID = $("#CustomerID").val();
         var EmployeeID = $("#EmployeeID").val();
         var AppointmentID = $("#AppointmentID").val();
@@ -917,7 +953,7 @@
                                     GrandTotal: GrandTotal,
                                     FinalGrandTotal: FinalGrandTotal,
                                     Notes: Notes,
-                                    Code: GiftCardCode
+                                    Code: GiftCardCode, TipAmount: TipAmount, TipType: TipType
                                 },
                                 success: function (response) {
                                     if (response.success) {
@@ -949,7 +985,7 @@
                                     GrandTotal: GrandTotal,
                                     FinalGrandTotal: FinalGrandTotal,
                                     Notes: Notes,
-                                    Code: LoyaltyCardNumber
+                                    Code: LoyaltyCardNumber, TipAmount: TipAmount, TipType: TipType
                                 },
                                 success: function (response) {
                                     if (response.success) {
@@ -981,7 +1017,7 @@
                                     GrandTotal: GrandTotal,
                                     FinalGrandTotal: FinalGrandTotal,
                                     Notes: Notes,
-                                    Code: GiftCardCode
+                                    Code: GiftCardCode, TipAmount: TipAmount, TipType: TipType
                                 },
                                 success: function (response) {
                                     if (response.success) {
@@ -1046,7 +1082,7 @@
                                     GrandTotal: GrandTotal,
                                     FinalGrandTotal: FinalGrandTotal,
                                     Notes: Notes,
-                                    Code: GiftCardCode
+                                    Code: GiftCardCode, TipAmount: TipAmount, TipType: TipType
                                 },
                                 success: function (response) {
                                     if (response.success) {
@@ -1078,7 +1114,7 @@
                                     GrandTotal: GrandTotal,
                                     FinalGrandTotal: FinalGrandTotal,
                                     Notes: Notes,
-                                    Code: LoyaltyCardNumber
+                                    Code: LoyaltyCardNumber, TipAmount: TipAmount, TipType: TipType
                                 },
                                 success: function (response) {
                                     if (response.success) {
@@ -1110,7 +1146,7 @@
                                     GrandTotal: GrandTotal,
                                     FinalGrandTotal: FinalGrandTotal,
                                     Notes: Notes,
-                                    Code: GiftCardCode
+                                    Code: GiftCardCode, TipAmount: TipAmount, TipType: TipType
                                 },
                                 success: function (response) {
                                     if (response.success) {
@@ -1162,7 +1198,7 @@
                         GrandTotal: GrandTotal,
                         FinalGrandTotal: FinalGrandTotal,
                         Notes: Notes,
-                        Code: GiftCardCode
+                        Code: GiftCardCode, TipAmount: TipAmount, TipType: TipType
                     },
                     success: function (response) {
                         if (response.success) {
@@ -1195,7 +1231,7 @@
                         GrandTotal: GrandTotal,
                         FinalGrandTotal: FinalGrandTotal,
                         Notes: Notes,
-                        Code: LoyaltyCardNumber
+                        Code: LoyaltyCardNumber, TipAmount: TipAmount, TipType: TipType
                     },
                     success: function (response) {
                         if (response.success) {
@@ -1225,7 +1261,7 @@
                         FinalGrandTotal: FinalGrandTotal,
                         Notes: Notes,
                         Referral: Referral,
-                        Code: GiftCardCode
+                        Code: GiftCardCode, TipAmount: TipAmount, TipType: TipType
                     },
                     success: function (response) {
                         if (response.success) {

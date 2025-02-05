@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Buffer = TheBookingPlatform.Entities.Buffer;
 
 namespace TheBookingPlatform.Database
 {
@@ -87,6 +88,7 @@ namespace TheBookingPlatform.Database
         public DbSet<FailedAppointment> FailedAppointments { get; set; }
         public DbSet<EmployeeWatch> EmployeeWatches { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Buffer> Buffers { get; set; }
 
     }
 }

@@ -15,7 +15,7 @@ using TheBookingPlatform.ViewModels;
 using TheBookingPlatform;
 
 
-namespace TheBookingPlatformV3.Controllers
+namespace TheBookingPlatform.Controllers
 {
     public class EmployeeController : Controller
     {
@@ -292,11 +292,14 @@ namespace TheBookingPlatformV3.Controllers
             {
                 if (ServiceEmployeeData == "")
                 {
-                    ServiceEmployeeData = String.Join("_", item.ServiceID);
+                    var datatoJoin = String.Join(",", item.ServiceID, item.BufferEnabled, item.BufferTime);
+                    ServiceEmployeeData = String.Join("_", datatoJoin);
+
                 }
                 else
                 {
-                    ServiceEmployeeData = String.Join("_", ServiceEmployeeData, item.ServiceID);
+                    var datatoJoin = String.Join(",", item.ServiceID, item.BufferEnabled, item.BufferTime);
+                    ServiceEmployeeData = String.Join("_", ServiceEmployeeData, datatoJoin);
                 }
             }
             model.ServiceData = ServiceEmployeeData;
@@ -320,10 +323,17 @@ namespace TheBookingPlatformV3.Controllers
 
                 foreach (var item in ServiceList)
                 {
-                    var service = ServiceServices.Instance.GetService(int.Parse(item));
+                    var SplitData = item.Split(',');
+                    var itemID = SplitData[0];
+                    var service = ServiceServices.Instance.GetService(int.Parse(itemID));
                     var MainEmployee_Service = new EmployeeService();
                     MainEmployee_Service.Business = service.Business;
                     MainEmployee_Service.ServiceID = service.ID;
+                    MainEmployee_Service.BufferEnabled = bool.Parse(SplitData[1]);
+                    if (SplitData.Length > 2)
+                    {
+                        MainEmployee_Service.BufferTime = SplitData[2];
+                    }
                     MainEmployee_Service.EmployeeID = model.EmployeeID;
                     EmployeeServiceServices.Instance.SaveEmployeeService(MainEmployee_Service);
                 }

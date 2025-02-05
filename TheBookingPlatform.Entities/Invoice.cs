@@ -13,6 +13,9 @@ namespace TheBookingPlatform.Entities
         public int CustomerID { get; set; }
         public int EmployeeID { get; set; }
         public float GrandTotal { get; set; }
+        public float TipAmount { get; set; }
+        public string TipType { get; set; }
+        public bool Tip { get; set; }
         public DateTime OrderDate { get; set; }
         public string OrderNo { get; set; }
         public string Remarks { get; set; }

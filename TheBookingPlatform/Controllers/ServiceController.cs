@@ -188,7 +188,6 @@ namespace TheBookingPlatform.Controllers
             tableData.Columns.Add("Setup",typeof(string));
             tableData.Columns.Add("Processing",typeof(string));
             tableData.Columns.Add("Finish",typeof(string));
-            tableData.Columns.Add("BufferTime",typeof(string));
             tableData.Columns.Add("Tool",typeof(string));
             tableData.Columns.Add("Room",typeof(string));
             tableData.Columns.Add("Notes",typeof(string));
@@ -214,7 +213,6 @@ namespace TheBookingPlatform.Controllers
                 row["Setup"] = Service.Setup;
                 row["Processing"] = Service.Processing;
                 row["Finish"] = Service.Finish;
-                row["BufferTime"] = Service.BufferTime;
                 row["Tool"] = Service.Tool;
                 row["Room"] = Service.Room;
                 row["Notes"] = Service.Notes;
@@ -311,7 +309,6 @@ namespace TheBookingPlatform.Controllers
             service.Processing = Service.Processing;
             service.DoesRequiredProcessing = Service.DoesRequiredProcessing;
             service.Finish = Service.Finish;
-            service.BufferTime = Service.BufferTime;
             service.Tool = Service.Tool;
             service.IsActive = true;
             service.Room = Service.Room;
@@ -377,7 +374,6 @@ namespace TheBookingPlatform.Controllers
                 model.Processing = Service.Processing;
                 model.DoesRequiredProcessing = Service.DoesRequiredProcessing;
                 model.Finish = Service.Finish;
-                model.BufferTime = Service.BufferTime;
                 model.Tool = Service.Tool;
                 model.Room = Service.Room;
                 model.Notes = Service.Notes;
@@ -420,7 +416,6 @@ namespace TheBookingPlatform.Controllers
                 Service.Setup = model.Setup;
                 Service.Processing = model.Processing;
                 Service.Finish = model.Finish;
-                Service.BufferTime = model.BufferTime;
                 Service.DoesRequiredProcessing = model.DoesRequiredProcessing;
                 Service.Tool = model.Tool;
                 Service.Room = model.Room;
@@ -483,7 +478,6 @@ namespace TheBookingPlatform.Controllers
                 Service.Setup = model.Setup;
                 Service.Processing = model.Processing;
                 Service.Finish = model.Finish;
-                Service.BufferTime = model.BufferTime;
                 Service.IsActive = true;
 
                 Service.Tool = model.Tool;

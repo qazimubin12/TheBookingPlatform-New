@@ -10,6 +10,7 @@
         margin-bottom: 0px;
         margin-top: 10px;
     }
+
     .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
         padding: 10px 8px;
         vertical-align: middle;
@@ -136,17 +137,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <div class="input-group input-group-dynamic">
 
-                                <label>
-                                    Buffer Time
-                                </label>
-                                <input type="text" class="form-control time-input" value="@Model.BufferTime" id="BufferTime" name="BufferTime" />
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
@@ -225,11 +216,11 @@
 
 
         </div>
-   
+
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Resources Details</h4>
-  
+
 
                 <h4 class="card-header-text">Employees</h4>
                 <button data-href="@Url.Action("ActionEmployee", "Service")" type="button" class="data-btn btn btn-sm btn-round btn-success btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">ADD MORE +</button>
@@ -243,7 +234,7 @@
                                     </label>
                                 </div>
                             </td>
-                            <th >
+                            <th>
                                 <label for="selectAllEmployee">All Employees</label>
                                 <i style="cursor:pointer;" id="ArrowKeyEmployee" class="material-icons">keyboard_arrow_down</i>
                             </th>
@@ -286,9 +277,9 @@
 
             </div>
         </div>
-    
+
     </div>
-    
+
     <div class="col-md-4">
         <div style="display:flex;">
 

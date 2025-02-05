@@ -124,8 +124,8 @@ namespace TheBookingPlatform.Controllers
             }
         }
 
-        
-        public JsonResult GetLostClietCustomers(string FilterDuration,DateTime StartDate, DateTime EndDate)
+
+        public JsonResult GetLostClietCustomers(string FilterDuration, DateTime StartDate, DateTime EndDate)
         {
             var numberOfDays = 30;
             var user = UserManager.FindById(User.Identity.GetUserId());
@@ -166,7 +166,7 @@ namespace TheBookingPlatform.Controllers
                     var lostClients = new List<int>();
 
                     var lostClientIds = AppointmentServices.Instance.GetLostClients(user.Company, false, false, StartDate, numberOfDays);
-                    LostClientsList = customers.Where(x => lostClientIds.Contains(x.ID)).ToList();                   
+                    LostClientsList = customers.Where(x => lostClientIds.Contains(x.ID)).ToList();
                 }
                 var customerExport = new List<CustomerExport>();
                 foreach (var item in LostClientsList)
@@ -196,7 +196,7 @@ namespace TheBookingPlatform.Controllers
             }
             else
             {
-                return Json(new { success =false }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
 
             }
         }
@@ -270,7 +270,7 @@ namespace TheBookingPlatform.Controllers
         }
 
 
-        public async Task<string> CreateWatch(Employee employee,string Company)
+        public async Task<string> CreateWatch(Employee employee, string Company)
         {
             var googleCalendarnew = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(Company);
             if (googleCalendarnew != null)
@@ -342,7 +342,7 @@ namespace TheBookingPlatform.Controllers
                         var history = new History
                         {
                             Note = "Failed to set up watch " + responseBody,
-                            Business = googleCalendarnew.Business,
+                            Business = "ERROR",
                             Date = DateTime.Now
                         };
                         HistoryServices.Instance.SaveHistory(history);
@@ -354,12 +354,12 @@ namespace TheBookingPlatform.Controllers
             return "Success";
 
         }
-      
+
         public ActionResult Dashboard(string StartDate = "", string EndDate = "", string FilterDuration = "")
         {
             AdminViewModel model = new AdminViewModel();
 
-            var user = UserManager.FindById(User.Identity.GetUserId()); 
+            var user = UserManager.FindById(User.Identity.GetUserId());
             model.SignedInUser = user;
             if (model.SignedInUser != null)
             {
@@ -374,12 +374,12 @@ namespace TheBookingPlatform.Controllers
                     {
                         if (employeeWatch.ExpirationDate <= DateTime.Now)
                         {
-                            CreateWatch(item,user.Company);
+                            CreateWatch(item, user.Company);
                         }
                     }
                     else
                     {
-                        CreateWatch(item,user.Company);
+                        CreateWatch(item, user.Company);
                     }
                 }
 
@@ -705,7 +705,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                                var appointmentsforthatday = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(company.Business, false, false, item.ID,date).Where(x=>x.Color != "darkgray").ToList();
+                                var appointmentsforthatday = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(company.Business, false, false, item.ID, date).Where(x => x.Color != "darkgray").ToList();
                                 foreach (var app in appointmentsforthatday)
                                 {
                                     var DurationWorked = (float)(app.EndTime - app.Time).TotalHours;
@@ -726,14 +726,14 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                            if(DailyOccupancy.Count()> 0)
+                            if (DailyOccupancy.Count() > 0)
                             {
-                                employeeOccupancyList.Add(new EmployeeOccupancy { Employee = item, Percentage = (float)Math.Round(DailyOccupancy.Average(),1),TotalTime = SumForAverage/60,WorkedHours = WorkedHours });
+                                employeeOccupancyList.Add(new EmployeeOccupancy { Employee = item, Percentage = (float)Math.Round(DailyOccupancy.Average(), 1), TotalTime = SumForAverage / 60, WorkedHours = WorkedHours });
 
                             }
                             else
                             {
-                                employeeOccupancyList.Add(new EmployeeOccupancy { Employee = item, Percentage = 0,TotalTime = SumForAverage,WorkedHours = WorkedHours });
+                                employeeOccupancyList.Add(new EmployeeOccupancy { Employee = item, Percentage = 0, TotalTime = SumForAverage, WorkedHours = WorkedHours });
 
                             }
                         }
@@ -796,7 +796,7 @@ namespace TheBookingPlatform.Controllers
         public JsonResult UpdatePlayerID(string PlayerID)
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
-            if(user != null)
+            if (user != null)
             {
                 user.PlayerID = PlayerID;
                 UserManager.Update(user);
@@ -850,12 +850,12 @@ namespace TheBookingPlatform.Controllers
                     if (Company.ID == item.CompanyIDFor || Company.ID == item.CompanyIDFrom)
                     {
                         var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                        if (!model.Employees.Select(x=>x.ID).ToList().Contains(employee.ID))
+                        if (!model.Employees.Select(x => x.ID).ToList().Contains(employee.ID))
                         {
                             model.Employees.Add(employee);
                         }
                     }
-                  
+
 
                 }
             }
@@ -906,7 +906,7 @@ namespace TheBookingPlatform.Controllers
             AnalysisViewModel model = new AnalysisViewModel();
             var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
 
-            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company,true);
+            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company, true);
             var listOfStrings = new List<string>
             {
                 "",
@@ -937,7 +937,7 @@ namespace TheBookingPlatform.Controllers
                         var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(companyFrom.Business, false, IsCancelled, item.EmployeeID, StartDate, EndDate);
                         AllAppointmentsWithabsenceIDsFilters.AddRange(appointment);
                     }
-                   
+
 
                 }
             }
@@ -991,10 +991,10 @@ namespace TheBookingPlatform.Controllers
             var ListOfOnlinePriceChange = new List<OnlinePriceChangeModel>();
             var ListOfEmployeePriceChange = new List<EmployeePriceChangeModel>();
             var AppointmentIDs = servicesAll.Select(x => x.ID).ToList();
-            var sales = SaleServices.Instance.GetSaleWRTBusiness(loggedInUser.Company, AppointmentIDs).Select(x=>x.ID).ToList();
+            var sales = SaleServices.Instance.GetSaleWRTBusiness(loggedInUser.Company, AppointmentIDs).Select(x => x.ID).ToList();
             var saleProducts = SaleProductServices.Instance.GetSaleProductWRTBusiness(loggedInUser.Company, sales);
             float saleProductsAmount = 0;
-            if(saleProducts != null && saleProducts.Count() > 0)
+            if (saleProducts != null && saleProducts.Count() > 0)
             {
                 saleProductsAmount = saleProducts.Sum(x => x.Total);
             }
@@ -1221,13 +1221,15 @@ namespace TheBookingPlatform.Controllers
             int LostClients = 0;
             DateTime thirtyDaysAgo = StartDate.AddDays(-30);
 
-        
 
-           
+
+
             float CheckOutCashCount = 0;
             float CheckOutCardCount = 0;
             float CheckOutPinCount = 0;
             float CheckOutGiftCardCount = 0;
+            float EmpTip = 0;
+            float CompanyTip = 0;
             float CheckOutLoyaltyCardCount = 0;
             var Invoices = InvoiceServices.Instance.GetInvoices(loggedInUser.Company, AppointmentIDs);
             foreach (var item in Invoices)
@@ -1245,13 +1247,20 @@ namespace TheBookingPlatform.Controllers
                 {
                     CheckOutGiftCardCount += item.GrandTotal;
                 }
-           
                 else if (item.PaymentMethod.Trim() == "Loyalty Card")
                 {
                     CheckOutLoyaltyCardCount += item.GrandTotal;
                 }
+                if (item.Tip && item.TipType == "Company")
+                {
+                    CompanyTip += item.TipAmount;
+                }
+                if (item.Tip && item.TipType == "Employee")
+                {
+                    EmpTip += item.TipAmount;
+                }
             }
-            
+
 
             int NoOfRebookReminderSent = 0;
             int NoOfRebookReminderClicked = 0;
@@ -1283,7 +1292,8 @@ namespace TheBookingPlatform.Controllers
             model.CheckedOutGiftCardCount = CheckOutGiftCardCount;
             model.CheckedOutLoyaltyCardCount = CheckOutGiftCardCount;
             model.CheckedOutPinCount = CheckOutPinCount;
-
+            model.EmployeeTips = EmpTip;
+            model.CompanyTips = CompanyTip;
 
 
             return View(model);
@@ -1380,13 +1390,13 @@ namespace TheBookingPlatform.Controllers
             public string Title { get; set; }
             public string Date { get; set; }
             public string BG_Color { get; set; }
-            public string Description { get;  set; }
+            public string Description { get; set; }
         }
 
         [HttpGet]
         public JsonResult GetNotifications()
         {
-            var LoggedInUser= UserManager.FindById(User.Identity.GetUserId());
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
             var notifications = NotificationServices.Instance.GetNotificationWRTBusiness2(LoggedInUser.Company);
             var notificationList = new List<NotificationModel>();
             foreach (var item in notifications)
@@ -1394,15 +1404,15 @@ namespace TheBookingPlatform.Controllers
                 if (LoggedInUser.ReadNotifications == null || LoggedInUser.ReadNotifications.Split(',').ToList().Contains(item.ID.ToString()) == false)
                 {
 
-                    notificationList.Add(new NotificationModel {Description = item.Description, ID=item.ID, Date = item.Date.ToString("yyyy-MM-dd"),Link = item.Link,Title = item.Title, BG_Color = "UNREAD"});
+                    notificationList.Add(new NotificationModel { Description = item.Description, ID = item.ID, Date = item.Date.ToString("yyyy-MM-dd"), Link = item.Link, Title = item.Title, BG_Color = "UNREAD" });
                 }
                 else
                 {
-                    notificationList.Add(new NotificationModel { Description = item.Description, ID = item.ID, Date = item.Date.ToString("yyyy-MM-dd"), Link = item.Link, Title = item.Title,BG_Color = "READ" });
+                    notificationList.Add(new NotificationModel { Description = item.Description, ID = item.ID, Date = item.Date.ToString("yyyy-MM-dd"), Link = item.Link, Title = item.Title, BG_Color = "READ" });
 
                 }
             }
-            return Json(new { success = true,Notifications = notificationList }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, Notifications = notificationList }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

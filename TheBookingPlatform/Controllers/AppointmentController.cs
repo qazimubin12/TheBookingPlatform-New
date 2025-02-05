@@ -91,7 +91,7 @@ namespace TheBookingPlatform.Controllers
 
         #endregion
         // GET: Appointment
-        
+
         public JsonResult SendAppointmentReminder(int ID)
         {
             var apppointment = AppointmentServices.Instance.GetAppointment(ID);
@@ -146,7 +146,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody += "</body></html>";
                     if (IsValidEmail(customer.Email))
                     {
-                        SendEmail(customer.Email, "Appointment Reminder", emailBody,company);
+                        SendEmail(customer.Email, "Appointment Reminder", emailBody, company);
                     }
                 }
             }
@@ -207,7 +207,8 @@ namespace TheBookingPlatform.Controllers
         public JsonResult CheckEmployeeService(string Services, int EmployeeID)
         {
             var employee = EmployeeServices.Instance.GetEmployee(EmployeeID);
-            if (Services != "") {
+            if (Services != "")
+            {
                 var finalIDsInt = Services.Split(',').Select(int.Parse).ToList();
                 var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == employee.Business).FirstOrDefault();
                 if (EmployeeID != 0)
@@ -434,7 +435,7 @@ namespace TheBookingPlatform.Controllers
                 emailBody += "</body></html>";
                 if (IsValidEmail(customer.Email))
                 {
-                    SendEmail(customer.Email, "Waiting List", emailBody,company);
+                    SendEmail(customer.Email, "Waiting List", emailBody, company);
                 }
             }
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
@@ -934,10 +935,7 @@ namespace TheBookingPlatform.Controllers
                 appointments = appointments.Distinct(new AppointmentComparer()).ToList();
                 foreach (var item in appointments)
                 {
-                    if (item.ID == 30555)
-                    {
 
-                    }
                     if (item.IsPaid == false && item.DepositMethod == "Online" && item.IsCancelled == false && (DateTime.Now - item.BookingDate).TotalMinutes > 15)
                     {
                         item.IsCancelled = true;
@@ -1005,7 +1003,8 @@ namespace TheBookingPlatform.Controllers
                                     Name = Service.Name,
                                     Duration = ServiceDuration[i],
                                     Price = Service.Price,
-                                    Category = Service.Category
+                                    Category = Service.Category,
+                                    ID = Service.ID
                                 };
                                 serviceList.Add(serviceViewModel);
                                 TotalDuration += int.Parse(serviceViewModel.Duration.ToLower().Replace("mins", "").Replace(" ", "").Trim());
@@ -1021,6 +1020,7 @@ namespace TheBookingPlatform.Controllers
                     }
                     if (customer == null)
                     {
+
 
                         AppointmentModel.Add(new AppointmentModel
                         {
@@ -1039,7 +1039,8 @@ namespace TheBookingPlatform.Controllers
                             Services = serviceList,
                             FromGCAL = item.FromGCAL,
                             ReminderSent = remindershouldbeSent && item.Reminder,
-                            TotalDuration = TotalDuration
+                            TotalDuration = TotalDuration,
+                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID)
                         });
                     }
                     else
@@ -1053,7 +1054,28 @@ namespace TheBookingPlatform.Controllers
                         {
                             NewCustomer = true;
                         }
-                        AppointmentModel.Add(new AppointmentModel { IsRepeat = item.IsRepeat, AnyEmployeeSelected = item.AnyAvailableEmployeeSelected, NewCustomer = NewCustomer, Date = item.Date, AppointmentEndTime = item.EndTime, Time = item.Time, Color = item.Color, ID = item.ID, Notes = item.Notes, IsPaid = item.IsPaid, IsCancelled = item.IsCancelled, EmployeeID = item.EmployeeID, CustomerFirstName = customer.FirstName, CustomerLastName = customer.LastName, MobileNumber = customer.MobileNumber, Services = serviceList, TotalDuration = TotalDuration, ReminderSent = remindershouldbeSent && item.Reminder });
+                        AppointmentModel.Add(new AppointmentModel
+                        {
+                            IsRepeat = item.IsRepeat,
+                            AnyEmployeeSelected = item.AnyAvailableEmployeeSelected,
+                            NewCustomer = NewCustomer,
+                            Date = item.Date,
+                            AppointmentEndTime = item.EndTime,
+                            Time = item.Time,
+                            Color = item.Color,
+                            ID = item.ID,
+                            Notes = item.Notes,
+                            IsPaid = item.IsPaid,
+                            IsCancelled = item.IsCancelled,
+                            EmployeeID = item.EmployeeID,
+                            CustomerFirstName = customer.FirstName,
+                            CustomerLastName = customer.LastName,
+                            MobileNumber = customer.MobileNumber,
+                            Services = serviceList,
+                            TotalDuration = TotalDuration,
+                            ReminderSent = remindershouldbeSent && item.Reminder,
+                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID)
+                        });
 
                     }
                 }
@@ -1108,7 +1130,8 @@ namespace TheBookingPlatform.Controllers
                                     Name = Service.Name,
                                     Duration = ServiceDuration[i],
                                     Price = Service.Price,
-                                    Category = Service.Category
+                                    Category = Service.Category,
+                                    ID = Service.ID
                                 };
                                 serviceList.Add(serviceViewModel);
                                 TotalDuration += int.Parse(serviceViewModel.Duration.ToLower().Replace("mins", "").Replace(" ", "").Trim());
@@ -1140,13 +1163,34 @@ namespace TheBookingPlatform.Controllers
                             Services = serviceList,
                             FromGCAL = item.FromGCAL,
                             TotalDuration = TotalDuration,
-                            ReminderSent = remindershouldbeSent && item.Reminder
+                            ReminderSent = remindershouldbeSent && item.Reminder,
+                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID)
+
                         });
                     }
                     else
                     {
 
-                        AppointmentModel.Add(new AppointmentModel { IsRepeat = item.IsRepeat, Date = item.Date, AppointmentEndTime = item.EndTime, Time = item.Time, Color = item.Color, ID = item.ID, Notes = item.Notes, IsPaid = item.IsPaid, IsCancelled = item.IsCancelled, EmployeeID = item.EmployeeID, CustomerFirstName = customer.FirstName, CustomerLastName = customer.LastName, MobileNumber = customer.MobileNumber, Services = serviceList, TotalDuration = TotalDuration, ReminderSent = remindershouldbeSent && item.Reminder });
+                        AppointmentModel.Add(new AppointmentModel
+                        {
+                            IsRepeat = item.IsRepeat,
+                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            Date = item.Date,
+                            AppointmentEndTime = item.EndTime,
+                            Time = item.Time,
+                            Color = item.Color,
+                            ID = item.ID,
+                            Notes = item.Notes,
+                            IsPaid = item.IsPaid,
+                            IsCancelled = item.IsCancelled,
+                            EmployeeID = item.EmployeeID,
+                            CustomerFirstName = customer.FirstName,
+                            CustomerLastName = customer.LastName,
+                            MobileNumber = customer.MobileNumber,
+                            Services = serviceList,
+                            TotalDuration = TotalDuration,
+                            ReminderSent = remindershouldbeSent && item.Reminder
+                        });
 
                     }
                 }
@@ -1226,7 +1270,8 @@ namespace TheBookingPlatform.Controllers
                                 var serviceViewModel = new ServiceModelForCustomerProfile
                                 {
                                     Name = serivce.Name,
-                                    Duration = ServiceDuration[i]
+                                    Duration = ServiceDuration[i],
+                                    ID = serivce.ID
                                 };
 
                                 serviceList.Add(serviceViewModel);
@@ -1292,6 +1337,7 @@ namespace TheBookingPlatform.Controllers
                                 {
 
                                     Name = Service.Name,
+                                    ID = Service.ID,
                                     Duration = ServiceDuration[i]
                                 };
                                 serviceList.Add(serviceViewModel);
@@ -1680,6 +1726,7 @@ namespace TheBookingPlatform.Controllers
                                     Name = Service2.Name,
                                     Duration = ServiceDuration2[i],
                                     Price = Service2.Price,
+                                    ID = Service2.ID
                                 };
                                 serviceList2.Add(serviceViewModel2);
                             }
@@ -2593,7 +2640,7 @@ namespace TheBookingPlatform.Controllers
             appointment.EndTime = combinedEndDateTime;
             appointment.EmployeeID = int.Parse(EmployeeID);
             AppointmentServices.Instance.UpdateAppointment(appointment);
-
+            CreateBuffer(appointment.ID);
             //var result = AppointmentServices.Instance.UpdateEvent(ID, start, end, int.Parse(EmployeeID));
 
 
@@ -2646,13 +2693,13 @@ namespace TheBookingPlatform.Controllers
                 RefreshToken(appointment.Business);
                 if (oldEmployee.ID != appointmentAgain.EmployeeID)
                 {
-                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployee.ID,"SAVING");
+                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployee.ID, "SAVING");
 
 
                 }
                 else
                 {
-                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices,0,"SAVING");
+                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
                 }
             }
             #region MailingRegion
@@ -2713,7 +2760,7 @@ namespace TheBookingPlatform.Controllers
             }
             #endregion
 
-            return Json(new { success = true, message = "Event updated successfully",End= appointmentAgain.EndTime.ToString("HH:mm"),Start= appointment.Date.ToString("yyyy-MM-dd"), Time = appointment.Time.ToString("HH:mm") }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, message = "Event updated successfully", End = appointmentAgain.EndTime.ToString("HH:mm"), Start = appointment.Date.ToString("yyyy-MM-dd"), Time = appointment.Time.ToString("HH:mm") }, JsonRequestBehavior.AllowGet);
             //}
             //else
             //{
@@ -2731,14 +2778,24 @@ namespace TheBookingPlatform.Controllers
             return slotStartTime.TimeOfDay >= employeeStartTime.TimeOfDay && slotEndTime.TimeOfDay <= employeeEndTime.TimeOfDay;
         }
 
-
-        public List<string> FindAvailableSlots(DateTime employeeStartTime, DateTime employeeEndTime, List<Appointment> appointments, int durationInMinutes,Company Company)
+        public List<string> FindAvailableSlots(DateTime employeeStartTime, DateTime employeeEndTime, List<Appointment> appointments, int durationInMinutes, Company Company, List<string> Services, int EmployeeID)
         {
             List<string> availableSlots = new List<string>();
             List<string> NotavailableSlots = new List<string>();
             DateTime currentTime = DateTime.Now;
-
-
+            var increaseMins = 0;
+            foreach (var item in Services)
+            {
+                var empservice = EmployeeServiceServices.Instance.GetEmployeeService(EmployeeID, int.Parse(item));
+                if (empservice != null)
+                {
+                    if (empservice.BufferEnabled)
+                    {
+                        increaseMins += int.Parse(empservice.BufferTime.Replace("mins", "").Replace("min", ""));
+                    }
+                }
+            }
+            durationInMinutes += increaseMins;
 
             currentTime = TheBookingPlatform.Models.TimeZoneConverter.ConvertToTimeZone(currentTime, Company.TimeZone).AddMinutes(5);
             var FinalAppointments = new List<Appointment>();
@@ -2760,6 +2817,12 @@ namespace TheBookingPlatform.Controllers
             if (FinalAppointments.Count > 0)
             {
                 var firstAppointment = FinalAppointments[0];
+                var FirstAppointmentEndTime = firstAppointment.EndTime;
+                var buffers = BufferServices.Instance.GetBufferWRTBusinessList(firstAppointment.Business, firstAppointment.ID);
+                if (buffers != null && buffers.Count() > 0)
+                {
+                    FirstAppointmentEndTime = buffers.OrderBy(x => x.Time).LastOrDefault().EndTime;
+                }
                 // Consider slots before the first appointment
                 // Step 1: Check if currentTime is greater than or equal to employeeStartTime
                 if (currentTime >= employeeStartTime)
@@ -2791,7 +2854,7 @@ namespace TheBookingPlatform.Controllers
                                     {
                                         availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
                                     }
-                                    lastEndTime = firstAppointment.EndTime;
+                                    lastEndTime = FirstAppointmentEndTime;
                                 }
                             }
                         }
@@ -2811,8 +2874,7 @@ namespace TheBookingPlatform.Controllers
                             DateTime slotEnd = slotStart.AddMinutes(durationInMinutes);
                             if (IsSlotWithinEmployeeTimeRange(slotStart, slotEnd, employeeStartTime, employeeEndTime))
                             {
-                                //if (slotEnd.TimeOfDay <= firstAppointment.Time.TimeOfDay)
-                                //{\
+
                                 if (employeeStartTime.Date.ToString("yyyy-MM-dd") == currentTime.ToString("yyyy-MM-dd"))
                                 {
                                     if (slotStart.TimeOfDay >= currentTime.TimeOfDay)
@@ -2826,26 +2888,9 @@ namespace TheBookingPlatform.Controllers
                                     availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
                                 }
-                                lastEndTime = firstAppointment.EndTime;
+                                lastEndTime = FirstAppointmentEndTime;
 
 
-                                //}
-                                //else if (slotEnd.Hour == employeeEndTime.TimeOfDay.Hours)
-                                //{
-                                //    if (slotEnd.Minute < employeeEndTime.TimeOfDay.Minutes)
-                                //    {
-                                //        availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
-                                //        lastEndTime = firstAppointment.EndTime;
-
-                                //    }
-                                //    else if (slotEnd.Minute == employeeEndTime.TimeOfDay.Minutes)
-                                //    {
-                                //        availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
-                                //        lastEndTime = firstAppointment.EndTime;
-
-
-                                //    }
-                                //}
                             }
                         }
                     }
@@ -2855,6 +2900,14 @@ namespace TheBookingPlatform.Controllers
 
             foreach (var appointment in FinalAppointments)
             {
+                var CurrentAppointmentEndTime = appointment.EndTime;
+                var buffers = BufferServices.Instance.GetBufferWRTBusinessList(appointment.Business, appointment.ID);
+                if (buffers != null && buffers.Count() > 0)
+                {
+                    CurrentAppointmentEndTime = buffers.OrderBy(x => x.Time).LastOrDefault().EndTime;
+                }
+
+
                 if (lastEndTime.TimeOfDay <= appointment.Time.TimeOfDay)
                 {
                     TimeSpan timeGap = appointment.Time.TimeOfDay - lastEndTime.TimeOfDay;
@@ -2885,18 +2938,7 @@ namespace TheBookingPlatform.Controllers
 
                                     }
                                 }
-                                //else if (slotEnd.Hour == employeeEndTime.TimeOfDay.Hours)
-                                //{
-                                //    if (slotEnd.Minute < employeeEndTime.TimeOfDay.Minutes)
-                                //    {
-                                //        availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
-                                //    }
-                                //    else if (slotEnd.Minute == employeeEndTime.TimeOfDay.Minutes)
-                                //    {
-                                //        availableSlots.Add(slotStart.ToString("HH:mm") + " - " + slotEnd.ToString("HH:mm"));
 
-                                //    }
-                                //}
                             }
                         }
                     }
@@ -2905,14 +2947,14 @@ namespace TheBookingPlatform.Controllers
                 }
                 if (employeeStartTime.TimeOfDay <= appointment.Time.TimeOfDay)
                 {
-                    if (lastEndTime.TimeOfDay < appointment.EndTime.TimeOfDay)
+                    if (lastEndTime.TimeOfDay < CurrentAppointmentEndTime.TimeOfDay)
                     {
-                        lastEndTime = appointment.EndTime;
+                        lastEndTime = CurrentAppointmentEndTime;
                     }
                 }
                 else if (employeeEndTime.TimeOfDay >= appointment.Time.TimeOfDay)
                 {
-                    lastEndTime = appointment.EndTime;
+                    lastEndTime = CurrentAppointmentEndTime;
                 }
 
             }
@@ -3064,6 +3106,7 @@ namespace TheBookingPlatform.Controllers
 
             return availableSlots;
         }
+
         public EmployeePriceChange GetPriceChange(int EmployeeID, DateTime SelectedDate, TimeSpan slotStart, TimeSpan slotEnd)
         {
             bool ChangeFound = false;
@@ -3126,8 +3169,10 @@ namespace TheBookingPlatform.Controllers
 
 
         [HttpGet]
-        public JsonResult CheckRunTimeSlot(string business, string timeslot, string Date, string serviceDuration, int EmployeeID)
+        public JsonResult CheckRunTimeSlot(string business, string timeslot, string Date, string serviceDuration, int EmployeeID, string serviceIDs)
         {
+
+            var services = serviceIDs.Split(',').ToList();
 
             var SelectedDate = DateTime.Parse(Date);
             var TimeSlot = timeslot.Replace("at", "").Trim();
@@ -3293,7 +3338,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes,Company);
+                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company, services, EmployeeID);
 
 
 
@@ -3332,7 +3377,7 @@ namespace TheBookingPlatform.Controllers
                                         {
                                             if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
                                             {
-                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company);
+                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company, services, EmployeeID);
                                                 if (CheckSlots.Count() != 0)
                                                 {
                                                     if (CheckSlots.Where(x => x == result).Any())
@@ -3344,7 +3389,7 @@ namespace TheBookingPlatform.Controllers
                                         }
                                         else
                                         {
-                                            CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company);
+                                            CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company, services, EmployeeID);
                                             if (CheckSlots.Count() != 0)
                                             {
                                                 if (CheckSlots.Where(x => x == result).Any())
@@ -3362,7 +3407,7 @@ namespace TheBookingPlatform.Controllers
                                             {
                                                 if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
                                                 {
-                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company);
+                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company, services, EmployeeID);
                                                     if (CheckSlots.Count() != 0)
                                                     {
                                                         if (CheckSlots.Where(x => x == result).Any())
@@ -3374,7 +3419,7 @@ namespace TheBookingPlatform.Controllers
                                             }
                                             else
                                             {
-                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes,Company);
+                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company, services, EmployeeID);
                                                 if (CheckSlots.Count() != 0)
                                                 {
                                                     if (CheckSlots.Where(x => x == result).Any())
@@ -3395,7 +3440,7 @@ namespace TheBookingPlatform.Controllers
                             }
                             else
                             {
-                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes,Company);
+                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company, services, EmployeeID);
                                 if (CheckSlots.Count() != 0)
                                 {
                                     if (CheckSlots.Where(x => x == result).Any())
@@ -3461,7 +3506,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes,Company);
+                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, serviceDurationMinutes, Company, services, EmployeeID);
 
 
 
@@ -3521,7 +3566,7 @@ namespace TheBookingPlatform.Controllers
                 if (ID == 0)
                 {
                     Appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(LoggedInUser.Company, false, false, EmployeeID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID).Where(x=>x.EmployeeID == EmployeeID).ToList();
+                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID).Where(x => x.EmployeeID == EmployeeID).ToList();
                     foreach (var item in employeeRequest)
                     {
                         if (item.Accepted)
@@ -3544,7 +3589,7 @@ namespace TheBookingPlatform.Controllers
                 else
                 {
                     Appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(LoggedInUser.Company, false, false, EmployeeID).Where(x => x.ID != ID).ToList();
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID).Where(x => x.EmployeeID == EmployeeID).ToList(); 
+                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID).Where(x => x.EmployeeID == EmployeeID).ToList();
                     foreach (var item in employeeRequest)
                     {
                         if (item.Accepted)
@@ -3945,10 +3990,10 @@ namespace TheBookingPlatform.Controllers
 
                     if (IsValidEmail(customer.Email))
                     {
-                        SendEmail(customer.Email, "Appointment Cancellation", emailBody,company);
+                        SendEmail(customer.Email, "Appointment Cancellation", emailBody, company);
                     }
                 }
-                var Message =  HandleRefund(appointment.PaymentSession,company.APIKEY,appointment.ID);
+                var Message = HandleRefund(appointment.PaymentSession, company.APIKEY, appointment.ID);
 
                 var history = new History();
                 history.Note = Message;
@@ -3968,7 +4013,7 @@ namespace TheBookingPlatform.Controllers
             }
         }
 
-        public string HandleRefund(string PaymentSession,string APIKEY,int appointmentID)
+        public string HandleRefund(string PaymentSession, string APIKEY, int appointmentID)
         {
             try
             {
@@ -3984,7 +4029,7 @@ namespace TheBookingPlatform.Controllers
 
                 if (string.IsNullOrEmpty(chargeId))
                 {
-                    return "No charge found for this appointment."+"AppointmentID: "+appointmentID;
+                    return "No charge found for this appointment." + "AppointmentID: " + appointmentID;
                 }
 
                 // Create a refund for the charge
@@ -4002,11 +4047,11 @@ namespace TheBookingPlatform.Controllers
 
                 var refund = refundService.Create(refundOptions);
 
-                return  "Refund successful for Appointment ID: "+appointmentID;
+                return "Refund successful for Appointment ID: " + appointmentID;
             }
             catch (StripeException ex)
             {
-                return "Refund Failed with Error: " + ex.Message + " AppointmentID : "+appointmentID;
+                return "Refund Failed with Error: " + ex.Message + " AppointmentID : " + appointmentID;
             }
         }
 
@@ -4047,6 +4092,46 @@ namespace TheBookingPlatform.Controllers
 
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == appointment.Business).FirstOrDefault();
             return View(model);
+        }
+
+
+        public void CreateBuffer(int AppointmentID)
+        {
+            var appoimtment = AppointmentServices.Instance.GetAppointment(AppointmentID);
+            if (appoimtment != null)
+            {
+                var buffers = BufferServices.Instance.GetBufferWRTBusinessList(appoimtment.Business, appoimtment.ID);
+                foreach (var item in buffers)
+                {
+                    BufferServices.Instance.DeleteBuffer(item.ID);
+                }
+            }
+            var serviceids = appoimtment.Service.Split(',').ToList();
+            var serviceList = new List<Entities.Service>();
+            var bufferLastEndTime = appoimtment.EndTime;
+            foreach (var item in serviceids)
+            {
+                var service = ServiceServices.Instance.GetService(int.Parse(item));
+                serviceList.Add(service);
+                var employeeService = EmployeeServiceServices.Instance.GetEmployeeService(appoimtment.EmployeeID, service.ID);
+                if (employeeService != null)
+                {
+                    if (employeeService.BufferEnabled)
+                    {
+                        var buffer = new Entities.Buffer();
+                        buffer.AppointmentID = appoimtment.ID;
+                        buffer.Date = appoimtment.Date;
+                        buffer.Time = bufferLastEndTime;
+                        buffer.EndTime = bufferLastEndTime.AddMinutes(int.Parse(employeeService.BufferTime.Replace("mins", "").Replace("min", "")));
+                        buffer.Business = appoimtment.Business;
+                        buffer.ServiceID = service.ID;
+                        buffer.Description = "Buffer for: " + service.Name;
+                        BufferServices.Instance.SaveBuffer(buffer);
+                        bufferLastEndTime = buffer.EndTime;
+                    }
+                }
+
+            }
         }
 
         [HttpPost]
@@ -4395,6 +4480,7 @@ namespace TheBookingPlatform.Controllers
 
                                 }
                                 AppointmentServices.Instance.SaveAppointment(appointment);
+                                CreateBuffer(appointment.ID);
                                 if (appointment.CustomerID != 0)
                                 {
                                     var reminder = new Entities.Reminder();
@@ -4417,15 +4503,15 @@ namespace TheBookingPlatform.Controllers
                                 history.CustomerName = "Walk In";
                                 history.Date = DateTime.Now;
                                 history.AppointmentID = appointment.ID;
-                                history.Note = "Appointment Updated for:" + history.CustomerName + " by " + LoggedInUser.Name;
+                                history.Note = "Offline Appointment Created for:" + history.CustomerName + " by " + LoggedInUser.Name + " ID: " + appointment.ID;
                                 history.EmployeeName = EmployeeServices.Instance.GetEmployee(emp.ID).Name;
-                                history.Name = "Updated";
+                                history.Name = "Offline Appointment Created";
                                 HistoryServices.Instance.SaveHistory(history);
                                 var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(LoggedInUser.Company);
                                 if (googleCalendar != null && !googleCalendar.Disabled)
                                 {
                                     RefreshToken(LoggedInUser.Company);
-                                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices,0,"SAVING");
+                                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
                                 }
                             }
                             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
@@ -4578,7 +4664,7 @@ namespace TheBookingPlatform.Controllers
                             var employee = EmployeeServices.Instance.GetEmployee(model.EmployeeID);
                             appointment.FromGCAL = false;
                             AppointmentServices.Instance.SaveAppointment(appointment);
-
+                            CreateBuffer(appointment.ID);
                             if (appointment.CustomerID != 0)
                             {
                                 var reminder = new Entities.Reminder();
@@ -4634,7 +4720,7 @@ namespace TheBookingPlatform.Controllers
 
                                     if (IsValidEmail(customer.Email))
                                     {
-                                        SendEmail(customer.Email, "Appointment Confirmation", emailBody,company);
+                                        SendEmail(customer.Email, "Appointment Confirmation", emailBody, company);
                                     }
                                 }
 
@@ -4650,7 +4736,7 @@ namespace TheBookingPlatform.Controllers
                                 }
                                 history.Date = DateTime.Now;
                                 history.AppointmentID = appointment.ID;
-                                history.Note = "Offline Appointment Created for " + history.CustomerName + " by:" + LoggedInUser.Name;
+                                history.Note = "Offline Appointment Created for " + history.CustomerName + " by:" + LoggedInUser.Name + " ID: " + appointment.ID;
                                 history.EmployeeName = employee.Name;
                                 history.Name = "Offline Appointment Created";
                                 HistoryServices.Instance.SaveHistory(history);
@@ -4662,7 +4748,7 @@ namespace TheBookingPlatform.Controllers
                                 if (googleCalendar != null && !googleCalendar.Disabled)
                                 {
                                     RefreshToken(LoggedInUser.Company);
-                                    mesage = GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices,0,"SAVING");
+                                    mesage = GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
                                 }
 
                                 return Json(new { success = true, Message = mesage }, JsonRequestBehavior.AllowGet);
@@ -4831,7 +4917,7 @@ namespace TheBookingPlatform.Controllers
                                 appointment.ServiceDiscount = model.ServiceDiscount;
                             }
                             AppointmentServices.Instance.UpdateAppointment(appointment);
-
+                            CreateBuffer(appointment.ID);
                             var reminder = ReminderServices.Instance.GetReminderWRTAppID(appointment.ID);
                             if (reminder != null)
                             {
@@ -4873,7 +4959,7 @@ namespace TheBookingPlatform.Controllers
                                 }
                                 else
                                 {
-                                    GenerateonGoogleCalendar(appointment.ID, service,0,"SAVING");
+                                    GenerateonGoogleCalendar(appointment.ID, service, 0, "SAVING");
                                 }
                             }
 
@@ -5014,6 +5100,7 @@ namespace TheBookingPlatform.Controllers
                             appointment.ServiceDiscount = model.ServiceDiscount;
                         }
                         AppointmentServices.Instance.UpdateAppointment(appointment);
+                        CreateBuffer(appointment.ID);
 
                         if (appointment.CustomerID != 0)
                         {
@@ -5139,12 +5226,12 @@ namespace TheBookingPlatform.Controllers
                         {
                             if (oldEmployeeID != appointment.EmployeeID)
                             {
-                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployeeID,"SAVING");
+                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployeeID, "SAVING");
 
                             }
                             else
                             {
-                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices,0,"SAVING");
+                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
 
                             }
                         }
@@ -5689,7 +5776,7 @@ namespace TheBookingPlatform.Controllers
         //}
 
 
-        public string GenerateonGoogleCalendar(int ID, string Services, int oldEmployeeID = 0,string NOTIMEZONE ="")
+        public string GenerateonGoogleCalendar(int ID, string Services, int oldEmployeeID = 0, string NOTIMEZONE = "")
         {
             // Retrieve appointment
             var appointment = AppointmentServices.Instance.GetAppointment(ID);
@@ -5705,7 +5792,7 @@ namespace TheBookingPlatform.Controllers
             var company = CompanyServices.Instance.GetCompanyByName(appointment.Business);
             // Get Calendar ID (either old employee or new employee)
 
-            string userCalendarID = oldEmployeeID != 0 ? EmployeeServices.Instance.GetEmployee(oldEmployeeID)?.GoogleCalendarID: EmployeeServices.Instance.GetEmployee(appointment.EmployeeID)?.GoogleCalendarID;
+            string userCalendarID = oldEmployeeID != 0 ? EmployeeServices.Instance.GetEmployee(oldEmployeeID)?.GoogleCalendarID : EmployeeServices.Instance.GetEmployee(appointment.EmployeeID)?.GoogleCalendarID;
             if (oldEmployeeID != 0)
             {
                 //delete previous one
@@ -5734,7 +5821,7 @@ namespace TheBookingPlatform.Controllers
                 DateTime endDate = appointment.Date.Add(appointment.EndTime.TimeOfDay);
 
 
-                
+
                 var calendarEvent = new Event
                 {
                     Summary = "Appointment at: " + loggedInUser.Company,
@@ -5791,7 +5878,7 @@ namespace TheBookingPlatform.Controllers
                     var calendarEvent = new Event
                     {
                         Summary = "Appointment at: " + loggedInUser.Company,
-                        Description = Services +" ID: "+appointment.ID,
+                        Description = Services + " ID: " + appointment.ID,
                         Start = new EventDateTime()
                         {
                             DateTime = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
@@ -5951,10 +6038,14 @@ namespace TheBookingPlatform.Controllers
                         calendarEvent.Summary = "Appointment at: " + LoggedInUser.Company;
                         calendarEvent.Description = services;
                         var TimeZone = TimeZoneInfo.Local.Id;
-                        calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                        calendarEvent.Start = new EventDateTime()
+                        {
+                            DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
                             TimeZone = "UTC" // Match your DB's time zone
                         };
-                        calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                        calendarEvent.End = new EventDateTime()
+                        {
+                            DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
                             TimeZone = "UTC" // Match your DB's time zone
                         };
 
@@ -6410,7 +6501,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody += "</body></html>";
                     if (IsValidEmail(customer.Email))
                     {
-                        SendEmail(customer.Email, "No Show", emailBody,company);
+                        SendEmail(customer.Email, "No Show", emailBody, company);
                     }
                 }
 
@@ -6473,7 +6564,8 @@ namespace TheBookingPlatform.Controllers
                         var serviceViewModel = new ServiceModelForCustomerProfile
                         {
                             Name = serivce.Name,
-                            Duration = ServiceDuration[i]
+                            Duration = ServiceDuration[i],
+                            ID = serivce.ID,
                         };
 
                         serviceList.Add(serviceViewModel);
@@ -6752,7 +6844,7 @@ namespace TheBookingPlatform.Controllers
             }
 
         }
-        public bool SendEmail(string toEmail, string subject, string emailBody,Company company)
+        public bool SendEmail(string toEmail, string subject, string emailBody, Company company)
         {
             try
             {
@@ -7140,7 +7232,7 @@ namespace TheBookingPlatform.Controllers
                 return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Appointments.xlsx");
             }
         }
-    
+
 
         public ActionResult Unsubscribe(int CustomerID)
         {
@@ -7303,7 +7395,7 @@ namespace TheBookingPlatform.Controllers
 
 
 
-        private async Task<string>  ScheduleEvent(string frequency, int every, List<string> daysOfWeek, string ends, int? numberOfTimes, DateTime? specificEndDate,
+        private async Task<string> ScheduleEvent(string frequency, int every, List<string> daysOfWeek, string ends, int? numberOfTimes, DateTime? specificEndDate,
                                    DateTime startDate, string time, int serviceId, int employeeId, string notes, string color,
                                    User loggedInUser, Entities.Service service, string OnThe = "")
         {

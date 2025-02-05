@@ -1,7 +1,4 @@
 ﻿@model TheBookingPlatform.ViewModels.BookingViewModel
-@{
-    ViewBag.Title = "Form";
-}
 <head>
     <link rel="stylesheet" href="~/Content/build/css/intlTelInput.css" />
     <script src="~/Content/slickdd/jquery.ddslick.min.js"></script>
@@ -985,7 +982,7 @@
 
     // Function to check if two dates have the same year, month, and day
     function isSameDate(date1, date2) {
-        
+
         const iteratedMilliseconds = parseInt(date2.match(/\/Date\((\d+)\)\//)[1]);
         const finalDate2 = new Date(iteratedMilliseconds);
 
@@ -994,7 +991,7 @@
             date1.getDate() === finalDate2.getDate();
     }
     function createDayElement(day, data, iteratedDate, finalSelectedDate) {
-        
+
         const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
         const dayElement = document.createElement("div");
         dayElement.classList.add("day");
@@ -1006,7 +1003,7 @@
         var resetToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0); // Reset time values for today
 
 
-        
+
 
         if (date.toDateString() === new Date().toDateString()) {
         //    dayElement.classList.add("current");
@@ -1020,7 +1017,7 @@
         const dayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
 
         if (data.length > 0) {
-            
+
             if (data && data.some(date => isSameDate(iteratedDate, date))) {
                 dayElement.classList.add("disabled");
             }
@@ -1041,7 +1038,7 @@
 
             }
         }
-      
+
     }
     prevBtn.addEventListener("click", () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
@@ -1223,7 +1220,7 @@
 
                 }
 
-                //updateTimeSlots();
+                updateTimeSlots();
                 hideLoadingSpinner();
 
 
@@ -1248,8 +1245,8 @@
         $("#ShowCartBtn").hide();
         $(".DescriptionText").hide();
         $(".footer").hide();
-     
-        
+
+
         SetFirst();
         var $dropdownBtn = $('.dropdown-btn');
 
@@ -1316,7 +1313,7 @@
                 // Clear the container before adding new content
                 timeSlotsContainer.empty();
                 if (ListOfTimeSlotsWithDiscount != null) {
-                    
+
                     if (ListOfTimeSlotsWithDiscount.length > 0)
                     {
                         //// Create a table element
@@ -1392,7 +1389,7 @@
                                 var TimeData = $(this).data("timeslot");
                                 var timePart = TimeData.replace(/[+-]\d+%/, ''); // Remove the +3% or -4% part
                                 $("#Time").val(timePart);
-                                
+
                                 CheckDetails();
                                 var percentageValue = $(this).data('percentage');
                                 var EmppercentageValue = $(this).data('emppercentage');
@@ -1542,7 +1539,7 @@
                             });
 
                             timeSlotsContainer.append(button);
-                           
+
                         }
 
                         // Append the table row to the table
@@ -1776,7 +1773,12 @@
         }
         hideLoadingSpinner();
     });
+
+
     $("#PayNow").click(function () {
+
+        var serviceIDs = $("#ServiceIDs").val();
+        var Email = $("#Email").val();
 
         var business = '@Model.Company.Business';
         var timeslot = $("#TimeSlotSelected").text();
@@ -1785,87 +1787,61 @@
         var employeeId = $("#MyEmployeeID").val();
         showLoadingSpinner();
         $.ajax({
-            url: "@Url.Action("CheckRunTimeSlot", "Appointment")", // Replace with the URL of your server-side script
-            method: "GET", // Or "GET" depending on your server-side implementation
-            data: { business: business, timeslot: timeslot, Date: date, serviceDuration: serviceDuration, EmployeeID: employeeId },
+            url: '@Url.Action("CheckStatusByEmail", "Customer")',
+            data: { CustomerEmail: Email },
+            type: 'GET',
             success: function (response) {
-                // Response will be true or false
-                if (response.isSlotAvailable) {
-                  var IsBlocked = false;
-                    var Email = $("#Email").val();
+                // Assuming the response contains a property 'IsBlocked'
+                var isBlocked = response.IsBlocked;
+                IsBlocked = isBlocked;
+                if (IsBlocked) {
+                    alert("You are blocked from the system");
+                    hideLoadingSpinner();
+                    return;
+                } else {
+                    $("#SelectedEmployeeID").val($("#FomrSubmittedID").val());
                     $.ajax({
-                        url: '@Url.Action("CheckStatusByEmail", "Customer")',
-                        data: { CustomerEmail: Email },
-                        type: 'GET',
-                        success: function (response) {
-                            // Assuming the response contains a property 'IsBlocked'
-                            var isBlocked = response.IsBlocked;
-                            IsBlocked = isBlocked;
-                            if (IsBlocked) {
-                                alert("You are blocked from the system");
+                        url: '@Url.Action("Form", "Booking")',
+                        type: 'POST',
+                        data: $("#ActionForm").serialize(),
+                        success: function (data) {
+
+
+                            if (data.session == null) {
                                 hideLoadingSpinner();
+                                console.log(data.Message);
+                                $("#pills-info-tab").removeAttr("disabled");
+                                $("#pills-info-tab").trigger("click");
+                                //updateTimeSlots();
                                 return;
-                            } else {
-                                $("#SelectedEmployeeID").val($("#FomrSubmittedID").val());
-                                $.ajax({
-                                    url: '@Url.Action("Form", "Booking")',
-                                    type: 'POST',
-                                    data: $("#ActionForm").serialize(),
-                                    success: function (data) {
+                            }
+                            else {
+                                hideLoadingSpinner();
+                                //handleAuthClick();
+                                let selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
+                                // Use splice to remove all items from the array
+                                selectedServices.splice(0, selectedServices.length);
+                                // Update the localStorage with the modified array
+                                localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+                                window.location.href = data.session;
 
-
-                                        if (data.session == null) {
-                                            hideLoadingSpinner();
-                                            console.log(data.Message);
-                                            $("#pills-info-tab").removeAttr("disabled");
-                                            $("#pills-info-tab").trigger("click");
-                                            //updateTimeSlots();
-                                            return;
-                                        }
-                                        else {
-                                            hideLoadingSpinner();
-                                            //handleAuthClick();
-                                            let selectedServices = JSON.parse(localStorage.getItem('selectedServices')) || [];
-                                            // Use splice to remove all items from the array
-                                            selectedServices.splice(0, selectedServices.length);
-                                            // Update the localStorage with the modified array
-                                            localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
-                                            window.location.href = data.session;
-
-                                            //window.open(data.session, '_blank');
-                                            //window.close();
-                                        }
-                                    },
-                                    error: function (xhr, status, error) {
-
-                                        hideLoadingSpinner();
-                                        console("Response Text: " + data.Message);
-                                    }
-                                });
-                            }                // Now you can use the isBlocked value in your logic
+                                //window.open(data.session, '_blank');
+                                //window.close();
+                            }
                         },
-                        error: function (error) {
-                            console.error('Error fetching customer information:', error);
+                        error: function (xhr, status, error) {
+
                             hideLoadingSpinner();
+                            console("Response Text: " + data.Message);
                         }
                     });
-                }
-                else {
-                    alert("Following Slot was booked by someone else");
-                    hideLoadingSpinner();
-
-
-                }
+                }                // Now you can use the isBlocked value in your logic
             },
-            error: function (xhr, status, error) {
-                // Handle error
-                console.error(error);
+            error: function (error) {
+                console.error('Error fetching customer information:', error);
                 hideLoadingSpinner();
-
-
             }
         });
-
     });
     function CheckAviaEmployee() {
         if ($('.dropdown-btn').find(".emp_Name").text() == "Any Available Specialist") {

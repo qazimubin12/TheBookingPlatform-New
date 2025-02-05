@@ -213,6 +213,7 @@ namespace TheBookingPlatform.ViewModels
         public bool ReminderSent { get;  set; }
         public bool IsRepeat { get;  set; }
         public bool FromGCAL { get;  set; }
+        public List<Entities.Buffer> Buffers { get;  set; }
     }
 
     public class ServiceModelForCustomerProfile
@@ -223,6 +224,7 @@ namespace TheBookingPlatform.ViewModels
         public float Price { get; set; }
         public float Discount { get; set; }
         public string Category { get; set; }
+        public int ID { get;  set; }
     }
     public class WaitingListModel
     {

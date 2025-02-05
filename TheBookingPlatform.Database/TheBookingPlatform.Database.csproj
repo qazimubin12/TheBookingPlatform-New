@@ -143,6 +143,10 @@
     <Compile Include="Migrations\202501161157042_cancellbyemailcheck.Designer.cs">
       <DependentUpon>202501161157042_cancellbyemailcheck.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502041859499_v3changestipsandbuffer.cs" />
+    <Compile Include="Migrations\202502041859499_v3changestipsandbuffer.Designer.cs">
+      <DependentUpon>202502041859499_v3changestipsandbuffer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -211,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202501161157042_cancellbyemailcheck.resx">
       <DependentUpon>202501161157042_cancellbyemailcheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502041859499_v3changestipsandbuffer.resx">
+      <DependentUpon>202502041859499_v3changestipsandbuffer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

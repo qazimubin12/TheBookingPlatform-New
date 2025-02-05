@@ -23,11 +23,11 @@
 
     <!-- Custom Stylesheet -->
     <link type="text/css" rel="stylesheet" href="~/Content/main/assets/css/style.css">
-<style>
-    .invoice-3 .logo img {
-        height: 100px;
-    }
-</style>
+    <style>
+        .invoice-3 .logo img {
+            height: 100px;
+        }
+    </style>
 </head>
 
 <body>
@@ -80,32 +80,42 @@
                                     </div>
                                 </div>
                                 @*<div class="row">
-                                    <div class="col-sm-6 mb-30">
-                                        <h4 class="inv-title-1">Date</h4>
-                                        <p class="inv-from-1 mb-0">Due Date: 21/09/2021</p>
-                                    </div>
-                                    <div class="col-sm-6 text-end mb-30">
-                                        <h4 class="inv-title-1">Payment Method</h4>
-                                        <p class="inv-from-1 mb-0">Credit Card</p>
-                                    </div>
-                                </div>*@
+                                        <div class="col-sm-6 mb-30">
+                                            <h4 class="inv-title-1">Date</h4>
+                                            <p class="inv-from-1 mb-0">Due Date: 21/09/2021</p>
+                                        </div>
+                                        <div class="col-sm-6 text-end mb-30">
+                                            <h4 class="inv-title-1">Payment Method</h4>
+                                            <p class="inv-from-1 mb-0">Credit Card</p>
+                                        </div>
+                                    </div>*@
                             </div>
                             <div class="invoice-center">
                                 <div class="order-summary">
                                     <h4>To Pay</h4>
                                     <div class="table-outer">
                                         <table class="default-table invoice-table">
-                                            
+
                                             <tbody>
                                                 <tr>
                                                     <td>Order Summary</td>
                                                 </tr>
                                                 <tr>
-                                                    <td>To Pay</td>
+
+                                                    @if (Model.Employee.Type == "Percentage")
+                                                    {
+
+
+                                                        <td>To Pay</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td></td>
+                                                    }
                                                     <td></td>
                                                     <td></td>
 
-                                                    @if (Model.Type != "Time to Time")
+                                                    @if (Model.Employee.Type == "Percentage")
                                                     {
                                                         <td>@Model.Amount @Model.Company.Currency</td>
                                                     }
@@ -116,14 +126,22 @@
                                                     }
 
                                                 </tr>
-                                                @if (Model.Type != "Percentage")
-                                                {
+
                                                 <tr>
                                                     <td><strong>Amount</strong></td>
                                                     <td></td>
                                                     <td></td>
                                                     <td><strong>@Model.FinalAmount</strong></td>
                                                 </tr>
+
+                                                @if (Model.Tips != 0)
+                                                {
+                                                    <tr>
+                                                        <td><strong>Tips</strong></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td><strong>@Model.Tips @Model.Company.Currency</strong></td>
+                                                    </tr>
                                                 }
                                             </tbody>
                                         </table>
@@ -142,11 +160,11 @@
                                                     Feel free to adjust any information to better suit your specific needs and context.
 
                                                 </li>
-                                               
+
                                             </ul>
                                         </div>
                                     </div>
-                                  
+
                                 </div>
                             </div>
                         </div>

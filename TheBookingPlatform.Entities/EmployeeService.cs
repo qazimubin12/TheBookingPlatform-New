@@ -10,5 +10,7 @@ namespace TheBookingPlatform.Entities
     {
         public int EmployeeID { get; set; }
         public int ServiceID { get; set; }
+        public bool BufferEnabled { get; set; }
+        public string BufferTime { get; set; }
     }
 }

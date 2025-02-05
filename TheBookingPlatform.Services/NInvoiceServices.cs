@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TheBookingPlatform.Database;
 using TheBookingPlatform.Entities;
 
-namespace TheBookingPlatformV3.Services
+namespace TheBookingPlatform.Services
 {
     public class NInvoiceServices
     {

@@ -8,7 +8,6 @@ using System.Web.Mvc;
 using TheBookingPlatform.Entities;
 using TheBookingPlatform.Services;
 using TheBookingPlatform.ViewModels;
-using TheBookingPlatformV3.Services;
 
 namespace TheBookingPlatform.Controllers
 {

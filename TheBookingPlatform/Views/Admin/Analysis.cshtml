@@ -2,11 +2,10 @@
 @{
     ViewBag.Title = "Analysis";
 }
-
 <head>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      
+
     <!-- Bootstrap core CSS     -->
     @*<link href="~/Content/MainTemplate/assets/css/bootstrap.min.css" rel="stylesheet" />*@
 
@@ -21,9 +20,11 @@
     .panel-heading > .dropdown .dropdown-toggle {
         color: inherit
     }
+
     .btn-group-justified > .btn-group .dropdown-menu {
         left: auto
     }
+
     .btn-group > .btn-group:first-child:not(:last-child) > .btn:last-child, .btn-group > .btn-group:first-child:not(:last-child) > .dropdown-toggle {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0
@@ -33,6 +34,7 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0
     }
+
     .dropdown-menu-hide {
         display: none !important; /* Initially hidden */
     }
@@ -65,6 +67,7 @@
             -webkit-box-shadow: none;
             box-shadow: none
         }
+
     .btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
         border-radius: 0
     }
@@ -85,153 +88,155 @@
 
     .btn-group > .btn-group {
         float: left
-    }.dropdown, .dropup {
-    position: relative
-}
-
-.dropdown-toggle:focus {
-    outline: 0
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1000;
-    display: none;
-    float: left;
-    min-width: 160px;
-    padding: 5px 0;
-    margin: 2px 0 0;
-    font-size: 14px;
-    text-align: left;
-    list-style: none;
-    background-color: #fff;
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0,0,0,.15);
-    border-radius: 4px;
-    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    box-shadow: 0 6px 12px rgba(0,0,0,.175)
-}
-
-    .dropdown-menu.pull-right {
-        right: 0;
-        left: auto
     }
 
-    .dropdown-menu .divider {
-        height: 1px;
-        margin: 9px 0;
-        overflow: hidden;
-        background-color: #e5e5e5
+    .dropdown, .dropup {
+        position: relative
     }
 
-    .dropdown-menu > li > a {
-        display: block;
-        padding: 3px 20px;
-        clear: both;
-        font-weight: 400;
-        line-height: 1.42857143;
-        color: #333;
-        white-space: nowrap
-    }
-
-        .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
-            color: #262626;
-            text-decoration: none;
-            background-color: #f5f5f5
-        }
-
-    .dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
-        color: #fff;
-        text-decoration: none;
-        background-color: #337ab7;
+    .dropdown-toggle:focus {
         outline: 0
     }
 
-    .dropdown-menu > .disabled > a, .dropdown-menu > .disabled > a:focus, .dropdown-menu > .disabled > a:hover {
-        color: #777
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        display: none;
+        float: left;
+        min-width: 160px;
+        padding: 5px 0;
+        margin: 2px 0 0;
+        font-size: 14px;
+        text-align: left;
+        list-style: none;
+        background-color: #fff;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        border: 1px solid #ccc;
+        border: 1px solid rgba(0,0,0,.15);
+        border-radius: 4px;
+        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        box-shadow: 0 6px 12px rgba(0,0,0,.175)
     }
 
-        .dropdown-menu > .disabled > a:focus, .dropdown-menu > .disabled > a:hover {
-            text-decoration: none;
-            cursor: not-allowed;
-            background-color: transparent;
-            background-image: none;
-            filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)
+        .dropdown-menu.pull-right {
+            right: 0;
+            left: auto
         }
 
-.open > .dropdown-menu {
-    display: block
-}
+        .dropdown-menu .divider {
+            height: 1px;
+            margin: 9px 0;
+            overflow: hidden;
+            background-color: #e5e5e5
+        }
 
-.open > a {
-    outline: 0
-}
+        .dropdown-menu > li > a {
+            display: block;
+            padding: 3px 20px;
+            clear: both;
+            font-weight: 400;
+            line-height: 1.42857143;
+            color: #333;
+            white-space: nowrap
+        }
 
-.dropdown-menu-right {
-    right: 0;
-    left: auto
-}
+            .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+                color: #262626;
+                text-decoration: none;
+                background-color: #f5f5f5
+            }
 
-.dropdown-menu-left {
-    right: auto;
-    left: 0
-}
+        .dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
+            color: #fff;
+            text-decoration: none;
+            background-color: #337ab7;
+            outline: 0
+        }
 
-.dropdown-header {
-    display: block;
-    padding: 3px 20px;
-    font-size: 12px;
-    line-height: 1.42857143;
-    color: #777;
-    white-space: nowrap
-}
+        .dropdown-menu > .disabled > a, .dropdown-menu > .disabled > a:focus, .dropdown-menu > .disabled > a:hover {
+            color: #777
+        }
 
-.dropdown-backdrop {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 990
-}
+            .dropdown-menu > .disabled > a:focus, .dropdown-menu > .disabled > a:hover {
+                text-decoration: none;
+                cursor: not-allowed;
+                background-color: transparent;
+                background-image: none;
+                filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)
+            }
 
-.pull-right > .dropdown-menu {
-    right: 0;
-    left: auto
-}
-
-    .dropdown-menu > li > a {
-        padding: 8px 20px !important;
-      
+    .open > .dropdown-menu {
+        display: block
     }
-.dropup .caret, .navbar-fixed-bottom .dropdown .caret {
-    content: "";
-    border-top: 0;
-    border-bottom: 4px dashed;
-    border-bottom: 4px solid\9
-}
 
-.dropup .dropdown-menu, .navbar-fixed-bottom .dropdown .dropdown-menu {
-    top: auto;
-    bottom: 100%;
-    margin-bottom: 2px
-}
+    .open > a {
+        outline: 0
+    }
 
-@@media (min-width:768px) {
-    .navbar-right .dropdown-menu {
+    .dropdown-menu-right {
         right: 0;
         left: auto
     }
 
-    .navbar-right .dropdown-menu-left {
+    .dropdown-menu-left {
         right: auto;
         left: 0
     }
-}
+
+    .dropdown-header {
+        display: block;
+        padding: 3px 20px;
+        font-size: 12px;
+        line-height: 1.42857143;
+        color: #777;
+        white-space: nowrap
+    }
+
+    .dropdown-backdrop {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 990
+    }
+
+    .pull-right > .dropdown-menu {
+        right: 0;
+        left: auto
+    }
+
+    .dropdown-menu > li > a {
+        padding: 8px 20px !important;
+    }
+
+    .dropup .caret, .navbar-fixed-bottom .dropdown .caret {
+        content: "";
+        border-top: 0;
+        border-bottom: 4px dashed;
+        border-bottom: 4px solid\9
+    }
+
+    .dropup .dropdown-menu, .navbar-fixed-bottom .dropdown .dropdown-menu {
+        top: auto;
+        bottom: 100%;
+        margin-bottom: 2px
+    }
+
+    @@media (min-width:768px) {
+        .navbar-right .dropdown-menu {
+            right: 0;
+            left: auto
+        }
+
+        .navbar-right .dropdown-menu-left {
+            right: auto;
+            left: 0
+        }
+    }
 
     select.bs-select-hidden, select.selectpicker {
         display: none !important;
@@ -405,8 +410,8 @@
 
                 .bootstrap-select.btn-group .dropdown-menu li a:focus, .bootstrap-select.btn-group .dropdown-menu li a:hover {
                     box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4);
-                    background-color:seagreen;
-                    color:white;
+                    background-color: seagreen;
+                    color: white;
                 }
 
                 .bootstrap-select.btn-group .dropdown-menu li a.opt {
@@ -591,13 +596,14 @@
         box-shadow: none;
         transition-duration: 0.3s !important;
     }
+
     .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
         padding: 0px 2px;
         vertical-align: middle;
     }
 
 
-/*
+    /*
     .selectize-dropdown{
         width:auto !important;
         background:white !important;
@@ -638,7 +644,7 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <div style="margin-bottom:-10px;" id="SelectedEmployeeIDsGR"  class="form-group">
+                            <div style="margin-bottom:-10px;" id="SelectedEmployeeIDsGR" class="form-group">
                                 @*<label class="label-control">Choose Employees</label>*@
                                 @*<select></select>*@
 
@@ -671,7 +677,7 @@
 
                         </div>
                         <div class="col-md-2">
-                            <div style="margin-bottom:-10px;" id="SelectedStatusGR"  class="form-group">
+                            <div style="margin-bottom:-10px;" id="SelectedStatusGR" class="form-group">
                                 @*<label class="label-control">Choose Status</label>*@
                                 <select class="selectpicker" id="SelectedStatuses" name="SelectedStatuses" data-style="select-with-transition" multiple title="Choose Status" data-size="7">
                                     @foreach (var item in Model.Statuses)
@@ -1145,7 +1151,7 @@
     </div>
 
 
-    
+
 
     <div class="row" style=" padding-left: 0px; padding-right: 0px; ">
         <div class="card">
@@ -1213,6 +1219,34 @@
                                 <div class="text-end pt-1">
                                     <p class="text-sm mb-0 text-capitalize">Gift Card</p>
                                     <h4 class="mb-0">@Model.CheckedOutGiftCardCount</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">money</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Company Tips</p>
+                                    <h4 class="mb-0">@Model.CompanyTips</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="card  mb-2">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-primary shadow-dark shadow text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-icons opacity-10">money</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Employee  Tips</p>
+                                    <h4 class="mb-0">@Model.EmployeeTips</h4>
                                 </div>
                             </div>
 
@@ -1538,7 +1572,7 @@
     $(document).on('click', function () {
         $('.dropdown-menu-show').removeClass('dropdown-menu-show');
     });
-   
+
 
 
 

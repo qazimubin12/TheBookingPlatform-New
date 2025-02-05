@@ -24,7 +24,8 @@
     var formattedDate = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("MM/dd/yyyy");
 
     string YesShow = "false";
-    if (!User.IsInRole("Calendar")) {
+    if (!User.IsInRole("Calendar"))
+    {
         YesShow = "true";
     }
 
@@ -39,289 +40,289 @@
 
 
 <style>
-        .fc-direction-ltr .fc-timegrid-now-indicator-arrow {
-            left: 0;
-            border-width: 10px 33px 10px 11px;
-            border-radius: 0px 10px 10px 0px;
-            opacity: .7;
+    .fc-direction-ltr .fc-timegrid-now-indicator-arrow {
+        left: 0;
+        border-width: 10px 33px 10px 11px;
+        border-radius: 0px 10px 10px 0px;
+        opacity: .7;
+    }
+
+    .employeePriceChange {
+        font-size: x-small;
+        display: flex;
+    }
+
+
+
+    .fc-timegrid-now-indicator-label {
+        position: absolute;
+        top: -1.5em; /* Adjust the positioning as needed */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #007bff; /* Background color */
+        color: #fff; /* Text color */
+        padding: 0.2em 0.5em; /* Adjust padding as needed */
+        border-radius: 3px; /* Rounded corners */
+    }
+
+    .fc-now-indicator {
+        content: "Now"; /* Label text */
+        position: absolute;
+        top: -1.5em; /* Adjust the positioning as needed */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #007bff; /* Background color */
+        color: #fff; /* Text color */
+        padding: 0.2em 0.5em; /* Adjust padding as needed */
+        border-radius: 3px; /* Rounded corners */
+    }
+
+    .fc .fc-timegrid-now-indicator-arrow {
+        position: absolute;
+        z-index: 4;
+        margin-top: -10px;
+        border-style: solid;
+        border-color: red;
+    }
+
+    .fc .fc-timegrid-now-indicator-line {
+        opacity: .7;
+        position: absolute;
+        z-index: 4;
+        left: 0;
+        right: 0;
+        margin-top: -2px;
+        border-style: solid;
+        border-color: #F2CB05;
+        border-color: var(--fc-now-indicator-color,#F2CB05);
+        border-width: 5px 0 0;
+    }
+
+    .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer:after {
+        content: "";
+    }
+
+
+    .fc-timegrid-slot {
+        height: 30px !important;
+    }
+
+    .fc-timegrid-event-harness {
+        width: 103%;
+    }
+
+    .unavailable-event .event-description {
+        font-size: 14px;
+        white-space: normal;
+        margin-top: 5px;
+        color: black;
+    }
+
+    .unavailable-event .fc-time {
+        display: none;
+    }
+
+    .container-fluid {
+        margin-right: auto;
+        margin-left: auto;
+        padding: 0px;
+    }
+
+
+    .employee-image {
+        width: 20px;
+        height: 20px;
+        margin-bottom: 0px;
+    }
+
+    .employee-specialization {
+        font-size: 0.6em;
+        width: auto;
+        color: grey;
+        float: left;
+        margin-top: 15px;
+        display: none;
+        padding-left: 0px;
+        padding-top: 0px;
+    }
+
+
+    .custom-modal-dialog {
+        width: 90%; /* Adjust the width as needed */
+        margin: auto; /* Center the modal horizontally */
+    }
+
+    .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer {
+        left: 0;
+        display: none;
+        right: 0;
+        bottom: 0;
+        height: 8px;
+        overflow: hidden;
+        line-height: 8px;
+        font-size: 11px;
+        font-family: monospace;
+        text-align: center;
+        cursor: s-resize;
+    }
+
+    .fc-time-grid-event.fc-short .fc-time:before {
+        content: '';
+    }
+
+    .fc-time {
+        border-radius: 5px;
+        height: 20px;
+    }
+
+    .fc-time-gray {
+        background-color: gray;
+    }
+
+    .fc-time-green {
+        background-color: darkslategrey;
+    }
+
+    .fc-time-purple {
+        background-color: indigo;
+    }
+
+    .fc-time-red {
+        background-color: brown;
+    }
+
+    .fc-time-yellow {
+        background-color: chocolate;
+    }
+
+    .fc-time-Gcal {
+        background-color: #9aad9c;
+    }
+
+    .fc-resizer .fc-end-resizer {
+        display: none;
+    }
+
+    .fc-title {
+        font-size: 12px; /* Adjust the font size as needed */
+        white-space: nowrap; /* Prevent text from wrapping */
+    }
+    /* Style the event description div */
+    .event-description {
+        font-size: 12px; /* Adjust the font size as needed */
+        white-space: normal; /* Allow text to wrap within the description div */
+        margin-top: 5px; /* Add spacing between the time and description */
+    }
+
+    .fc-content > .fc-time {
+        background-color: #8A789C;
+    }
+
+    .fc-timegrid-event .fc-event-main {
+        padding: 1px 1px 0px;
+        overflow: auto;
+        scrollbar-width: thin; /* For Firefox */
+    }
+
+        /* For Webkit browsers like Chrome and Safari */
+        .fc-timegrid-event .fc-event-main::-webkit-scrollbar {
+            width: 6px; /* Width of the scrollbar */
         }
 
-        .employeePriceChange {
-            font-size: x-small;
-            display: flex;
-        }
-
-
-
-        .fc-timegrid-now-indicator-label {
-            position: absolute;
-            top: -1.5em; /* Adjust the positioning as needed */
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #007bff; /* Background color */
-            color: #fff; /* Text color */
-            padding: 0.2em 0.5em; /* Adjust padding as needed */
-            border-radius: 3px; /* Rounded corners */
-        }
-
-        .fc-now-indicator {
-            content: "Now"; /* Label text */
-            position: absolute;
-            top: -1.5em; /* Adjust the positioning as needed */
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #007bff; /* Background color */
-            color: #fff; /* Text color */
-            padding: 0.2em 0.5em; /* Adjust padding as needed */
-            border-radius: 3px; /* Rounded corners */
-        }
-
-        .fc .fc-timegrid-now-indicator-arrow {
-            position: absolute;
-            z-index: 4;
-            margin-top: -10px;
-            border-style: solid;
-            border-color: red;
-        }
-
-        .fc .fc-timegrid-now-indicator-line {
-            opacity: .7;
-            position: absolute;
-            z-index: 4;
-            left: 0;
-            right: 0;
-            margin-top: -2px;
-            border-style: solid;
-            border-color: #F2CB05;
-            border-color: var(--fc-now-indicator-color,#F2CB05);
-            border-width: 5px 0 0;
-        }
-
-        .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer:after {
-            content: "";
-        }
-
-
-        .fc-timegrid-slot {
-            height: 30px !important;
-        }
-
-        .fc-timegrid-event-harness {
-            width: 103%;
-        }
-
-        .unavailable-event .event-description {
-            font-size: 14px;
-            white-space: normal;
-            margin-top: 5px;
-            color: black;
-        }
-
-        .unavailable-event .fc-time {
-            display: none;
-        }
-
-        .container-fluid {
-            margin-right: auto;
-            margin-left: auto;
-            padding: 0px;
-        }
-
-
-        .employee-image {
-            width: 20px;
-            height: 20px;
-            margin-bottom: 0px;
-        }
-
-        .employee-specialization {
-            font-size: 0.6em;
-            width: auto;
-            color: grey;
-            float: left;
-            margin-top: 15px;
-            display: none;
-            padding-left: 0px;
-            padding-top: 0px;
-        }
-
-
-        .custom-modal-dialog {
-            width: 90%; /* Adjust the width as needed */
-            margin: auto; /* Center the modal horizontally */
-        }
-
-        .fc-time-grid-event.fc-allow-mouse-resize .fc-resizer {
-            left: 0;
-            display: none;
-            right: 0;
-            bottom: 0;
-            height: 8px;
-            overflow: hidden;
-            line-height: 8px;
-            font-size: 11px;
-            font-family: monospace;
-            text-align: center;
-            cursor: s-resize;
-        }
-
-        .fc-time-grid-event.fc-short .fc-time:before {
-            content: '';
-        }
-
-        .fc-time {
-            border-radius: 5px;
-            height: 20px;
-        }
-
-        .fc-time-gray {
-            background-color: gray;
-        }
-
-        .fc-time-green {
-            background-color: darkslategrey;
-        }
-
-        .fc-time-purple {
-            background-color: indigo;
-        }
-
-        .fc-time-red {
-            background-color: brown;
-        }
-
-        .fc-time-yellow {
-            background-color: chocolate;
-        }
-
-        .fc-time-Gcal {
-            background-color: #9aad9c;
-        }
-
-        .fc-resizer .fc-end-resizer {
-            display: none;
-        }
-
-        .fc-title {
-            font-size: 12px; /* Adjust the font size as needed */
-            white-space: nowrap; /* Prevent text from wrapping */
-        }
-        /* Style the event description div */
-        .event-description {
-            font-size: 12px; /* Adjust the font size as needed */
-            white-space: normal; /* Allow text to wrap within the description div */
-            margin-top: 5px; /* Add spacing between the time and description */
-        }
-
-        .fc-content > .fc-time {
-            background-color: #8A789C;
-        }
-
-        .fc-timegrid-event .fc-event-main {
-            padding: 1px 1px 0px;
-            overflow: auto;
-            scrollbar-width: thin; /* For Firefox */
-        }
-
-            /* For Webkit browsers like Chrome and Safari */
-            .fc-timegrid-event .fc-event-main::-webkit-scrollbar {
-                width: 6px; /* Width of the scrollbar */
-            }
-
-            .fc-timegrid-event .fc-event-main::-webkit-scrollbar-thumb {
-                background-color: #888; /* Color of the thumb */
-            }
-
-
-        .inactive-slot {
-            background-color: #ccc; /* Change the background color */
-            cursor: not-allowed; /* Change the cursor to indicate it's not clickable */
-            opacity: 0.5; /* Reduce opacity to visually indicate it's inactive */
-        }
-
-        .fc-time-grid-event.fc-short .fc-time, .fc-time-grid-event.fc-short .fc-title {
-            display: flex;
-            vertical-align: top;
+        .fc-timegrid-event .fc-event-main::-webkit-scrollbar-thumb {
+            background-color: #888; /* Color of the thumb */
         }
 
 
-        .employee-image {
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            float: left;
-            margin-left: 5px;
-            margin-top: 5px;
-            margin-right: 5px;
-            margin-bottom: 0px;
-        }
+    .inactive-slot {
+        background-color: #ccc; /* Change the background color */
+        cursor: not-allowed; /* Change the cursor to indicate it's not clickable */
+        opacity: 0.5; /* Reduce opacity to visually indicate it's inactive */
+    }
+
+    .fc-time-grid-event.fc-short .fc-time, .fc-time-grid-event.fc-short .fc-title {
+        display: flex;
+        vertical-align: top;
+    }
 
 
-        .fc .fc-col-header-cell-cushion {
-            display: inline-block;
-            /*        padding-right: 25px;
+    .employee-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        float: left;
+        margin-left: 5px;
+        margin-top: 5px;
+        margin-right: 5px;
+        margin-bottom: 0px;
+    }
+
+
+    .fc .fc-col-header-cell-cushion {
+        display: inline-block;
+        /*        padding-right: 25px;
     */ padding-top: 0px;
-            padding-bottom: 0px;
-            padding-left: 5px;
-            font-size: smaller;
-            margin-bottom: 0px;
-            float: left;
+        padding-bottom: 0px;
+        padding-left: 5px;
+        font-size: smaller;
+        margin-bottom: 0px;
+        float: left;
+    }
+
+
+    body {
+        overflow: hidden;
+    }
+
+    .fc-col-header-cell {
+        cursor: pointer;
+    }
+
+    .main-panel > .content {
+        margin-top: 0px;
+        padding: 0px 0px;
+        min-height: calc(100vh - 200px);
+    }
+
+    .loading-spinner-overlay {
+        display: none; /* Initially hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 9999; /* Ensure it appears above all other content */
+        background-color: rgba(0,0,0,0.5); /* Transparent black */
+    }
+
+
+    .spinner {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
         }
 
-
-        body {
-            overflow: hidden;
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
         }
+    }
 
-        .fc-col-header-cell {
-            cursor: pointer;
-        }
-
-        .main-panel > .content {
-            margin-top: 0px;
-            padding: 0px 0px;
-            min-height: calc(100vh - 200px);
-        }
-
-        .loading-spinner-overlay {
-            display: none; /* Initially hidden */
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 100%;
-            z-index: 9999; /* Ensure it appears above all other content */
-            background-color: rgba(0,0,0,0.5); /* Transparent black */
-        }
-
-
-        .spinner {
-            border: 16px solid #f3f3f3;
-            border-top: 16px solid #3498db;
-            border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            animation: spin 2s linear infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        @@keyframes spin {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        .modal-backdrop.show {
-            opacity: var(--bs-backdrop-opacity);
-            z-index: 54;
-        }
+    .modal-backdrop.show {
+        opacity: var(--bs-backdrop-opacity);
+        z-index: 54;
+    }
 </style>
 
 <input type="hidden" value="@Model.LoggedInUser.IntervalCalendar" id="IntervalFinal" />
@@ -1390,6 +1391,7 @@ else
                             console.log('Received Appointments:', data.Appointments);
                             data.Appointments.forEach(function (appointment) {
                                 var services = appointment.Services.map(s => "- " + s.Name);
+                                var serviceIDs = appointment.Services.map(s => s.ID, ",");
                                 var serviceList = services.join(",");
                                 var title = appointment.CustomerFirstName + " " + appointment.CustomerLastName;
                                 var eventId = appointment.ID;
@@ -1404,7 +1406,45 @@ else
                                 var startTime = parseDotNetDate(appointment.Time);
                                 startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
                                 var endDate = addMinutes(startDate, appointment.TotalDuration);
+                                var haveBuffer = appointment.Buffers.length > 0 ? "true" : "false";
 
+
+                                var bufferList = [];
+
+                                // Check if there are buffers in the appointment object
+                                if (appointment.Buffers.length > 0) {
+                                    let lastBufferEndTime = null; // To store the last buffer's EndTime
+
+                                    appointment.Buffers.forEach(function (buffer) {
+                                        var bufferStart = parseDotNetDate(buffer.Date);
+                                        var bufferStartTime = parseDotNetDate(buffer.Time);
+                                        bufferStart.setHours(bufferStartTime.getHours(), bufferStartTime.getMinutes(), bufferStartTime.getSeconds());
+
+                                        var bufferEndTime = parseDotNetDate(buffer.EndTime);
+                                        var bufferEnd = new Date(bufferStart); // Clone the start date
+                                        bufferEnd.setHours(bufferEndTime.getHours(), bufferEndTime.getMinutes(), bufferEndTime.getSeconds());
+
+                                        // Store the last buffer's end time
+                                        lastBufferEndTime = bufferEndTime;
+
+                                        var bufferDesc = buffer.Description;
+                                        var serviceIdforbuffer = buffer.ServiceID;
+
+                                        // Push the buffer details to the list
+                                        bufferList.push({
+                                            ID: buffer.ID,
+                                            start: bufferStart,
+                                            end: bufferEnd,
+                                            description: bufferDesc,
+                                            ServiceID: serviceIdforbuffer
+                                        });
+                                    });
+
+                                    // Set endDate after the loop with the last buffer's EndTime
+                                    if (lastBufferEndTime) {
+                                        endDate.setHours(lastBufferEndTime.getHours(), lastBufferEndTime.getMinutes(), lastBufferEndTime.getSeconds());
+                                    }
+                                }
                                 events.push({
                                     id: eventId,
                                     title: title,
@@ -1425,7 +1465,10 @@ else
                                     backgroundColor: appointment.Color,
                                     testingEnd: endDate,
                                     NewCustomer: appointment.NewCustomer,
-                                    AnyEmployeeSelected: appointment.AnyEmployeeSelected
+                                    AnyEmployeeSelected: appointment.AnyEmployeeSelected,
+                                    havebuffer: haveBuffer,
+                                    Buffers: bufferList,
+                                    ServiceIDs: serviceIDs
                                 });
                             });
                         }
@@ -1453,7 +1496,7 @@ else
                             successCallback(events);
 
                         } catch (e) {
-                            debugger
+
                         }
                         console.log('Events array after callback:', events);
 
@@ -1555,6 +1598,16 @@ else
 
                 var eventContent = document.createElement('div');
                 eventContent.classList.add('fc-event-main');
+
+                var Buffers = arg.event.extendedProps.Buffers || [];
+
+                const ServiceIDs = arg.event.extendedProps.ServiceIDs || [];
+                let serviceNames = arg.event.extendedProps.description || "Service"; // Service names string
+
+                // Split service names based on a delimiter (e.g., comma)
+                serviceNames = serviceNames.split(",");  // You can change the delimiter if needed (e.g., `;`)
+
+
                 if (arg.event.id == "000") {
 
                     var description = arg.event.extendedProps.description;
@@ -1649,20 +1702,82 @@ else
                         icon.addEventListener('mouseleave', hideTooltip);
                     });
                     eventContent.appendChild(timeElement);
+                        // Add customer details block at the top
+                        if (arg.backgroundColor !== "darkgray" && YesShow === "true") {
+                            const customerName = arg.event.extendedProps.customer || "Customer Name";
+                            const customerPhone = arg.event.extendedProps.customerphone || "Phone Number";
+
+                            const customerInfoElement = document.createElement('div');
+                            customerInfoElement.classList.add('customer-info');
+                            customerInfoElement.innerHTML = `${customerName}<br> ${customerPhone}`;
+                            eventContent.appendChild(customerInfoElement);
+                        }
+                        // Initialize a Map to track added buffers for each ServiceID + index combination
+                        var addedBuffers = new Map();
+
+                        // Loop through each service name and display it followed by its specific buffer(s)
+                    serviceNames.forEach((serviceName, index) => {
+                        // Trim any extra spaces from the service name
+                        serviceName = serviceName.trim();
+
+                        // Service Name Block
+                        const serviceNameElement = document.createElement('div');
+                        serviceNameElement.classList.add('fc-service-name');
+                        serviceNameElement.textContent = `${serviceName}`;
+                        eventContent.appendChild(serviceNameElement);
+
+                        if (Buffers.length > 0) {
+                            var SerID = ServiceIDs[index];
+                            var filteredArray = [];
+                            //debugger
+                            //// Filter Buffers where the ServiceID matches SerID
+                            if (Array.isArray(Buffers) && SerID != undefined) {
+                                // Initialize a Set for the current service index to track added buffer IDs
+                                if (!addedBuffers.has(index)) {
+                                    addedBuffers.set(index, new Set());
+                                }
+
+                                // Filter Buffers where ServiceID matches SerID and the buffer hasn't been added to the current service
+                                filteredArray = Buffers.filter(buffer => {
+                                    const bufferHasBeenAdded = addedBuffers.get(index).has(buffer.ID);
+                                    return buffer.ServiceID === SerID && !bufferHasBeenAdded;
+                                });
+                            } else {
+                                console.log('Invalid Buffers array or SerID.');
+                            }
+                            const result = filteredArray.length > 0 ? filteredArray[0] : null;
+
+                            //filteredArray.forEach((buffer) => {
+                            // Add the buffer ID to the current service's Set of added buffers
+                            if (result != null) {
+                                addedBuffers.get(index).add(result.ID);
+
+                                const bufferStartTime = timeFormatter.format(new Date(result.start));
+                                const bufferEndTime = timeFormatter.format(new Date(result.end));
+                                var color = darkenHexColor(arg.backgroundColor, 30);
+
+                                // Create buffer element
+                                const bufferElement = document.createElement('div');
+                                bufferElement.classList.add('fc-buffer');
+                                bufferElement.style.backgroundColor = color;
+                                bufferElement.style.color = "white";
+                                bufferElement.style.padding = "5px";
+                                bufferElement.style.marginTop = "5px";
+
+                                const bufferDurationInMinutes = (result.end - result.start) / (1000 * 60);
+                                bufferElement.textContent = `Buffer: ${bufferDurationInMinutes} minutes`;
+
+                                eventContent.appendChild(bufferElement);
+
+                            }
+                        }
+                    });
 
 
 
 
                     // Create customer info block
 
-                    if (arg.backgroundColor != "darkgray") {
-                        if (YesShow == "true") {
-                            var customerInfoElement = document.createElement('div');
-                            customerInfoElement.classList.add('customer-info');
-                            customerInfoElement.innerHTML = customername + '<br>' + customerphone; // Use innerHTML to interpret the <br> tag
-                            eventContent.appendChild(customerInfoElement);
-                        }
-                    }
 
                     // Add the event time
                     // Add the event description
@@ -1689,6 +1804,136 @@ else
                 return { domNodes: [eventContent] };
 
             },
+            //eventContent: function (arg) {
+            //    showLoadingSpinner();
+
+            //    const clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            //    const timeFormatter = new Intl.DateTimeFormat('en-US', {
+            //        hour: '2-digit',
+            //        minute: '2-digit',
+            //        hour12: false,
+            //        timeZone: clientTimeZoneName
+            //    });
+
+            //    const eventContent = document.createElement('div');
+            //    eventContent.classList.add('fc-event-main');
+
+            
+
+            //    // Format start time and end time
+            //    let serviceStartTime = arg.event.start;
+            //    let serviceEndTime = arg.event.end;
+
+            //    const formattedStartTime = timeFormatter.format(serviceStartTime);
+            //    const formattedEndTime = timeFormatter.format(serviceEndTime);
+
+            //    const timeElement = document.createElement('div');
+            //    timeElement.classList.add('fc-time');
+
+            //    // Apply the right class based on background color
+            //    if (arg.backgroundColor === "#5DAF4D") {
+            //        timeElement.classList.add('fc-time-green');
+            //    } else if (arg.backgroundColor === "darkgray") {
+            //        timeElement.classList.add('fc-time-gray');
+            //    } else if (arg.backgroundColor === "#952AB2") {
+            //        timeElement.classList.add('fc-time-purple');
+            //    } else if (arg.backgroundColor === "#E94234") {
+            //        timeElement.classList.add('fc-time-red');
+            //    } else if (arg.backgroundColor === "#F79700") {
+            //        timeElement.classList.add('fc-time-yellow');
+            //    } else if (arg.backgroundColor === "#dff0e3") {
+            //        timeElement.classList.add('fc-time-Gcal');
+            //    }
+
+            //    timeElement.textContent = `${formattedStartTime} - ${formattedEndTime}`;
+            //    eventContent.appendChild(timeElement);
+
+            //    // Add customer details block at the top
+            //    if (arg.backgroundColor !== "darkgray" && YesShow === "true") {
+            //        const customerName = arg.event.extendedProps.customer || "Customer Name";
+            //        const customerPhone = arg.event.extendedProps.customerphone || "Phone Number";
+
+            //        const customerInfoElement = document.createElement('div');
+            //        customerInfoElement.classList.add('customer-info');
+            //        customerInfoElement.innerHTML = `${customerName}<br> ${customerPhone}`;
+            //        eventContent.appendChild(customerInfoElement);
+            //    }
+            //    // Initialize a Map to track added buffers for each ServiceID + index combination
+            //    var addedBuffers = new Map();
+
+            //    // Loop through each service name and display it followed by its specific buffer(s)
+            //    serviceNames.forEach((serviceName, index) => {
+            //        // Trim any extra spaces from the service name
+            //        serviceName = serviceName.trim();
+
+            //        // Service Name Block
+            //        const serviceNameElement = document.createElement('div');
+            //        serviceNameElement.classList.add('fc-service-name');
+            //        serviceNameElement.textContent = `${serviceName}`;
+            //        eventContent.appendChild(serviceNameElement);
+
+            //        if (Buffers.length > 0) {
+            //            var SerID = ServiceIDs[index];
+            //            var filteredArray = [];
+            //            //debugger
+            //            //// Filter Buffers where the ServiceID matches SerID
+            //            if (Array.isArray(Buffers) && SerID != undefined) {
+            //                // Initialize a Set for the current service index to track added buffer IDs
+            //                if (!addedBuffers.has(index)) {
+            //                    addedBuffers.set(index, new Set());
+            //                }
+
+            //                // Filter Buffers where ServiceID matches SerID and the buffer hasn't been added to the current service
+            //                filteredArray = Buffers.filter(buffer => {
+            //                    const bufferHasBeenAdded = addedBuffers.get(index).has(buffer.ID);
+            //                    return buffer.ServiceID === SerID && !bufferHasBeenAdded;
+            //                });
+            //            } else {
+            //                console.log('Invalid Buffers array or SerID.');
+            //            }
+            //            const result = filteredArray.length > 0 ? filteredArray[0] : null;
+
+            //            //filteredArray.forEach((buffer) => {
+            //            // Add the buffer ID to the current service's Set of added buffers
+            //            if (result != null) {
+            //                addedBuffers.get(index).add(result.ID);
+
+            //                const bufferStartTime = timeFormatter.format(new Date(result.start));
+            //                const bufferEndTime = timeFormatter.format(new Date(result.end));
+            //                var color = darkenHexColor(arg.backgroundColor, 30);
+
+            //                // Create buffer element
+            //                const bufferElement = document.createElement('div');
+            //                bufferElement.classList.add('fc-buffer');
+            //                bufferElement.style.backgroundColor = color;
+            //                bufferElement.style.color = "white";
+            //                bufferElement.style.padding = "5px";
+            //                bufferElement.style.marginTop = "5px";
+
+            //                const bufferDurationInMinutes = (result.end - result.start) / (1000 * 60);
+            //                bufferElement.textContent = `Buffer: ${bufferDurationInMinutes} minutes`;
+
+            //                eventContent.appendChild(bufferElement);
+
+            //            }
+            //        }
+            //    });
+
+
+            //    // Add Notes Block (if applicable)
+            //    const notes = arg.event.extendedProps.notes;
+            //    if (notes) {
+            //        const notesElement = document.createElement('div');
+            //        notesElement.classList.add('event-notes');
+            //        notesElement.textContent = notes;
+            //        eventContent.appendChild(notesElement);
+            //    }
+
+            //    hideLoadingSpinner();
+
+            //    // Return the updated event content with customer info at the top, followed by service and buffer pairs
+            //    return { domNodes: [eventContent] };
+            //},
 
             eventsSet: function (events) {
                 // This callback fires after events are initially rendered or when events are added/changed/removed
@@ -2259,6 +2504,22 @@ else
         document.getElementById('loadingSpinner').style.display = 'none';
     }
 
+    function darkenHexColor(hex, percentage) {
+        // Step 1: Convert Hex to RGB
+        let r = parseInt(hex.slice(1, 3), 16);
+        let g = parseInt(hex.slice(3, 5), 16);
+        let b = parseInt(hex.slice(5, 7), 16);
+
+        // Step 2: Darken the RGB values by the given percentage
+        const factor = (100 - percentage) / 100;
+
+        r = Math.floor(r * factor);
+        g = Math.floor(g * factor);
+        b = Math.floor(b * factor);
+
+        // Step 3: Return the darkened RGB value
+        return `rgb(${r}, ${g}, ${b})`;
+    }
 
 
 

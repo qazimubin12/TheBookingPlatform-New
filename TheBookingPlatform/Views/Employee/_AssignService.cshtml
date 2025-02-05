@@ -32,7 +32,9 @@
         <div class="modal-header">
             <h5 class="modal-title">
 
-                <span>Assign Service for Employee: @Model.EmployeeFull.Name </span>
+                <span>
+                    Assign Service for Employee: @Model.EmployeeFull.Name
+                </span>
 
             </h5>
 
@@ -45,53 +47,89 @@
                             <input hidden type="text" value="@Model.EmployeeID" name="EmployeeID" id="EmployeeID" />
 
                             <input hidden type="text" name="ServiceData" id="ServiceJson" />
-
-                            <ul class="main-topics list-group col-md-12">
-                                <li class="list-group-item">
-                                    <div class="form-check">
-                                        <label style="margin-left:20px;">
-                                            <input class="form-check-input main-service-checkbox" name="AllServiceCategories" type="checkbox" />
-                                            Select All
-                                        </label>
-                                    </div>
-                                </li>
+                            <div class="accordion" id="serviceAccordion" style="width:100%;">
                                 @foreach (var item in Model.Services)
                                 {
-                                    <li class="list-group-item">
-                                        <div class="form-check">
-                                            <label>
-                                                <span class="toggle-btn"></span>
-                                                <input onchange="FillData()" class="form-check-input main-service-checkbox" name="ServiceCheckBox" type="checkbox" />
-                                                @item.ServiceCategory.Name
-                                            </label>
-                                        </div>
-                                        <ul class="services list-group">
-                                            @foreach (var servic in item.Services)
-                                            {
-                                                <li class="list-group-item" data-service-id="@servic.ID" data-service-name="@servic.Name">
-                                                    <div class="form-check">
-                                                        <label>
-                                                            @if (Model.ServiceData != null)
-                                                            {
-                                                                if (Model.ServiceData.Split('_').ToList().Contains(servic.ID.ToString()))
-                                                                {
-                                                                    <input checked onchange="FillData()" class="form-check-input service-checkbox" type="checkbox" />
-                                                                }
-                                                                else
-                                                                {
-                                                                    <input onchange="FillData()" class="form-check-input service-checkbox" type="checkbox" />
+                                    <div class="accordion-item">
+                                        <p class="accordion-header" id="heading-@item.ServiceCategory.ID">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@item.ServiceCategory.ID" aria-expanded="false" aria-controls="collapse-@item.ServiceCategory.ID">
+                                                @item.ServiceCategory.Name <i class="fa fa-chevron-down"></i>
 
-                                                                }
+                                            </button>
+                                        </p>
+                                        <div id="collapse-@item.ServiceCategory.ID" class="accordion-collapse collapse" aria-labelledby="heading-@item.ServiceCategory.ID" data-bs-parent="#serviceAccordion">
+                                            <div class="accordion-body">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Assign Service</th>
+                                                            <th>
+                                                                Buffer Time <a href="https://yourbookingplatform.com/how-to-add-buffer-time/" target="_blank"><i class="fa fa-info-circle"></i></a>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var servic in item.Services)
+                                                        {
+                                                            // Parse ServiceData to find the current service entry
+                                                            var serviceEntry = Model.ServiceData
+                                                                .Split('_')
+                                                                .FirstOrDefault(data => data.StartsWith(servic.ID.ToString() + ","));
+
+                                                            // Extract service-specific data
+                                                            bool isServiceChecked = false;
+                                                            bool isBufferEnabled = false;
+                                                            string bufferTime = "";
+
+                                                            if (!string.IsNullOrEmpty(serviceEntry))
+                                                            {
+                                                                var parts = serviceEntry.Split(',');
+                                                                isServiceChecked = true; // If an entry exists, the service is checked
+                                                                isBufferEnabled = parts.Length > 1 && parts[1] == "True"; // Check if buffer is enabled
+                                                                bufferTime = parts.Length > 2 ? parts[2] : ""; // Extract buffer time
                                                             }
-                                                            @servic.Name
-                                                        </label>
-                                                    </div>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </li>
+
+                                                            <tr data-service-id="@servic.ID">
+                                                                <td>
+                                                                    <div class="form-check">
+                                                                        <input onchange="FillData()"
+                                                                               class="form-check-input service-checkbox"
+                                                                               type="checkbox"
+                                                                               id="service-checkbox-@servic.ID"
+                                                                               data-service-id="@servic.ID"
+                                                                               @(isServiceChecked ? "checked" : "") />
+                                                                        @servic.Name
+                                                                    </div>
+                                                                </td>
+
+                                                                <td style="display: flex; align-items: center; gap: 20px;">
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input service-buffer-checkbox"
+                                                                               type="checkbox"
+                                                                               id="buffer-checkbox-@servic.ID"
+                                                                               data-service-id="@servic.ID"
+                                                                               @(isBufferEnabled ? "checked" : "") />
+                                                                    </div>
+                                                                    <input class="form-control buffer-time-input"
+                                                                           type="text"
+                                                                           id="buffer-time-@servic.ID"
+                                                                           data-service-id="@servic.ID"
+                                                                           placeholder="Enter Buffer Time"
+                                                                           value="@bufferTime"
+                                                                           @(isBufferEnabled ? "" : "disabled") />
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
-                            </ul>
+                            </div>
+
+
+
                         </div>
                         <button id="ActionBtn" type="button" class="btn btn-primary my-2">SAVE</button>
                     </div>
@@ -109,24 +147,67 @@
 
 <script>
 
-
     function FillData() {
         var selectedServices = [];
-        $(".service-checkbox:checked").each(function () {
-            var serviceName = $(this).closest("li").data("service-id");
-            selectedServices.push(serviceName);
+
+        // Iterate through each service-checkbox
+        $(".service-checkbox").each(function () {
+            var serviceId = $(this).closest("tr").data("service-id");
+            var isServiceChecked = $(this).prop("checked"); // Check if service-checkbox is enabled
+            var isBufferEnabled = $(this).closest("tr").find(".service-buffer-checkbox").prop("checked");
+            var bufferTime = $(this).closest("tr").find(".buffer-time-input").val(); // Get buffer time value
+
+            // Add serviceID, buffer state, and bufferTime only if the service-checkbox is checked
+            if (isServiceChecked) {
+                var serviceData = serviceId + "," + isBufferEnabled;
+
+                // Append bufferTime if buffer is enabled
+                if (isBufferEnabled) {
+                    serviceData += "," + bufferTime;
+                }
+
+                selectedServices.push(serviceData);
+            }
         });
 
-
+        // Join the array with underscores and update the hidden input field
         var selectedServiceNames = selectedServices.join("_");
         $("#ServiceJson").val(selectedServiceNames);
     }
 
 
+
+
+
     $(document).ready(function () {
         FillData();
+        // Additional logic to enable/disable bufferTime input based on bufferEnabled checkbox
+        $(document).on("change", ".service-buffer-checkbox", function () {
+            var bufferTimeInput = $(this).closest("tr").find(".buffer-time-input");
+            if ($(this).prop("checked")) {
+                bufferTimeInput.prop("disabled", false); // Enable bufferTime input if buffer is enabled
+            } else {
+                bufferTimeInput.prop("disabled", true).val(""); // Disable and clear bufferTime input if buffer is disabled
+            }
+            FillData();
+
+        });
+        $(document).on("input", ".buffer-time-input", function () {
+            var value = $(this).val();
+
+            // Remove any non-numeric characters
+            var numericValue = value.replace(/[^0-9]/g, "");
+
+            // Update the input with the numeric value followed by " mins"
+            if (numericValue) {
+                $(this).val(numericValue + " mins");
+            } else {
+                $(this).val("");
+            }
+            FillData();
+        });
+
         $(".toggle-btn").click(function (e) {
-            debugger
             e.preventDefault();
             $(this).toggleClass("rotate");
             var parent = $(this).parent().parent();
@@ -148,77 +229,77 @@
             var isChecked = $(this).prop("checked");
             $(".main-service-checkbox").prop("checked", isChecked);
             $(".service-checkbox").prop("checked", isChecked);
+            $(".service-buffer-checkbox").prop("checked", isChecked); // Sync buffer checkboxes too
             FillData();
         });
-
 
         $(".main-service-checkbox").click(function () {
             var isChecked = $(this).prop("checked");
             $(this).closest("li").find(".service-checkbox").prop("checked", isChecked);
+            $(this).closest("li").find(".service-buffer-checkbox").prop("checked", isChecked); // Sync buffer checkboxes too
             FillData();
         });
 
-        $(".service-checkbox").click(function () {
+        $(".service-checkbox, .service-buffer-checkbox").click(function () {
             FillData();
         });
 
 
-    $("#PhotoUpload").change(function () {
+        $("#PhotoUpload").change(function () {
 
-        showLoadingSpinner();
-        var element = this;
-        var formData = new FormData();
-        var totalFiles = element.files.length;
+            showLoadingSpinner();
+            var element = this;
+            var formData = new FormData();
+            var totalFiles = element.files.length;
 
-        for (var i = 0; i < totalFiles; i++) {
-            var file = element.files[i];
-            formData.append("Logo", file);
-        }
+            for (var i = 0; i < totalFiles; i++) {
+                var file = element.files[i];
+                formData.append("Logo", file);
+            }
 
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("UploadImage", "Shared")',
-            data: formData,
-            dataType: 'json',
-            contentType: false,
-            processData: false
-        })
-            .done(function (response) {
-
-                if (response.Success) {
-                    // For now, we'll just delay the fade out for demonstration
-                    hideLoadingSpinner();
-                    $("#Photo").val(response.DocURL);
-                    $("#MainThumb").attr("src", response.DocURL);
-                }
-
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UploadImage", "Shared")',
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false
             })
-            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("FAIL");
+                .done(function (response) {
+
+                    if (response.Success) {
+                        // For now, we'll just delay the fade out for demonstration
+                        hideLoadingSpinner();
+                        $("#Photo").val(response.DocURL);
+                        $("#MainThumb").attr("src", response.DocURL);
+                    }
+
+                })
+                .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("FAIL");
+                })
+        });
+
+
+
+        $("#ActionBtn").click(function () {
+            $("#ActionBtn").text("Loading...");
+
+            $("#ActionBtn").attr("disabled", "disabled");
+            $.ajax({
+                url: '@Url.Action("AssignService", "Employee")',
+                type: "post",
+                data: $("#actionForm").serialize()
             })
-    });
-
-
-
-    $("#ActionBtn").click(function () {
-        $("#ActionBtn").text("Loading...");
-
-        $("#ActionBtn").attr("disabled", "disabled");
-		$.ajax({
-			url: '@Url.Action("AssignService", "Employee")',
-			type: "post",
-			data: $("#actionForm").serialize()
-		})
-		.done(function (response) {
-			if(response.success)
-			{
-				location.reload();
-			}
-			else {
-				$(".errorDiv").html(response.Message);
-			}
-		});
-	});
+                .done(function (response) {
+                    if (response.success) {
+                        location.reload();
+                    }
+                    else {
+                        $(".errorDiv").html(response.Message);
+                    }
+                });
+        });
     });
 
 </script>

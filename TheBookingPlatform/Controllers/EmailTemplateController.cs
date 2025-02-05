@@ -9,7 +9,7 @@ using TheBookingPlatform.Services;
 using TheBookingPlatform.ViewModels;
 using TheBookingPlatform.Entities;
 
-namespace TheBookingPlatformV3.Controllers
+namespace TheBookingPlatform.Controllers
 {
     public class EmailTemplateController : Controller
     {

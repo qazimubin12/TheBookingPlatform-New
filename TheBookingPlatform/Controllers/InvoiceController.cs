@@ -57,7 +57,7 @@ namespace TheBookingPlatform.Controllers
             }
         }
         [HttpPost]
-        public JsonResult SaveInvoice(string CustomerID, string EmployeeID, string AppointmentID, string PaymentMethod, string GrandTotal, string FinalGrandTotal, string Notes, string Referral = "", string Code = "")
+        public JsonResult SaveInvoice(string CustomerID, string EmployeeID, string AppointmentID, string PaymentMethod, string GrandTotal, string FinalGrandTotal, string Notes, string Referral = "", string Code = "", string TipType = "", float TipAmount = 0)
         {
             var Customer = CustomerServices.Instance.GetCustomer(int.Parse(CustomerID));
             if (PaymentMethod == "Referral")
@@ -74,6 +74,13 @@ namespace TheBookingPlatform.Controllers
             invoice.EmployeeID = int.Parse(EmployeeID);
             invoice.GrandTotal = float.Parse(GrandTotal);
             invoice.Business = LoggedInUser.Company;
+            if (TipAmount != 0)
+            {
+                invoice.Tip = true;
+                invoice.TipAmount = TipAmount;
+                invoice.TipType = TipType;
+            }
+
             invoice.OrderDate = DateTime.Now;
             invoice.Remarks = Notes;
             invoice.OrderNo = "OR" + DateTime.Now.ToString("dd-MM-yyyy") + random.Next(100, 1000) + "DER";
@@ -81,6 +88,12 @@ namespace TheBookingPlatform.Controllers
             var appointment = AppointmentServices.Instance.GetAppointment(invoice.AppointmentID);
             appointment.Status = "Paid";
             appointment.Color = "#5DAF4D";
+            if (invoice.Tip)
+            {
+                appointment.Tip = true;
+                appointment.TipAmount = TipAmount;
+                appointment.TipType = TipType;
+            }
 
             AppointmentServices.Instance.UpdateAppointment(appointment);
 
@@ -346,9 +359,9 @@ namespace TheBookingPlatform.Controllers
             if (giftCard != null)
             {
                 var customer = CustomerServices.Instance.GetCustomer(CustomerID);
-                var giftCardAssignment = GiftCardServices.Instance.GetGiftCardAssignmentByGiftCardID(giftCard.GiftCardID).Where(x=>x.CustomerID == customer.ID).FirstOrDefault();
+                var giftCardAssignment = GiftCardServices.Instance.GetGiftCardAssignmentByGiftCardID(giftCard.GiftCardID).Where(x => x.CustomerID == customer.ID).FirstOrDefault();
 
-                if(giftCardAssignment != null)
+                if (giftCardAssignment != null)
                 {
                     if ((giftCardAssignment.AssignedDate.AddDays(giftCardAssignment.Days) - DateTime.Now).Days <= 0)
                     {
@@ -377,7 +390,7 @@ namespace TheBookingPlatform.Controllers
             }
             else
             {
-                return Json(new {success=false,Message="No Gift Card Found"},JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, Message = "No Gift Card Found" }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -406,7 +419,7 @@ namespace TheBookingPlatform.Controllers
         [HttpGet]
         public JsonResult CheckLoyaltyCard(int CustomerID, string LoyaltyCardCode)
         {
-          
+
             var customer = CustomerServices.Instance.GetCustomer(CustomerID);
             var lcAssignment = LoyaltyCardServices.Instance.GetLoyaltyCardAssignments().Where(x => x.CustomerID == customer.ID && x.CardNumber == LoyaltyCardCode).FirstOrDefault();
             if (lcAssignment != null)
@@ -433,8 +446,8 @@ namespace TheBookingPlatform.Controllers
             {
                 return Json(new { success = false, Message = "Loyalty Card Is not assigned to this customer" }, JsonRequestBehavior.AllowGet);
             }
-            
-         
+
+
         }
         public bool SendEmail(string toEmail, string subject, string emailBody, Company company)
         {
@@ -530,7 +543,7 @@ namespace TheBookingPlatform.Controllers
                 CustomerServices.Instance.UpdateCustomer(customer);
             }
             var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
-            var company = CompanyServices.Instance.GetCompany().Where(x=>x.Business ==  appointment.Business).FirstOrDefault();
+            var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == appointment.Business).FirstOrDefault();
             string ConcatenatedServices = "";
             foreach (var item in appointment.Service.Split(',').ToList())
             {

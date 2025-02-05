@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace TheBookingPlatform.Entities
 {
-    public class Notification:BaseEntity
+    public class Buffer:BaseEntity
     {
-        public string Title { get; set; }
+        public int AppointmentID { get; set; }
         public string Description { get; set; }
-        public string Link { get; set; }
-        public string Code { get; set; }
+        public DateTime Time { get; set; }
+        public DateTime EndTime { get; set; }
         public DateTime Date { get; set; }
+        public int ServiceID { get; set; }
     }
 }
