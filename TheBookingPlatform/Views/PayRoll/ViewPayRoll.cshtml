@@ -126,24 +126,26 @@
                                                     }
 
                                                 </tr>
-
-                                                <tr>
-                                                    <td><strong>Amount</strong></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td><strong>@Model.FinalAmount</strong></td>
-                                                </tr>
-
-                                                @if (Model.Tips != 0)
+                                                @if (Model.Employee.Type == "Time To Time" || Model.Employee.Type == "Worked Hours")
                                                 {
                                                     <tr>
-                                                        <td><strong>Tips</strong></td>
+                                                        <td><strong>Amount</strong></td>
                                                         <td></td>
                                                         <td></td>
-                                                        <td><strong>@Model.Tips @Model.Company.Currency</strong></td>
+                                                        <td><strong>@Model.FinalAmount </strong></td>
                                                     </tr>
                                                 }
-                                            </tbody>
+
+                                                    @if (Model.Tips != 0)
+                                                    {
+                                                        <tr>
+                                                            <td><strong>Tips</strong></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td><strong>@Model.Tips @Model.Company.Currency</strong></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
                                         </table>
                                     </div>
                                 </div>

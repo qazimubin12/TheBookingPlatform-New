@@ -146,7 +146,7 @@
                     </div>
                     <div id="TIPAmountDIV" style="display:@(Model.Appointment.Tip ? "block":"none" )" class="col-md-4">
                         <label>Tip Amount:</label>
-                        <input class="form-control" type="number" value="@Model.Appointment.TipAmount" id="TipAmount" name="TipAmount" />
+                        <input class="form-control" @(Model.Appointment.Status == "Paid" ? "readonly":"") type="number" value="@Model.Appointment.TipAmount" id="TipAmount" name="TipAmount" />
                     </div>
                 </div>
                 <div class="form-group">

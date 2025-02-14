@@ -53,7 +53,7 @@ namespace TheBookingPlatform.Database
         public DbSet<CalendarManage> CalendarManages { get; set; }
         public DbSet<RebookReminder> RebookReminders { get; set; }
         public DbSet<Review> Reviews { get; set; }
-
+        
 
 
 
@@ -89,6 +89,6 @@ namespace TheBookingPlatform.Database
         public DbSet<EmployeeWatch> EmployeeWatches { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Buffer> Buffers { get; set; }
-
+        public DbSet<RequestedEmployee> RequestedEmployees { get; set; }
     }
 }

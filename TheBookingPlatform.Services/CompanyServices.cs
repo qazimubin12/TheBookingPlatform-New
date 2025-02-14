@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using System.Data.SqlClient;
 
 namespace TheBookingPlatform.Services
 {
@@ -153,13 +154,40 @@ namespace TheBookingPlatform.Services
         {
             using (var context = new DSContext())
             {
-
                 var Company = context.Companies.Find(ID);
-                context.Companies.Remove(Company);
-                context.SaveChanges();
+                DeleteCompanyByBusinessValue(Company.Business);
+
             }
         }
 
-     
+        public void DeleteCompanyByBusinessValue(string businessValue)
+        {
+            using (var context = new DSContext())
+            {
+                string sql = @"
+            DECLARE @TableName NVARCHAR(MAX);
+            DECLARE @SQL NVARCHAR(MAX);
+            DECLARE table_cursor CURSOR FOR 
+            SELECT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = 'Business';
+
+            OPEN table_cursor;
+            FETCH NEXT FROM table_cursor INTO @TableName;
+
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+                SET @SQL = 'DELETE FROM ' + QUOTENAME(@TableName) + ' WHERE Business = @BusinessValue';
+                EXEC sp_executesql @SQL, N'@BusinessValue NVARCHAR(MAX)', @BusinessValue;
+                FETCH NEXT FROM table_cursor INTO @TableName;
+            END;
+
+            CLOSE table_cursor;
+            DEALLOCATE table_cursor;";
+
+                context.Database.ExecuteSqlCommand(sql, new SqlParameter("@BusinessValue", businessValue));
+            }
+        }
+
+
+
     }
 }

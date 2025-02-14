@@ -72,10 +72,11 @@ namespace TheBookingPlatform.Controllers
             {
                 var user = UserManager.FindById(item.UserID);
                 var ManagesOfList = new List<Employee>();
-                if (item.ManageOf != null)
+                if (item.ManageOf != null && item.ManageOf != "")
                 {
                     foreach (var empID in item.ManageOf.Split(',').ToList())
                     {
+                        var employee = EmployeeServices.Instance.GetEmployee(int.Parse(empID));
                         ManagesOfList.Add(EmployeeServices.Instance.GetEmployee(int.Parse(empID)));
 
                     }
@@ -129,7 +130,10 @@ namespace TheBookingPlatform.Controllers
                     foreach (var item in listofCalendarManageModel)
                     {
                         var employee = EmployeeServices.Instance.GetEmployee(int.Parse(item));
-                        AssignedEmployeeList.Add(employee);
+                        if (employee != null)
+                        {
+                            AssignedEmployeeList.Add(employee);
+                        }
                     }
                     var exceptUsers = EmployeeServices.Instance.GetEmployee()
                                     .Where(emp =>

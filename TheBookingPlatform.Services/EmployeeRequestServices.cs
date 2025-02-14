@@ -57,6 +57,15 @@ namespace TheBookingPlatform.Services
         }
 
 
+        public List<EmployeeRequest> GetEmployeeRequestsWRTEMPID(int EmployeeID)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.EmployeeRequests.Where(x => x.EmployeeID == EmployeeID).OrderBy(x => x.Business).ToList();
+            }
+
+        }
 
 
 

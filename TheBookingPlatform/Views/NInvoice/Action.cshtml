@@ -452,7 +452,7 @@
 
         $("#ActionBtn").click(function () {
 
-
+            $("#ItemDetails").val(getTableValues());
             showLoadingSpinner();
             $.ajax({
                 url: '@Url.Action("Action", "NInvoice")',

@@ -332,6 +332,7 @@
     <Compile Include="Controllers\SharedController.cs" />
     <Compile Include="Controllers\ShiftController.cs" />
     <Compile Include="Controllers\StockOrderController.cs" />
+    <Compile Include="Controllers\StripeInvoicesController.cs" />
     <Compile Include="Controllers\SupplierController.cs" />
     <Compile Include="Controllers\TimeTableController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -380,6 +381,7 @@
     <Compile Include="ViewModels\SaleViewModel.cs" />
     <Compile Include="ViewModels\ShiftViewModel.cs" />
     <Compile Include="ViewModels\StockOrderViewModel.cs" />
+    <Compile Include="ViewModels\StripeInvoicesViewModel.cs" />
     <Compile Include="ViewModels\SupplierViewModel.cs" />
     <Compile Include="ViewModels\TimeTableViewModel.cs" />
     <Compile Include="ViewModels\VatViewModel.cs" />
@@ -2082,6 +2084,7 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <Content Include="Views\Referral\Index.cshtml" />
     <Content Include="Views\Referral\ReferralLists.cshtml" />
+    <Content Include="Views\StripeInvoices\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

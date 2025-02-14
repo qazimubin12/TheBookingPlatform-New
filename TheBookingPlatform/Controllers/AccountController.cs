@@ -90,6 +90,9 @@ namespace TheBookingPlatform.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+           
+
+
 
             if (returnUrl != null)
             {
@@ -115,7 +118,6 @@ namespace TheBookingPlatform.Controllers
                 ViewBag.ReturnUrl = returnUrl;
                 return View();
             }
-            return View();
         }
             //
 

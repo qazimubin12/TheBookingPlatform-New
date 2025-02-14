@@ -55,14 +55,37 @@ namespace TheBookingPlatform.Services
                 return context.Appointments.AsNoTracking().Where(x=>x.GoogleCalendarEventID == GCalEventID).FirstOrDefault();
             }
         }
-          public Appointment GetAppointmentWithGCalEventID(string GCalEventID,bool FromGCal)
+        public Appointment GetAppointmentWithGCalEventIDs(string busienss,string GCalEventID)
+        {
+            using (var context = new DSContext())
+            {
+                var appointment = context.Appointments
+                                    .AsNoTracking()
+                                    .Where(x => x.GoogleCalendarEventID != null  && x.Business == busienss)
+                                    .AsEnumerable() // Switch to in-memory processing
+                                    .FirstOrDefault(x => x.GoogleCalendarEventID.Split(',').Contains(GCalEventID));
+                return appointment;
+            }
+        }
+        public Appointment GetAppointmentWithGCalEventID(string Business,string GCalEventID,bool FromGCal)
         {
             using (var context = new DSContext())
             {
                 return context.Appointments.AsNoTracking().Where(x=>x.GoogleCalendarEventID == GCalEventID && x.FromGCAL == FromGCal).FirstOrDefault();
             }
         }
-
+        public Appointment GetAppointmentWithGCalEventIDs(string Business,string GCalEventID, bool FromGCal)
+        {
+            using (var context = new DSContext())
+            {
+                var appointment = context.Appointments
+                    .AsNoTracking()
+                    .Where(x => x.GoogleCalendarEventID != null && x.FromGCAL == FromGCal && x.Business == Business)
+                    .AsEnumerable() // Switch to in-memory processing
+                    .FirstOrDefault(x => x.GoogleCalendarEventID.Split(',').Contains(GCalEventID));
+                return appointment;
+            }
+        }
 
         public Appointment GetAppointments(string Business)
         {

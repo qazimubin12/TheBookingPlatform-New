@@ -163,11 +163,20 @@ namespace TheBookingPlatform.Controllers
             user.LastPaymentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
             UserManager.Update(user);
 
+            var package = PackageServices.Instance.GetPackage(PackageID);
+
+            var price = float.Parse(package.Price.ToString());
+            var vatpercentage = float.Parse(package.VAT.ToString());
+
+            var vatAmount = (vatpercentage / 100) * price;
+
+
             var payment = new Payment();
             payment.Business = user.Company;
             payment.LastPaidDate = DateTime.Now;
             payment.PackageID = PackageID;
             payment.UserID = UserID;
+            payment.Total = vatAmount;
             PaymentServices.Instance.SavePayment(payment);
 
 
@@ -358,6 +367,7 @@ namespace TheBookingPlatform.Controllers
                 string type = (string)parsedJson["type"];
                 string userId = (string)parsedJson["data"]["object"]["lines"]["data"][0]["metadata"]["UserID"];
                 int packageId = (int)parsedJson["data"]["object"]["lines"]["data"][0]["metadata"]["PackageID"];
+                float total = (float)parsedJson["data"]["object"]["amount_paid"];
                 // Handle different types of Stripe events
                 if (type == "invoice.payment_succeeded")
                 {
@@ -376,7 +386,8 @@ namespace TheBookingPlatform.Controllers
                             Business = user.Company,
                             LastPaidDate = DateTime.Now,
                             PackageID = packageId,
-                            UserID = userId
+                            UserID = userId,
+                            Total = total
                         };
                         PaymentServices.Instance.SavePayment(payment);
 

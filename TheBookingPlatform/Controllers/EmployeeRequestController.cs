@@ -874,126 +874,257 @@ namespace TheBookingPlatform.Controllers
                     {
                         // Deserialize the created calendar response
                         var modelofGoogle = JsonConvert.DeserializeObject<GoogleCalendarCreateModel>(responseData);
-
-                        // Retrieve employee
-                        var employee = EmployeeServices.Instance.GetEmployee(item.employeeID);
-                        employee.GoogleCalendarID = modelofGoogle.Id;
-                        employee.GoogleCalendarName = modelofGoogle.Summary;
-                        EmployeeServices.Instance.UpdateEmployee(employee);
-
-                        // Set up watch request (existing logic)
-                        using (var newclient = new HttpClient())
+                        var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(loggedInUser.Company);
+                        
+                        var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(item.employeeID);
+                        if (employeeRequest.Any(x => x.EmployeeID == item.employeeID))
                         {
-                            newclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
 
-                            var watchRequestBody = new
+                            if (requestedEmployee != null)
                             {
-                                id = Guid.NewGuid().ToString(), // A unique ID for this channel
-                                type = "web_hook",
-                                address = $"https://app.yourbookingplatform.com/Booking/TestingGoogleToYBP", // Your webhook endpoint
-                                @params = new
-                                {
-                                    ttl = "2147483647" // Max integer value (2^31 - 1 seconds, approx 68 years)
-                                }
-                            };
-
-                            var newcontent = new StringContent(JsonConvert.SerializeObject(watchRequestBody), Encoding.UTF8, "application/json");
-                            var newrequestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events/watch";
-                            var newresponse = await newclient.PostAsync(newrequestUrl, newcontent);
-                            var responseBody = await newresponse.Content.ReadAsStringAsync();
-
-                            if (newresponse.IsSuccessStatusCode)
+                                requestedEmployee.GoogleCalendarID = modelofGoogle.Id;
+                                requestedEmployee.WatchName = modelofGoogle.Summary;
+                                requestedEmployee.Business = loggedInUser.Company;
+                                RequestedEmployeeServices.Instance.UpdateRequestedEmployee(requestedEmployee);
+                            }
+                            else
                             {
-                                var history = new History
+                                requestedEmployee = new RequestedEmployee();
+                                requestedEmployee.GoogleCalendarID = modelofGoogle.Id;
+                                requestedEmployee.WatchName = modelofGoogle.Summary;
+                                requestedEmployee.Business = loggedInUser.Company;
+                                requestedEmployee.EmployeeID = item.employeeID;
+                                requestedEmployee.ExpirationDate = DateTime.Now.AddMonths(6);
+                                RequestedEmployeeServices.Instance.SaveRequestedEmployee(requestedEmployee);
+                            }
+
+                            using (var newclient = new HttpClient())
+                            {
+                                newclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
+
+                                var watchRequestBody = new
                                 {
-                                    Note = "Setup Successfully watched",
-                                    Business = googleCalendarnew.Business,
-                                    Date = DateTime.Now
+                                    id = Guid.NewGuid().ToString(), // A unique ID for this channel
+                                    type = "web_hook",
+                                    address = $"https://app.yourbookingplatform.com/Booking/TestingGoogleToYBP", // Your webhook endpoint
+                                    @params = new
+                                    {
+                                        ttl = "2147483647" // Max integer value (2^31 - 1 seconds, approx 68 years)
+                                    }
                                 };
-                                Channel channel = JsonConvert.DeserializeObject<Channel>(responseBody);
 
-                                employee.WatchChannelID = channel.Id;
-                                EmployeeServices.Instance.UpdateEmployee(employee);
-                                HistoryServices.Instance.SaveHistory(history);
+                                var newcontent = new StringContent(JsonConvert.SerializeObject(watchRequestBody), Encoding.UTF8, "application/json");
+                                var newrequestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{requestedEmployee.GoogleCalendarID}/events/watch";
+                                var newresponse = await newclient.PostAsync(newrequestUrl, newcontent);
+                                var responseBody = await newresponse.Content.ReadAsStringAsync();
 
-                                var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(employee.ID);
-                                if (employeeWatch != null)
+                                if (newresponse.IsSuccessStatusCode)
                                 {
+                                    var history = new History
+                                    {
+                                        Note = "Setup Successfully watched",
+                                        Business = googleCalendarnew.Business,
+                                        Date = DateTime.Now
+                                    };
+                                    Channel channel = JsonConvert.DeserializeObject<Channel>(responseBody);
+
+                                    requestedEmployee.WatchID = channel.Id;
+                                    RequestedEmployeeServices.Instance.UpdateRequestedEmployee(requestedEmployee);
+
+
+                                    HistoryServices.Instance.SaveHistory(history);
+
+
                                     //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
                                     long timestampSeconds = channel.Expiration / 1000;
 
                                     // Convert to DateTime
                                     DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
-                                    employeeWatch.ExpirationDate = dateTime;
-                                    employeeWatch.EmployeeID = employee.ID;
-                                    EmployeeWatchServices.Instance.UpdateEmployeeWatch(employeeWatch);
+                                    requestedEmployee.ExpirationDate = dateTime;
+                                    RequestedEmployeeServices.Instance.UpdateRequestedEmployee(requestedEmployee);
+
                                 }
                                 else
                                 {
-                                    employeeWatch = new EmployeeWatch();
-                                    //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
-                                    long timestampSeconds = channel.Expiration / 1000;
-
-                                    // Convert to DateTime
-                                    DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
-                                    employeeWatch.ExpirationDate = dateTime;
-                                    employeeWatch.EmployeeID = employee.ID;
-                                    EmployeeWatchServices.Instance.SaveEmployeeWatch(employeeWatch);
+                                    var history = new History
+                                    {
+                                        Note = "Failed to set up watch " + responseBody,
+                                        Business = googleCalendarnew.Business,
+                                        Date = DateTime.Now
+                                    };
+                                    HistoryServices.Instance.SaveHistory(history);
                                 }
                             }
-                            else
+
+                            // Step 2: Make the created calendar public
+                            using (var aclClient = new HttpClient())
                             {
-                                var history = new History
+                                aclClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
+
+                                var aclBody = new
                                 {
-                                    Note = "Failed to set up watch " + responseBody,
-                                    Business = googleCalendarnew.Business,
-                                    Date = DateTime.Now
+                                    role = "reader", // Public can view the calendar
+                                    scope = new
+                                    {
+                                        type = "default" // Refers to public
+                                    }
                                 };
-                                HistoryServices.Instance.SaveHistory(history);
+
+                                var aclContent = new StringContent(JsonConvert.SerializeObject(aclBody), Encoding.UTF8, "application/json");
+                                var aclUrl = $"https://www.googleapis.com/calendar/v3/calendars/{requestedEmployee.GoogleCalendarID}/acl";
+                                var aclResponse = await aclClient.PostAsync(aclUrl, aclContent);
+                                var aclResponseBody = await aclResponse.Content.ReadAsStringAsync();
+
+                                if (aclResponse.IsSuccessStatusCode)
+                                {
+                                    // Log success for making calendar public
+                                    var history = new History
+                                    {
+                                        Note = "Successfully made calendar public",
+                                        Business = googleCalendarnew.Business,
+                                        Date = DateTime.Now
+                                    };
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
+                                else
+                                {
+                                    // Log failure
+                                    var history = new History
+                                    {
+                                        Note = "Failed to make calendar public: " + aclResponseBody,
+                                        Business = googleCalendarnew.Business,
+                                        Date = DateTime.Now
+                                    };
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
                             }
                         }
-
-                        // Step 2: Make the created calendar public
-                        using (var aclClient = new HttpClient())
+                        else
                         {
-                            aclClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
+                            // Retrieve employee
+                            var employee = EmployeeServices.Instance.GetEmployee(item.employeeID);
+                            employee.GoogleCalendarID = modelofGoogle.Id;
+                            employee.GoogleCalendarName = modelofGoogle.Summary;
+                            EmployeeServices.Instance.UpdateEmployee(employee);
 
-                            var aclBody = new
+                            // Set up watch request (existing logic)
+                            using (var newclient = new HttpClient())
                             {
-                                role = "reader", // Public can view the calendar
-                                scope = new
+                                newclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
+
+                                var watchRequestBody = new
                                 {
-                                    type = "default" // Refers to public
+                                    id = Guid.NewGuid().ToString(), // A unique ID for this channel
+                                    type = "web_hook",
+                                    address = $"https://app.yourbookingplatform.com/Booking/TestingGoogleToYBP", // Your webhook endpoint
+                                    @params = new
+                                    {
+                                        ttl = "2147483647" // Max integer value (2^31 - 1 seconds, approx 68 years)
+                                    }
+                                };
+
+                                var newcontent = new StringContent(JsonConvert.SerializeObject(watchRequestBody), Encoding.UTF8, "application/json");
+                                var newrequestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/events/watch";
+                                var newresponse = await newclient.PostAsync(newrequestUrl, newcontent);
+                                var responseBody = await newresponse.Content.ReadAsStringAsync();
+
+                                if (newresponse.IsSuccessStatusCode)
+                                {
+                                    var history = new History
+                                    {
+                                        Note = "Setup Successfully watched",
+                                        Business = googleCalendarnew.Business,
+                                        Date = DateTime.Now
+                                    };
+                                    Channel channel = JsonConvert.DeserializeObject<Channel>(responseBody);
+
+                                    employee.WatchChannelID = channel.Id;
+                                    EmployeeServices.Instance.UpdateEmployee(employee);
+
+
+                                    HistoryServices.Instance.SaveHistory(history);
+
+                                    var employeeWatch = EmployeeWatchServices.Instance.GetEmployeeWatchByEmployeeID(employee.ID);
+                                    if (employeeWatch != null)
+                                    {
+                                        //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                                        long timestampSeconds = channel.Expiration / 1000;
+
+                                        // Convert to DateTime
+                                        DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                                        employeeWatch.ExpirationDate = dateTime;
+                                        employeeWatch.EmployeeID = employee.ID;
+                                        EmployeeWatchServices.Instance.UpdateEmployeeWatch(employeeWatch);
+                                    }
+                                    else
+                                    {
+                                        employeeWatch = new EmployeeWatch();
+                                        //employeeWatch.ExpirationDate = DateTime.Parse(channel.Expiration);
+                                        long timestampSeconds = channel.Expiration / 1000;
+
+                                        // Convert to DateTime
+                                        DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(timestampSeconds).DateTime;
+                                        employeeWatch.ExpirationDate = dateTime;
+                                        employeeWatch.EmployeeID = employee.ID;
+                                        employeeWatch.Business = googleCalendarnew.Business;
+                                        EmployeeWatchServices.Instance.SaveEmployeeWatch(employeeWatch);
+                                    }
                                 }
-                            };
-
-                            var aclContent = new StringContent(JsonConvert.SerializeObject(aclBody), Encoding.UTF8, "application/json");
-                            var aclUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/acl";
-                            var aclResponse = await aclClient.PostAsync(aclUrl, aclContent);
-                            var aclResponseBody = await aclResponse.Content.ReadAsStringAsync();
-
-                            if (aclResponse.IsSuccessStatusCode)
-                            {
-                                // Log success for making calendar public
-                                var history = new History
+                                else
                                 {
-                                    Note = "Successfully made calendar public",
-                                    Business = googleCalendarnew.Business,
-                                    Date = DateTime.Now
-                                };
-                                HistoryServices.Instance.SaveHistory(history);
+                                    var history = new History
+                                    {
+                                        Note = "Failed to set up watch " + responseBody,
+                                        Business = googleCalendarnew.Business,
+                                        Date = DateTime.Now
+                                    };
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
                             }
-                            else
+
+                            // Step 2: Make the created calendar public
+                            using (var aclClient = new HttpClient())
                             {
-                                // Log failure
-                                var history = new History
+                                aclClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", googleCalendarnew.AccessToken);
+
+                                var aclBody = new
                                 {
-                                    Note = "Failed to make calendar public: " + aclResponseBody,
-                                    Business = googleCalendarnew.Business,
-                                    Date = DateTime.Now
+                                    role = "reader", // Public can view the calendar
+                                    scope = new
+                                    {
+                                        type = "default" // Refers to public
+                                    }
                                 };
-                                HistoryServices.Instance.SaveHistory(history);
+
+                                var aclContent = new StringContent(JsonConvert.SerializeObject(aclBody), Encoding.UTF8, "application/json");
+                                var aclUrl = $"https://www.googleapis.com/calendar/v3/calendars/{employee.GoogleCalendarID}/acl";
+                                var aclResponse = await aclClient.PostAsync(aclUrl, aclContent);
+                                var aclResponseBody = await aclResponse.Content.ReadAsStringAsync();
+
+                                if (aclResponse.IsSuccessStatusCode)
+                                {
+                                    // Log success for making calendar public
+                                    var history = new History
+                                    {
+                                        Note = "Successfully made calendar public",
+                                        Business = googleCalendarnew.Business,
+                                        Date = DateTime.Now
+                                    };
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
+                                else
+                                {
+                                    // Log failure
+                                    var history = new History
+                                    {
+                                        Note = "Failed to make calendar public: " + aclResponseBody,
+                                        Business = googleCalendarnew.Business,
+                                        Date = DateTime.Now
+                                    };
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
                             }
+
                         }
                     }
                     else

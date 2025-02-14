@@ -368,7 +368,7 @@ namespace TheBookingPlatform.Controllers
 
             var invoices = InvoiceServices.Instance.GetInvoices(LoggedInUser.Company, appointmentIDs);
             TotalAmount = invoices.Select(x => x.GrandTotal).Sum();
-            var tip = invoices.Where(x => x.Tip).Sum(x => x.TipAmount);
+            var tip = invoices.Where(x => x.Tip && x.TipType == "Employee").Sum(x => x.TipAmount);
 
             float Amount = 0;
             string FinalAmount = "";
@@ -529,7 +529,7 @@ namespace TheBookingPlatform.Controllers
             }
 
             var invoices = InvoiceServices.Instance.GetInvoices(LoggedInUser.Company, appointmentIDs);
-            var tip = invoices.Where(x => x.Tip).Sum(x => x.TipAmount);
+            var tip = invoices.Where(x => x.Tip && x.TipType == "Employee").Sum(x => x.TipAmount);
 
             TotalAmount = invoices.Select(x => x.GrandTotal).Sum();
             float Amount = 0;

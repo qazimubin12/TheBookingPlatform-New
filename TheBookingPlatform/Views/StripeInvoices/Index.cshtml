@@ -1,0 +1,45 @@
+﻿@model TheBookingPlatform.ViewModels.StripeInvoicesListingViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">
+                Payments
+            </h2>
+            <div class="table-responsive">
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th>
+                                Package
+                            </th>
+                            <th>
+                                Amount
+                            </th>
+                            <th>
+                                Last Paid Date
+                            </th>
+                            <th>User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Payments)
+                        {
+                            <tr>
+                                <td>@item.Package.Name</td>
+                                <td>@item.Payment.Total @Model.Company.Currency</td>
+                                <td>@item.Payment.LastPaidDate.ToString("yyyy-MM-dd")</td>
+                                <td>@item.User.Name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
