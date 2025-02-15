@@ -93,6 +93,128 @@ namespace TheBookingPlatform.Controllers
         #endregion
         // GET: Appointment
 
+
+        public string DeleteFromGCal(Appointment appointment, GoogleCalendarIntegration gcal, string GoogleCalendarID, string EventID)
+        {
+
+            var url = $"https://www.googleapis.com/calendar/v3/calendars/{GoogleCalendarID}/events/{EventID}";
+            var finalUrl = new Uri(url);
+            RestClient restClient = new RestClient(finalUrl);
+            RestRequest request = new RestRequest();
+
+            request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+            request.AddHeader("Authorization", "Bearer " + gcal.AccessToken);
+            request.AddHeader("Accept", "application/json");
+
+            var response = restClient.Execute(request, Method.Delete);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                // Event deleted successfully
+                appointment.GoogleCalendarEventID = null;
+                AppointmentServices.Instance.UpdateAppointment(appointment);
+                return "Event deleted successfully.";
+            }
+            else
+            {
+                // Log the error in history
+                var history = new History
+                {
+                    Note = "Error while deleting event: " + response.Content,
+                    Business = "Error",
+                    Date = DateTime.Now
+                };
+
+                HistoryServices.Instance.SaveHistory(history);
+                return "Error deleting the event: " + response.Content;
+            }
+        }
+
+        public string UpdateOnGCal(Appointment appointment, GoogleCalendarIntegration gcal, string GoogleCalendarID, string EventID)
+        {
+
+            var company = CompanyServices.Instance.GetCompanyByName(gcal.Business);
+            var url = $"https://www.googleapis.com/calendar/v3/calendars/{GoogleCalendarID}/events/{EventID}";
+            var finalUrl = new Uri(url);
+            RestClient restClient = new RestClient(finalUrl);
+            RestRequest request = new RestRequest();
+
+            string concatenatedServices = "";
+            var servicesList = new List<ServiceFormModel>();
+            if (appointment.Service != null)
+            {
+                foreach (var item in appointment.Service.Split(',').ToList())
+                {
+                    var service = ServiceServices.Instance.GetService(int.Parse(item));
+                    servicesList.Add(new ServiceFormModel { ID = service.ID, Name = service.Name, Duration = service.Duration, Price = service.Price });
+                }
+            }
+
+            int year = appointment.Date.Year;
+            int month = appointment.Date.Month;
+            int day = appointment.Date.Day;
+            int startHour = appointment.Time.Hour;
+            int startMinute = appointment.Time.Minute;
+            int startSeconds = appointment.Time.Second;
+
+            int endHour = appointment.EndTime.Hour;
+            int endMinute = appointment.EndTime.Minute;
+            int endSeconds = appointment.EndTime.Second;
+
+            DateTime startDateNew = new DateTime(year, month, day, startHour, startMinute, startSeconds);
+            DateTime endDateNew = new DateTime(year, month, day, endHour, endMinute, endSeconds);
+
+            concatenatedServices = string.Join(",", servicesList.Select(x => x.Name).ToList());
+
+            var calendarEvent = new Event
+            {
+                Summary = "Updated Appointment at: " + appointment.Business,
+                Description = concatenatedServices + " Notes: " + appointment.Notes + " ID: " + appointment.ID,
+                Start = new EventDateTime
+                {
+                    DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                    TimeZone = company.TimeZone
+                },
+                End = new EventDateTime
+                {
+                    DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                    TimeZone = company.TimeZone
+                }
+            };
+
+            var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+
+            request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+            request.AddHeader("Authorization", "Bearer " + gcal.AccessToken);
+            request.AddHeader("Accept", "application/json");
+            request.AddHeader("Content-Type", "application/json");
+            request.AddParameter("application/json", model, ParameterType.RequestBody);
+
+            var response = restClient.Execute(request, Method.Put);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                // Event updated successfully
+                return "Event updated successfully.";
+            }
+            else
+            {
+                // Log the error in history
+                var history = new History
+                {
+                    Note = "Error while updating event: " + response.Content,
+                    Business = "Error",
+                    Date = DateTime.Now
+                };
+
+                HistoryServices.Instance.SaveHistory(history);
+                return "Error updating the event: " + response.Content;
+            }
+        }
+
         public JsonResult SendAppointmentReminder(int ID)
         {
             var apppointment = AppointmentServices.Instance.GetAppointment(ID);
