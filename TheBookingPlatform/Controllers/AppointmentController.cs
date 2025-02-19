@@ -36,6 +36,7 @@ using System.Data.Entity.Migrations.History;
 using Microsoft.Office.Interop.Word;
 using Stripe;
 using System.Security.Cryptography;
+using static TheBookingPlatform.Controllers.BookingController;
 
 
 namespace TheBookingPlatform.Controllers
@@ -101,7 +102,6 @@ namespace TheBookingPlatform.Controllers
             var finalUrl = new Uri(url);
             RestClient restClient = new RestClient(finalUrl);
             RestRequest request = new RestRequest();
-
             request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
             request.AddHeader("Authorization", "Bearer " + gcal.AccessToken);
             request.AddHeader("Accept", "application/json");
@@ -168,7 +168,7 @@ namespace TheBookingPlatform.Controllers
 
             var calendarEvent = new Event
             {
-                Summary = "Updated Appointment at: " + appointment.Business,
+                Summary = appointment.FromGCAL ? appointment.Notes : "Appointment at: " + appointment.Business,
                 Description = concatenatedServices + " Notes: " + appointment.Notes + " ID: " + appointment.ID,
                 Start = new EventDateTime
                 {
@@ -2838,7 +2838,8 @@ namespace TheBookingPlatform.Controllers
                 }
                 else
                 {
-                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
+                    UpdateOnGCal(appointment, googleCalendar, employee.GoogleCalendarID, appointment.GoogleCalendarEventID);
+                    //GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
                 }
             }
             #region MailingRegion
@@ -4903,6 +4904,7 @@ namespace TheBookingPlatform.Controllers
                                 var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(LoggedInUser.Company);
                                 if (googleCalendar != null && !googleCalendar.Disabled)
                                 {
+                                    
                                     mesage = GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
                                 }
 
@@ -5941,7 +5943,7 @@ namespace TheBookingPlatform.Controllers
                     RefreshToken(appointment.Business);
 
                     //employee is in same business as appointment
-                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
+                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(old.Business);
                     ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(old.ID);
                     var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(old.ID);
@@ -6002,7 +6004,7 @@ namespace TheBookingPlatform.Controllers
                 {
                     //employee is in same business as appointment
                     RefreshToken(appointment.Business);
-                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
+                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(newemp.Business);
                     ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
                     var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(newemp.ID);
@@ -6047,33 +6049,36 @@ namespace TheBookingPlatform.Controllers
 
                     RestClient restClient = new RestClient(finalUrl);
                     RestRequest request = new RestRequest();
-                    DateTime startDate = appointment.Date.Add(appointment.Time.TimeOfDay);
-                    DateTime endDate = appointment.Date.Add(appointment.EndTime.TimeOfDay);
+                    int year = appointment.Date.Year;
+                    int month = appointment.Date.Month;
+                    int day = appointment.Date.Day;
+                    int starthour = appointment.Time.Hour;
+                    int startminute = appointment.Time.Minute;
+                    int startseconds = appointment.Time.Second;
+
+                    int endhour = appointment.EndTime.Hour;
+                    int endminute = appointment.EndTime.Minute;
+                    int endseconds = appointment.EndTime.Second;
+
+                    DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
+                    DateTime EndDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
+
+                    DateTime currentDateTime = DateTime.Now;
+                    TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
 
 
-
-                    var calendarEvent = new Event
-                    {
-                        Summary = "Appointment at: " + loggedInUser.Company,
-                        Description = Services + " ID: " + appointment.ID,
-                        Start = new EventDateTime()
-                        {
-                            DateTime = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
-                            TimeZone = company.TimeZone
-                        },
-                        End = new EventDateTime()
-                        {
-                            DateTime = endDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
-                            TimeZone = company.TimeZone
-                        }
-                    };
-
-
+                    var calendarEvent = new Event();
+                    calendarEvent.Summary = "Appointment at: " + appointment.Business;
+                    calendarEvent.Description = Services + "ID: " + appointment.ID;
+                    var TimeZone = TimeZoneInfo.Local.Id;
+                    calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+                    calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
 
                     var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
                     {
                         ContractResolver = new CamelCasePropertyNamesContractResolver()
                     });
+
                     request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
                     request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
                     request.AddHeader("Accept", "application/json");
@@ -6086,7 +6091,7 @@ namespace TheBookingPlatform.Controllers
                         JObject jsonObj = JObject.Parse(response.Content);
                         if (appointment.GoogleCalendarEventID != null)
                         {
-                            appointment.GoogleCalendarEventID = appointment.GoogleCalendarEventID.Replace(appointment.GoogleCalendarEventID, jsonObj["id"]?.ToString());
+                            appointment.GoogleCalendarEventID = appointment.GoogleCalendarEventID.Replace(appointment.GoogleCalendarEventID,jsonObj["id"]?.ToString());
                         }
                         else
                         {
@@ -6152,24 +6157,31 @@ namespace TheBookingPlatform.Controllers
                 try
                 {
                     // Prepare event details
-                    DateTime startDate = appointment.Date.Add(appointment.Time.TimeOfDay);
-                    DateTime endDate = appointment.Date.Add(appointment.EndTime.TimeOfDay);
+                    int year = appointment.Date.Year;
+                    int month = appointment.Date.Month;
+                    int day = appointment.Date.Day;
+                    int starthour = appointment.Time.Hour;
+                    int startminute = appointment.Time.Minute;
+                    int startseconds = appointment.Time.Second;
 
-                    var calendarEvent = new Event
-                    {
-                        Summary = "Appointment at: " + loggedInUser.Company,
-                        Description = Services + " ID: " + appointment.ID,
-                        Start = new EventDateTime()
-                        {
-                            DateTime = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
-                            TimeZone = company.TimeZone
-                        },
-                        End = new EventDateTime()
-                        {
-                            DateTime = endDate.ToString("yyyy-MM-dd'T'HH:mm:ss"), // UTC with offset
-                            TimeZone = company.TimeZone
-                        }
-                    };
+                    int endhour = appointment.EndTime.Hour;
+                    int endminute = appointment.EndTime.Minute;
+                    int endseconds = appointment.EndTime.Second;
+
+                    DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
+                    DateTime EndDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
+
+                    DateTime currentDateTime = DateTime.Now;
+                    TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
+
+
+                    var calendarEvent = new Event();
+                    calendarEvent.Summary = "Appointment at: " + appointment.Business;
+                    calendarEvent.Description = Services + "ID: " + appointment.ID;
+                    var TimeZone = TimeZoneInfo.Local.Id;
+                    calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+                    calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+
 
                     var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
                     {
@@ -6199,15 +6211,10 @@ namespace TheBookingPlatform.Controllers
                                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                 {
                                     JObject jsonObj = JObject.Parse(response.Content);
-                                    if (appointment.GoogleCalendarEventID != null)
-                                    {
-                                        appointment.GoogleCalendarEventID = appointment.GoogleCalendarEventID.Replace(cc, jsonObj["id"]?.ToString());
-                                    }
-                                    else
-                                    {
-                                        appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
 
-                                    }
+                                    appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+
+
                                     AppointmentServices.Instance.UpdateAppointment(appointment);
 
                                     // Event successfully updated
@@ -6218,11 +6225,11 @@ namespace TheBookingPlatform.Controllers
                                     SaveErrorHistory(response.Content);
                                 }
                             }
-                            
+
                         }
                         else
                         {
-                        
+
 
                             var url = $"https://www.googleapis.com/calendar/v3/calendars/{item.Value}/events";
                             var finalUrl = new Uri(url);
@@ -6243,15 +6250,10 @@ namespace TheBookingPlatform.Controllers
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
                                 JObject jsonObj = JObject.Parse(response.Content);
-                                if(appointment.GoogleCalendarEventID != null)
-                                {
-                                    appointment.GoogleCalendarEventID = string.Join(",", appointment.GoogleCalendarEventID, jsonObj["id"]?.ToString());
-                                }
-                                else
-                                {
-                                    appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
 
-                                }
+                                appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+
+
                                 AppointmentServices.Instance.UpdateAppointment(appointment);
                                 // Event successfully updated
                             }
@@ -6826,8 +6828,8 @@ namespace TheBookingPlatform.Controllers
             var employee = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID);
             var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
             //delete previous one
-            RefreshToken(Appointment.Business);
-            var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(Appointment.Business);
+            RefreshToken(employee.Business);
+            var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
             ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
             var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(Appointment.Business);
             var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
@@ -6888,16 +6890,7 @@ namespace TheBookingPlatform.Controllers
                 {
                     if (item.Key != null && !item.Key.Disabled)
                     {
-                        var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + item.Value + "/events/" + Appointment.GoogleCalendarEventID);
-                        RestClient restClient = new RestClient(url);
-                        RestRequest request = new RestRequest();
-
-                        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                        request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
-                        request.AddHeader("Accept", "application/json");
-
-                        var response = restClient.Delete(request);
-                       
+                        DeleteFromGCal(Appointment, item.Key, item.Value, Appointment.GoogleCalendarEventID);
                     }
                
                 }
@@ -7636,6 +7629,7 @@ namespace TheBookingPlatform.Controllers
                             eventSwitch.SwitchStatus = true;
                             eventSwitch.Business = loggedInUser.Company;
                             EventSwitchServices.Instance.SaveEventSwitch(eventSwitch);
+                            EventSwitchID = eventSwitch.ID;
                         }
                         if (Occurences % daysOfWeek.Count() == 0)
                         {
@@ -7686,6 +7680,7 @@ namespace TheBookingPlatform.Controllers
                             eventSwitch.SwitchStatus = true;
                             eventSwitch.Business = loggedInUser.Company;
                             EventSwitchServices.Instance.SaveEventSwitch(eventSwitch);
+                            EventSwitchID = eventSwitch.ID;
                         }
                         if (Occurences % daysOfWeek.Count() == 0)
                         {

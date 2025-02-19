@@ -13,7 +13,7 @@ namespace TheBookingPlatform.Entities
     {
         public string Name { get; set; }
         public int IntervalCalendar { get; set; } = 15;
-        public string Password { get; set; }
+        public string Password { get; set; } 
         public string Role { get; set; }
         public string Company { get; set; }
         public bool IsActive { get; set; } = true;
