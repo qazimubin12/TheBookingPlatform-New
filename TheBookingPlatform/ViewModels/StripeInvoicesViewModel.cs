@@ -10,6 +10,7 @@ namespace TheBookingPlatform.ViewModels
     {
         public List<StripeInvoiceModel> Payments { get; set; }
         public Company Company { get; set; }
+        public User LoggedInUser { get;  set; }
     }
 
     public class StripeInvoiceModel

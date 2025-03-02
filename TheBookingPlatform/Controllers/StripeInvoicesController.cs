@@ -75,6 +75,7 @@ namespace TheBookingPlatform.Controllers
                 PaymentModels.Add(new StripeInvoiceModel { Payment = item, Package = package, User = user });
 
             }
+            model.LoggedInUser = LoggedInUser;
             model.Company = CompanyServices.Instance.GetCompanyByName(LoggedInUser.Company);
             model.Payments = PaymentModels;
             return View(model);

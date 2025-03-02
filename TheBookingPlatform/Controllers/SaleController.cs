@@ -109,7 +109,41 @@ namespace TheBookingPlatform.Controllers
 
             if (saleRequest.ID != 0)
             {
+                var sale = SaleServices.Instance.GetSale(saleRequest.ID);
+                if(sale != null)
+                {
+                    SaleServices.Instance.DeleteSale(saleRequest.ID);
+                }
+                if (saleRequest.SaleProducts != null)
+                {
+                    sale = new Sale();
+                    if (saleRequest.AppointmentID != 0)
+                    {
+                        sale.Type = "Via Appointment";
+                    }
+                    else
+                    {
+                        sale.Type = "Via Sale";
+                    }
+                    sale.Remarks = saleRequest.Remarks;
+                    sale.CustomerID = saleRequest.CustomerID;
+                    sale.AppointmentID = saleRequest.AppointmentID;
+                    sale.Business = LoggedInUser.Company;
+                    sale.Date = DateTime.Now;
+                    SaleServices.Instance.SaveSale(sale);
 
+                    foreach (var item in saleRequest.SaleProducts)
+                    {
+                        var saleProduct = new SaleProduct();
+                        saleProduct.ProductID = item.ProductID;
+                        saleProduct.Qty = item.Qty;
+                        saleProduct.Total = item.Total;
+                        saleProduct.Business = LoggedInUser.Company;
+                        saleProduct.ReferenceID = sale.ID;
+                        SaleProductServices.Instance.SaveSaleProduct(saleProduct);
+
+                    }
+                }
             }
             else
             {

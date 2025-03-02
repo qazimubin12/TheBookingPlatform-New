@@ -164,8 +164,21 @@ namespace TheBookingPlatform.ViewModels
         public string Business { get; set; }
         public string CustomerLastName { get; set; }
     }
+    public class LoyaltyCardModel2
+    {
+        public LoyaltyCardAssignment LoyaltyCardAssignment { get; set; }
+        public LoyaltyCard LoyaltyCard { get; set; }
+    } 
+    public class GiftCardModel
+    {
+        public GiftCardAssignment GiftCardAssignment { get; set; }
+        public GiftCard GiftCard { get; set; }
+    }
     public class AppointmentModel
     {
+        public string ReferralCode { get; set; }
+        public List<GiftCardModel> GiftCardCodes { get; set; }
+        public List<LoyaltyCardModel2> LoyaltyCards { get; set; }
         public int NoOfAppointments { get; set; }
         public int NoOfNoShows { get; set; }
         public bool NewCustomer { get; set; }
@@ -214,6 +227,9 @@ namespace TheBookingPlatform.ViewModels
         public bool IsRepeat { get;  set; }
         public bool FromGCAL { get;  set; }
         public List<Entities.Buffer> Buffers { get;  set; }
+        public float ReferralBalance { get;  set; }
+        public Company Company { get;  set; }
+        public bool BlockedEvent { get;  set; }
     }
 
     public class ServiceModelForCustomerProfile

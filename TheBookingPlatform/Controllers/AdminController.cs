@@ -20,6 +20,7 @@ using Notification = TheBookingPlatform.Entities.Notification;
 using System.ComponentModel.Design;
 using System.Configuration;
 using System.Web.Configuration;
+using Stripe;
 
 namespace TheBookingPlatform.Controllers
 {
@@ -159,7 +160,7 @@ namespace TheBookingPlatform.Controllers
 
                 var currentDate = StartDate;
                 var CurrentDatePrev = currentDate.AddDays(-numberOfDays);
-                List<Customer> LostClientsList = new List<Customer>();
+                List<Entities.Customer> LostClientsList = new List<Entities.Customer>();
                 if (user != null)
                 {
                     var customers = CustomerServices.Instance.GetCustomerWRTBusiness(user.Company);
@@ -358,9 +359,11 @@ namespace TheBookingPlatform.Controllers
         public ActionResult Dashboard(string StartDate = "", string EndDate = "", string FilterDuration = "")
         {
             AdminViewModel model = new AdminViewModel();
-
             var user = UserManager.FindById(User.Identity.GetUserId());
             model.SignedInUser = user;
+          
+
+
             if (model.SignedInUser != null)
             {
 
@@ -1217,7 +1220,7 @@ namespace TheBookingPlatform.Controllers
             var filteredAppointments = servicesAll.Where(x => x.FromGCAL == false).Select(x => x.CustomerID).Distinct().ToList();
             int TotalNewClients = 0;
             int ReturnedClients = 0;
-            var LostClientsList = new List<Customer>();
+            var LostClientsList = new List<Entities.Customer>();
             int LostClients = 0;
             DateTime thirtyDaysAgo = StartDate.AddDays(-30);
 

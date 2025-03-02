@@ -12,6 +12,7 @@ namespace TheBookingPlatform.Entities
         public int PackageID { get; set; }
         public DateTime LastPaidDate { get; set; }
         public float Total { get; set; }
-
+        public string SubcriptionID { get; set; }
+        public string ProductID { get; set; }
     }
 }

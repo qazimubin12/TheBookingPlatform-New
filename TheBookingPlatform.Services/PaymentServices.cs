@@ -36,6 +36,14 @@ namespace TheBookingPlatform.Services
 
             }
         }
+        public List<Payment> GetPayment()
+        {
+            using (var context = new DSContext())
+            {
+                return context.Payments.OrderBy(x => x.LastPaidDate).ToList();
+
+            }
+        }
         public List<Payment> GetPaymentWRTBusiness(string Business)
         {
             using (var context = new DSContext())

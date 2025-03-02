@@ -697,7 +697,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                     emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                     emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                     emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                     emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                     emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -830,7 +830,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                     //emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                     //emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                     emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                     //emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                     //emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -2441,7 +2441,7 @@ namespace TheBookingPlatform.Controllers
                 emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                 //emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                 //emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                 //emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
 
                 emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
@@ -3311,7 +3311,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                     //emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                     //emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                     emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                     //emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                     //emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -3467,7 +3467,7 @@ namespace TheBookingPlatform.Controllers
                 emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                 //emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                 //emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                 emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                 //emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                 //emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -3915,7 +3915,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                     emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                     emailBody = emailBody.Replace("{{Customer_initial}}", customer.Gender == "Male" ? "Mr." : "Ms.");
-                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                     emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                     emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm"));
                     emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
@@ -4462,7 +4462,7 @@ namespace TheBookingPlatform.Controllers
                                 emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                                 emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                                 emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                                 emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                                 emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                                 emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -4537,7 +4537,7 @@ namespace TheBookingPlatform.Controllers
                             emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                             emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                             emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                            emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                            emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                             emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                             emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                             emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -4874,7 +4874,7 @@ namespace TheBookingPlatform.Controllers
                                 emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                                 emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                                 emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                                 emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                                 emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                                 emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -4938,7 +4938,7 @@ namespace TheBookingPlatform.Controllers
                             emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                             emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                             emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                            emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                            emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                             emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                             emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                             emailBody = emailBody.Replace("{{employee}}", employee.Name);

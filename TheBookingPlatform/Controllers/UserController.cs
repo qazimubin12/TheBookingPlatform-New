@@ -155,7 +155,7 @@ namespace TheBookingPlatform.Controllers
         }
 
 
-        public ActionResult SavePayment(string UserID, int PackageID)
+        public ActionResult SavePayment(string UserID, int PackageID,string ProductID)
         {
             var user = UserManager.FindById(UserID);
             user.Package = PackageID;
@@ -177,6 +177,7 @@ namespace TheBookingPlatform.Controllers
             payment.PackageID = PackageID;
             payment.UserID = UserID;
             payment.Total = vatAmount;
+            payment.ProductID = ProductID;
             PaymentServices.Instance.SavePayment(payment);
 
 
@@ -329,7 +330,7 @@ namespace TheBookingPlatform.Controllers
                 }
             },
                 Mode = "subscription", // Use subscription mode
-                SuccessUrl = "http://app.yourbookingplatform.com" + Url.Action("SavePayment", "User", new { UserID = UserID, PackageID = PackageID }),
+                SuccessUrl = "http://app.yourbookingplatform.com" + Url.Action("SavePayment", "User", new { UserID = UserID, PackageID = PackageID,ProductID = product.Id }),
                 CancelUrl = "http://app.yourbookingplatform.com" + Url.Action("Login", "Account"),
                 Metadata = new Dictionary<string, string> // Add metadata
         {
@@ -365,6 +366,7 @@ namespace TheBookingPlatform.Controllers
                 JObject parsedJson = JObject.Parse(jsonBody);
                 bool isPaid = (bool)parsedJson["data"]["object"]["paid"];
                 string type = (string)parsedJson["type"];
+                string subscriptionId = (string)parsedJson["data"]["object"]["subscription"];
                 string userId = (string)parsedJson["data"]["object"]["lines"]["data"][0]["metadata"]["UserID"];
                 int packageId = (int)parsedJson["data"]["object"]["lines"]["data"][0]["metadata"]["PackageID"];
                 float total = (float)parsedJson["data"]["object"]["amount_paid"];
@@ -387,7 +389,8 @@ namespace TheBookingPlatform.Controllers
                             LastPaidDate = DateTime.Now,
                             PackageID = packageId,
                             UserID = userId,
-                            Total = total
+                            Total = total,
+                            SubcriptionID= subscriptionId
                         };
                         PaymentServices.Instance.SavePayment(payment);
 

@@ -37,6 +37,7 @@ using Microsoft.Office.Interop.Word;
 using Stripe;
 using System.Security.Cryptography;
 using static TheBookingPlatform.Controllers.BookingController;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 
 
 namespace TheBookingPlatform.Controllers
@@ -252,7 +253,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                     emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                     emailBody = emailBody.Replace("{{Customer_initial}}", customer.Gender == "Male" ? "Mr." : "Ms.");
-                    emailBody = emailBody.Replace("{{date}}", apppointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{date}}", apppointment.Date.ToString("MMMM dd, yyyy"));
                     emailBody = emailBody.Replace("{{time}}", apppointment.Time.ToString("H:mm:ss"));
                     emailBody = emailBody.Replace("{{company_name}}", company.Business);
                     emailBody = emailBody.Replace("{{company_email}}", company.NotificationEmail);
@@ -544,7 +545,7 @@ namespace TheBookingPlatform.Controllers
                 emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                 emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                 emailBody = emailBody.Replace("{{Customer_initial}}", customer.Gender == "Male" ? "Mr." : "Ms.");
-                emailBody = emailBody.Replace("{{date}}", waitingList.Date.ToString("yyyy-MM-dd"));
+                emailBody = emailBody.Replace("{{date}}", waitingList.Date.ToString("MMMM dd, yyyy"));
                 emailBody = emailBody.Replace("{{time}}", waitingList.Time.ToString("H:mm:ss"));
                 emailBody = emailBody.Replace("{{company_name}}", company.Business);
                 emailBody = emailBody.Replace("{{company_email}}", company.NotificationEmail);
@@ -1126,6 +1127,7 @@ namespace TheBookingPlatform.Controllers
                     int TotalDuration = 0;
                     var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
                     var serviceList = new List<ServiceModelForCustomerProfile>();
+                    bool BlockedEvent = item.Business != LoggedInUser.Company ? true : false;
                     if (item.Service != null)
                     {
                         var ServiceListCommand = item.Service.Split(',').ToList();
@@ -1180,7 +1182,8 @@ namespace TheBookingPlatform.Controllers
                             FromGCAL = item.FromGCAL,
                             ReminderSent = remindershouldbeSent && item.Reminder,
                             TotalDuration = TotalDuration,
-                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID)
+                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            BlockedEvent = BlockedEvent
                         });
                     }
                     else
@@ -1214,7 +1217,8 @@ namespace TheBookingPlatform.Controllers
                             Services = serviceList,
                             TotalDuration = TotalDuration,
                             ReminderSent = remindershouldbeSent && item.Reminder,
-                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID)
+                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            BlockedEvent = BlockedEvent
                         });
 
                     }
@@ -2406,6 +2410,32 @@ namespace TheBookingPlatform.Controllers
                  .Count();
                 appointmentModel.NoOfAppointments = NoOfAppointments;
                 appointmentModel.NoOfNoShows = NoOfNoShows;
+
+                appointmentModel.ReferralCode = customer.ReferralCode;
+                appointmentModel.ReferralBalance = customer.ReferralBalance;
+                appointmentModel.Company = CompanyServices.Instance.GetCompanyByName(appointmentModel.Business);
+                var giftcardassignments = GiftCardServices.Instance.GetGiftCardAssignmentsWRTBusiness(appointmentDetails.Business, customer.ID);
+                var giftcardassignemntmodel = new List<GiftCardModel>();
+                foreach (var item in giftcardassignments)
+                {
+                    var giftcard = GiftCardServices.Instance.GetGiftCard(item.GiftCardID);
+                    var expiresIn = (item.AssignedDate.AddDays(item.Days) - DateTime.Now).Days;
+                    item.Days = expiresIn;
+                    giftcardassignemntmodel.Add(new GiftCardModel { GiftCardAssignment = item, GiftCard = giftcard });
+                    appointmentModel.GiftCardCodes = giftcardassignemntmodel;
+                }
+                var Loyaltycardassignments = LoyaltyCardServices.Instance.GetLoyaltyCardAssignmentsWRTbBusinessAndCustomer(appointmentDetails.Business, customer.ID);
+                var Loyaltycardassignemntmodel = new List<LoyaltyCardModel2>();
+                foreach (var item in Loyaltycardassignments)
+                {
+                    
+                    var Loyaltycard = LoyaltyCardServices.Instance.GetLoyaltyCard(item.LoyaltyCardID);
+                    var expiresIn = (item.Date.AddDays(Loyaltycard.Days) - DateTime.Now).Days;
+                    item.Days = expiresIn;
+                    Loyaltycardassignemntmodel.Add(new LoyaltyCardModel2 { LoyaltyCardAssignment = item, LoyaltyCard = Loyaltycard });
+                    appointmentModel.LoyaltyCards = Loyaltycardassignemntmodel;
+                }
+
             }
             appointmentModel.IsPaid = appointmentDetails.IsPaid;
             appointmentModel.IsCancelled = appointmentDetails.IsCancelled;
@@ -2427,6 +2457,7 @@ namespace TheBookingPlatform.Controllers
                     }
                 }
             }
+            
             // Return the HTML to populate the modal
             return Json(appointmentModel, JsonRequestBehavior.AllowGet);
         }
@@ -2858,7 +2889,7 @@ namespace TheBookingPlatform.Controllers
                 historyNew.Business = appointment.Business;
                 historyNew.CustomerName = customer.FirstName + " " + customer.LastName;
                 historyNew.Date = DateTime.Now;
-                historyNew.Note = "Appointment was moved by " + LoggedInUser.Name + " Previous Date:" + oldDate.ToString("yyyy-MM-dd") + "Time was " + oldtime.ToString("HH:mm") + " to new Date: " + appointment.Date.ToString("yyyy-MM-dd") + " and New Time is: " + appointment.Time.ToString("HH:mm");
+                historyNew.Note = "Appointment was moved by " + LoggedInUser.Name + " Previous Date:" + oldDate.ToString("MMMM dd, yyyy") + "Time was " + oldtime.ToString("HH:mm") + " to new Date: " + appointment.Date.ToString("MMMM dd, yyyy") + " and New Time is: " + appointment.Time.ToString("HH:mm");
                 historyNew.EmployeeName = employee.Name;
                 historyNew.Name = "Moved";
                 historyNew.AppointmentID = appointment.ID;
@@ -2873,11 +2904,11 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                     emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                     emailBody = emailBody.Replace("{{Customer_initial}}", customer.Gender == "Male" ? "Mr." : "Ms.");
-                    emailBody = emailBody.Replace("{{date}}", appointmentAgain.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{date}}", appointmentAgain.Date.ToString("MMMM dd, yyyy")); 
                     emailBody = emailBody.Replace("{{time}}", appointmentAgain.Time.ToString("H:mm:ss"));
                     emailBody = emailBody.Replace("{{end_time}}", appointmentAgain.EndTime.ToString("H:mm"));
                     emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
-                    emailBody = emailBody.Replace("{{previous_date}}", oldDate.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{previous_date}}", oldDate.ToString("MMMM dd, yyyy"));
                     emailBody = emailBody.Replace("{{previous_time}}", oldtime.ToString("H:mm"));
                     emailBody = emailBody.Replace("{{employee}}", employee.Name);
                     emailBody = emailBody.Replace("{{employee_specialization}}", employee.Specialization);
@@ -2900,7 +2931,7 @@ namespace TheBookingPlatform.Controllers
             }
             #endregion
 
-            return Json(new { success = true, message = "Event updated successfully", End = appointmentAgain.EndTime.ToString("HH:mm"), Start = appointment.Date.ToString("yyyy-MM-dd"), Time = appointment.Time.ToString("HH:mm") }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, message = "Event updated successfully", End = appointmentAgain.EndTime.ToString("HH:mm"), Start = appointment.Date.ToString("MMMM dd, yyyy"), Time = appointment.Time.ToString("HH:mm") }, JsonRequestBehavior.AllowGet);
             //}
             //else
             //{
@@ -4125,7 +4156,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                     emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                     emailBody = emailBody.Replace("{{Customer_initial}}", customer.Gender == "Male" ? "Mr." : "Ms.");
-                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                     emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm"));
                     emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm"));
                     emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -4854,7 +4885,7 @@ namespace TheBookingPlatform.Controllers
                                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                                     emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                                     emailBody = emailBody.Replace("{{Customer_initial}}", customer.Gender == "Male" ? "Mr." : "Ms.");
-                                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                                     emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm"));
                                     emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm"));
                                     emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -5353,7 +5384,7 @@ namespace TheBookingPlatform.Controllers
                                 emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                                 emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                                 emailBody = emailBody.Replace("{{Customer_initial}}", "Dear");
-                                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                                emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                                 emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                                 emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                                 emailBody = emailBody.Replace("{{employee}}", employee.Name);
@@ -5422,7 +5453,7 @@ namespace TheBookingPlatform.Controllers
                             emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                             emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                             emailBody = emailBody.Replace("{{Customer_initial}}", customer.Gender == "Male" ? "Mr." : "Ms.");
-                            emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                            emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                             emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                             emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm"));
                             emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
@@ -6618,7 +6649,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{Customer_first_name}}", customer.FirstName);
                     emailBody = emailBody.Replace("{{Customer_last_name}}", customer.LastName);
                     emailBody = emailBody.Replace("{{Customer_initial}}", customer.Gender == "Male" ? "Mr." : "Ms.");
-                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("yyyy-MM-dd"));
+                    emailBody = emailBody.Replace("{{date}}", appointment.Date.ToString("MMMM dd, yyyy"));
                     emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                     emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm:ss"));
                     emailBody = emailBody.Replace("{{employee}}", employee.Name);

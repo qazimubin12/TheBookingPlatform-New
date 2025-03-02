@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Stripe;
+using Stripe.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,7 +148,12 @@ namespace TheBookingPlatform.Controllers
         {
             if (model.ID != 0)
             {
+                var priceChanged = false;
                 var Package = PackageServices.Instance.GetPackage(model.ID);
+                if(Package.Price != model.Price)
+                {
+                    priceChanged = true;
+                }
                 Package.ID = model.ID;
                 Package.Name = model.Name;
                 Package.Price = model.Price;
@@ -173,6 +180,35 @@ namespace TheBookingPlatform.Controllers
                     }
                 }
                 PackageServices.Instance.UpdatePackage(Package);
+                var payments = PaymentServices.Instance.GetPayment();
+                decimal amountInDollars = Package.Price; // Base price
+                decimal vatInDollars = Package.Price * (Package.VAT / 100); // VAT
+
+                long amountInCents = Convert.ToInt64(amountInDollars * 100);
+                long vatInCents = Convert.ToInt64(vatInDollars * 100);
+                if (priceChanged)
+                {
+
+                   
+                    foreach (var item in payments)
+                    {
+                        var priceService = new PriceService();
+                        var priceOptions = new PriceCreateOptions
+                        {
+                            UnitAmount = amountInCents + vatInCents, // Total price including VAT
+                            Currency = "eur",
+                            Recurring = new PriceRecurringOptions
+                            {
+                                Interval = "month",
+                                IntervalCount = 1
+                            },
+                            Product = item.ProductID
+                        };
+                        var price = priceService.Create(priceOptions); // ✅ This returns a new price
+
+                        UpdateSubscriptionPrice(item.SubcriptionID, price.Id);
+                    }
+                }
             }
             else
             {
@@ -207,6 +243,29 @@ namespace TheBookingPlatform.Controllers
         }
 
 
+        public void UpdateSubscriptionPrice(string subscriptionId, string newPriceId)
+        {
+            var subscriptionService = new SubscriptionService();
+
+            // Retrieve the existing subscription
+            var subscription = subscriptionService.Get(subscriptionId);
+
+            // Update the subscription with the new price
+            var updateOptions = new SubscriptionUpdateOptions
+            {
+                Items = new List<SubscriptionItemOptions>
+        {
+            new SubscriptionItemOptions
+            {
+                Id = subscription.Items.Data[0].Id, // Keep the same subscription item ID
+                Price = newPriceId // Set the new price ID
+            }
+        },
+                ProrationBehavior = "create_prorations" // Handles price change prorations
+            };
+
+            subscriptionService.Update(subscriptionId, updateOptions);
+        }
 
 
 

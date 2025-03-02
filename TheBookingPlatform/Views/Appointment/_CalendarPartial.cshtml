@@ -284,6 +284,12 @@
         min-height: calc(100vh - 200px);
     }
 
+    .blocked-event {
+        background: repeating-linear-gradient( -45deg, rgba(255, 255, 0, 0.5), /* Yellow with 50% opacity */
+        rgba(255, 255, 0, 0.5) 10px, rgba(255, 255, 255, 0.5) 10px, /* White with 50% opacity */
+        rgba(255, 255, 255, 0.5) 20px );
+        color:black !important;
+    }
     .loading-spinner-overlay {
         display: none; /* Initially hidden */
         position: fixed;
@@ -1399,7 +1405,7 @@ else
                                 var customer = FromGCAL
                                     ? "Appointment from Google Calendar"
                                     : appointment.Services.some(x => x.Category === "ABSENSE") ? "Walk In" : title;
-
+                                var blockedEvent = appointment.BlockedEvent;                                    
                                 var customerPhone = appointment.MobileNumber || "";
                                 var notes = appointment.Notes ? appointment.Notes.replace("\r\n", "").replace("\n", " ") : "";
                                 var startDate = parseDotNetDate(appointment.Date);
@@ -1448,6 +1454,7 @@ else
                                 events.push({
                                     id: eventId,
                                     title: title,
+                                    blockedEvent: blockedEvent,
                                     content: serviceList,
                                     customer: customer,
                                     customerphone: customerPhone,
@@ -1580,7 +1587,7 @@ else
                 hour12: false
             },
             eventContent: function (arg) {
-
+                
                 showLoadingSpinner();
                 var clientDate = new Date();
                 var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
@@ -1595,10 +1602,13 @@ else
                 });
 
                 const timeString = arg.event.extendedProps.testingEnd;
-
+                var blocked = arg.event.extendedProps.blockedEvent;
+                
                 var eventContent = document.createElement('div');
                 eventContent.classList.add('fc-event-main');
-
+                if (blocked) {
+                    eventContent.classList.add('blocked-event');
+                }
                 var Buffers = arg.event.extendedProps.Buffers || [];
 
                 const ServiceIDs = arg.event.extendedProps.ServiceIDs || [];
@@ -1635,7 +1645,7 @@ else
 
                     var timeElement = document.createElement('div');
                     timeElement.classList.add('fc-time'); // Add the FullCalendar time class
-
+                    
                     if (arg.backgroundColor == "#5DAF4D") {
                         timeElement.classList.add('fc-time-green'); // Add the FullCalendar time class
                     }
@@ -1970,7 +1980,7 @@ else
                 }
                 else {
                     // When an event is clicked, open the modal and fetch appointment details from the controller
-                    debugger
+                    
                     var FromGCAL = calEvent.event.extendedProps.FromGCAL;
 
                     $.ajax({
@@ -2008,6 +2018,54 @@ else
                             $('#TotalDuration').val(appointmentDetails.TotalDuration + ' mins');
                             $("#NoOfVisits").text(appointmentDetails.NoOfAppointments);
                             $("#NoOfNoShows").text(appointmentDetails.NoOfNoShows);
+                            if (appointmentDetails.Customer != null) {
+                                let tableRows = '';
+                                $('#CardsBody').html("");
+
+                                tableRows += `
+                            <tr>
+    <td>Referral</td>
+    <td>${appointmentDetails.ReferralCode}</td>
+    <td>${parseFloat(appointmentDetails.ReferralBalance).toFixed(2)} ${appointmentDetails.Company.Currency}</td>
+    <td>N/A</td>
+</tr>`;
+                                // Add Gift Card Data to Table
+                                if (appointmentDetails.GiftCardCodes && appointmentDetails.GiftCardCodes.length > 0) {
+                                    appointmentDetails.GiftCardCodes.forEach(function (giftCard) {
+                                        tableRows += `
+                
+                <tr>
+                    <td>Gift Card</td>
+                    <td>${giftCard.GiftCardAssignment.AssignedCode}</td>
+<td>${parseFloat(giftCard.GiftCardAssignment.Balance).toFixed(2)} ${appointmentDetails.Company.Currency}</td>
+
+                    <td>${giftCard.GiftCardAssignment.Days > 0 ? giftCard.GiftCardAssignment.Days +`Days`:`Expired`}</td >
+                </tr>`;
+                                    });
+                                }
+
+                                // Add Loyalty Card Data to Table
+                                if (appointmentDetails.LoyaltyCards && appointmentDetails.LoyaltyCards.length > 0) {
+                                    appointmentDetails.LoyaltyCards.forEach(function (loyaltyCard) {
+                                        tableRows += `
+                <tr>
+                    <td>Loyalty Card</td>
+                    <td>${loyaltyCard.LoyaltyCardAssignment.CardNumber}</td>
+<td>${parseFloat(loyaltyCard.LoyaltyCardAssignment.CashBack).toFixed(2)} ${appointmentDetails.Company.Currency}</td>
+    <td>${loyaltyCard.LoyaltyCardAssignment.Days > 0 ? loyaltyCard.LoyaltyCardAssignment.Days +`Days` : `Expired`}</td >
+
+                </tr>`;
+                                    });
+                                }
+
+                                // Check if no data is present
+                                if (tableRows === '') {
+                                    tableRows = '<tr><td colspan="5">No Gift Cards or Loyalty Cards Available</td></tr>';
+                                }
+
+                                // Insert rows into the table
+                                $('#CardsBody').append(tableRows);
+                            }
                             var paramValue = "your_parameter_value";
                             var AppID = calEvent.event.id;
                             // Generate the URL with the parameter using Url.Action
@@ -2049,7 +2107,7 @@ else
                                 $("#Popupservice").text("Events:")
                                 $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + eventEditURl + "'");
                                 $("#CallCustomerButton").hide();
-                                $('#HalfSideDetails').removeClass('col-md-12').addClass('col-md-8');
+                                //$('#HalfSideDetails').removeClass('col-md-12').addClass('col-md-8');
                                 $('#HalfSideDetails2').show();
                             }
                             else if (FromGCAL) {
@@ -2064,7 +2122,7 @@ else
                                 $("#EditAppointmentBtn").hide();
                                 $("#SendReminderBtn").hide();
                                 $("#CallCustomerButton").hide();
-                                $('#HalfSideDetails').removeClass('col-md-8').addClass('col-md-12');
+                                //$('#HalfSideDetails').removeClass('col-md-8').addClass('col-md-12');
                                 $('#HalfSideDetails2').hide();
 
                             }
@@ -2088,7 +2146,7 @@ else
                                 $("#moreButton").show();
                                 $("#CustomerEmailROW").show();
                                 $("#SendReminderBtn").show();
-                                $('#HalfSideDetails').removeClass('col-md-12').addClass('col-md-8');
+                                //$('#HalfSideDetails').removeClass('col-md-12').addClass('col-md-8');
                                 $('#HalfSideDetails2').show();
 
                             }
@@ -2129,6 +2187,13 @@ else
             },
             eventDragStart: function (event, delta, revertFunc) {
 
+                var blocked = event.event.extendedProps.blockedEvent;
+                
+                if (blocked) {
+                    alert("Cannot Move this Appointment");
+                    location.reload();
+                    revertFunc();
+                }
                 if (event.event.backgroundColor == "#5DAF4D") {
                     alert("Cannot Move this Appointment");
                     location.reload();
@@ -2161,47 +2226,53 @@ else
                     location.reload();
                     revertFunc();
                 } else {
+                    var blocked = event.event.extendedProps.blockedEvent;
+                    if (!blocked) {
+                        // Display a confirmation dialog
+                        var userConfirmed = confirm("Do you want to update this event?");
 
-                    // Display a confirmation dialog
-                    var userConfirmed = confirm("Do you want to update this event?");
-
-                    if (userConfirmed) {
-                        // Send an Ajax request to update the event date and time
-                        $.ajax({
-                            url: '@Url.Action("UpdateAppointment", "Appointment")', // Replace with your controller and action
-                            data: eventData,
-                            type: 'POST', // Use POST or PUT depending on your API
-                            dataType: 'json',
-                            beforeSend: function () {
-                                // Show loading spinner before the AJAX request is sent
-                                showLoadingSpinner();
-                            },
-                            success: function (response) {
-                                debugger
-                                if (response.success) {
-                                    // Event updated successfully
-                                    showSuccessAlert();
-                                } else {
-                                    // Handle error if the update fails
+                        if (userConfirmed) {
+                            // Send an Ajax request to update the event date and time
+                            $.ajax({
+                                url: '@Url.Action("UpdateAppointment", "Appointment")', // Replace with your controller and action
+                                data: eventData,
+                                type: 'POST', // Use POST or PUT depending on your API
+                                dataType: 'json',
+                                beforeSend: function () {
+                                    // Show loading spinner before the AJAX request is sent
+                                    showLoadingSpinner();
+                                },
+                                success: function (response) {
+                                    debugger
+                                    if (response.success) {
+                                        // Event updated successfully
+                                        showSuccessAlert();
+                                    } else {
+                                        // Handle error if the update fails
+                                        revertFunc(); // Revert the event to its original position
+                                    }
+                                },
+                                error: function (error) {
+                                    // Handle error if the AJAX request fails
+                                    console.error('Error updating event:', error);
                                     revertFunc(); // Revert the event to its original position
+                                },
+                                complete: function () {
+                                    // Hide loading spinner once the AJAX request is completed
+                                    hideLoadingSpinner();
+
                                 }
-                            },
-                            error: function (error) {
-                                // Handle error if the AJAX request fails
-                                console.error('Error updating event:', error);
-                                revertFunc(); // Revert the event to its original position
-                            },
-                            complete: function () {
-                                // Hide loading spinner once the AJAX request is completed
-                                hideLoadingSpinner();
+                            });
 
-                            }
-                        });
-
+                        }
+                        else {
+                            // If the user cancels the update, revert the event to its original position
+                            revertFunc();
+                        }
                     }
                     else {
-                        // If the user cancels the update, revert the event to its original position
                         revertFunc();
+
                     }
                 }
             },

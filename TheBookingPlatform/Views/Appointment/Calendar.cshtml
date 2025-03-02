@@ -187,7 +187,7 @@
 
 
 <div id="appointmentModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" style="width:90%;" role="document">
+    <div class="modal-dialog modal-xl" style="width:90%;" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 id="PopupTitle" style="font-weight:600;" class="modal-title">Appointment Details</h5>
@@ -197,7 +197,7 @@
                 <div id="appointmentDetails">
 
                     <div class="row">
-                        <div id="HalfSideDetails" class="col-md-8">
+                        <div id="HalfSideDetails" class="col-md-6">
 
                             <div style="margin-left:0px !important; " class="row">
                                 <div class="col-md-6">
@@ -250,7 +250,7 @@
 
                                     <div style="display: flex; align-items: center;" class="row">
                                         <label style="margin-right:10px;">Services:</label>
-                                        <select id="Services" class="form-control choices__input">
+                                        <select id="Services" class="form-select">
                                         </select>
                                     </div>
                                 </div>
@@ -295,7 +295,7 @@
                             </div>
                         </div>
 
-                        <div id="HalfSideDetails2" class="col-md-4">
+                        <div id="HalfSideDetails2" class="col-md-6">
                             <div class="row">
                                 <h5 class="modal-title"><b>Summary of Customer</b></h5>
                             </div>
@@ -306,6 +306,31 @@
                             <div class="row">
                                 <span>No Shows:</span>
                                 <span id="NoOfNoShows"></span>
+                            </div>
+                          
+                            <div class="row">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Type
+                                                </th>
+                                                <th>
+                                                    Code
+                                                </th>
+                                                <th>
+                                                    Balance
+                                                </th>
+                                                <th>
+                                                    Expires In
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="CardsBody">
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
