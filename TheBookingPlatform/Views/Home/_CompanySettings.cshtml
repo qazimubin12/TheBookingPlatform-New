@@ -55,7 +55,7 @@
                             <label class="w-100">
                                 Business Name
                             </label>
-                            <input value="@Model.Company.Business" class="form-control" placeholder="Enter Business Name..." type="text" name="Business" required />
+                            <input value="@Model.Company.Business" class="form-control" placeholder="Enter Business Name..." type="text" name="Business" id="Business" required />
                         </div>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
                         <select class="form-control choices__input" name="CountryName" id="CountryName">
                             @foreach (var item in Model.Countries)
                             {
-                                if (item == Model.Company.CountryName)
+                                if (item == Model.Company.CountryName || item == "Netherlands")
                                 {
                                     <option value="@item" selected>@item</option>
                                 }
@@ -159,7 +159,7 @@
                         <select class="form-control choices__input" name="Currency" id="Currency">
                             @foreach (var item in Model.Currencies)
                             {
-                                if (Model.Company.Currency == item.Abbreviation)
+                                if (Model.Company.Currency == item.Abbreviation || item.Abbreviation == "EUR")
                                 {
                                     <option selected value="@item.Abbreviation">@item.Name @item.Symbol</option>
                                 }
@@ -413,7 +413,7 @@
                         <select class="form-control choices__input" name="TimeZone" id="TimeZone">
                             @foreach (var item in Model.TimeZones)
                             {
-                                if (item.Trim() == Model.Company.TimeZone.Trim())
+                                if (item.Trim() == Model.Company.TimeZone.Trim() || item == "Europe/Amsterdam")
                                 {
                                     <option selected value="@item">@item</option>
                                 }
@@ -681,6 +681,14 @@
 <script>
 
 
+    $("#Business").on("input", function () {
+        var invalidChars = /[<>*%:&\\?]/g;
+
+        if (invalidChars.test($(this).val())) {
+            alert("Special characters are not allowed!");
+            $(this).val($(this).val().replace(invalidChars, ''));
+        }
+    });
 
     function showSuccessAlert() {
         Swal.fire({

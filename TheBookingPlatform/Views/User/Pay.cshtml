@@ -135,7 +135,17 @@
         <div class="full-page login-page" filter-color="black" data-image="~/Content/MainTemplate/assets/img/login.jpeg">
             <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
             <div class="content">
-                <h4 class="text-center" style="color:white">Kindly Pay for your package.</h4>
+                @if (Model.IsUpgrading != null && Model.IsUpgrading != "")
+                {
+
+                    <h4 class="text-center" style="color:white">Upgrade your package.</h4>
+
+                }
+                else
+                {
+
+                    <h4 class="text-center" style="color:white">Kindly Pay for your package.</h4>
+                }
                 <h6 class="text-center" style="color:white">Please wait till Login Screen, after payment for smooth process handling.</h6>
                 <div class="container">
                     <div class="row">

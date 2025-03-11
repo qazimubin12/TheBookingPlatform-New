@@ -103,12 +103,6 @@
                                 </a>
                             </li>
 
-                            <li id="Reviews" class="nav-item">
-                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
-                                    Reviews
-                                </a>
-                            </li>
-
 
 
 
@@ -133,11 +127,6 @@
 
 
 
-                            <li id="OpeningHours" class="nav-item">
-                                <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#openinghours-2" role="tab" aria-controls="opening-hours" aria-selected="false">
-                                    Opening Hours
-                                </a>
-                            </li>
 
 
 
@@ -152,32 +141,18 @@
                             if (inTrial == "No")
                             {
                                 @*if (package.Split(',').Contains("Employees"))
-                {
+                    {
 
 
-                    <li id="Employees" class="nav-item">
-                        <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="true">
-                            Emloyees
-                        </a>
-                    </li>
+                        <li id="Employees" class="nav-item">
+                            <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="true">
+                                Emloyees
+                            </a>
+                        </li>
 
 
-                }*@
-                                if (package.Split(',').Contains("Reviews"))
-                                {
-
-
-                                    <li id="Reviews" class="nav-item">
-                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
-                                            Reviews
-                                        </a>
-                                    </li>
-
-
-
-
-                                }
-
+                    }*@
+                               
                                 if (package.Split(',').Contains("Logs"))
                                 {
 
@@ -204,12 +179,7 @@
 
 
 
-                                <li id="Reviews" class="nav-item">
-                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
-                                        Reviews
-                                    </a>
-                                </li>
-
+                             
 
                                 <li id="Logs" class="nav-item">
                                     <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#logs-2" role="tab" aria-controls="logs" aria-selected="false">
@@ -258,18 +228,7 @@
                                     </li>
 
                                 }
-                                if (package.Split(',').Contains("Reviews"))
-                                {
-
-                                    <li id="Reviews" class="nav-item">
-                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
-                                            Reviews
-                                        </a>
-                                    </li>
-
-
-
-                                }
+                               
                                 if (package.Split(',').Contains("Logs"))
                                 {
                                     <li id="Logs" class="nav-item">
@@ -299,19 +258,7 @@
                                     </li>
 
                                 }
-                                if (package.Split(',').Contains("Opening Hours"))
-                                {
-
-
-                                    <li id="OpeningHours" class="nav-item">
-                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#openinghours-2" role="tab" aria-controls="opening-hours" aria-selected="false">
-                                            Opening Hours
-                                        </a>
-                                    </li>
-
-
-
-                                }
+                               
                                 if (package.Split(',').Contains("Price Changes"))
                                 {
                                     <li id="PriceChange" class="nav-item">
@@ -336,12 +283,7 @@
                                     </a>
                                 </li>
 
-                                <li id="Reviews" class="nav-item">
-                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#reviews-1" role="tab" aria-controls="profile" aria-selected="false">
-                                        Reviews
-                                    </a>
-                                </li>
-
+                               
 
 
 
@@ -366,12 +308,6 @@
 
 
 
-                                <li id="OpeningHours" class="nav-item">
-                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#openinghours-2" role="tab" aria-controls="opening-hours" aria-selected="false">
-                                        Opening Hours
-                                    </a>
-                                </li>
-
 
 
                                 <li id="PriceChange" class="nav-item">
@@ -382,7 +318,6 @@
 
                             }
                         }
-
 
                     </ul>
                 </div>
@@ -526,7 +461,7 @@
         });
     });
 
-        $("#Reviews").click(function () {
+        @*$("#Reviews").click(function () {
             showLoadingSpinner();
             $.ajax({
                 url: '@Url.Action("Index", "Review")', // Replace with your controller and action names
@@ -543,7 +478,7 @@
                     hideLoadingSpinner();
                 }
             });
-        });
+        });*@
 
         $("#Logs").click(function () {
             showLoadingSpinner();

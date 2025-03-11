@@ -348,7 +348,9 @@ namespace TheBookingPlatform.Controllers
         {
             EmployeeActionViewModel model = new EmployeeActionViewModel();
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
-            var package = PackageServices.Instance.GetPackage(LoggedInUser.Package);
+            var company = CompanyServices.Instance.GetCompanyByName(LoggedInUser.Company);
+
+            var package = PackageServices.Instance.GetPackage(company.Package);
             var currentlyAlloted = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, "").Where(x => x.LinkedEmployee != LoggedInUser.Id).Count();
 
             if (ID != 0)

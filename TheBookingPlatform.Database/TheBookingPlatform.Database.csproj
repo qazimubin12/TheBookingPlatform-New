@@ -167,6 +167,26 @@
     <Compile Include="Migrations\202502271841128_productid.Designer.cs">
       <DependentUpon>202502271841128_productid.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503051727190_subscremarks.cs" />
+    <Compile Include="Migrations\202503051727190_subscremarks.Designer.cs">
+      <DependentUpon>202503051727190_subscremarks.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503051802235_newchangesinsubs.cs" />
+    <Compile Include="Migrations\202503051802235_newchangesinsubs.Designer.cs">
+      <DependentUpon>202503051802235_newchangesinsubs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503061803537_newhcanges.cs" />
+    <Compile Include="Migrations\202503061803537_newhcanges.Designer.cs">
+      <DependentUpon>202503061803537_newhcanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503070022048_removelastpaymentDate.cs" />
+    <Compile Include="Migrations\202503070022048_removelastpaymentDate.Designer.cs">
+      <DependentUpon>202503070022048_removelastpaymentDate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503070926371_ownercompany.cs" />
+    <Compile Include="Migrations\202503070926371_ownercompany.Designer.cs">
+      <DependentUpon>202503070926371_ownercompany.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -253,6 +273,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502271841128_productid.resx">
       <DependentUpon>202502271841128_productid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503051727190_subscremarks.resx">
+      <DependentUpon>202503051727190_subscremarks.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503051802235_newchangesinsubs.resx">
+      <DependentUpon>202503051802235_newchangesinsubs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503061803537_newhcanges.resx">
+      <DependentUpon>202503061803537_newhcanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503070022048_removelastpaymentDate.resx">
+      <DependentUpon>202503070022048_removelastpaymentDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503070926371_ownercompany.resx">
+      <DependentUpon>202503070926371_ownercompany.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

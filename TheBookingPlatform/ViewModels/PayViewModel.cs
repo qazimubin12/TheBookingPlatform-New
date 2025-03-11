@@ -10,5 +10,6 @@ namespace TheBookingPlatform.ViewModels
     {
         public User User { get; set; }
         public List<Package> Packages { get; set; }
+        public string IsUpgrading { get;  set; }
     }
 }

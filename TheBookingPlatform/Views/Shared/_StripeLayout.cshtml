@@ -1,0 +1,1191 @@
+﻿@using System.Security.Claims
+@{
+    var package = "";
+    var inTrial = "";
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    var claimsPrincipal = User as ClaimsPrincipal;
+
+    // Use traditional null checks
+    if (claimsPrincipal != null)
+    {
+        var claim = claimsPrincipal.FindAll("Package").Where(x => x.Value != "").FirstOrDefault();
+        if (claim != null)
+        {
+            package = claim.Value;
+        }
+        var InTrial = claimsPrincipal.FindAll("InTrial").Where(x => x.Value != "").FirstOrDefault();
+        if (InTrial != null)
+        {
+            inTrial = InTrial.Value;
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="~/Content/MainTemplate2/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="~/Content/TBPContent/v2color.png">
+    <title>
+        Your Booking Platform
+    </title>
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+    <!-- Nucleo Icons -->
+    <link href="~/Content/MainTemplate2/assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="~/Content/MainTemplate2/assets/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="~/Content/MainTemplate2/assets/css/material-dashboard.css?v=3.0.6" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    @*<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>*@
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="~/Content/MainTemplate2/assets/js/plugins/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
+    @*<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>*@
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/OneSignalSDKWorker.js')
+                .then(function (registration) {
+                    console.log('ServiceWorker registration successful with scope:', registration.scope);
+                }).catch(function (error) {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        } else {
+            console.warn('Service workers are not supported by this browser.');
+        }
+
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(function () {
+            window.OneSignal = window.OneSignal || [];
+            OneSignal.push(function () {
+                //OneSignal.init({
+                //    appId: "7bd124a0-dd61-43bf-82b3-23c469448c73",
+                //    safari_web_id: "web.onesignal.auto.0654afc0-ce06-4b31-9757-37165e976417",
+                //    notifyButton: {
+                //        enable: true, // Enables the notification subscription bell
+                //    },
+                //});
+
+            });
+        });
+        // Check if permission has already been granted or denied
+        if (localStorage.getItem('notificationPermission') !== 'granted') {
+            // Check current permission status
+            if (Notification.permission === 'granted') {
+                console.log('Notification permission already granted.');
+                localStorage.setItem('notificationPermission', 'granted');
+            } else if (Notification.permission !== 'denied') {
+                // If permission is not denied, request it
+                OneSignal.Notifications.requestPermission()
+                    .then((permission) => {
+                        if (permission === 'granted') {
+                            console.log('Notification permission granted.');
+                            localStorage.setItem('notificationPermission', 'granted');
+                        } else {
+                            console.log('Notification permission denied.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error requesting notification permission:', error);
+                    });
+            } else {
+                console.log('Notification permission was denied previously.');
+            }
+        } else {
+            console.log('Notification permission already granted (cached).');
+        }
+
+
+
+    </script>
+    <!-- Nepcha Analytics (nepcha.com) -->
+    <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
+    <style>
+        .ui-datepicker table th span {
+            font-weight: 600 !important;
+            margin-left: 6px;
+        }
+
+        .mini-navbar #calendar-block {
+            position: absolute;
+            top: 0;
+            left: 70px
+        }
+
+        .btn.btn-sm i, .btn-group-sm > .btn i {
+            font-size: 1rem;
+        }
+
+        .autocomplete-suggestions {
+            width: 35% !important;
+        }
+
+        .loading-spinner-overlay {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 9999; /* Ensure it appears above all other content */
+            background-color: rgba(0,0,0,0.5); /* Transparent black */
+        }
+
+        #mainContainerflu .material-icons {
+            color: white !important;
+        }
+
+
+        .spinner {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .ui-datepicker {
+            width: 220px;
+            display: none;
+            padding: 0 1px 7px;
+            font-size: 14px;
+            border: none
+        }
+
+        nav.navbar-new.navbar-new-design .ui-datepicker {
+            padding: 0 1px
+        }
+
+        .ui-datepicker-prev {
+            float: left;
+            text-indent: -9999px;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            cursor: pointer;
+            margin-top: 4px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-right: 5px solid #dfe4ed
+        }
+
+        .ui-datepicker-next {
+            float: right;
+            text-indent: -9999px;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            cursor: pointer;
+            margin-top: 4px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid #dfe4ed
+        }
+
+
+        .menuicons {
+            height: 25px;
+        }
+
+        .choices .choices__list.choices__list--dropdown {
+            background: #fff;
+            width: 300px;
+        }
+
+        .ui-autocomplete {
+            z-index: 1051; /* Ensure it's above other Bootstrap components */
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+            .ui-autocomplete .ui-menu-item {
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+            }
+
+                .ui-autocomplete .ui-menu-item:hover {
+                    background: #f8f9fa;
+                }
+
+            .ui-autocomplete .ui-state-focus {
+                background: #e9ecef;
+            }
+
+        .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+            padding: 0px 8px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .ui-datepicker-next:hover {
+            background: 0 0;
+            border-left: 5px solid #fff
+        }
+
+        .ui-datepicker-prev:hover {
+            background: 0 0;
+            border-right: 5px solid #fff
+        }
+
+        .ui-datepicker-title {
+            height: 1%;
+            overflow: hidden;
+            text-align: center;
+            font-size: 14px;
+            color: #4a5054;
+            text-transform: none
+        }
+
+        .material-icons {
+            width: 30px;
+        }
+
+        .material-icons-round {
+            width: 30px;
+        }
+
+        .ui-datepicker-header {
+            overflow: hidden;
+            width: 212px;
+            margin: 0 0 6px;
+            background: 0 0
+        }
+
+        .ui-datepicker table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+            .ui-datepicker table th {
+                color: #a7b1c2;
+                font-weight: 600 !important;
+                padding-bottom: 5px
+            }
+
+                .ui-datepicker table th span {
+                    font-weight: 600 !important
+                }
+
+            .ui-datepicker table td {
+                text-align: center;
+                padding: 0
+            }
+
+        .ui-datepicker .ui-state-disabled {
+            color: #696e72;
+            background: 0 0
+        }
+
+        .ui-datepicker table a {
+            text-decoration: none;
+            color: gray !important;
+            float: left;
+            height: 24px;
+            width: 24px;
+            text-align: center;
+            padding-top: 2px;
+            border: none !important;
+            text-shadow: none !important;
+            line-height: normal !important;
+            font-weight: 600 !important;
+        }
+
+        .ui-datepicker table span {
+            height: 24px;
+            width: 24px;
+            border: none !important;
+            text-shadow: none !important;
+            line-height: normal !important;
+            font-weight: 400 !important;
+            float: left;
+            padding-top: 4px
+        }
+
+        #ui-datepicker-div.ui-datepicker table span {
+            background: #fff
+        }
+
+        #AutoCompletecustomers_2::placeholder {
+            margin-left: 5px;
+        }
+
+        #ui-datepicker-div.ui-datepicker .ui-state-disabled span {
+            color: #ccc
+        }
+
+        .ui-datepicker .not_work a {
+            color: #4a5054;
+            background: 0 0
+        }
+
+        .ui-datepicker .work a {
+            color: #a7b1c2;
+            background: 0 0
+        }
+
+        .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .ui-datepicker .ui-datepicker-current-day a {
+            border-radius: 20%;
+            background: #757575 !important;
+            color: #fff
+        }
+
+        .calendar-container .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .calendar-container .ui-datepicker .ui-datepicker-current-day a {
+            background: #FACA00 !important;
+            color: black;
+        }
+
+        #master_cal .ui-datepicker .ui-datepicker-calendar .ui-state-hover, #master_cal .ui-datepicker .ui-datepicker-current-day a {
+            background: 0 0 !important
+        }
+
+        /*  .calendar-container .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .calendar-container .ui-datepicker .ui-datepicker-current-day a {
+            background: #000 !important
+        }*/
+
+        .ui-datepicker table a.ui-state-default {
+            background: 0 0
+        }
+
+        li.nav-item {
+            margin: 0px 5px;
+        }
+
+
+        .ui-datepicker .ui-datepicker-today a {
+            color: #7092cc;
+            font-weight: 700 !important;
+            background: yellow;
+        }
+
+        .navbar-new.navbar-new-design .ui-datepicker .ui-datepicker-today a {
+            font-weight: 400 !important
+        }
+
+        .ui-datepicker-month, .ui-datepicker-year {
+            color: #a7b1c2;
+            font-weight: 700;
+            background: 0 0
+        }
+
+        .autocomplete-suggestion {
+            padding: 2px 5px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .autocomplete-no-suggestion {
+            padding: 2px 5px;
+        }
+
+        .autocomplete-selected {
+            background: #F0F0F0;
+        }
+
+        .autocomplete-suggestions strong {
+            font-weight: bold;
+            color: #000;
+        }
+
+
+        #mainContainerflu {
+            padding-left: 270px;
+        }
+
+        @@media (max-width: 1024px) {
+            #mainContainerflu {
+                padding-left: 0px;
+            }
+        }
+
+        .autocomplete-group {
+            padding: 2px 5px;
+            font-size: 16px;
+            color: #000;
+            display: block;
+            border-bottom: 1px solid #000;
+        }
+
+        /* Define the scrollbar thumb */
+        .autocomplete-suggestions::-webkit-scrollbar-thumb {
+            background-color: #999; /* Color of the thumb */
+            border-radius: 5px; /* Rounded corners for the thumb */
+        }
+
+            /* Define the scrollbar thumb on hover */
+            .autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+                background-color: #666; /* Color of the thumb on hover */
+            }
+
+        /* Define the scrollbar track on hover */
+        .autocomplete-suggestions::-webkit-scrollbar-track {
+            background-color: #FFF; /* Color of the track */
+        }
+
+        /* Define the scrollbar corner (optional) */
+        .autocomplete-suggestions::-webkit-scrollbar-corner {
+            background-color: #FFF; /* Color of the scrollbar corner */
+        }
+
+        /* .navbar-vertical.navbar-expand-xs .navbar-nav > .nav-item {
+            margin-top: 0.125rem;
+            background: white;
+        }*/
+
+        .navbar-vertical.navbar-expand-xs .navbar-nav .nav-link {
+            margin-left: 0px !important;
+            padding: 0.5rem 1rem !important;
+        }
+
+
+        .text-dark {
+            color: #262626 !important;
+            font-weight: 400 !important;
+        }
+
+        .bg-light {
+            background-color: white !important;
+            border: solid 1px lightgray !important;
+        }
+
+        .sidenav .navbar-brand {
+            padding-top: 1.5em !important;
+            padding-left: 1em !important;
+        }
+
+        .material-icons {
+            color: #8D8D8D !important;
+            font-size: 20px !important;
+        }
+
+        .material-icons-round {
+            color: #8D8D8D !important;
+        }
+
+        .sidenav .collapse .nav-item .nav-link.active {
+            color: #fff !important;
+            background-image: linear-gradient(195deg, #262626, #262626);
+        }
+
+        .navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapse .nav-item.active .nav-link.active, .navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapsing .nav-item.active .nav-link.active {
+            background-image: linear-gradient(195deg, #262626, #262626);
+            color: #fff !important;
+        }
+
+        button .material-icons {
+            color: white !important; /* Change to your desired color */
+        }
+
+        body {
+            font-family: sans-serif !important
+        }
+
+        h1, h2, h3, h3, h4, h5, h6, p, span, a, button, select, input, label, th, td {
+            font-family: sans-serif !important;
+        }
+
+
+        .choices .choices__list.choices__list--single .choices__item--selectable {
+            font-family: sans-serif !important
+        }
+    </style>
+</head>
+
+<body class="g-sidenav-show  bg-gray-200">
+    <div id="loadingSpinner" class="loading-spinner-overlay">
+        <div class="spinner"></div>
+        <h3 id="LoaderText" style="color: white; position: absolute; left: 36%; top: 60%;"></h3>
+
+    </div>
+    <aside style="z-index:55;" class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-2 fixed-start ms-2 bg-light ps" id="sidenav-main">
+        <div class="sidenav-header">
+            <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+            <a class="navbar-brand m-0" href="https://www.yourbookingplatform.com" target="_blank">
+                <img src="~/Content/TBPContent/v2blacklogo.png" class="navbar-brand-img h-100" alt="main_logo">
+                <span class="ms-1 font-weight-bold text-dark">Your Booking Platform</span>
+            </a>
+        </div>
+        <hr class="horizontal light mt-0 mb-2">
+        <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
+
+        </div>
+    </aside>
+    <nav style="z-index:1;" class="navbar navbar-main navbar-expand-lg position-sticky mt-3 top-1 px-0 mx-4 shadow-none border-radius-xl z-index-sticky" id="navbarBlur" data-scroll="true">
+        <div class="container-fluid py-1 px-3">
+            <nav aria-label="breadcrumb">
+
+            </nav>
+            <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
+                <a href="javascript:;" class="nav-link text-body p-0">
+                    <div class="sidenav-toggler-inner">
+                        <i class="sidenav-toggler-line"></i>
+                        <i class="sidenav-toggler-line"></i>
+                        <i class="sidenav-toggler-line"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                <div class="ms-md-auto d-flex align-items-center"></div>
+                <ul class="navbar-nav d-flex align-items-center justify-content-end gap-3 m-0 p-0">
+                    <li class="nav-item mb-2 mt-0">
+                        <a data-bs-toggle="collapse" href="#ProfileNav" class="nav-link text-dark" aria-controls="ProfileNav" role="button" aria-expanded="false">
+                            <span style="font-size:smaller;" target="_blank" href="http://www.yourbookingplatform.com" class="simple-text logo-mini">
+                                YBP
+                            </span>
+                            <span id="TextOfUserName" style="white-space:normal; display:block;" class="nav-link-text ms-2 ps-1">
+                                Maricio Gerak
+                            </span>
+
+                        </a>
+
+                        <input type="hidden" id="FINALDATEO" />
+
+                        <div class="collapse" id="ProfileNav" style="">
+                            <div class="collapse" id="ProfileNav" style="">
+                                <ul class="nav">
+                                    @if (inTrial == "Yes")
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" id="openModalBtn">
+                                                <span class="sidenav-mini-icon"> S </span>
+                                                <span class="sidenav-normal ms-3  ps-1"> Switch </span>
+                                            </a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        if (package.Split(',').Contains("Company Switch"))
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" id="openModalBtn">
+                                                    <span class="sidenav-mini-icon"> S </span>
+                                                    <span class="sidenav-normal ms-3  ps-1"> Switch </span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" href="@Url.Action("UserProfile","Account")">
+                                            <span class="sidenav-mini-icon"> MP </span>
+                                            <span class="sidenav-normal ms-3  ps-1"> My Profile </span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" style="cursor:pointer" onclick="logout()">
+                                            <span class="sidenav-mini-icon"> L </span>
+                                            <span class="sidenav-normal ms-3  ps-1"> Logout </span>
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                        </div>
+                    </li>
+                    <li class="nav-item mb-2 mt-0">
+                        <a class="nav-link text-dark" style=" padding-bottom: 0px !important; padding-top: 0px !important; margin-top: 0px !important; margin-bottom: 0px !important;">
+                            <span id="TextOfUser" style="width: 100%; white-space: normal; display: flex; justify-content: flex-start; margin-left: 30px !important; " class="nav-link-text ms-2 ps-1">
+                                V3 Testing
+                            </span>
+                        </a>
+                    </li>
+                    <hr class="horizontal light mt-0">
+
+                   
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+    <main class="main-content position-relative  border-radius-lg ps ps--active-y ">
+        <!-- Navbar -->
+        <!-- End Navbar -->
+        <div id="mainContainerflu" class="container-fluid py-2">
+            <a target="_self" href="#" id="GoToLink"></a>
+            <div id="myModal" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitle"></h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="modalDescription"></p>
+                            <div id="modalButtonContainer" style="display: none;">
+                                <a id="modalLinkButton" href="#" target="_blank" class="btn btn-primary">Go to Link</a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <form id="form"></form>
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Switch Organisation</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="exampleFormControlSelect1">Select Organisation</label>
+                                <select class="form-control " id="SelectedOrg">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" id="SwitchOrg" class="btn btn-sm btn-success">Switch Organisation</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+            {
+            }
+            @RenderBody()
+            <footer class="footer py-4  ">
+                <div class="container-fluid">
+
+                    <div class="row align-items-center justify-content-lg-between">
+                        <div class="col-lg-6 mb-lg-0 mb-4">
+                            <div class="copyright text-center text-sm text-muted text-lg-start">
+                                &copy;
+                                <script>document.write(new Date().getFullYear())</script>  Powered by <a href="https://www.yourbookingplatform.com">Your Booking Platform</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/core/popper.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/core/bootstrap.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <!--   Core JS Files   -->
+    <script src="~/Content/MainTemplate2/assets/js/plugins/smooth-scrollbar.min.js"></script>
+    <!-- Kanban scripts -->
+
+    <script src="~/Content/MainTemplate2/assets/js/plugins/chartjs.min.js"></script>
+    <script src="~/Content/MainTemplate2/assets/js/plugins/choices.min.js"></script>
+
+
+    <script>
+
+    </script>
+
+
+    <script type="text/javascript">
+
+        function UpdateUserRead(ID, Link,Title,Description) {
+            $.ajax({
+                url: '@Url.Action("UpdateUserRead", "Admin")',
+                type: 'POST',
+                data: { ID: ID },
+                success: function (data) {
+                    // If the Link does not start with http or https, prepend it
+                    if (!Link.startsWith('http://') && !Link.startsWith('https://')) {
+                        Link = 'https://' + Link;
+                    }
+
+                    // Set modal title and description
+                    $('#modalTitle').text(Title); // Set a title for the modal
+                    $('#modalDescription').text(Description);
+
+                    // Show or hide the button based on the Link
+                    if (Link) {
+                        $('#modalButtonContainer').show();
+                        $('#modalLinkButton').attr('href', Link);
+                    } else {
+                        $('#modalButtonContainer').hide();
+                    }
+
+                    // Display the modal
+                    $('#myModal').modal('show');
+
+                    hideLoadingSpinner(); // Hide any loading spinner if necessary
+                },
+                error: function (error) {
+                    console.error('Error fetching data');
+                    hideLoadingSpinner(); // Handle error scenario
+                }
+            });
+        }
+
+        function escapeString(str) {
+            return str
+                .replace(/'/g, "\\'") // Escape single quotes
+                .replace(/"/g, '\\"') // Escape double quotes
+                .replace(/\n/g, '\\n') // Escape newlines
+                .replace(/\r/g, '\\r'); // Escape carriage returns
+        }
+
+        function GetNotifications() {
+
+            $.ajax({
+                url: '@Url.Action("GetNotifications", "Admin")',
+                type: 'GET',
+                success: function (data) {
+                    var notifications = data.Notifications; // Replace with actual response structure if needed
+                    var notificationListHtml = '';
+                    var count = 0;
+                    notifications.forEach(function (notification) {
+                        if (notification.BG_Color == "UNREAD") {
+                            // Construct the HTML for each notification
+                            notificationListHtml += `
+        <li class="mb-2">
+            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}','${notification.Title}','${escapeString(notification.Description)} ')">
+                <div class="d-flex align-items-center py-1">
+                    <span class="material-icons">email</span>
+                    <div class="ms-2">
+                        <h6 class="text-sm font-weight-normal my-auto">
+                            ${notification.Title}
+                        </h6>
+                        <p class="text-muted">${notification.Date}</p>
+                    </div>
+                </div>
+            </span>
+        </li>
+    `;
+                            count++;
+                        } else {
+                            notificationListHtml += `
+        <li class="mb-2">
+            <span class="dropdown-item border-radius-md" onclick="UpdateUserRead(${notification.ID}, '${notification.Link}','${notification.Title}','${notification.Description}')">
+                <div class="d-flex align-items-center py-1">
+                    <span class="material-icons">drafts</span>
+                    <div class="ms-2">
+                        <h6 class="text-sm font-weight-normal my-auto">
+                            ${notification.Title}
+                        </h6>
+                        <p class="text-muted">${notification.Date}</p>
+                    </div>
+                </div>
+            </span>
+        </li>
+    `;
+
+                        }
+
+                        $("#unreadBadge").show();
+                    });
+
+                    // Append the generated HTML to the notification panel
+                    var notificationPanel = document.getElementById('notificationPanel');
+                    notificationPanel.innerHTML = notificationListHtml;
+                    $("#unreadcount").text(count);
+
+                    hideLoadingSpinner();
+                    // You might want to update the UI or perform other operations based on this count
+                },
+                error: function (error) {
+                    console.error('Error fetching opening hours count');
+                    hideLoadingSpinner();
+
+                    // Handle error scenarios here
+                }
+            });
+        }
+        function CheckOpeningHours() {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("GetOpeningHoursCount", "Admin")',
+                type: 'GET',
+                dataType: 'json',
+
+                success: function (data) {
+                    // Handle the response here
+                    var openingHoursCount = data.count;
+                    // You can perform actions based on the opening hours count
+                    if (openingHoursCount > 7) {
+                        $("#MainDatePickerContainer").hide();
+                    } else {
+                        $("#MainDatePickerContainer").show();
+
+                    }
+                    $("#TextOfUser").html(data.Company);
+                    $("#TextOfUserName").html(data.UserName);
+                    var companies = data.Companies;
+                    var dropdown = $("#SelectedOrg"); // Replace "yourDropdownID" with the actual ID of your dropdown
+                    dropdown.empty(); // Clear existing options
+
+                    $.each(companies, function (index, company) {
+                        dropdown.append($("<option></option>").attr("value", company.ID).text(company.Business));
+                    });
+
+
+                    hideLoadingSpinner();
+                    // You might want to update the UI or perform other operations based on this count
+                },
+                error: function (error) {
+                    console.error('Error fetching opening hours count');
+                    hideLoadingSpinner();
+
+                    // Handle error scenarios here
+                }
+            });
+
+        }
+        function CheckPayment() {
+            showLoadingSpinner();
+            $.ajax({
+                url: '@Url.Action("CheckPayment", "Admin")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // Handle the response here
+                    hideLoadingSpinner();
+                    if (data.success) {
+
+                    } else {
+                    }
+                    // You might want to update the UI or perform other operations based on this count
+                },
+                error: function (error) {
+                    console.error('Error fetching opening hours count');
+                    hideLoadingSpinner();
+
+                    // Handle error scenarios here
+                }
+            });
+
+        }
+    $("#SwitchOrg").click(function () {
+        var Business = $("#SelectedOrg").val();
+
+        showLoadingSpinner();
+        $.ajax({
+            url: '@Url.Action("SwitchOrganisation", "Admin")',
+            type: 'POST',
+            data: { Business: Business },
+
+            success: function (data) {
+                // Handle the response here
+
+                if (data.success)
+                {
+                    var Email = data.Email;
+                    var KIKO = data.KIKO;
+                    var goToLink = '@Url.Action("AutoLogin", "Account", new { Email = "__Email__"})'
+                        .replace("__Email__", encodeURIComponent(Email))
+
+                    // Set the href attribute of the anchor tag
+                    $("#GoToLink").attr("href", goToLink);
+
+                    // Optionally, trigger a click event on the link
+                    $("#GoToLink")[0].click();
+
+                }
+                else {
+                    alert(data.Message);
+                    hideLoadingSpinner();
+                }
+                // You might want to update the UI or perform other operations based on this count
+            },
+            error: function (error) {
+                hideLoadingSpinner();
+                alert("Fail");
+
+                // Handle error scenarios here
+            }
+        });
+    });
+
+    function logout() {
+        clearCredentialsMain();
+        document.getElementById('logoutForm').submit();
+    }
+    function clearCredentialsMain() {
+        localStorage.removeItem('Mainemail');
+        localStorage.removeItem('Mainpassword');
+    }
+        document.addEventListener("DOMContentLoaded", function () {
+
+            initializeChoices();
+        });
+
+        function initializeChoices() {
+            var elements = document.getElementsByClassName('choices__input');
+            if (elements.length > 0) {
+                for (var i = 0; i < elements.length; i++) {
+                    new Choices(elements[i], {
+                        searchEnabled: false,
+                        itemSelectText: ''
+                    });
+                }
+            }
+        }
+        $(document).ready(function () {
+
+
+            // Initialize the Datepicker
+            function getBrowserLanguage() {
+                return navigator.language || navigator.userLanguage || 'en-US';
+            }
+            // Get all elements with the class name 'choices__input'
+
+
+            // Set the language and format based on the browser's language
+            var browserLanguage = getBrowserLanguage().toLowerCase();
+            var dateFormat = (browserLanguage.startsWith('ru')) ? 'dd.mm.yyyy' : 'mm/dd/yyyy';
+            CheckOpeningHours();
+            GetNotifications();
+            $('#datepicker-container').datepicker({
+                inline: true, // Show the datepicker inline
+                showOtherMonths: true, // Show days from other months
+                selectOtherMonths: true, // Allow selecting days from other months
+                todayHighlight: true, // Highlight today's date
+                language: browserLanguage,
+                format: dateFormat,
+                firstDay: 1, // Set Monday as the first day of the week
+                language: browserLanguage, // Language setting
+
+                beforeShowDay: function (date) {
+                    // Convert the date to a string in the format yyyy-mm-dd
+                    var dateString = $.datepicker.formatDate('yy-mm-dd', date);
+
+                    // Add a data-date attribute to the day element
+                    return [true, '', '' + dateString + '"'];
+                },
+                onSelect: function (selectedDate) {
+
+                    // Handle date selection
+                    showLoadingSpinner();
+                    var url = '@Url.Action("Calendar","Appointment")'; // Replace with the actual URL of your full calendar page
+                    var selectedDateParam = encodeURIComponent(selectedDate);
+                    // Add the selected date as a query parameter
+                    url += '?date=' + selectedDateParam;
+                    // Navigate to the full calendar page with the selected date
+                    window.location.href = url;
+                }
+
+            });
+
+            SetDadte();
+            var $sidebar = $(".sidebar");
+            var $body = $("body");
+
+
+            $("#minimizeSidebar").click(function () {
+                if ($('#MainDatePickerContainer').is(':visible')) {
+
+                    if ($body.hasClass("sidebar-mini")) {
+                        // The 'sidebar-mini' class is present on the <body> element
+                        $("#datepicker-container").hide();
+                    } else {
+                        // The 'sidebar-mini' class is not present on the <body> element
+                        $("#datepicker-container").show();
+                    }
+                }
+            });
+
+            if ($('#MainDatePickerContainer').is(':visible')) {
+
+                $sidebar.hover(
+                    function () {
+                        $("#datepicker-container").show();
+                    },
+                    function () {
+                        if ($body.hasClass("sidebar-mini")) {
+                            $("#datepicker-container").hide();
+                        } else {
+                            $("#datepicker-container").show();
+                        }
+                    }
+                );
+            }
+
+            CheckTheEmployeePayRollSettings();
+
+            $(".ps__rail-x").hide();
+
+        });
+
+    function SetDadte() {
+        // Set the datepicker's date to the selected date
+        $('#datepicker-container').datepicker('setDate', $("#FINALDATEO").val());
+
+    }
+
+    function showLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+    }
+
+    function hideLoadingSpinner() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+
+
+    function CheckTheEmployeePayRollSettings() {
+        $.ajax({
+            url: '@Url.Action("CheckEmployee", "Admin")',
+            type: 'GET',
+            success: function (data) {
+                // Handle the response here
+
+                if (data.success) {
+                    $("#PayRollTAB").show();
+                }
+                else
+                {
+                    $("#PayRollTAB").hide();
+                }
+                // You might want to update the UI or perform other operations based on this count
+            },
+            error: function (error) {
+                hideLoadingSpinner();
+                alert("Fail");
+
+                // Handle error scenarios here
+            }
+        });
+    }
+
+    var openModalBtn = document.getElementById('openModalBtn');
+
+    if (openModalBtn) {
+        openModalBtn.addEventListener('click', function () {
+            $('#exampleModal').modal({
+                backdrop: false
+            });
+            $("#exampleModal").show();
+            $("#exampleModal").removeClass("fade").modal('show');
+        });
+    }
+
+
+
+
+    (function (global) {
+
+        if (typeof (global) === "undefined") {
+            throw new Error("window is undefined");
+        }
+
+        var _hash = "!";
+        var noBackPlease = function () {
+            global.location.href += "#";
+
+            // Making sure we have the fruit available for juice (^__^)
+            global.setTimeout(function () {
+                global.location.href += "!";
+            }, 50);
+        };
+
+        global.onhashchange = function () {
+            if (global.location.hash !== _hash) {
+                global.location.hash = _hash;
+            }
+        };
+
+        global.onload = function () {
+            noBackPlease();
+
+            // Disables backspace on page except on input fields and textarea..
+            document.body.onkeydown = function (e) {
+                var elm = e.target.nodeName.toLowerCase();
+                if (e.which === 8 && (elm !== 'input' && elm !== 'textarea')) {
+                    e.preventDefault();
+                }
+                // Stopping the event bubbling up the DOM tree...
+                e.stopPropagation();
+            };
+        }
+    })(window);
+
+
+    </script>
+    <script>
+
+        var win = navigator.platform.indexOf('Win') > -1;
+        if (win && document.querySelector('#sidenav-scrollbar')) {
+            var options = {
+                damping: '0.5'
+            }
+            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentUrl = window.location.pathname.toLowerCase(); // Get the current path
+
+            let navItems = document.querySelectorAll(".nav-item");
+
+            navItems.forEach(item => {
+                let link = item.querySelector("a.nav-link:not([data-bs-toggle])"); // Exclude dropdown toggles
+                if (link) {
+                    let linkUrl = new URL(link.href, window.location.origin).pathname.toLowerCase();
+
+                    if (currentUrl === linkUrl) {
+                        link.classList.add("active"); // Highlight the active link
+                        link.classList.remove("text-dark"); // Remove dark text for contrast
+
+                        // If the link is inside a collapsed menu, expand its parent
+                        let parentCollapse = link.closest(".collapse");
+                        if (parentCollapse) {
+                            parentCollapse.classList.add("show");
+                        }
+
+                        // If inside a dropdown menu, mark the parent item as active
+                        let parentNavItem = item.closest(".nav-item");
+                        if (parentNavItem && !parentNavItem.querySelector("[data-bs-toggle='collapse']")) {
+                            parentNavItem.classList.add("active");
+                        }
+                    }
+                }
+            });
+        });
+
+
+
+    </script>
+
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="~/Content/MainTemplate2/assets/js/material-dashboard.js"></script>
+</body>
+
+</html>

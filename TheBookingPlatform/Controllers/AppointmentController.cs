@@ -2398,6 +2398,7 @@ namespace TheBookingPlatform.Controllers
                 appointmentModel.IsRepeat = appointmentDetails.IsRepeat;
                 appointmentModel.CustomerLastName = customer.LastName;
                 appointmentModel.CustomerEmail = customer.Email;
+                appointmentModel.CustomerPhoneNumber = customer.MobileNumber;
                 appointmentModel.Customer = customer;
                 appointmentModel.ServicesNew = serviceList;
                 appointmentModel.MobileNumber = customer.MobileNumber;
@@ -2442,7 +2443,7 @@ namespace TheBookingPlatform.Controllers
             appointmentModel.ID = appointmentDetails.ID;
             appointmentModel.Notes = appointmentDetails.Notes;
             // Render the appointment details as HTML (you can customize this part)
-            appointmentModel.DateString = appointmentDetails.Date.ToString("yyyy-MM-dd");
+            appointmentModel.DateString = appointmentDetails.Date.ToString("dd MMMM, yyyy");
             appointmentModel.StartTime = appointmentDetails.Time.ToString("HH:mm");
             appointmentModel.EndTime = appointmentDetails.EndTime.ToString("HH:mm");
             var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == appointmentDetails.Business).FirstOrDefault();
@@ -4075,22 +4076,6 @@ namespace TheBookingPlatform.Controllers
                 var customer = CustomerServices.Instance.GetCustomer(appointment.CustomerID);
                 var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
                 var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
-                //delete previous one
-                RefreshToken(appointment.Business);
-                var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
-                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-                var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
-                {
-                    if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                    {
-                        RefreshToken(employee.Business);
-
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                        ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                    }
-                }
                 var historyNew = new History();
                 historyNew.Business = appointment.Business;
                 historyNew.CustomerName = customer.FirstName + " " + customer.LastName;
@@ -4100,31 +4085,6 @@ namespace TheBookingPlatform.Controllers
                 historyNew.EmployeeName = employee.Name;
                 historyNew.Name = "Cancelled";
                 HistoryServices.Instance.SaveHistory(historyNew);
-
-                foreach (var item in ToBeInputtedIDs)
-                {
-                    if (item.Key != null && !item.Key.Disabled)
-                    {
-                        if (appointment.GoogleCalendarEventID != null)
-                        {
-                            var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + item.Value + "/events/" + appointment.GoogleCalendarEventID);
-                            RestClient restClient = new RestClient(url);
-                            RestRequest request = new RestRequest();
-
-                            request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                            request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
-                            request.AddHeader("Accept", "application/json");
-
-                            var response = restClient.Delete(request);
-
-                        }
-                    }
-
-                }
-
-
-
-
 
                 string ConcatenatedServices = "";
                 if (appointment.Service != null)
@@ -4194,6 +4154,52 @@ namespace TheBookingPlatform.Controllers
                 history.EmployeeName = employee?.Name;
                 history.Name = "Appointment Refunded";
                 HistoryServices.Instance.SaveHistory(history);
+
+
+                //delete previous one
+                RefreshToken(appointment.Business);
+                var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
+                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
+                var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
+                if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                {
+                    if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
+                    {
+                        RefreshToken(employee.Business);
+
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
+                        ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
+                    }
+                }
+                
+
+                foreach (var item in ToBeInputtedIDs)
+                {
+                    if (item.Key != null && !item.Key.Disabled)
+                    {
+                        if (appointment.GoogleCalendarEventID != null)
+                        {
+                            var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + item.Value + "/events/" + appointment.GoogleCalendarEventID);
+                            RestClient restClient = new RestClient(url);
+                            RestRequest request = new RestRequest();
+
+                            request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                            request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
+                            request.AddHeader("Accept", "application/json");
+
+                            var response = restClient.Delete(request);
+
+                        }
+                    }
+
+                }
+
+
+
+
+
+               
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
             else
@@ -4508,7 +4514,14 @@ namespace TheBookingPlatform.Controllers
 
                             var history = new History();
                             history.Business = LoggedInUser.Company;
-                            history.CustomerName = customer.FirstName + " " + customer.LastName;
+                            if (customer != null)
+                            {
+                                history.CustomerName = customer.FirstName + " " + customer.LastName;
+                            }
+                            else
+                            {
+                                history.CustomerName = "Walk In";
+                            }
                             history.Date = DateTime.Now;
                             history.Note = "Waiting List Created for:" + history.CustomerName + " by " + LoggedInUser.Name;
                             history.Name = "Waiting List Created";
@@ -4965,6 +4978,7 @@ namespace TheBookingPlatform.Controllers
                     var customer = CustomerServices.Instance.GetCustomer(model.CustomerID);
 
                     var oldDate = appointment.Date.ToString("yyyy-MM-dd");
+                    var oldDateformated = appointment.Date.ToString("MMMM dd, yyyy");
                     var oldTime = appointment.Time.ToString("H:mm");
                     var oldEmployeeID = appointment.EmployeeID;
                     if (model.AllEmployees == true)
@@ -5457,7 +5471,7 @@ namespace TheBookingPlatform.Controllers
                             emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                             emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm"));
                             emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
-                            emailBody = emailBody.Replace("{{previous_date}}", oldDate);
+                            emailBody = emailBody.Replace("{{previous_date}}", oldDateformated);
                             emailBody = emailBody.Replace("{{previous_time}}", oldTime);
                             emailBody = emailBody.Replace("{{employee}}", employee.Name);
                             emailBody = emailBody.Replace("{{employee_specialization}}", employee.Specialization);

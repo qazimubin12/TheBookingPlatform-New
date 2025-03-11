@@ -230,6 +230,7 @@ namespace TheBookingPlatform.ViewModels
         public float ReferralBalance { get;  set; }
         public Company Company { get;  set; }
         public bool BlockedEvent { get;  set; }
+        public string CustomerPhoneNumber { get;  set; }
     }
 
     public class ServiceModelForCustomerProfile

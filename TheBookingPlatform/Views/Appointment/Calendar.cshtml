@@ -29,9 +29,17 @@
         margin-top: 10px;
     }
 
-    #navbarBlur{
-        display:none;
+    .ppff {
+        width: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
+
+    #navbarBlur {
+        display: none;
+    }
+
     #calendarPartialContainer {
         margin-top: 50px;
     }
@@ -114,6 +122,53 @@
             margin-top: 10px; /* Adjust the margin as needed */
             font-size: 16px; /* Adjust the font size as needed */
         }
+
+    .moving-tab {
+        display: none;
+    }
+
+    .boxyy {
+        padding-left: 5px;
+        cursor: pointer;
+        padding-bottom: 5px;
+    }
+
+    .card .nav-pills, .card .tab-content {
+        margin-top: 0px;
+    }
+
+    .nav.nav-pills .nav-link {
+        transition: transform 0.3s ease; /* Add transition for transform */
+        width: 100%;
+    }
+
+        .nav.nav-pills .nav-link.active {
+            background: white;
+            border-radius: 5px;
+            box-shadow: lightgray 2px 2px 5px;
+        }
+
+    .circular-box {
+        width: 50px;
+        height: 50px;
+        background-color: lightskyblue;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        font-size: larger;
+        justify-content: center;
+    }
+
+    .circular-box_2 {
+        width: 50px;
+        height: 50px;
+        background-color: gainsboro;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        font-size: larger;
+        justify-content: center;
+    }
 </style>
 
 
@@ -134,41 +189,42 @@
             <input type="text" class="form-control" placeholder="Search Customers" id="AutoCompletecustomers_Calendar" />
         </div>
     }
-    <a class="btn btn-primary btn-sm" style="padding: 8px; margin-right: 5px; background-color: white; border-radius: 10px; color: black;" href="@Url.Action("Dashboard","Admin")"><i class="fa fa-arrow-left"></i></a>
+    <a class="btn btn-light btn-sm" style="padding: 8px; margin-right: 5px; border-radius: 10px; color: black;" href="@Url.Action("Dashboard","Admin")"><i class="fa fa-arrow-left"></i></a>
     <div class="dropdown pull-left">
 
-        <button style="padding: 8px; margin: 0px 5px 0px 5px; background-color: white; border-radius: 10px; color: black;" type="button" class="btn btn-sm btn-round btn-info dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="material-icons">zoom_in</i>
-            <span class="caret"></span>
-        </button>
+        @*<button style="padding: 8px; margin: 0px 5px 0px 5px;  border-radius: 10px; color: black;" type="button" class="btn btn-sm btn-round btn-info dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="material-icons">zoom_in</i>
+                <span class="caret"></span>
+            </button>*@
         <input type="hidden" value="@Model.GoToDate" id="GoToDate" />
-        <ul class="dropdown-menu dropdown-menu-left" role="menu">
-            <li><button class="btn btn-sm btn-primary btn-block" onclick="UpdateIntervalOnUser('15')" type="button" id="slot5min">15 mins</button></li>
-            <li><button class="btn btn-sm btn-primary btn-block" onclick="UpdateIntervalOnUser('30')" type="button" id="slot15min">30 mins</button></li>
-            <li><button class="btn btn-sm btn-primary btn-block" onclick="UpdateIntervalOnUser('60')" type="button" id="slot30min">1 Hour</button></li>
 
-        </ul>
+
     </div>
 
     <div class="pull-left emee">
-        <button id="buttonShowEmployees" style="padding: 8px; margin: 0px 5px 0px 5px; background-color: white; border-radius: 10px; color: black;" type="button" class="btn btn-sm btn-round btn-success dropdown-toggle" data-bs-toggle="dropdown">
+        <button id="buttonShowEmployees" style="padding: 8px; margin: 0px 5px 0px 5px;  border-radius: 10px; color: black;" type="button" class="btn btn-sm btn-round btn-dark dropdown-toggle" data-bs-toggle="dropdown">
             <i class="material-icons">group</i>
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu dropdown-menu-left" role="menu">
-
             @if (Model.Employees != null)
             {
                 foreach (var item in Model.Employees)
                 {
-                    <li><button class="btn btn-sm btn-success btn-block" onclick="updateCalendar('@item.Employee.ID')" type="button" id="">@item.Employee.Name</button></li>
-
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item" onclick="updateCalendar('@item.Employee.ID')">
+                            @item.Employee.Name
+                        </a>
+                    </li>
                 }
             }
-            <li><button class="btn btn-sm btn-success btn-block" onclick="updateCalendar('0')" type="button" id="">VIEW ALL</button></li>
-
-
+            <li>
+                <a href="javascript:void(0);" class="dropdown-item" onclick="updateCalendar('0')">
+                    VIEW ALL
+                </a>
+            </li>
         </ul>
+
 
 
     </div>
@@ -180,230 +236,141 @@
         Html.RenderPartial("_CalendarPartial", Model);
 
 
-}
+
+}
 </div>
 
 
 
 
 <div id="appointmentModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" style="width:90%;" role="document">
+    <div class="modal-dialog modal-lg" style="width:90%;" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 id="PopupTitle" style="font-weight:600;" class="modal-title">Appointment Details</h5>
 
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background: #F5F5F5;border-radius:15px;">
                 <div id="appointmentDetails">
-
-                    <div class="row">
-                        <div id="HalfSideDetails" class="col-md-6">
-
-                            <div style="margin-left:0px !important; " class="row">
-                                <div class="col-md-6">
-                                    @if (!User.IsInRole("Calendar"))
-                                    {
-                                    <div style="display: flex; align-items: center;" class="row">
-                                        <div class="input-group input-group-dynamic">
-                                            <label style="margin-right:10px;">Customer:</label>
-                                            <input style="margin-right:0px;" class="form-control" disabled id="CustomerName" />
-                                            <i style="cursor:pointer;padding:20px;font-size:15px;" id="copyNameButton" onclick="copyNameToClipboard()" class="material-icons">
-                                                content_copy
-                                            </i>
+                    @if (!User.IsInRole("Calendar"))
+                    {
+                        <div class="card mb-2" style="border: 1px solid #e5e5e5;">
+                            <div class="card-body" id="profile">
+                                <div class="row justify-content-center align-items-center">
+                                    <div class="col-sm-auto col-4">
+                                        <div class="avatar avatar-xl position-relative">
+                                            <div id="CustomerInitial" class="circular-box"></div>
                                         </div>
                                     </div>
-                                    }
-                                </div>
-                                <div class="col-md-6">
-                                    @if (User.IsInRole("Calendar"))
-                                    {
-
-                                        @*<div style="display: none; align-items: center;" class="row">
-                                            <div class="input-group input-group-dynamic">
-
-                                                <label style="margin-right:10px;">Email:</label>
-                                                <input style="margin-right:0px;" class="form-control col-md-6" readonly id="CustomerEmail" />
-                                                <i style="cursor: pointer; padding: 20px; font-size: 15px;" id="copyButton" onclick="copyToClipboard()" class="material-icons">
-                                                    content_copy
-                                                </i>
-                                            </div>
-                                        </div>*@
-                                    }
-                                    else
-                                    {
-                                        <div style="display: flex; align-items: center;" class="row">
-                                            <div class="input-group input-group-dynamic">
-
-                                                <label style="margin-right:10px;">Email:</label>
-                                                <input style="margin-right:0px;" class="form-control col-md-6" readonly id="CustomerEmail" />
-                                                <i style="cursor: pointer; padding: 20px; font-size: 15px;" id="copyButton" onclick="copyToClipboard()" class="material-icons">
-                                                    content_copy
-                                                </i>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-
-                            <div style="margin-left:0px !important; " class="row">
-                                <div class="col-md-6">
-
-                                    <div style="display: flex; align-items: center;" class="row">
-                                        <label style="margin-right:10px;">Services:</label>
-                                        <select id="Services" class="form-select">
-                                        </select>
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-6">
-                                    <div style="display: flex; align-items: center;" class="row">
-                                        <div class="input-group input-group-dynamic">
-
-                                            <label style="margin-right:10px;">Date and Time:</label>
-                                            <input class="form-control col-md-6" readonly id="DateAndTime" />
+                                    <div class="col-sm-auto col-8 my-auto">
+                                        <div class="h-100">
+                                            <h5 id="CustomerName" class="mb-1 font-weight-bolder">
+                                            </h5>
+                                            <p id="CustomerEmail" class="mb-0 font-weight-normal text-sm">
+                                            </p>
+                                            <p id="CustomerPhoneNumber" class="mb-0 font-weight-normal text-sm">
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
-
-
-
-                            <div style="margin-left:0px !important; " class="row">
-                                <div class="col-md-6">
-
-                                    <div style="display: flex; align-items: center;" class="row">
-                                        <div class="input-group input-group-dynamic">
-
-                                            <label style="margin-right:10px;">Duration:</label>
-                                            <input class="form-control col-md-6" readonly id="TotalDuration" />
+                                    <div class="col-sm-auto ms-sm-auto mt-sm-0 mt-3">
+                                        <div class="mb-1">
+                                            <p class="mb-0 font-weight-normal text-sm">
+                                                Visits: <span id="NoOfVisits"></span> |
+                                                No Shows:    <span id="NoOfNoShows"></span>
+                                            </p>
                                         </div>
-                                    </div>
-                                </div>
 
-
-                                <div class="col-md-6">
-                                    <div style="display: flex; align-items: center;" class="row">
-                                        <div class="input-group input-group-dynamic">
-
-                                            <label style="margin-right:10px;">Notes:</label>
-                                            <input class="form-control col-md-6" readonly id="AppointmentNotes" />
+                                        <div class="d-flex">
+                                            <a class="btn btn-sm me-2" style="background: #F0F3F8; color: #6E727B; width:50px; display: flex; justify-content: center;" data-tooltip="Call" id="CallCustomerButton">
+                                                <i class="material-icons ppff">call</i>
+                                            </a>
+                                            <a class="btn btn-sm" style="background: #F0F3F8;" data-tooltip="Call" id="WhatsappCustomerButton">
+                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50">
+                                                    <path d="M 25 2 C 12.309534 2 2 12.309534 2 25 C 2 29.079097 3.1186875 32.88588 4.984375 36.208984 L 2.0371094 46.730469 A 1.0001 1.0001 0 0 0 3.2402344 47.970703 L 14.210938 45.251953 C 17.434629 46.972929 21.092591 48 25 48 C 37.690466 48 48 37.690466 48 25 C 48 12.309534 37.690466 2 25 2 z M 25 4 C 36.609534 4 46 13.390466 46 25 C 46 36.609534 36.609534 46 25 46 C 21.278025 46 17.792121 45.029635 14.761719 43.333984 A 1.0001 1.0001 0 0 0 14.033203 43.236328 L 4.4257812 45.617188 L 7.0019531 36.425781 A 1.0001 1.0001 0 0 0 6.9023438 35.646484 C 5.0606869 32.523592 4 28.890107 4 25 C 4 13.390466 13.390466 4 25 4 z M 16.642578 13 C 16.001539 13 15.086045 13.23849 14.333984 14.048828 C 13.882268 14.535548 12 16.369511 12 19.59375 C 12 22.955271 14.331391 25.855848 14.613281 26.228516 L 14.615234 26.228516 L 14.615234 26.230469 C 14.588494 26.195329 14.973031 26.752191 15.486328 27.419922 C 15.999626 28.087653 16.717405 28.96464 17.619141 29.914062 C 19.422612 31.812909 21.958282 34.007419 25.105469 35.349609 C 26.554789 35.966779 27.698179 36.339417 28.564453 36.611328 C 30.169845 37.115426 31.632073 37.038799 32.730469 36.876953 C 33.55263 36.755876 34.456878 36.361114 35.351562 35.794922 C 36.246248 35.22873 37.12309 34.524722 37.509766 33.455078 C 37.786772 32.688244 37.927591 31.979598 37.978516 31.396484 C 38.003976 31.104927 38.007211 30.847602 37.988281 30.609375 C 37.969311 30.371148 37.989581 30.188664 37.767578 29.824219 C 37.302009 29.059804 36.774753 29.039853 36.224609 28.767578 C 35.918939 28.616297 35.048661 28.191329 34.175781 27.775391 C 33.303883 27.35992 32.54892 26.991953 32.083984 26.826172 C 31.790239 26.720488 31.431556 26.568352 30.914062 26.626953 C 30.396569 26.685553 29.88546 27.058933 29.587891 27.5 C 29.305837 27.918069 28.170387 29.258349 27.824219 29.652344 C 27.819619 29.649544 27.849659 29.663383 27.712891 29.595703 C 27.284761 29.383815 26.761157 29.203652 25.986328 28.794922 C 25.2115 28.386192 24.242255 27.782635 23.181641 26.847656 L 23.181641 26.845703 C 21.603029 25.455949 20.497272 23.711106 20.148438 23.125 C 20.171937 23.09704 20.145643 23.130901 20.195312 23.082031 L 20.197266 23.080078 C 20.553781 22.728924 20.869739 22.309521 21.136719 22.001953 C 21.515257 21.565866 21.68231 21.181437 21.863281 20.822266 C 22.223954 20.10644 22.02313 19.318742 21.814453 18.904297 L 21.814453 18.902344 C 21.828863 18.931014 21.701572 18.650157 21.564453 18.326172 C 21.426943 18.001263 21.251663 17.580039 21.064453 17.130859 C 20.690033 16.232501 20.272027 15.224912 20.023438 14.634766 L 20.023438 14.632812 C 19.730591 13.937684 19.334395 13.436908 18.816406 13.195312 C 18.298417 12.953717 17.840778 13.022402 17.822266 13.021484 L 17.820312 13.021484 C 17.450668 13.004432 17.045038 13 16.642578 13 z M 16.642578 15 C 17.028118 15 17.408214 15.004701 17.726562 15.019531 C 18.054056 15.035851 18.033687 15.037192 17.970703 15.007812 C 17.906713 14.977972 17.993533 14.968282 18.179688 15.410156 C 18.423098 15.98801 18.84317 16.999249 19.21875 17.900391 C 19.40654 18.350961 19.582292 18.773816 19.722656 19.105469 C 19.863021 19.437122 19.939077 19.622295 20.027344 19.798828 L 20.027344 19.800781 L 20.029297 19.802734 C 20.115837 19.973483 20.108185 19.864164 20.078125 19.923828 C 19.867096 20.342656 19.838461 20.445493 19.625 20.691406 C 19.29998 21.065838 18.968453 21.483404 18.792969 21.65625 C 18.639439 21.80707 18.36242 22.042032 18.189453 22.501953 C 18.016221 22.962578 18.097073 23.59457 18.375 24.066406 C 18.745032 24.6946 19.964406 26.679307 21.859375 28.347656 C 23.05276 29.399678 24.164563 30.095933 25.052734 30.564453 C 25.940906 31.032973 26.664301 31.306607 26.826172 31.386719 C 27.210549 31.576953 27.630655 31.72467 28.119141 31.666016 C 28.607627 31.607366 29.02878 31.310979 29.296875 31.007812 L 29.298828 31.005859 C 29.655629 30.601347 30.715848 29.390728 31.224609 28.644531 C 31.246169 28.652131 31.239109 28.646231 31.408203 28.707031 L 31.408203 28.708984 L 31.410156 28.708984 C 31.487356 28.736474 32.454286 29.169267 33.316406 29.580078 C 34.178526 29.990889 35.053561 30.417875 35.337891 30.558594 C 35.748225 30.761674 35.942113 30.893881 35.992188 30.894531 C 35.995572 30.982516 35.998992 31.07786 35.986328 31.222656 C 35.951258 31.624292 35.8439 32.180225 35.628906 32.775391 C 35.523582 33.066746 34.975018 33.667661 34.283203 34.105469 C 33.591388 34.543277 32.749338 34.852514 32.4375 34.898438 C 31.499896 35.036591 30.386672 35.087027 29.164062 34.703125 C 28.316336 34.437036 27.259305 34.092596 25.890625 33.509766 C 23.114812 32.325956 20.755591 30.311513 19.070312 28.537109 C 18.227674 27.649908 17.552562 26.824019 17.072266 26.199219 C 16.592866 25.575584 16.383528 25.251054 16.208984 25.021484 L 16.207031 25.019531 C 15.897202 24.609805 14 21.970851 14 19.59375 C 14 17.077989 15.168497 16.091436 15.800781 15.410156 C 16.132721 15.052495 16.495617 15 16.642578 15 z" fill="#6E727B"></path>
+                                                </svg>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    }
+                    <div class="card mb-2" style="border: 1px solid #e5e5e5;">
+                        <div class="card-body">
+                            <h6 style="margin-bottom:0px !important;" class="mt-1">Services:</h6>
+                            <ul id="Services" class="text-muted ps-4 mb-2">
+                            </ul>
 
-                        <div id="HalfSideDetails2" class="col-md-6">
-                            <div class="row">
-                                <h5 class="modal-title"><b>Summary of Customer</b></h5>
+                            <h6 class="mt-1" style="margin-bottom:0px !important;">Date & Time | Duration</h6>
+                            <div class="d-flex mb-2 " style="gap:10px;">
+                                <span class="text-sm" id="DateAndTime"></span>
+                                <span class="text-sm" id=""> | </span>
+                                <span class="text-sm" id="TotalDuration"></span>
                             </div>
-                            <div class="row">
-                                <span>Visits:</span>
-                                <span id="NoOfVisits"></span>
+                            <h6 class="mb-0 mt-1" style="margin-bottom:0px !important;">Notes:</h6>
+                            <div class="d-flex">
+                                <textarea class="form-control border-0 bg-light shadow-sm p-1 small" id="AppointmentNotes" readonly rows="2"></textarea>
                             </div>
-                            <div class="row">
-                                <span>No Shows:</span>
-                                <span id="NoOfNoShows"></span>
-                            </div>
-                          
-                            <div class="row">
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    Type
-                                                </th>
-                                                <th>
-                                                    Code
-                                                </th>
-                                                <th>
-                                                    Balance
-                                                </th>
-                                                <th>
-                                                    Expires In
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="CardsBody">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
-
-
-
-
-
-
-                    <div class=" text-center ">
-                        @if (!User.IsInRole("Calendar"))
-                        {
-                        <button style="padding:6px;" data-tooltip="Appointment Info" type="button" id="moreButton" class="btn btn-sm btn-info hover-button">
-                            <i style="font-size:25px;" class="material-icons">info</i>
-                        </button>
-                        <button style="padding:6px;" data-tooltip="Checkout" type="button" id="checkoutButn" class="btn btn-success btn-sm hover-button">
-                            <i style="font-size:25px;" class="material-icons">shopping_cart</i>
-                        </button>
-                        <button style="padding:6px;" data-tooltip="Edit" type="button" id="EditAppointmentBtn" class="btn btn-info btn-sm hover-button">
-                            <i style="font-size:25px;" class="material-icons">edit</i>
-                        </button>
-
-                        <button style="padding:6px;" data-tooltip="Delete" type="button" id="DeleteAppointmentButton" class="btn btn-sm btn-info hover-button">
-                            <i style="font-size:25px;" class="material-icons">delete</i>
-                        </button>
-
-                        <button style="padding:6px;" data-tooltip="Send Reminder" type="button" id="SendReminderBtn" class="btn btn-sm btn-warning hover-button">
-                            <i style="font-size:25px;" class="material-icons">mail</i>
-                        </button>
-                        }
-                        <span id="BusinessDEET" style="display:block;" class="text-muted">
-
-                        </span>
-                        @if (User.IsInRole("Calendar"))
-                        {
-
-
-                            <div class="col-md-12 text-center" style="display:none;">
-                                <a style="width: fit-content; padding:15px; align-items: center; height: 50px;" href="#" data-tooltip="Call" target="_blank" id="CallCustomerButton" class="btn btn-primary col-md-1 hover-button">
-                                    <i class="material-icons">call</i>
-                                </a>
-
-                                <a style="width: fit-content; padding: 15px; display: flex; align-items: center; height: 50px;" href="#" data-tooltip="Call" target="_blank" id="WhatsappCustomerButton" class="btn btn-success col-md-1 hover-button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50">
-                                        <path d="M 25 2 C 12.309534 2 2 12.309534 2 25 C 2 29.079097 3.1186875 32.88588 4.984375 36.208984 L 2.0371094 46.730469 A 1.0001 1.0001 0 0 0 3.2402344 47.970703 L 14.210938 45.251953 C 17.434629 46.972929 21.092591 48 25 48 C 37.690466 48 48 37.690466 48 25 C 48 12.309534 37.690466 2 25 2 z M 25 4 C 36.609534 4 46 13.390466 46 25 C 46 36.609534 36.609534 46 25 46 C 21.278025 46 17.792121 45.029635 14.761719 43.333984 A 1.0001 1.0001 0 0 0 14.033203 43.236328 L 4.4257812 45.617188 L 7.0019531 36.425781 A 1.0001 1.0001 0 0 0 6.9023438 35.646484 C 5.0606869 32.523592 4 28.890107 4 25 C 4 13.390466 13.390466 4 25 4 z M 16.642578 13 C 16.001539 13 15.086045 13.23849 14.333984 14.048828 C 13.882268 14.535548 12 16.369511 12 19.59375 C 12 22.955271 14.331391 25.855848 14.613281 26.228516 L 14.615234 26.228516 L 14.615234 26.230469 C 14.588494 26.195329 14.973031 26.752191 15.486328 27.419922 C 15.999626 28.087653 16.717405 28.96464 17.619141 29.914062 C 19.422612 31.812909 21.958282 34.007419 25.105469 35.349609 C 26.554789 35.966779 27.698179 36.339417 28.564453 36.611328 C 30.169845 37.115426 31.632073 37.038799 32.730469 36.876953 C 33.55263 36.755876 34.456878 36.361114 35.351562 35.794922 C 36.246248 35.22873 37.12309 34.524722 37.509766 33.455078 C 37.786772 32.688244 37.927591 31.979598 37.978516 31.396484 C 38.003976 31.104927 38.007211 30.847602 37.988281 30.609375 C 37.969311 30.371148 37.989581 30.188664 37.767578 29.824219 C 37.302009 29.059804 36.774753 29.039853 36.224609 28.767578 C 35.918939 28.616297 35.048661 28.191329 34.175781 27.775391 C 33.303883 27.35992 32.54892 26.991953 32.083984 26.826172 C 31.790239 26.720488 31.431556 26.568352 30.914062 26.626953 C 30.396569 26.685553 29.88546 27.058933 29.587891 27.5 C 29.305837 27.918069 28.170387 29.258349 27.824219 29.652344 C 27.819619 29.649544 27.849659 29.663383 27.712891 29.595703 C 27.284761 29.383815 26.761157 29.203652 25.986328 28.794922 C 25.2115 28.386192 24.242255 27.782635 23.181641 26.847656 L 23.181641 26.845703 C 21.603029 25.455949 20.497272 23.711106 20.148438 23.125 C 20.171937 23.09704 20.145643 23.130901 20.195312 23.082031 L 20.197266 23.080078 C 20.553781 22.728924 20.869739 22.309521 21.136719 22.001953 C 21.515257 21.565866 21.68231 21.181437 21.863281 20.822266 C 22.223954 20.10644 22.02313 19.318742 21.814453 18.904297 L 21.814453 18.902344 C 21.828863 18.931014 21.701572 18.650157 21.564453 18.326172 C 21.426943 18.001263 21.251663 17.580039 21.064453 17.130859 C 20.690033 16.232501 20.272027 15.224912 20.023438 14.634766 L 20.023438 14.632812 C 19.730591 13.937684 19.334395 13.436908 18.816406 13.195312 C 18.298417 12.953717 17.840778 13.022402 17.822266 13.021484 L 17.820312 13.021484 C 17.450668 13.004432 17.045038 13 16.642578 13 z M 16.642578 15 C 17.028118 15 17.408214 15.004701 17.726562 15.019531 C 18.054056 15.035851 18.033687 15.037192 17.970703 15.007812 C 17.906713 14.977972 17.993533 14.968282 18.179688 15.410156 C 18.423098 15.98801 18.84317 16.999249 19.21875 17.900391 C 19.40654 18.350961 19.582292 18.773816 19.722656 19.105469 C 19.863021 19.437122 19.939077 19.622295 20.027344 19.798828 L 20.027344 19.800781 L 20.029297 19.802734 C 20.115837 19.973483 20.108185 19.864164 20.078125 19.923828 C 19.867096 20.342656 19.838461 20.445493 19.625 20.691406 C 19.29998 21.065838 18.968453 21.483404 18.792969 21.65625 C 18.639439 21.80707 18.36242 22.042032 18.189453 22.501953 C 18.016221 22.962578 18.097073 23.59457 18.375 24.066406 C 18.745032 24.6946 19.964406 26.679307 21.859375 28.347656 C 23.05276 29.399678 24.164563 30.095933 25.052734 30.564453 C 25.940906 31.032973 26.664301 31.306607 26.826172 31.386719 C 27.210549 31.576953 27.630655 31.72467 28.119141 31.666016 C 28.607627 31.607366 29.02878 31.310979 29.296875 31.007812 L 29.298828 31.005859 C 29.655629 30.601347 30.715848 29.390728 31.224609 28.644531 C 31.246169 28.652131 31.239109 28.646231 31.408203 28.707031 L 31.408203 28.708984 L 31.410156 28.708984 C 31.487356 28.736474 32.454286 29.169267 33.316406 29.580078 C 34.178526 29.990889 35.053561 30.417875 35.337891 30.558594 C 35.748225 30.761674 35.942113 30.893881 35.992188 30.894531 C 35.995572 30.982516 35.998992 31.07786 35.986328 31.222656 C 35.951258 31.624292 35.8439 32.180225 35.628906 32.775391 C 35.523582 33.066746 34.975018 33.667661 34.283203 34.105469 C 33.591388 34.543277 32.749338 34.852514 32.4375 34.898438 C 31.499896 35.036591 30.386672 35.087027 29.164062 34.703125 C 28.316336 34.437036 27.259305 34.092596 25.890625 33.509766 C 23.114812 32.325956 20.755591 30.311513 19.070312 28.537109 C 18.227674 27.649908 17.552562 26.824019 17.072266 26.199219 C 16.592866 25.575584 16.383528 25.251054 16.208984 25.021484 L 16.207031 25.019531 C 15.897202 24.609805 14 21.970851 14 19.59375 C 14 17.077989 15.168497 16.091436 15.800781 15.410156 C 16.132721 15.052495 16.495617 15 16.642578 15 z" fill="#ffffff"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-12 text-center">
-                                <a style="width: auto; padding:15px; align-items: center; height: 50px;" href="#" data-tooltip="Call" target="_blank" id="CallCustomerButton" class="btn btn-primary col-md-1 hover-button">
-                                    <i class="material-icons">call</i>
-                                </a>
-
-                                <a style="width: auto; padding: 15px; align-items: center; height: 50px;" href="#" data-tooltip="Call" target="_blank" id="WhatsappCustomerButton" class="btn btn-success col-md-1 hover-button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50">
-                                        <path d="M 25 2 C 12.309534 2 2 12.309534 2 25 C 2 29.079097 3.1186875 32.88588 4.984375 36.208984 L 2.0371094 46.730469 A 1.0001 1.0001 0 0 0 3.2402344 47.970703 L 14.210938 45.251953 C 17.434629 46.972929 21.092591 48 25 48 C 37.690466 48 48 37.690466 48 25 C 48 12.309534 37.690466 2 25 2 z M 25 4 C 36.609534 4 46 13.390466 46 25 C 46 36.609534 36.609534 46 25 46 C 21.278025 46 17.792121 45.029635 14.761719 43.333984 A 1.0001 1.0001 0 0 0 14.033203 43.236328 L 4.4257812 45.617188 L 7.0019531 36.425781 A 1.0001 1.0001 0 0 0 6.9023438 35.646484 C 5.0606869 32.523592 4 28.890107 4 25 C 4 13.390466 13.390466 4 25 4 z M 16.642578 13 C 16.001539 13 15.086045 13.23849 14.333984 14.048828 C 13.882268 14.535548 12 16.369511 12 19.59375 C 12 22.955271 14.331391 25.855848 14.613281 26.228516 L 14.615234 26.228516 L 14.615234 26.230469 C 14.588494 26.195329 14.973031 26.752191 15.486328 27.419922 C 15.999626 28.087653 16.717405 28.96464 17.619141 29.914062 C 19.422612 31.812909 21.958282 34.007419 25.105469 35.349609 C 26.554789 35.966779 27.698179 36.339417 28.564453 36.611328 C 30.169845 37.115426 31.632073 37.038799 32.730469 36.876953 C 33.55263 36.755876 34.456878 36.361114 35.351562 35.794922 C 36.246248 35.22873 37.12309 34.524722 37.509766 33.455078 C 37.786772 32.688244 37.927591 31.979598 37.978516 31.396484 C 38.003976 31.104927 38.007211 30.847602 37.988281 30.609375 C 37.969311 30.371148 37.989581 30.188664 37.767578 29.824219 C 37.302009 29.059804 36.774753 29.039853 36.224609 28.767578 C 35.918939 28.616297 35.048661 28.191329 34.175781 27.775391 C 33.303883 27.35992 32.54892 26.991953 32.083984 26.826172 C 31.790239 26.720488 31.431556 26.568352 30.914062 26.626953 C 30.396569 26.685553 29.88546 27.058933 29.587891 27.5 C 29.305837 27.918069 28.170387 29.258349 27.824219 29.652344 C 27.819619 29.649544 27.849659 29.663383 27.712891 29.595703 C 27.284761 29.383815 26.761157 29.203652 25.986328 28.794922 C 25.2115 28.386192 24.242255 27.782635 23.181641 26.847656 L 23.181641 26.845703 C 21.603029 25.455949 20.497272 23.711106 20.148438 23.125 C 20.171937 23.09704 20.145643 23.130901 20.195312 23.082031 L 20.197266 23.080078 C 20.553781 22.728924 20.869739 22.309521 21.136719 22.001953 C 21.515257 21.565866 21.68231 21.181437 21.863281 20.822266 C 22.223954 20.10644 22.02313 19.318742 21.814453 18.904297 L 21.814453 18.902344 C 21.828863 18.931014 21.701572 18.650157 21.564453 18.326172 C 21.426943 18.001263 21.251663 17.580039 21.064453 17.130859 C 20.690033 16.232501 20.272027 15.224912 20.023438 14.634766 L 20.023438 14.632812 C 19.730591 13.937684 19.334395 13.436908 18.816406 13.195312 C 18.298417 12.953717 17.840778 13.022402 17.822266 13.021484 L 17.820312 13.021484 C 17.450668 13.004432 17.045038 13 16.642578 13 z M 16.642578 15 C 17.028118 15 17.408214 15.004701 17.726562 15.019531 C 18.054056 15.035851 18.033687 15.037192 17.970703 15.007812 C 17.906713 14.977972 17.993533 14.968282 18.179688 15.410156 C 18.423098 15.98801 18.84317 16.999249 19.21875 17.900391 C 19.40654 18.350961 19.582292 18.773816 19.722656 19.105469 C 19.863021 19.437122 19.939077 19.622295 20.027344 19.798828 L 20.027344 19.800781 L 20.029297 19.802734 C 20.115837 19.973483 20.108185 19.864164 20.078125 19.923828 C 19.867096 20.342656 19.838461 20.445493 19.625 20.691406 C 19.29998 21.065838 18.968453 21.483404 18.792969 21.65625 C 18.639439 21.80707 18.36242 22.042032 18.189453 22.501953 C 18.016221 22.962578 18.097073 23.59457 18.375 24.066406 C 18.745032 24.6946 19.964406 26.679307 21.859375 28.347656 C 23.05276 29.399678 24.164563 30.095933 25.052734 30.564453 C 25.940906 31.032973 26.664301 31.306607 26.826172 31.386719 C 27.210549 31.576953 27.630655 31.72467 28.119141 31.666016 C 28.607627 31.607366 29.02878 31.310979 29.296875 31.007812 L 29.298828 31.005859 C 29.655629 30.601347 30.715848 29.390728 31.224609 28.644531 C 31.246169 28.652131 31.239109 28.646231 31.408203 28.707031 L 31.408203 28.708984 L 31.410156 28.708984 C 31.487356 28.736474 32.454286 29.169267 33.316406 29.580078 C 34.178526 29.990889 35.053561 30.417875 35.337891 30.558594 C 35.748225 30.761674 35.942113 30.893881 35.992188 30.894531 C 35.995572 30.982516 35.998992 31.07786 35.986328 31.222656 C 35.951258 31.624292 35.8439 32.180225 35.628906 32.775391 C 35.523582 33.066746 34.975018 33.667661 34.283203 34.105469 C 33.591388 34.543277 32.749338 34.852514 32.4375 34.898438 C 31.499896 35.036591 30.386672 35.087027 29.164062 34.703125 C 28.316336 34.437036 27.259305 34.092596 25.890625 33.509766 C 23.114812 32.325956 20.755591 30.311513 19.070312 28.537109 C 18.227674 27.649908 17.552562 26.824019 17.072266 26.199219 C 16.592866 25.575584 16.383528 25.251054 16.208984 25.021484 L 16.207031 25.019531 C 15.897202 24.609805 14 21.970851 14 19.59375 C 14 17.077989 15.168497 16.091436 15.800781 15.410156 C 16.132721 15.052495 16.495617 15 16.642578 15 z" fill="#ffffff"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        }
-                    </div>
-
 
                 </div>
 
-            </div>
-        </div>
 
+
+
+                <!-- Cards Tab -->
+                <!-- Actions Section (Below Nav Pills) -->
+                <div class="card mb-2" style="border: 1px solid #e5e5e5;">
+                    <div class="card-body" style=" display: flex; justify-content: center; gap: 20px;padding:10px !important;">
+                        @if (!User.IsInRole("Calendar"))
+                        {
+                            <button style="background: #F0F3F8; color: #6E727B !important;margin-bottom:0px !important; width:50px; display: flex; justify-content: center;align-items:center;" class="btn btn-sm " data-tooltip="Appointment Info" id="moreButton">
+                                <i class="material-icons ppff">info</i>
+                            </button>
+                            <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm " data-tooltip="Checkout" id="checkoutButn">
+                                <i class="material-icons ppff">shopping_cart</i>
+                            </button>
+                            <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn  btn-smf" data-tooltip="Edit" id="EditAppointmentBtn">
+                                <i class="material-icons ppff">edit</i>
+                            </button>
+                            <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm  " data-tooltip="Delete" id="DeleteAppointmentButton">
+                                <i class="material-icons ppff">delete</i>
+                            </button>
+                            <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm " data-tooltip="Send Reminder" id="SendReminderBtn">
+                                <i class="material-icons ppff">mail</i>
+                            </button>
+
+                        }
+                    </div>
+                </div>
+                
+
+                <div class="card mb-2" style="border: 1px solid #e5e5e5;">
+                    <div class="card-body">
+                        <div id="CardsBody">
+                            <div class="d-flex">
+                                <div id="" class="circular-box TypeOfCard"></div>
+                                <div class="my-auto ms-3">
+                                    <div class="h-100">
+                                        <h5 class="mb-0 CardCode"></h5>
+                                        <p class="mb-0 text-sm ExpiresIn"></p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-secondary ms-auto me-3 my-auto AmountinCard"></p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
     </div>
 </div>
+
 
 
 

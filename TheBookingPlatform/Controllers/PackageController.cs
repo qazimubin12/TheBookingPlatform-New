@@ -165,20 +165,20 @@ namespace TheBookingPlatform.Controllers
                 {
                     Package.Features = String.Join(",", model.Features);
                 }
-                var users = UserManager.Users.Where(x => x.Package == Package.ID).ToList();
-                foreach (var item in users)
-                {
-                    var claimsall = UserManager.GetClaims(item.Id);
-                    foreach (var claim in claimsall)
-                    {
-                        var resultnew =  UserManager.RemoveClaim(item.Id, claim);
-                    }
-                    claimsall =  UserManager.GetClaims(item.Id);
-                    if (!claimsall.Any(c => c.Type == "Package" && c.Value != ""))
-                    {
-                        UserManager.AddClaim(item.Id, new Claim("Package", Package.Features ?? ""));
-                    }
-                }
+                //var users = UserManager.Users.Where(x => x.Package == Package.ID).ToList();
+                //foreach (var item in users)
+                //{
+                //    var claimsall = UserManager.GetClaims(item.Id);
+                //    foreach (var claim in claimsall)
+                //    {
+                //        var resultnew =  UserManager.RemoveClaim(item.Id, claim);
+                //    }
+                //    claimsall =  UserManager.GetClaims(item.Id);
+                //    if (!claimsall.Any(c => c.Type == "Package" && c.Value != ""))
+                //    {
+                //        UserManager.AddClaim(item.Id, new Claim("Package", Package.Features ?? ""));
+                //    }
+                //}
                 PackageServices.Instance.UpdatePackage(Package);
                 var payments = PaymentServices.Instance.GetPayment();
                 decimal amountInDollars = Package.Price; // Base price
@@ -223,20 +223,22 @@ namespace TheBookingPlatform.Controllers
                 {
                     package.Features = String.Join(",", model.Features);
                 }
-                var users = UserManager.Users.Where(x => x.Package == package.ID).ToList();
-                foreach (var item in users)
-                {
-                    var claimsall = UserManager.GetClaims(item.Id);
-                    foreach (var claim in claimsall)
-                    {
-                        var resultnew = UserManager.RemoveClaim(item.Id, claim);
-                    }
-                    claimsall = UserManager.GetClaims(item.Id);
-                    if (!claimsall.Any(c => c.Type == "Package" && c.Value != ""))
-                    {
-                        UserManager.AddClaim(item.Id, new Claim("Package", package.Features ?? ""));
-                    }
-                }
+
+                
+                //var users = UserManager.Users.Where(x => x.Package == package.ID).ToList();
+                //foreach (var item in users)
+                //{
+                //    var claimsall = UserManager.GetClaims(item.Id);
+                //    foreach (var claim in claimsall)
+                //    {
+                //        var resultnew = UserManager.RemoveClaim(item.Id, claim);
+                //    }
+                //    claimsall = UserManager.GetClaims(item.Id);
+                //    if (!claimsall.Any(c => c.Type == "Package" && c.Value != ""))
+                //    {
+                //        UserManager.AddClaim(item.Id, new Claim("Package", package.Features ?? ""));
+                //    }
+                //}
                 PackageServices.Instance.SavePackage(package);
             }
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);

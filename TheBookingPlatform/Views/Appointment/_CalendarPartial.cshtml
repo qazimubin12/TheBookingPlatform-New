@@ -40,6 +40,10 @@
 
 
 <style>
+  
+    #appointmentModal{
+        padding-left:20px !important;
+    }
     .fc-direction-ltr .fc-timegrid-now-indicator-arrow {
         left: 0;
         border-width: 10px 33px 10px 11px;
@@ -52,7 +56,8 @@
         display: flex;
     }
 
-
+    
+    
 
     .fc-timegrid-now-indicator-label {
         position: absolute;
@@ -84,6 +89,7 @@
         border-style: solid;
         border-color: red;
     }
+
 
     .fc .fc-timegrid-now-indicator-line {
         opacity: .7;
@@ -264,9 +270,10 @@
     */ padding-top: 0px;
         padding-bottom: 0px;
         padding-left: 5px;
-        font-size: smaller;
+        font-size: 12px;
         margin-bottom: 0px;
         float: left;
+        margin-top:10px;
     }
 
 
@@ -329,6 +336,22 @@
         opacity: var(--bs-backdrop-opacity);
         z-index: 54;
     }
+
+    .fc .fc-timegrid-axis-cushion {
+        max-width: 60px;
+        flex-shrink: 0;
+        font-size: smaller;
+    }
+    /* Lighten all time labels */
+    .fc-timegrid-slot-label-cushion {
+        color: #ccc; /* Light gray for all times */
+    }
+
+    /* Keep ":00" clocks dark */
+    .fc-timegrid-slot[data-time$=":00:00"] .fc-timegrid-slot-label-cushion {
+        color: gray; /* Black or darker color */
+    }
+
 </style>
 
 <input type="hidden" value="@Model.LoggedInUser.IntervalCalendar" id="IntervalFinal" />
@@ -457,7 +480,8 @@
             stickyFooterScrollbar: true,
             width: calendarWidth, // Set the calendar width dynamically
             initialDate: parsedDate,
-            slotMinTime: '09:00:00', // set the start time for the slots
+            slotMinTime: openingHours.start, // set the start time for the slots
+            slotMaxTime: openingHours.end,
             height: calendarHeight,
             slotWidth: 50,  // Adjust the width as needed
             slotEventOverlap: false,
@@ -1993,20 +2017,33 @@ else
                             var appointmentDetails = data;
 
                             // Populate the modal inputs with appointment details
-                            $('#CustomerName').val(appointmentDetails.CustomerFirstName + " " + appointmentDetails.CustomerLastName);
-                            $("#CustomerEmail").val(appointmentDetails.CustomerEmail);
+                            $('#CustomerName').text(appointmentDetails.CustomerFirstName + " " + appointmentDetails.CustomerLastName);
+                            let firstName = appointmentDetails.CustomerFirstName ? appointmentDetails.CustomerFirstName.charAt(0) : '';
+                            let lastName = appointmentDetails.CustomerLastName ? appointmentDetails.CustomerLastName.charAt(0) : '';
+
+                            let initials = firstName + (lastName ? "" + lastName : '');
+
+
+                            $("#CustomerInitial").html(initials);
+                            $("#CustomerEmail").text(appointmentDetails.CustomerEmail);
+                            $("#CustomerPhoneNumber").text(appointmentDetails.MobileNumber);
                             $("#AppointmentNotes").val(appointmentDetails.Notes);
-                            $("#BusinessDEET").text("Appointment of: " + appointmentDetails.Business);
-                            var servicesDropdown = $('#Services');
-                            servicesDropdown.empty();
+                            var blocke = calEvent.event.extendedProps.blockedEvent;
+                            if (blocke) {
+                                $("#BusinessDEET").html("Appointment of: " + appointmentDetails.Business + ". <b>Please process the checkout through the Parent Company appointment.</b>");
+                            } else {
+                                $("#BusinessDEET").text("Appointment of: " + appointmentDetails.Business);
+
+                            }
+                            var servicesList = $('#Services'); // Target the <ul>
+                            servicesList.empty(); // Clear existing items
 
                             $.each(appointmentDetails.ServicesNew, function (index, service) {
-
-                                servicesDropdown.append($('<option>', {
-                                    value: service.Service,
-                                    text: service.Service,
-                                    'data-category': service.Category // Add the data-category attribute
-                                }));
+                                var listItem = `
+        <li>
+            <span class="text-sm">${service.Service}</span>
+        </li>`;
+                                servicesList.append(listItem);
                             });
 
 
@@ -2014,57 +2051,78 @@ else
 
 
 
-                            $('#DateAndTime').val(appointmentDetails.DateString + " " + appointmentDetails.StartTime + " - " + appointmentDetails.EndTime);
-                            $('#TotalDuration').val(appointmentDetails.TotalDuration + ' mins');
+                            $('#DateAndTime').text(appointmentDetails.DateString + " " + appointmentDetails.StartTime + " - " + appointmentDetails.EndTime);
+                            $('#TotalDuration').text(appointmentDetails.TotalDuration + ' mins');
                             $("#NoOfVisits").text(appointmentDetails.NoOfAppointments);
                             $("#NoOfNoShows").text(appointmentDetails.NoOfNoShows);
                             if (appointmentDetails.Customer != null) {
-                                let tableRows = '';
+                                let cardItems = '';
                                 $('#CardsBody').html("");
 
-                                tableRows += `
-                            <tr>
-    <td>Referral</td>
-    <td>${appointmentDetails.ReferralCode}</td>
-    <td>${parseFloat(appointmentDetails.ReferralBalance).toFixed(2)} ${appointmentDetails.Company.Currency}</td>
-    <td>N/A</td>
-</tr>`;
-                                // Add Gift Card Data to Table
+                                // Referral Card
+                                cardItems += `
+    <div class="d-flex mb-2">
+        <div class="circular-box_2 TypeOfCard">R</div>
+        <div class="my-auto ms-3">
+            <div class="h-100">
+                <h5 class="mb-0 CardCode">${appointmentDetails.ReferralCode != null ? appointmentDetails.ReferralCode : "N/A" }</h5>
+                <p class="mb-0 text-sm ExpiresIn">N/A</p>
+            </div>
+        </div>
+        <p class="text-sm text-secondary ms-auto me-3 my-auto AmountinCard">
+            ${parseFloat(appointmentDetails.ReferralBalance).toFixed(2)} ${appointmentDetails.Company.Currency}
+        </p>
+    </div>`;
+
+                                // Gift Cards
                                 if (appointmentDetails.GiftCardCodes && appointmentDetails.GiftCardCodes.length > 0) {
                                     appointmentDetails.GiftCardCodes.forEach(function (giftCard) {
-                                        tableRows += `
-                
-                <tr>
-                    <td>Gift Card</td>
-                    <td>${giftCard.GiftCardAssignment.AssignedCode}</td>
-<td>${parseFloat(giftCard.GiftCardAssignment.Balance).toFixed(2)} ${appointmentDetails.Company.Currency}</td>
-
-                    <td>${giftCard.GiftCardAssignment.Days > 0 ? giftCard.GiftCardAssignment.Days +`Days`:`Expired`}</td >
-                </tr>`;
+                                        cardItems += `
+            <div class="d-flex mb-2">
+                <div class="circular-box_2 TypeOfCard">GC</div>
+                <div class="my-auto ms-3">
+                    <div class="h-100">
+                        <h5 class="mb-0 CardCode">${giftCard.GiftCardAssignment.AssignedCode}</h5>
+                        <p class="mb-0 text-sm ExpiresIn">
+                            ${giftCard.GiftCardAssignment.Days > 0 ? giftCard.GiftCardAssignment.Days + ' Days' : 'Expired'}
+                        </p>
+                    </div>
+                </div>
+                <p class="text-sm text-secondary ms-auto me-3 my-auto AmountinCard">
+                    ${parseFloat(giftCard.GiftCardAssignment.Balance).toFixed(2)} ${appointmentDetails.Company.Currency}
+                </p>
+            </div>`;
                                     });
                                 }
 
-                                // Add Loyalty Card Data to Table
+                                // Loyalty Cards
                                 if (appointmentDetails.LoyaltyCards && appointmentDetails.LoyaltyCards.length > 0) {
                                     appointmentDetails.LoyaltyCards.forEach(function (loyaltyCard) {
-                                        tableRows += `
-                <tr>
-                    <td>Loyalty Card</td>
-                    <td>${loyaltyCard.LoyaltyCardAssignment.CardNumber}</td>
-<td>${parseFloat(loyaltyCard.LoyaltyCardAssignment.CashBack).toFixed(2)} ${appointmentDetails.Company.Currency}</td>
-    <td>${loyaltyCard.LoyaltyCardAssignment.Days > 0 ? loyaltyCard.LoyaltyCardAssignment.Days +`Days` : `Expired`}</td >
-
-                </tr>`;
+                                        cardItems += `
+            <div class="d-flex mb-2">
+                <div class="circular-box_2 TypeOfCard">LC</div>
+                <div class="my-auto ms-3">
+                    <div class="h-100">
+                        <h5 class="mb-0 CardCode">${loyaltyCard.LoyaltyCardAssignment.CardNumber}</h5>
+                        <p class="mb-0 text-sm ExpiresIn">
+                            ${loyaltyCard.LoyaltyCardAssignment.Days > 0 ? loyaltyCard.LoyaltyCardAssignment.Days + ' Days' : 'Expired'}
+                        </p>
+                    </div>
+                </div>
+                <p class="text-sm text-secondary ms-auto me-3 my-auto AmountinCard">
+                    ${parseFloat(loyaltyCard.LoyaltyCardAssignment.CashBack).toFixed(2)} ${appointmentDetails.Company.Currency}
+                </p>
+            </div>`;
                                     });
                                 }
 
                                 // Check if no data is present
-                                if (tableRows === '') {
-                                    tableRows = '<tr><td colspan="5">No Gift Cards or Loyalty Cards Available</td></tr>';
+                                if (cardItems === '') {
+                                    cardItems = '<p class="text-center">No Gift Cards or Loyalty Cards Available</p>';
                                 }
 
-                                // Insert rows into the table
-                                $('#CardsBody').append(tableRows);
+                                // Insert structured divs into the container
+                                $('#CardsBody').append(cardItems);
                             }
                             var paramValue = "your_parameter_value";
                             var AppID = calEvent.event.id;
@@ -2087,88 +2145,71 @@ else
 
                             var containabsense = false;
 
-                            servicesDropdown.find('option').each(function () {
-                                var optionCategory = $(this).data('category'); // Get the value of data-category
-                                if (optionCategory === "ABSENSE") {
-                                    containabsense = true;
-                                    return false; // exit the loop if "Break" is found
-                                }
+                            var servicesList = $('#Services'); // Target the <ul>
+                            servicesList.empty(); // Clear existing items
+
+                            $.each(appointmentDetails.ServicesNew, function (index, service) {
+                                var listItem = `
+<li>
+    <span class="text-sm">${service.Service}</span>
+</li>`;
+                                servicesList.append(listItem);
                             });
 
 
-                            if (containabsense && FromGCAL == false) {
-                                $("#checkoutButn").hide();
-                                $("#DeleteAppointmentButton").show();
-                                $("#CustomerROW").hide();
-                                $("#moreButton").hide();
-                                $("#CustomerEmailROW").hide();
-                                $("#WhatsappCustomerButton").hide();
-                                $("#PopupTitle").text("Event Details");
-                                $("#Popupservice").text("Events:")
-                                $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + eventEditURl + "'");
-                                $("#CallCustomerButton").hide();
-                                //$('#HalfSideDetails').removeClass('col-md-12').addClass('col-md-8');
-                                $('#HalfSideDetails2').show();
-                            }
-                            else if (FromGCAL) {
-                                $("#checkoutButn").hide();
-                                $("#CustomerROW").hide();
-                                $("#moreButton").hide();
-                                $("#CustomerEmailROW").hide();
-                                $("#WhatsappCustomerButton").hide();
-                                $("#BusinessDEET").hide();
-                                $("#PopupTitle").text("Event Details");
-                                $("#Popupservice").text("Events:")
-                                $("#EditAppointmentBtn").hide();
-                                $("#SendReminderBtn").hide();
-                                $("#CallCustomerButton").hide();
-                                //$('#HalfSideDetails').removeClass('col-md-8').addClass('col-md-12');
-                                $('#HalfSideDetails2').hide();
 
+                            
+                            if (containabsense && !FromGCAL) {
+                                $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #WhatsappCustomerButton, #CallCustomerButton").hide();
+                                $("#DeleteAppointmentButton").show();
+                                $("#PopupTitle").text("Event Details");
+                                $("#Popupservice").text("Events:");
+                                $("#pills-cards-tab").hide();
+                                $("#pills-summary-tab").hide();
+                                $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + eventEditURl + "'");
+                            } else if (FromGCAL) {
+                                $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #WhatsappCustomerButton, #BusinessDEET, #EditAppointmentBtn, #SendReminderBtn, #CallCustomerButton").hide();
+                                $("#PopupTitle").text("Event Details");
+                                $("#pills-cards-tab").hide();
+                                $("#pills-summary-tab").hide();
+                                $("#Popupservice").text("Events:");
                             }
                             else {
-                                if (appointmentDetails.CustomerFirstName != "Walk In") {
-                                    var callLink = 'tel:' + appointmentDetails.MobileNumber;
-                                    $('#CallCustomerButton').attr('href', callLink);
-                                    var whatsappLink = 'https://wa.me/' + appointmentDetails.MobileNumber;
-                                    $('#WhatsappCustomerButton').attr('href', whatsappLink);
-                                    $("#WhatsappCustomerButton").show();
-                                    $("#CallCustomerButton").show();
+                                if (appointmentDetails.CustomerFirstName !== "Walk In") {
+                                    $("#CallCustomerButton").attr("href", 'tel:' + appointmentDetails.MobileNumber).show();
+                                    $("#WhatsappCustomerButton").attr("href", 'https://wa.me/' + appointmentDetails.MobileNumber).show();
+                                    $("#pills-cards-tab").show();
+                                    $("#pills-summary-tab").show();
+                                } else {
+                                    $("#pills-cards-tab").hide();
+                                    $("#pills-summary-tab").hide();
                                 }
                                 $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + editUrl + "'");
-
-                                $("#Popupservice").text("Services:")
-                                $("#PopupTitle").text("Appointment Details")
-
-                                $("#checkoutButn").show();
-                                $("#DeleteAppointmentButton").hide();
-                                $("#CustomerROW").show();
-                                $("#moreButton").show();
-                                $("#CustomerEmailROW").show();
-                                $("#SendReminderBtn").show();
-                                //$('#HalfSideDetails').removeClass('col-md-12').addClass('col-md-8');
-                                $('#HalfSideDetails2').show();
-
+                                $("#Popupservice").text("Services:");
+                                $("#PopupTitle").text("Appointment Details");
+                             
+                                $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #SendReminderBtn").show();
                             }
 
                             $("#checkoutButn").attr("onclick", "window.location.href='" + newUrl + "'");
                             $("#DeleteAppointmentButton").attr("onclick", "DeleteAppointment('" + AppID + "','" + appointmentDetails.IsRepeat + "')");
                             $("#SendReminderBtn").attr("onclick", "SendAppointmentReminder('" + AppID + "')");
 
-                            if (appointmentDetails.IsPaid == false) {
-                                if (appointmentDetails.IsCancelled == false) {
+                            if (!appointmentDetails.IsPaid) {
+                                if (!appointmentDetails.IsCancelled) {
                                     alert("Awaiting PrePayment");
-                                    hideLoadingSpinner();
-
                                 } else {
                                     $('#appointmentModal').modal('show');
-                                    hideLoadingSpinner();
                                 }
-
-                            }
-                            else {
+                            } else {
                                 $('#appointmentModal').modal('show');
-                                hideLoadingSpinner();
+                            }
+
+                            hideLoadingSpinner();
+
+                            if (blocke) {
+                                $("#DeleteAppointmentButton, #moreButton, #SendReminderBtn, #EditAppointmentBtn, #CallCustomerButton, #WhatsappCustomerButton, #checkoutButn, #HalfSideDetails2").hide();
+                                $('#HalfSideDetails').removeClass('col-md-6').addClass('col-md-12');
                             }
 
 
@@ -2390,7 +2431,7 @@ else
         });
 
         date.css({
-            'font-size': '1.0rem',
+            'font-size': '0.8rem',
         });
         ted.css({
             'font-size': 'x-small',
@@ -2481,16 +2522,7 @@ else
         }
     }
 
-    // Add click event handlers for the buttons
-    $('#slot5min').click(function () {
-        UpdateIntervalOnUser('00:15:00'); // 5 minutes
-    });
-    $('#slot15min').click(function () {
-        UpdateIntervalOnUser('00:30:00'); // 15 minutes
-    });
-    $('#slot30min').click(function () {
-        UpdateIntervalOnUser('00:60:00'); // 30 minutes
-    });
+   
 
     function adjustMent() {
         var elementToAppend = $(".emee");
@@ -2535,35 +2567,13 @@ else
 
     function parseOpeningHours(openingHoursStr) {
         var times = openingHoursStr.split(' - ');
-
+        debugger
         return {
             start: times[0],
             end: times[1]
         };
     }
 
-    function UpdateIntervalOnUser(interval) {
-        $.ajax({
-            url: '@Url.Action("UpdateIntervalOnUser", "Appointment")', // Replace with your controller and action
-            data: { interval: interval },
-            type: 'POST', // Use POST or PUT depending on your API
-            success: function (response) {
-                if (response.success) {
-                    // Event updated successfully
-                    showSuccessAlert();
-                    location.reload();
-                } else {
-                    // Handle error if the update fails
-                    revertFunc(); // Revert the event to its original position
-                }
-            },
-            error: function (error) {
-                // Handle error if the Ajax request fails
-                console.error('Error updating event:', error);
-                revertFunc(); // Revert the event to its original position
-            }
-        });
-    }
 
 
 

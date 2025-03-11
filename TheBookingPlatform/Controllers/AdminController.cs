@@ -356,14 +356,40 @@ namespace TheBookingPlatform.Controllers
 
         }
 
+        public JsonResult CheckPayment()
+        {
+            var paymentreminder = false;
+            var user = UserManager.FindById(User.Identity.GetUserId());
+            var payments = PaymentServices.Instance.GetPaymentWRTBusiness(user.Company).LastOrDefault();
+            var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+            if (company != null)
+            {
+                var package = PackageServices.Instance.GetPackage(company.Package);
+                StripeConfiguration.ApiKey = package.APIKEY;
+                var invoiceService = new InvoiceService();
+                var invoices = invoiceService.List(new InvoiceListOptions
+                {
+                    Subscription = payments.SubcriptionID, // Replace with your Subscription ID
+                    Limit = 10 // Set appropriate limit
+                });
+                var pendingInvoices = invoices.Where(i => i.Status == "draft" || i.Status == "open").ToList();
+                if (payments != null && payments.LastPaidDate != null)
+                {
+                    var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
+
+                    if (remainderDays < 1 && pendingInvoices.Count() > 0)
+                    {
+                        paymentreminder = true;
+                    }
+                }
+            }
+            return Json(new { success = paymentreminder }, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult Dashboard(string StartDate = "", string EndDate = "", string FilterDuration = "")
         {
             AdminViewModel model = new AdminViewModel();
             var user = UserManager.FindById(User.Identity.GetUserId());
             model.SignedInUser = user;
-          
-
-
             if (model.SignedInUser != null)
             {
 
@@ -765,7 +791,7 @@ namespace TheBookingPlatform.Controllers
 
                         if (user.Role == "Owner")
                         {
-                            var package = PackageServices.Instance.GetPackage(user.Package);
+                            var package = PackageServices.Instance.GetPackage(company.Package);
                             if (package == null && user.IsInTrialPeriod == false)
                             {
                                 return RedirectToAction("Pay", "User", new { UserID = user.Id });
@@ -1331,7 +1357,7 @@ namespace TheBookingPlatform.Controllers
                     }
                 }
                 // Return the opening hours count as a JSON response
-                return Json(new { count = openingHoursCount, Company = user.Company, Companies = companyList }, JsonRequestBehavior.AllowGet);
+                return Json(new {UserName=user.Name, count = openingHoursCount, Company = user.Company, Companies = companyList }, JsonRequestBehavior.AllowGet);
             }
             else
             {

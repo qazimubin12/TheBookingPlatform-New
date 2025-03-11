@@ -29,19 +29,18 @@
         width: 200px;
     }
 </style>
-<div class="row">
-    <div class="container">
-        @if (Model.SignedInUser.Role != "Super Admin")
+
+        @*@if (Model.SignedInUser.Role != "Super Admin")
         {
             var LastPaymentDate = DateTime.Parse(Model.SignedInUser.LastPaymentDate);
             var RemainderDays = (LastPaymentDate.AddMonths(1).Date - DateTime.Now.Date).Days;
             <div class="alert alert-primary">
                 <span class="text-white">You have @RemainderDays days till your package subscription ends</span>
             </div>
-        }
+        }*@
         <h3 style="font-size:1.6rem;">Dashboard - Welcome @Model.SignedInUser.Name  - (@Model.SignedInUser.Company)</h3>
         <hr />
-        <button class="btn btn-primary" type="button" onclick="sendPushNotification('this is test','hello this is notifc')">TEST</button>
+        @*<button class="btn btn-primary" type="button" onclick="sendPushNotification('this is test','hello this is notifc')">TEST</button>*@
         @if (Model.Company != null)
         {
             if (Model.OpeningHours.Count() > 7)
@@ -89,8 +88,7 @@
             }
 
         }
-    </div>
-</div>
+    
 <div class="row" style="padding-left: 0; padding-right: 0;">
     
 
@@ -404,7 +402,7 @@
         
         
         
-        LoadChart();
+        //LoadChart();
 
 
     });
@@ -414,13 +412,13 @@
     OneSignalDeferred.push(function () {
         window.OneSignal = window.OneSignal || [];
         OneSignal.push(function () {
-            OneSignal.init({
-                appId: "7bd124a0-dd61-43bf-82b3-23c469448c73",
-                safari_web_id: "web.onesignal.auto.0654afc0-ce06-4b31-9757-37165e976417",
-                notifyButton: {
-                    enable: true, // Enables the notification subscription bell
-                },
-            });
+            //OneSignal.init({
+            //    appId: "7bd124a0-dd61-43bf-82b3-23c469448c73",
+            //    safari_web_id: "web.onesignal.auto.0654afc0-ce06-4b31-9757-37165e976417",
+            //    notifyButton: {
+            //        enable: true, // Enables the notification subscription bell
+            //    },
+           // });
 
         });
     });

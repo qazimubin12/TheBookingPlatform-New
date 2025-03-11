@@ -36,5 +36,11 @@ namespace TheBookingPlatform.Entities
         public float ReferralPercentage { get; set; }
         public string StatusForPayroll { get; set; }
         public string CompanyCode { get; set; }
+        public int Package { get; set; }
+
+        public string SubscriptionID { get; set; }
+        public string SubscriptionStatus { get; set; }
+        public bool OwnerCompany { get; set; }
+
     }
 }

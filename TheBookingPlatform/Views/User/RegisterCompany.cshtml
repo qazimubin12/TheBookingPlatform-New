@@ -265,6 +265,15 @@
             })
     });
 
+    $("#Business").on("input", function () {
+        var invalidChars = /[<>*%:&\\?]/g;
+
+        if (invalidChars.test($(this).val())) {
+            alert("Special characters are not allowed!");
+            $(this).val($(this).val().replace(invalidChars, ''));
+        }
+    });
+
     $("#ActionBtn").click(function () {
 
 

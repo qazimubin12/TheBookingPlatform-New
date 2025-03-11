@@ -19,11 +19,10 @@ namespace TheBookingPlatform.Entities
         public bool IsActive { get; set; } = true;
         public bool IsInTrialPeriod { get; set; }
         public bool IsPaid { get; set; }
-        public int Package { get; set; }
-        public string LastPaymentDate { get; set; }
         public DateTime RegisteredDate { get; set; }
         public string ReadNotifications { get; set; }
         public string PlayerID { get; set; }
+        
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

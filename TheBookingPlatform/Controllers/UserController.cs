@@ -155,41 +155,119 @@ namespace TheBookingPlatform.Controllers
         }
 
 
-        public ActionResult SavePayment(string UserID, int PackageID,string ProductID)
+        public ActionResult SavePayment(string session_id = "")
         {
-            var user = UserManager.FindById(UserID);
-            user.Package = PackageID;
-            user.IsPaid = true;
-            user.LastPaymentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-            UserManager.Update(user);
-
-            var package = PackageServices.Instance.GetPackage(PackageID);
-
-            var price = float.Parse(package.Price.ToString());
-            var vatpercentage = float.Parse(package.VAT.ToString());
-
-            var vatAmount = (vatpercentage / 100) * price;
+            var sessionService = new SessionService();
+            var session = sessionService.Get(session_id); // Retrieve session from Stripe
+            string subscriptionId = session.SubscriptionId; // Get the Subscription ID
 
 
-            var payment = new Payment();
-            payment.Business = user.Company;
-            payment.LastPaidDate = DateTime.Now;
-            payment.PackageID = PackageID;
-            payment.UserID = UserID;
-            payment.Total = vatAmount;
-            payment.ProductID = ProductID;
-            PaymentServices.Instance.SavePayment(payment);
+            var eventService = new EventService();
 
-
-            var currentUsers = UserManager.Users.Where(x => x.Company == user.Company && x.Id != user.Id).ToList();
-            foreach (var item in currentUsers)
+            // Fetch all events (You can also filter by type if needed)
+            var eventListOptions = new EventListOptions
             {
-                item.Package = user.Package;
-                item.LastPaymentDate = user.LastPaymentDate;
-                item.IsPaid = user.IsPaid;
-                item.IsInTrialPeriod = user.IsInTrialPeriod;
-                UserManager.Update(item);
+                Limit = 50 // Adjust as needed
+            };
+            var events = eventService.List(eventListOptions);
+
+            string sessionId = session.Id; // Replace with your actual Session ID
+            Stripe.Event completedEvent = null;
+
+            // Find the specific event for the session
+            foreach (var stripeEvent in events)
+            {
+                if (stripeEvent.Type == "checkout.session.completed")
+                {
+                    var sessionObject = stripeEvent.Data.Object as Stripe.Checkout.Session;
+                    if (sessionObject != null && sessionObject.Id == sessionId)
+                    {
+                        completedEvent = stripeEvent;
+                        break;
+                    }
+                }
             }
+            string ProductId = "";
+            if (!string.IsNullOrEmpty(subscriptionId))
+            {
+                var subscriptionService = new SubscriptionService();
+                var subscription = subscriptionService.Get(subscriptionId);
+
+                // Step 2: Get Price ID from Subscription
+                string priceId = subscription.Items.Data[0].Price.Id;
+
+                if (!string.IsNullOrEmpty(priceId))
+                {
+                    var priceService = new PriceService();
+                    var price = priceService.Get(priceId);
+
+                    // Step 3: Get Product ID from Price
+                    ProductId = price.ProductId;
+                }
+                else
+                {
+                    Console.WriteLine("No Price ID found for this subscription.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No Subscription ID found in the session.");
+            }
+
+            // If event found, get metadata
+            if (completedEvent != null)
+            {
+                var metadata = ((Stripe.Checkout.Session)completedEvent.Data.Object).Metadata;
+
+                string userId = metadata.ContainsKey("UserID") ? metadata["UserID"] : null;
+                string packageId = metadata.ContainsKey("PackageID") ? metadata["PackageID"] : null;
+                var package = PackageServices.Instance.GetPackage(int.Parse(packageId));
+
+                var price = float.Parse(package.Price.ToString());
+                var vatpercentage = float.Parse(package.VAT.ToString());
+
+
+                var vatAmount = (vatpercentage / 100) * price;
+                var payment = new Payment();
+                var user = UserManager.FindById(userId);
+                var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+
+                company.Package = package.ID;
+                company.SubscriptionID = subscriptionId;
+                company.SubscriptionStatus = "Active";
+                CompanyServices.Instance.UpdateCompany(company);
+                user.IsPaid = true;
+                UserManager.Update(user);
+
+
+                payment.Business = user.Company;
+                payment.LastPaidDate = DateTime.Now;
+                payment.PackageID = package.ID;
+                payment.UserID = user.Id;
+                payment.Total = vatAmount;
+                payment.ProductID = ProductId;
+                
+                payment.SubcriptionID = subscriptionId;
+                PaymentServices.Instance.SavePayment(payment);
+
+
+                var currentUsers = UserManager.Users.Where(x => x.Company == user.Company && x.Id != user.Id).ToList();
+                foreach (var item in currentUsers)
+                {
+                    item.IsInTrialPeriod = user.IsInTrialPeriod;
+                    item.IsPaid = user.IsPaid;
+                    UserManager.Update(item);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No completed event found for this session.");
+            }
+
+           
+
+
+          
 
             return RedirectToAction("Login", "Account");
 
@@ -266,32 +344,37 @@ namespace TheBookingPlatform.Controllers
         //    return Json(new { success = true, URL = session.Url }, JsonRequestBehavior.AllowGet);
         //}
 
-
         [HttpPost]
-        public JsonResult PayPackage(int PackageID, string UserID)
+        public ActionResult PayPackage(int PackageID, string UserID)
         {
-            // Step 1: Fetch package and user details (assume these services are implemented)
-            var package = PackageServices.Instance.GetPackage(PackageID); // Your service
-            var user = UserManager.FindById(UserID); // Your user manager
-            StripeConfiguration.ApiKey = package.APIKEY; // Use your Stripe API Key
+            var package = PackageServices.Instance.GetPackage(PackageID);
+            var user = UserManager.FindById(UserID);
+            StripeConfiguration.ApiKey = package.APIKEY;
 
-            // Step 2: Create a Stripe Customer
+            // Step 1: Retrieve existing Stripe Customer
             var customerService = new CustomerService();
-            var customerOptions = new CustomerCreateOptions
+            var customerList = customerService.List(new CustomerListOptions { Email = user.Email });
+            var customer = customerList.Data.FirstOrDefault();
+            var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+            if (!company.OwnerCompany) { 
+            if (customer == null)
             {
-                Email = user.Email, // Ensure you have user's email
-                Name = user.Name
-            };
-            var customer = customerService.Create(customerOptions);
+                // Create new Stripe Customer if doesn't exist
+                var customerOptions = new CustomerCreateOptions
+                {
+                    Email = user.Email,
+                    Name = user.Name
+                };
+                customer = customerService.Create(customerOptions);
+            }
 
-            // Step 3: Calculate package price and VAT
-            decimal amountInDollars = package.Price; // Base price
-            decimal vatInDollars = package.Price * (package.VAT / 100); // VAT
+            // Step 2: Fetch the user's current subscription (if any)
+            var subscriptionService = new SubscriptionService();
+            var existingSubscriptions = subscriptionService.List(new SubscriptionListOptions { Customer = customer.Id });
 
-            long amountInCents = Convert.ToInt64(amountInDollars * 100);
-            long vatInCents = Convert.ToInt64(vatInDollars * 100);
+            var existingSubscription = existingSubscriptions.Data.FirstOrDefault();
 
-            // Step 4: Create a Product in Stripe
+            // Step 3: Create Product & Price
             var productService = new ProductService();
             var productOptions = new ProductCreateOptions
             {
@@ -300,49 +383,224 @@ namespace TheBookingPlatform.Controllers
             };
             var product = productService.Create(productOptions);
 
-            // Step 5: Create a Price for the Product
             var priceService = new PriceService();
             var priceOptions = new PriceCreateOptions
             {
-                UnitAmount = amountInCents + vatInCents, // Total price (including VAT)
+                UnitAmount = Convert.ToInt64(package.Price * 100),
                 Currency = "eur",
-                Recurring = new PriceRecurringOptions
-                {
-                    Interval = "month", // "month" or "year"
-                    IntervalCount = 1   // Every 1 month
-                },
+                Recurring = new PriceRecurringOptions { Interval = "month", IntervalCount = 1 },
                 Product = product.Id
             };
             var price = priceService.Create(priceOptions);
+            var taxRateService = new TaxRateService();
+            var taxRateOptions = new TaxRateCreateOptions
+            {
+                DisplayName = "VAT",
+                Inclusive = false, // Set to true if VAT should be included in the price
+                Percentage = package.VAT, // VAT percentage from package
+                Country = "NL" // Adjust based on your tax region
+            };
+            var taxRate = taxRateService.Create(taxRateOptions);
 
-            // Step 6: Create a Checkout Session
-            var sessionService = new SessionService();
-            var sessionOptions = new SessionCreateOptions
-            {
-                Customer = customer.Id, // Link to Stripe Customer
-                PaymentMethodTypes = new List<string> { "card", "ideal" }, // Payment methods
-                LineItems = new List<SessionLineItemOptions>
-            {
-                new SessionLineItemOptions
+                if (existingSubscription != null)
                 {
-                    Price = price.Id, // Use recurring price
-                    Quantity = 1      // Single subscription
+                    // Step 4: Upgrade Subscription (Replacing old plan)
+                    var subscriptionUpdateOptions = new SubscriptionUpdateOptions
+                    {
+                        Items = new List<SubscriptionItemOptions>
+    {
+        new SubscriptionItemOptions
+        {
+            Id = existingSubscription.Items.Data[0].Id, // Existing Subscription Item ID
+            Price = price.Id, // New Price ID
+            TaxRates = new List<string> { taxRate.Id }  // Attach VAT Tax Rate here
+        }
+    },
+                        ProrationBehavior = "create_prorations" // Ensures fair charge adjustment
+                    };
+
+                    // Apply tax rates at the subscription level
+                    subscriptionUpdateOptions.DefaultTaxRates = new List<string> { taxRate.Id };
+
+                    var updatedSubscription = subscriptionService.Update(existingSubscription.Id, subscriptionUpdateOptions);
+                    company.SubscriptionID = updatedSubscription.Id;
+                    company.SubscriptionStatus = "Active";
+                    CompanyServices.Instance.UpdateCompany(company);
                 }
-            },
-                Mode = "subscription", // Use subscription mode
-                SuccessUrl = "http://app.yourbookingplatform.com" + Url.Action("SavePayment", "User", new { UserID = UserID, PackageID = PackageID,ProductID = product.Id }),
-                CancelUrl = "http://app.yourbookingplatform.com" + Url.Action("Login", "Account"),
-                Metadata = new Dictionary<string, string> // Add metadata
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                // Step 5: Create new subscription if user has none
+                StripeConfiguration.ApiKey = package.APIKEY; // Use your Stripe API Key
+
+                // Step 2: Create a Stripe Customer
+                var customerService2 = new CustomerService();
+                var customerOptions2 = new CustomerCreateOptions
+                {
+                    Email = user.Email,
+                    Name = user.Name
+                };
+                var customer2 = customerService.Create(customerOptions2);
+
+                // Step 3: Calculate package price and VAT
+                decimal amountInDollars2 = package.Price;
+                long amountInCents2 = Convert.ToInt64(amountInDollars2 * 100);
+
+                // Step 4: Create a Product in Stripe
+                var productService2 = new ProductService();
+                var productOptions2 = new ProductCreateOptions
+                {
+                    Name = package.Name,
+                    Description = package.Description
+                };
+                var product2 = productService2.Create(productOptions2);
+
+                // Step 5: Create a Price for the Product (Excluding VAT)
+                var priceService2 = new PriceService();
+                var priceOptions2 = new PriceCreateOptions
+                {
+                    UnitAmount = amountInCents2, // Base price without VAT
+                    Currency = "eur",
+                    Recurring = new PriceRecurringOptions
+                    {
+                        Interval = "month", // Subscription interval
+                        IntervalCount = 1    // Every 1 month
+                    },
+                    Product = product2.Id
+                };
+                var price2 = priceService2.Create(priceOptions2);
+
+                // Step 6: Create a VAT Tax Rate in Stripe
+                var taxRateService2 = new TaxRateService();
+                var taxRateOptions2 = new TaxRateCreateOptions
+                {
+                    DisplayName = "VAT",
+                    Inclusive = false, // Set to true if VAT should be included in the price
+                    Percentage = package.VAT, // VAT percentage from package
+                    Country = "NL" // Adjust based on your tax region
+                };
+                var taxRate2 = taxRateService2.Create(taxRateOptions2);
+
+                // Step 7: Create a Subscription instead of Checkout Session
+                var subscriptionService2 = new SubscriptionService();
+                var subscriptionOptions2 = new SubscriptionCreateOptions
+                {
+                    Customer = customer2.Id,
+                    Items = new List<SubscriptionItemOptions>
+        {
+            new SubscriptionItemOptions
+            {
+                Price = price2.Id,
+                Quantity = 1,
+                TaxRates = new List<string> { taxRate2.Id } // Attach VAT Tax Rate here
+            }
+        },
+                    Metadata = new Dictionary<string, string>
         {
             { "UserID", UserID },
             { "PackageID", PackageID.ToString() }
-        }
-            };
-            var session = sessionService.Create(sessionOptions);
+        },
+                    PaymentBehavior = "default_incomplete", // Allows payment to be completed later
+                    Expand = new List<string> { "latest_invoice.payment_intent" }
+                };
+                var subscription2 = subscriptionService2.Create(subscriptionOptions2);
 
-            // Step 7: Return Checkout Session URL
-            return Json(new { success = true, URL = session.Url }, JsonRequestBehavior.AllowGet);
+                // Step 8: Return Subscription ID and Payment Intent Client Secret for frontend
+                var clientSecret2 = subscription2.LatestInvoice.PaymentIntent.ClientSecret;
+                return Json(new { success = true, SubscriptionID = subscription2.Id, ClientSecret = clientSecret2 }, JsonRequestBehavior.AllowGet);
+            }
+
         }
+
+        //[HttpPost]
+        //public JsonResult PayPackage(int PackageID, string UserID)
+        //{
+        //    // Step 1: Fetch package and user details (assume these services are implemented)
+        //    var package = PackageServices.Instance.GetPackage(PackageID);
+        //    var user = UserManager.FindById(UserID);
+        //    StripeConfiguration.ApiKey = package.APIKEY; // Use your Stripe API Key
+
+        //    // Step 2: Create a Stripe Customer
+        //    var customerService = new CustomerService();
+        //    var customerOptions = new CustomerCreateOptions
+        //    {
+        //        Email = user.Email,
+        //        Name = user.Name
+        //    };
+        //    var customer = customerService.Create(customerOptions);
+
+        //    // Step 3: Calculate package price and VAT
+        //    decimal amountInDollars = package.Price;
+        //    long amountInCents = Convert.ToInt64(amountInDollars * 100);
+
+        //    // Step 4: Create a Product in Stripe
+        //    var productService = new ProductService();
+        //    var productOptions = new ProductCreateOptions
+        //    {
+        //        Name = package.Name,
+        //        Description = package.Description
+        //    };
+        //    var product = productService.Create(productOptions);
+
+        //    // Step 5: Create a Price for the Product (Excluding VAT)
+        //    var priceService = new PriceService();
+        //    var priceOptions = new PriceCreateOptions
+        //    {
+        //        UnitAmount = amountInCents, // Base price without VAT
+        //        Currency = "eur",
+        //        Recurring = new PriceRecurringOptions
+        //        {
+        //            Interval = "month", // Subscription interval
+        //            IntervalCount = 1    // Every 1 month
+        //        },
+        //        Product = product.Id
+        //    };
+        //    var price = priceService.Create(priceOptions);
+
+        //    // Step 6: Create a VAT Tax Rate in Stripe
+        //    var taxRateService = new TaxRateService();
+        //    var taxRateOptions = new TaxRateCreateOptions
+        //    {
+        //        DisplayName = "VAT",
+        //        Inclusive = false, // Set to true if VAT should be included in the price
+        //        Percentage = package.VAT, // VAT percentage from package
+        //        Country = "NL" // Adjust based on your tax region
+        //    };
+        //    var taxRate = taxRateService.Create(taxRateOptions);
+
+        //    // Step 7: Create a Checkout Session with the VAT Tax Rate
+        //    var sessionService = new SessionService();
+        //    var sessionOptions = new SessionCreateOptions
+        //    {
+        //        Customer = customer.Id,
+        //        PaymentMethodTypes = new List<string> { "card", "ideal" },
+        //        LineItems = new List<SessionLineItemOptions>
+        //{
+        //    new SessionLineItemOptions
+        //    {
+        //        Price = price.Id,
+        //        Quantity = 1,
+        //        TaxRates = new List<string> { taxRate.Id } // Attach VAT Tax Rate here
+        //    }
+        //},
+        //        Mode = "subscription",
+        //        SuccessUrl = "http://app.yourbookingplatform.com" + Url.Action("SavePayment", "User") + "?session_id={CHECKOUT_SESSION_ID}",
+        //        CancelUrl = "http://app.yourbookingplatform.com" + Url.Action("Login", "Account"),
+        //        Metadata = new Dictionary<string, string>
+        //{
+        //    { "UserID", UserID },
+        //    { "PackageID", PackageID.ToString() }
+        //}
+        //    };
+        //    var session = sessionService.Create(sessionOptions);
+
+        //    // Step 8: Return Checkout Session URL
+        //    return Json(new { success = true, URL = session.Url }, JsonRequestBehavior.AllowGet);
+        //}
+
+
+
         [HttpPost]
         public ActionResult UserRegistrationWebHook()
         {
@@ -377,9 +635,7 @@ namespace TheBookingPlatform.Controllers
                     var user = UserManager.FindById(userId);
                     if (user != null)
                     {
-                        user.Package = packageId;
                         user.IsPaid = true;
-                        user.LastPaymentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
                         UserManager.Update(user);
 
                         // Save payment details
@@ -392,6 +648,10 @@ namespace TheBookingPlatform.Controllers
                             Total = total,
                             SubcriptionID= subscriptionId
                         };
+                        var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+                        company.SubscriptionID = subscriptionId;
+                        company.SubscriptionStatus = "Active";
+                        CompanyServices.Instance.UpdateCompany(company);
                         PaymentServices.Instance.SavePayment(payment);
 
                         // Update other users in the same company
@@ -401,8 +661,6 @@ namespace TheBookingPlatform.Controllers
 
                         foreach (var item in currentUsers)
                         {
-                            item.Package = user.Package;
-                            item.LastPaymentDate = user.LastPaymentDate;
                             item.IsPaid = user.IsPaid;
                             item.IsInTrialPeriod = user.IsInTrialPeriod;
                             UserManager.Update(item);
@@ -634,11 +892,31 @@ namespace TheBookingPlatform.Controllers
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Pay(string UserID)
+        public ActionResult Pay(string UserID, string IsUpgrading = "")
         {
             PayViewModel model = new PayViewModel();
             model.User = UserManager.FindById(UserID);
-            model.Packages = PackageServices.Instance.GetPackage();
+            var company = CompanyServices.Instance.GetCompanyByName(model.User.Company);
+            if (company.Package != 0)
+            {
+                var currentPackage = PackageServices.Instance.GetPackage(company.Package);
+                model.Packages = PackageServices.Instance.GetPackage()
+                                   .Where(x => x.Price > currentPackage.Price) // Show only higher packages
+                                   .ToList();
+                if(model.Packages.Count ==  0)
+                {
+                    model.Packages = PackageServices.Instance.GetPackage()
+                                   .Where(x => x.Price ==  currentPackage.Price) // Show only higher packages
+                                   .ToList();
+                }
+
+
+            }
+            else
+            {
+                model.Packages = PackageServices.Instance.GetPackage();
+            }
+            model.IsUpgrading = IsUpgrading;
             HttpContext.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return View(model);
         }
@@ -648,7 +926,8 @@ namespace TheBookingPlatform.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId());
             if (user != null)
             {
-                var package = PackageServices.Instance.GetPackage(user.Package);
+                var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+                var package = PackageServices.Instance.GetPackage(company.Package);
                 if (package != null)
                 {
                     model.NoOfUserAllowed = package.NoOfUsers;

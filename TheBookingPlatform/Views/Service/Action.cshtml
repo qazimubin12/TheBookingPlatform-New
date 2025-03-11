@@ -840,8 +840,8 @@
         var CategoryID = selectedOption.data("id");
 
         var Services = $("#Name").val();
-
-        if (CategoryName != '' && Services != '') {
+        var Duration = $("#Duration").val();
+        if (CategoryName != '' && Services != '' && Duration != '') {
             $.ajax({
                 url: '@Url.Action("Action", "Service")',
                 type: "post",
@@ -849,19 +849,29 @@
             })
                 .done(function (response) {
                     if (response.success) {
-
                         var url = '@Url.Action("Index", "Service")' + '?ServiceCategory=' + CategoryID;
                         window.location.href = url;
-                    }
-                    else {
+                    } else {
                         $(".errorDiv").html(response.Message);
                     }
                 });
         } else {
             alert("Kindly fill out the necessary details, or check the red fields");
-            $("#CategoryPicker").css("border", "0.5px solid red");
-            $("#Name").css("border", "0.5px solid red");
 
+            // Reset borders first
+            $("#CategoryPicker, #Duration, #Name").css("border", "");
+
+            // Add red border only to empty fields
+            if (CategoryName == '') {
+                $("#CategoryPicker").css("border", "0.5px solid red");
+            }
+            if (Duration == '') {
+                $("#Duration").css("border", "0.5px solid red");
+            }
+            if (Services == '') {
+                $("#Name").css("border", "0.5px solid red");
+            }
         }
+
     });
 </script>

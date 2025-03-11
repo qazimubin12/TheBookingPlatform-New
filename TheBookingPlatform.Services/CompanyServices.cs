@@ -136,6 +136,10 @@ namespace TheBookingPlatform.Services
         {
             using (var context = new DSContext())
             {
+                Company.SubscriptionStatus = "Active";
+                Company.CountryName = "Netherlands";
+                Company.Currency = "EUR";
+                Company.TimeZone = "Europe/Amsterdam";
                 context.Companies.Add(Company);
                 context.SaveChanges();
             }

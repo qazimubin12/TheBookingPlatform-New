@@ -90,9 +90,6 @@ namespace TheBookingPlatform.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
-           
-
-
 
             if (returnUrl != null)
             {
@@ -141,31 +138,53 @@ namespace TheBookingPlatform.Controllers
                 {
                     return RedirectToAction("Login", "Account");
                 }
-                if (user.IsInTrialPeriod && user.IsPaid == false)
-                {
-                    if ((DateTime.Now - user.RegisteredDate).Days >= 30)
-                    {
-                        return RedirectToAction("Pay", "User", new { UserID = user.Id });
-                    }
-                }
-                else if (user.IsPaid)
-                {
-                    if (user.LastPaymentDate != null)
-                    {
-                        var remainderDays = (DateTime.Parse(user.LastPaymentDate).AddMonths(1).Date - DateTime.Now.Date).Days;
 
-                        if (remainderDays < 1)
+                //Trial End///
+                var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+                if (user.Role != "Super Admin")
+                {
+                    if (company.OwnerCompany == false)
+                    {
+                        if (user.IsInTrialPeriod && user.IsPaid == false)
+                        {
+                            if ((DateTime.Now - user.RegisteredDate).Days >= 30)
+                            {
+                                return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                            }
+                        }
+                        else if (user.IsPaid)
+                        {
+
+                            var payments = PaymentServices.Instance.GetPaymentWRTBusiness(user.Company).LastOrDefault();
+                            if (payments != null)
+                            {
+                                if (payments.LastPaidDate != null)
+                                {
+                                    var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
+                                    if (remainderDays < 1)
+                                    {
+                                        return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                    }
+                                }
+                                else
+                                {
+                                    return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                }
+                            }
+                            else
+                            {
+                                return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                            }
+                        }
+
+                        if (company.SubscriptionStatus != "Active")
                         {
                             return RedirectToAction("Pay", "User", new { UserID = user.Id });
+
                         }
                     }
-                    else
-                    {
-                        return RedirectToAction("Pay", "User", new { UserID = user.Id });
-                    }
+
                 }
-
-
                 if (user != null)
                 {
                     Session["User"] = user.Name;
@@ -178,8 +197,9 @@ namespace TheBookingPlatform.Controllers
                 {
                     case SignInStatus.Success:
                         Session["RegisteredEmail"] = user.Email;
-                        Session["RegisteredPAKKITA"] = user.Package;
-                        var package = PackageServices.Instance.GetPackage(user.Package);
+                        Session["RegisteredPAKKITA"] = user.Password;
+                        var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+                        var package = PackageServices.Instance.GetPackage(company.Package);
                         if (package != null)
                         {
                             var claims = await UserManager.GetClaimsAsync(user.Id);
@@ -194,31 +214,33 @@ namespace TheBookingPlatform.Controllers
                             }
                             if (!claims.Any(c => c.Type == "InTrial" && c.Value != ""))
                             {
-                                if (user.IsInTrialPeriod)
-                                {
-                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
-
-                                }
-                                else
+                                if ((DateTime.Now - user.RegisteredDate).TotalDays > 30)
                                 {
                                     await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
 
                                 }
+                                else
+                                {
+                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
+
+                                }
                             }
+                            claims = await UserManager.GetClaimsAsync(user.Id);
+
                         }
                         else
                         {
                             var claims = await UserManager.GetClaimsAsync(user.Id);
                             if (!claims.Any(c => c.Type == "InTrial" && c.Value != ""))
                             {
-                                if (user.IsInTrialPeriod)
+                                if ((DateTime.Now - user.RegisteredDate).TotalDays > 30)
                                 {
-                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
+                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
 
                                 }
                                 else
                                 {
-                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
+                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
 
                                 }
                             }
@@ -265,130 +287,149 @@ namespace TheBookingPlatform.Controllers
             {
                 return View(model);
             }
-
+            var paymentreminder = false;
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var user = await UserManager.FindByEmailAsync(model.Email);
-            if (user != null && user.Role != "Super Admin")
-            {
-                if (user.IsActive == false)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-                if (user.IsInTrialPeriod && user.IsPaid == false)
-                {
-                    if ((DateTime.Now - user.RegisteredDate).Days >= 30)
-                    {
-                        return RedirectToAction("Pay", "User", new { UserID = user.Id });
-                    }
-                }
-                else if (user.IsPaid)
-                {
-                    if (user.LastPaymentDate != null)
-                    {
-                        var remainderDays = (DateTime.Parse(user.LastPaymentDate).AddMonths(1).Date - DateTime.Now.Date).Days;
-
-                        if (remainderDays < 1)
-                        {
-                            return RedirectToAction("Pay", "User", new { UserID = user.Id });
-                        }
-                    }
-                    else
-                    {
-                        return RedirectToAction("Pay", "User", new { UserID = user.Id });
-                    }
-                }
-              
-                
-               
-                if (user != null)
-                {
-                    Session["User"] = user.Name;
-                }
-            }
             if (user != null)
             {
-                var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, shouldLockout: false);
-                switch (result)
+                if (user.Role != "Super Admin")
                 {
-                    case SignInStatus.Success:
-                        Session["RegisteredEmail"] = user.Email;
-                        Session["RegisteredPAKKITA"] = user.Package;
-                        var package = PackageServices.Instance.GetPackage(user.Package);
-                        if (package != null)
+                    if (user.Company != null && user.Company != "")
+                    {
+                        var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+                        if (company.OwnerCompany == false)
                         {
-                            var claims = await UserManager.GetClaimsAsync(user.Id);
-                            foreach (var item in claims)
+                            if (user != null && user.Role != "Super Admin")
                             {
-                                var resultnew = await UserManager.RemoveClaimAsync(user.Id, item);
-                            }
-                            claims = await UserManager.GetClaimsAsync(user.Id);
-                            if (!claims.Any(c => c.Type == "Package" && c.Value != ""))
-                            {
-                                await UserManager.AddClaimAsync(user.Id, new Claim("Package", package.Features ?? ""));
-                            }
-                            if (!claims.Any(c => c.Type == "InTrial" && c.Value != ""))
-                            {
-                                if (user.IsInTrialPeriod)
+                                if (user.IsActive == false)
                                 {
-                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
+                                    return RedirectToAction("Login", "Account");
+                                }
+                                if (user.IsInTrialPeriod && user.IsPaid == false)
+                                {
+                                    var datr = DateTime.Now.Date - user.RegisteredDate;
+                                    if ((DateTime.Today - user.RegisteredDate.Date).Days >= 30)
+                                    {
+                                        return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                    }
+                                }
+
+                                if (company.SubscriptionStatus != "Active")
+                                {
+                                    return RedirectToAction("Pay", "User", new { UserID = user.Id });
 
                                 }
-                                else
-                                {
-                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
 
+
+
+                                if (user != null)
+                                {
+                                    Session["User"] = user.Name;
                                 }
                             }
-                            claims = await UserManager.GetClaimsAsync(user.Id);
-
                         }
-                        else
-                        {
-                            var claims = await UserManager.GetClaimsAsync(user.Id);
-                            if (!claims.Any(c => c.Type == "InTrial" && c.Value != ""))
+                    }
+                   
+                }
+                if (user != null)
+                {
+                    var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, shouldLockout: false);
+                    switch (result)
+                    {
+                        case SignInStatus.Success:
+                            Session["RegisteredEmail"] = user.Email;
+                            Session["RegisteredPAKKITA"] = user.Password;
+                            if (user.Company != null)
                             {
-                                if (user.IsInTrialPeriod)
+                                var company = CompanyServices.Instance.GetCompanyByName(user.Company);
+                                if (company != null)
                                 {
-                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
+                                    var package = PackageServices.Instance.GetPackage(company.Package);
+                                    if (package != null)
+                                    {
+                                        var claims = await UserManager.GetClaimsAsync(user.Id);
+                                        foreach (var item in claims)
+                                        {
+                                            var resultnew = await UserManager.RemoveClaimAsync(user.Id, item);
+                                        }
+                                        claims = await UserManager.GetClaimsAsync(user.Id);
+                                        if (!claims.Any(c => c.Type == "Package" && c.Value != ""))
+                                        {
+                                            await UserManager.AddClaimAsync(user.Id, new Claim("Package", package.Features ?? ""));
+                                        }
+                                        if (!claims.Any(c => c.Type == "InTrial" && c.Value != ""))
+                                        {
+                                            if ((DateTime.Now - user.RegisteredDate).TotalDays > 30)
+                                            {
+                                                await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
 
-                                }
-                                else
-                                {
-                                    await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
+                                            }
+                                            else
+                                            {
+                                                await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
 
+                                            }
+                                        }
+                                        claims = await UserManager.GetClaimsAsync(user.Id);
+
+                                    }
+                                    else
+                                    {
+                                        var claims = await UserManager.GetClaimsAsync(user.Id);
+                                        if (!claims.Any(c => c.Type == "InTrial" && c.Value != ""))
+                                        {
+                                            if ((DateTime.Now - user.RegisteredDate).TotalDays > 30)
+                                            {
+                                                await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "No"));
+
+                                            }
+                                            else
+                                            {
+                                                await UserManager.AddClaimAsync(user.Id, new Claim("InTrial", "Yes"));
+
+                                            }
+                                        }
+                                        claims = await UserManager.GetClaimsAsync(user.Id);
+                                    }
                                 }
                             }
-                            claims = await UserManager.GetClaimsAsync(user.Id);
-                        }
-                        Session["ID"] = user.Id;
-                        var log = new History();
-                        log.Business = user.Company;
-                        var employee = EmployeeServices.Instance.GetEmployee().Where(x => x.LinkedEmployee == user.Id).FirstOrDefault();
-                        if (employee != null)
-                        {
-                            log.EmployeeName = employee.Name;
-                            log.Date = DateTime.Now;
-                            log.Note = log.EmployeeName + " Logged In";
-                            HistoryServices.Instance.SaveHistory(log);
-                        }
+                            Session["ID"] = user.Id;
+                            var log = new History();
+                            log.Business = user.Company;
+                            var employee = EmployeeServices.Instance.GetEmployee().Where(x => x.LinkedEmployee == user.Id).FirstOrDefault();
+                            if (employee != null)
+                            {
+                                log.EmployeeName = employee.Name;
+                                log.Date = DateTime.Now;
+                                log.Note = log.EmployeeName + " Logged In";
+                                HistoryServices.Instance.SaveHistory(log);
+                            }
 
-                        return RedirectToLocal(returnUrl);
-                    case SignInStatus.LockedOut:
-                        return View("Lockout");
-                    case SignInStatus.RequiresVerification:
-                        return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                    case SignInStatus.Failure:
-                    default:
-                        ModelState.AddModelError("", "Invalid login attempt.");
-                        return View(model);
+                            return RedirectToLocal(returnUrl, paymentreminder);
+                        case SignInStatus.LockedOut:
+                            return View("Lockout");
+                        case SignInStatus.RequiresVerification:
+                            return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                        case SignInStatus.Failure:
+                        default:
+                            ModelState.AddModelError("", "Invalid login attempt.");
+                            return View(model);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid login attempt.");
+                    return View(model);
                 }
             }
             else
             {
                 ModelState.AddModelError("", "Invalid login attempt.");
+                ViewData["Message"] = "Invalid login attempt.";
                 return View(model);
             }
+           
         }
 
 
@@ -490,7 +531,7 @@ namespace TheBookingPlatform.Controllers
                     var role = await RolesManager.FindByIdAsync(model.RoleID);
                     if (!User.Identity.IsAuthenticated)
                     {
-                        var user = new User { UserName = model.Email, Email = model.Email, PhoneNumber = model.Contact, Name = model.Name, Role = role.Name, Password = model.Password, RegisteredDate = DateTime.Now, IsInTrialPeriod = true, IsPaid = false, LastPaymentDate = DateTime.Now.ToString("yyyy-MM-dd") };
+                        var user = new User { UserName = model.Email, Email = model.Email, PhoneNumber = model.Contact, Name = model.Name, Role = role.Name, Password = model.Password, RegisteredDate = DateTime.Now, IsInTrialPeriod = true, IsPaid = false };
 
                         var result = await UserManager.CreateAsync(user, model.Password);
                         if (result.Succeeded)
@@ -507,7 +548,7 @@ namespace TheBookingPlatform.Controllers
                             if (!User.Identity.IsAuthenticated)
                             {
                                 Session["RegisteredEmail"] = user.Email;
-                                Session["RegisteredPAKKITA"] = user.Package;
+                                Session["RegisteredPAKKITA"] = user.Password;
                                 return RedirectToAction("RegisterCompany", "User");
                             }
                             else
@@ -531,8 +572,9 @@ namespace TheBookingPlatform.Controllers
                         var Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == LoggedInUserCompany.Company).FirstOrDefault();
                     
 
-                        var user = new User { UserName = model.Email, Email = model.Email, PhoneNumber = model.Contact, Name = model.Name, Role = role.Name, Password = model.Password, 
-                                            Package = LoggedInUserCompany.Package,LastPaymentDate = LoggedInUserCompany.LastPaymentDate, Company = LoggedInUserCompany.Company, RegisteredDate = DateTime.Now, IsInTrialPeriod = false, IsPaid = true };
+
+                        var user = new User { UserName = model.Email, Email = model.Email, PhoneNumber = model.Contact, Name = model.Name, Role = role.Name, Password = model.Password
+                                           ,Company = LoggedInUserCompany.Company, RegisteredDate = DateTime.Now, IsInTrialPeriod = false, IsPaid = true };
                         var result = await UserManager.CreateAsync(user, model.Password);
                         if (result.Succeeded)
                         {
@@ -641,6 +683,7 @@ namespace TheBookingPlatform.Controllers
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == user.Company).FirstOrDefault();
             model.Contact = user.PhoneNumber;
             model.Role = user.Role;
+            model.IntervalCalendar = user.IntervalCalendar;
             model.Email = user.Email;
             model.ID = user.Id;
             model.UserName = user.UserName;
@@ -911,7 +954,7 @@ namespace TheBookingPlatform.Controllers
                 ModelState.AddModelError("", error);
             }
         }
-        private ActionResult RedirectToLocal(string returnUrl)
+        private ActionResult RedirectToLocal(string returnUrl,bool Paymentreminder = false)
         {
             var userID = "";
             if (Convert.ToString(Session["ID"]) != "")
@@ -928,15 +971,23 @@ namespace TheBookingPlatform.Controllers
                 return RedirectToAction("Dashboard", "Admin");
 
             }
-            else if (user.Role == "Admin")
+            else if (user.Role == "Admin" || user.Role == "Owner")
             {
                 var UserLogginIn = UserManager.FindById(userID);
-                if (UserLogginIn.Company == null)
+                if (UserLogginIn.Company != null)
                 {
-                    var Company = CompanyServices.Instance.GetCompany().Where(x => x.CreatedBy == userID).FirstOrDefault();
+                    var Company = CompanyServices.Instance.GetCompanyByName(UserLogginIn.Company);
                     if (Company != null)
                     {
-                        return RedirectToAction("Dashboard", "Admin");
+                        if (Paymentreminder)
+                        {
+                            return RedirectToAction("Index", "StripeInvoices", new {DontLetEm = true});
+                        }
+                        else
+                        {
+                            return RedirectToAction("Dashboard", "Admin");
+
+                        }
                     }
                     else
                     {
@@ -946,44 +997,22 @@ namespace TheBookingPlatform.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Dashboard", "Admin");
+
+                    return RedirectToAction("RegisterCompany", "User");
 
                 }
             }
-            else if (user.Role == "Calendar")
+            else if(user.Role != "Admin" && user.Role != "Owner")
             {
-                return RedirectToAction("Dashboard", "Admin");
-            }
-            else if (user.Role == "Accountant")
-            {
-                return RedirectToAction("Dashboard", "Admin");
-            }
-            else if (user.Role == "Owner")
-            {
-                var UserLogginIn = UserManager.FindById(userID);
-                if (UserLogginIn.Company == null)
+                if (Paymentreminder)
                 {
-                    var Company = CompanyServices.Instance.GetCompany().Where(x => x.CreatedBy == userID).FirstOrDefault();
-                    if (Company != null)
-                    {
-                        return RedirectToAction("Dashboard", "Admin");
-                    }
-                    else
-                    {
-                        return RedirectToAction("RegisterCompany", "User");
-
-                    }
+                    return RedirectToAction("Index", "StripeInvoices");
                 }
                 else
                 {
                     return RedirectToAction("Dashboard", "Admin");
-
                 }
-            }
-            else if (user.Role == "Manager")
-            {
-                return RedirectToAction("Dashboard", "Admin");
-            }
+            } 
             else
             {
                 return RedirectToAction("", "");

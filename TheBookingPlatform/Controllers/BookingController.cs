@@ -2104,34 +2104,48 @@ namespace TheBookingPlatform.Controllers
             var name = businessName;
             var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == name).FirstOrDefault();
             model.Company = company;
-            model.By = By;
-            var service = new List<ServiceModelForBooking>();
-            var BestSellerServices = ServiceServices.Instance.GetBestSellerServices(businessName);
-            var categories = ServicesCategoriesServices.Instance.GetServiceCategoriesWRTBusinessAndCategory(name, "ABSENSE").OrderBy(x => x.DisplayOrder).ToList();
-            foreach (var item in categories)
+            if (model.Company.SubscriptionStatus == "Active")
             {
-
-                var serviceModel = new List<ServiceModelFORBK>();
-                var ServicesWRTCategory = ServiceServices.Instance.GetServiceWRTCategory(name, item.Name, true).Where(x => x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
-                foreach (var ser in ServicesWRTCategory)
+                model.By = By;
+                var service = new List<ServiceModelForBooking>();
+                var BestSellerServices = ServiceServices.Instance.GetBestSellerServices(businessName);
+                var categories = ServicesCategoriesServices.Instance.GetServiceCategoriesWRTBusinessAndCategory(name, "ABSENSE").OrderBy(x => x.DisplayOrder).ToList();
+                foreach (var item in categories)
                 {
-                    if (BestSellerServices.Contains(ser.ID.ToString()))
-                    {
-                        serviceModel.Add(new ServiceModelFORBK { Service = ser, BestSeller = true });
-                    }
-                    else
-                    {
-                        serviceModel.Add(new ServiceModelFORBK { Service = ser, BestSeller = false });
 
+                    var serviceModel = new List<ServiceModelFORBK>();
+                    var ServicesWRTCategory = ServiceServices.Instance.GetServiceWRTCategory(name, item.Name, true).Where(x => x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
+                    foreach (var ser in ServicesWRTCategory)
+                    {
+                        if (BestSellerServices.Contains(ser.ID.ToString()))
+                        {
+                            serviceModel.Add(new ServiceModelFORBK { Service = ser, BestSeller = true });
+                        }
+                        else
+                        {
+                            serviceModel.Add(new ServiceModelFORBK { Service = ser, BestSeller = false });
+
+                        }
                     }
+                    service.Add(new ServiceModelForBooking { ServiceCategory = item, Services = serviceModel, Company = model.Company });
                 }
-                service.Add(new ServiceModelForBooking { ServiceCategory = item, Services = serviceModel, Company = model.Company });
+
+                model.Services = service;
+
+                model.CustomerID = CustomerID;
+                return View("Index", "_BookingLayout", model);
             }
+            else
+            {
+                return RedirectToAction("NotFound", "Booking");
+            }
+        }
 
-            model.Services = service;
-
-            model.CustomerID = CustomerID;
-            return View("Index", "_BookingLayout", model);
+        [HttpGet]
+        public ActionResult NotFound(string businessName = "")
+        {
+            BookingViewModel model = new BookingViewModel();
+            return View("NotFound", "_BookingLayout",model);
         }
 
 
@@ -2295,7 +2309,15 @@ namespace TheBookingPlatform.Controllers
         {
             BookingViewModel model = new BookingViewModel();
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business.Trim() == businessName.Trim()).FirstOrDefault();
-            return View("Login", "_BookingLayout", model);
+            if (model.Company.SubscriptionStatus == "Active")
+            {
+                return View("Login", "_BookingLayout", model);
+            }
+
+            else
+            {
+                return RedirectToAction("NotFound", "Booking");
+            }
         }
 
         [HttpGet]
@@ -2314,7 +2336,14 @@ namespace TheBookingPlatform.Controllers
                 reviewModel.Add(new ReviewModel { Review = item, EmployeeName = employee.Name, CustomerName = customer.FirstName + " " + customer.LastName });
             }
             model.Reviews = reviewModel;
-            return View("AboutCompany", "_BookingLayout", model);
+            if (model.Company.SubscriptionStatus == "Active")
+            {
+                return View("AboutCompany", "_BookingLayout", model);
+            }
+            else
+            {
+                return RedirectToAction("NotFound", "Booking");
+            }
         }
 
         [HttpPost]
@@ -2825,7 +2854,14 @@ namespace TheBookingPlatform.Controllers
                 }
             }
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business.Trim() == businessName.Trim()).FirstOrDefault();
-            return View("Welcome", "_BookingLayout", model);
+            if (model.Company.SubscriptionStatus == "Active")
+            {
+                return View("Welcome", "_BookingLayout", model);
+            }
+            else
+            {
+                return RedirectToAction("NotFound", "Booking");
+            }
         }
 
         public bool IsCurrentDateInRange(DateTime startDate, DateTime endDate)
@@ -3501,6 +3537,7 @@ namespace TheBookingPlatform.Controllers
 
 
             var oldDate = appointment.Date.ToString("yyyy-MM-dd");
+            var olddateFormatted = appointment.Date.ToString("MMMM dd, yyyy");
             var oldTime = appointment.Time.ToString("HH:mm");
             var oldEmployee = appointment.EmployeeID;
 
@@ -3919,7 +3956,7 @@ namespace TheBookingPlatform.Controllers
                     emailBody = emailBody.Replace("{{time}}", appointment.Time.ToString("H:mm:ss"));
                     emailBody = emailBody.Replace("{{end_time}}", appointment.EndTime.ToString("H:mm"));
                     emailBody = emailBody.Replace("{{employee_picture}}", $"<img class='text-center' style='height:50px;width:auto;' src='{"http://app.yourbookingplatform.com" + employee.Photo}'>");
-                    emailBody = emailBody.Replace("{{previous_date}}", oldDate);
+                    emailBody = emailBody.Replace("{{previous_date}}", olddateFormatted);
                     emailBody = emailBody.Replace("{{previous_time}}", oldTime);
                     emailBody = emailBody.Replace("{{employee}}", employee.Name);
                     emailBody = emailBody.Replace("{{employee_specialization}}", employee.Specialization);
