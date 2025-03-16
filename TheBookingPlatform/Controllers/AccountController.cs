@@ -531,7 +531,8 @@ namespace TheBookingPlatform.Controllers
                     var role = await RolesManager.FindByIdAsync(model.RoleID);
                     if (!User.Identity.IsAuthenticated)
                     {
-                        var user = new User { UserName = model.Email, Email = model.Email, PhoneNumber = model.Contact, Name = model.Name, Role = role.Name, Password = model.Password, RegisteredDate = DateTime.Now, IsInTrialPeriod = true, IsPaid = false };
+                        var user = new User { UserName = model.Email, Email = model.Email, PhoneNumber = model.Contact, Name = model.Name, Role = role.Name, Password = model.Password, RegisteredDate = DateTime.Now, IsInTrialPeriod = true, IsPaid = false
+                        ,Country = model.Country};
 
                         var result = await UserManager.CreateAsync(user, model.Password);
                         if (result.Succeeded)
@@ -573,7 +574,7 @@ namespace TheBookingPlatform.Controllers
                     
 
 
-                        var user = new User { UserName = model.Email, Email = model.Email, PhoneNumber = model.Contact, Name = model.Name, Role = role.Name, Password = model.Password
+                        var user = new User { UserName = model.Email, Email = model.Email, PhoneNumber = model.Contact, Name = model.Name, Role = role.Name, Password = model.Password,Country =model.Country
                                            ,Company = LoggedInUserCompany.Company, RegisteredDate = DateTime.Now, IsInTrialPeriod = false, IsPaid = true };
                         var result = await UserManager.CreateAsync(user, model.Password);
                         if (result.Succeeded)

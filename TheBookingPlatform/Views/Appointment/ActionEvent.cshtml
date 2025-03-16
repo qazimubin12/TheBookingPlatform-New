@@ -253,9 +253,9 @@
                             <div class="col-md-12">
                                 <label>Select Employee</label>
                                 <select onchange="CheckIfEmployeeProvideTheService()" class="form-control choices__input" name="EmployeeID" id="EmployeeIDAB">
-                                    <option value="0">---Select----</option>
                                     @foreach (var item in Model.Employees)
                                     {
+
                                         if (item.ID == Model.EmployeeID)
                                         {
                                             <option selected value="@item.ID">@item.Name</option>
@@ -265,6 +265,7 @@
                                             <option value="@item.ID">@item.Name</option>
 
                                         }
+
                                     }
                                 </select>
                             </div>

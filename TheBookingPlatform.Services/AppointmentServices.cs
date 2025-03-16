@@ -488,22 +488,22 @@ namespace TheBookingPlatform.Services
 
 
 
-        public List<Appointment> GetAllAppointmentWRTBusiness(string Business, bool isDeleted, List<int> EmployeeIDs, DateTime StartDate, DateTime EndDate, List<string> AbsenseServiceIDs, bool IsCancelled, List<string> SelectedStatus)
+        public async Task<List<Appointment>> GetAllAppointmentWRTBusinessNEO(
+     string Business, bool isDeleted, int EmployeeID, DateTime StartDate, DateTime EndDate, bool IsCancelled)
         {
             using (var context = new DSContext())
             {
-                var totalServices = context.Appointments.AsNoTracking()
-                .Where(x => x.Business == Business
-                  && x.DELETED == false
-                  && SelectedStatus.Contains(x.Status.Trim())
-                  && x.IsCancelled == IsCancelled
-                  && EmployeeIDs.Contains(x.EmployeeID)
-                  && !AbsenseServiceIDs.Contains(x.Service)
-                  && x.Date >= StartDate && x.Date <= EndDate)
-                  .ToList();
-                return totalServices;
+                return await context.Appointments
+                    .AsNoTracking()
+                    .Where(x => x.Business == Business
+                        && x.DELETED == isDeleted  // Use isDeleted parameter
+                        && x.IsCancelled == IsCancelled
+                        && x.EmployeeID == EmployeeID
+                        && x.Date >= StartDate && x.Date <= EndDate)
+                    .ToListAsync();
             }
         }
+
         public List<Appointment> GetAllAppointmentWRTBusiness(string Business, bool isDeleted,  DateTime StartDate, DateTime EndDate)
         {
             using (var context = new DSContext())

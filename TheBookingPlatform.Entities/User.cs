@@ -18,6 +18,7 @@ namespace TheBookingPlatform.Entities
         public string Company { get; set; }
         public bool IsActive { get; set; } = true;
         public bool IsInTrialPeriod { get; set; }
+        public string Country { get; set; }
         public bool IsPaid { get; set; }
         public DateTime RegisteredDate { get; set; }
         public string ReadNotifications { get; set; }

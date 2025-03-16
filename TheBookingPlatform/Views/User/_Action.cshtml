@@ -67,28 +67,28 @@
 
                 @if (Model.LoggedInUser.Role == "Owner" || Model.LoggedInUser.Role == "Super Admin")
                 {
-                        <div class="form-group input-group input-group-dynamic">
-                            <label>Role</label>
-                            <select name="Role" class="form-control choices__input">
-                                @foreach (var item in Model.Roles)
+                    <div class="form-group input-group input-group-dynamic">
+                        <label>Role</label>
+                        <select name="Role" class="form-control choices__input">
+                            @foreach (var item in Model.Roles)
+                            {
+                                if (item.Name != "Super Admin")
                                 {
-                                    if (item.Name != "Super Admin")
+                                    if (item.Name == Model.Role)
                                     {
-                                        if (item.Name == Model.Role)
-                                        {
-                                            <option selected value="@item.Id">@item.Name</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@item.Id">@item.Name</option>
+                                        <option selected value="@item.Id">@item.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
 
-                                        }
                                     }
                                 }
+                            }
 
 
-                            </select>
-                        </div>
+                        </select>
+                    </div>
                 }
 
                 <div class="form-group input-group input-group-dynamic">
@@ -124,6 +124,12 @@
                 <div class="form-group input-group input-group-dynamic">
                     <label>Contact</label>
                     <input class="form-control common-field" id="Contact" name="Contact" placeholder="Enter Contact." value="@Model.Contact">
+                </div>
+
+
+                <div class="form-group input-group input-group-dynamic">
+                    <label>Country</label>
+                    <input class="form-control common-field" id="Country" name="Country" placeholder="Enter Country." value="@Model.Country">
                 </div>
 
                 <div class="form-group input-group input-group-dynamic">

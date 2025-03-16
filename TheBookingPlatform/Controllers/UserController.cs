@@ -965,6 +965,7 @@ namespace TheBookingPlatform.Controllers
                 model.ID = user.Id;
                 model.Company = user.Company;
                 model.Name = user.Name;
+                model.Country = user.Country;
                 model.Contact = user.PhoneNumber;
                 model.Email = user.Email;
                 model.IntervalCalendar = user.IntervalCalendar;
@@ -1008,6 +1009,7 @@ namespace TheBookingPlatform.Controllers
                     user.UserName = model.Email;
                     user.IntervalCalendar = model.IntervalCalendar;
                     user.Role = role.Name;
+                    user.Country = model.Country;
                     user.Password = model.passkaka;
                     var token = await UserManager.GeneratePasswordResetTokenAsync(model.ID);
                     var result2 = await UserManager.ResetPasswordAsync(model.ID, token, model.passkaka);
@@ -1044,6 +1046,7 @@ namespace TheBookingPlatform.Controllers
                     user.Company = LoggedInUser.Company;
                     user.Password = model.Password;
                     user.Role = model.Role;
+                    user.Country = model.Country;
                     user.IntervalCalendar = model.IntervalCalendar;
                     user.UserName = model.Email;
                     result = await UserManager.CreateAsync(user);

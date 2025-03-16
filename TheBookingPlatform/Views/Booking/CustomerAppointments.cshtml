@@ -36,7 +36,13 @@
                     </p>
                     @if (item.IsCancelled)
                     {
-                        <button class="btn btn-danger" disabled type="button">CANCELLED</button>
+
+
+<button class="btn btn-danger" disabled type="button">CANCELLED</button>
+                        if (item.CancelledByEmail)
+                        {
+                        <span class="text-muted">Appointment was cancelled by Customer.</span>
+                        }
                     }
                     else
                     {

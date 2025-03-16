@@ -2654,6 +2654,7 @@ namespace TheBookingPlatform.Controllers
                     IsCancelled = item.IsCancelled,
                     IsPaid = item.IsPaid,
                     ID = item.ID,
+                    CancelledByEmail = item.CancelledByEmail,
                     EmployeeName = employee?.Name,
                     EmployeeSpecialization = employee?.Specialization,
                     Customer = model.Customer,

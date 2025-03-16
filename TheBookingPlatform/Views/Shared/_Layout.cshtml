@@ -127,7 +127,10 @@
             top: 0;
             left: 70px
         }
-
+        .navbar-vertical.navbar-expand-xs .navbar-nav > .nav-item {
+            margin-top: 0.125rem;
+            width: auto;
+        }
         .btn.btn-sm i, .btn-group-sm > .btn i {
             font-size: 1rem;
         }
@@ -636,6 +639,7 @@
                         </li>
                     }
                 }
+
                 @if (User.IsInRole("Accountant"))
                 {
                     <!-- Dashboard -->
@@ -697,7 +701,7 @@
                                             </a>
                                         </li>
                                     }
-                                    
+
                                 </ul>
                             }
                             else
@@ -715,7 +719,7 @@
                                             <span class="sidenav-normal  ms-2  ps-1"> Reviews </span>
                                         </a>
                                     </li>
-                                  
+
                                 </ul>
                             }
                         </div>
@@ -839,6 +843,12 @@
                                             </a>
                                         </li>
                                     }
+                                    <li class="nav-item" id="STRIPEInvoicesTAB">
+                                        <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
+                                            <span class="sidenav-mini-icon"> P </span>
+                                            <span class="nav-link-text ms-2 ps-1">Payments</span>
+                                        </a>
+                                    </li>
                                 }
                                 else
                                 {
@@ -866,13 +876,9 @@
                                             <span class="sidenav-normal  ms-2  ps-1"> Integrations </span>
                                         </a>
                                     </li>
+
                                 }
-                                <li class="nav-item" id="STRIPEInvoicesTAB">
-                                    <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
-                                        <span class="sidenav-mini-icon"> P </span>
-                                        <span class="nav-link-text ms-2 ps-1">Payments</span>
-                                    </a>
-                                </li>
+
                             </ul>
                         </div>
                     </li>
@@ -963,6 +969,7 @@
                         </a>
                     </li>
                 }
+
                 @if (User.IsInRole("Manager"))
                 {
                     <!-- Dashboard -->
@@ -1024,7 +1031,7 @@
                                             </a>
                                         </li>
                                     }
-                                   
+
                                 </ul>
                             }
                             else
@@ -1042,7 +1049,7 @@
                                             <span class="sidenav-normal  ms-2  ps-1"> Reviews </span>
                                         </a>
                                     </li>
-                                  
+
                                 </ul>
                             }
                         </div>
@@ -1168,6 +1175,12 @@
                                             </a>
                                         </li>
                                     }
+                                    <li class="nav-item" id="STRIPEInvoicesTAB">
+                                        <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
+                                            <span class="sidenav-mini-icon"> P </span>
+                                            <span class="nav-link-text ms-2 ps-1">Payments</span>
+                                        </a>
+                                    </li>
                                 }
                                 else
                                 {
@@ -1199,12 +1212,7 @@
                                         </a>
                                     </li>
                                 }
-                                <li class="nav-item" id="STRIPEInvoicesTAB">
-                                    <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
-                                        <span class="sidenav-mini-icon"> P </span>
-                                        <span class="nav-link-text ms-2 ps-1">Payments</span>
-                                    </a>
-                                </li>
+
                             </ul>
                         </div>
                     </li>
@@ -1295,6 +1303,7 @@
                         </a>
                     </li>
                 }
+
                 @if (User.IsInRole("Admin"))
                 {
                     <!-- Dashboard -->
@@ -1356,7 +1365,7 @@
                                             </a>
                                         </li>
                                     }
-                                   
+
                                 </ul>
                             }
                             else
@@ -1374,7 +1383,7 @@
                                             <span class="sidenav-normal  ms-2  ps-1"> Reviews </span>
                                         </a>
                                     </li>
-                                 
+
                                 </ul>
                             }
                         </div>
@@ -1498,6 +1507,12 @@
                                             </a>
                                         </li>
                                     }
+                                    <li class="nav-item" id="STRIPEInvoicesTAB">
+                                        <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
+                                            <span class="sidenav-mini-icon"> P </span>
+                                            <span class="nav-link-text ms-2 ps-1">Payments</span>
+                                        </a>
+                                    </li>
                                 }
                                 else
                                 {
@@ -1527,12 +1542,7 @@
                                         </a>
                                     </li>
                                 }
-                                <li class="nav-item" id="STRIPEInvoicesTAB">
-                                    <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
-                                        <span class="sidenav-mini-icon"> P </span>
-                                        <span class="nav-link-text ms-2 ps-1">Payments</span>
-                                    </a>
-                                </li>
+
                             </ul>
                         </div>
                     </li>
@@ -1623,6 +1633,7 @@
                         </a>
                     </li>
                 }
+
                 @if (User.IsInRole("Owner"))
                 {
                     <!-- Dashboard -->
@@ -1702,7 +1713,7 @@
                                             <span class="sidenav-normal  ms-2  ps-1"> Reviews </span>
                                         </a>
                                     </li>
-                                   
+
                                 </ul>
                             }
                         </div>
@@ -1826,6 +1837,12 @@
                                             </a>
                                         </li>
                                     }
+                                    <li class="nav-item" id="STRIPEInvoicesTAB">
+                                        <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
+                                            <span class="sidenav-mini-icon"> P </span>
+                                            <span class="nav-link-text ms-2 ps-1">Payments</span>
+                                        </a>
+                                    </li>
                                 }
                                 else
                                 {
@@ -1854,12 +1871,7 @@
                                         </a>
                                     </li>
                                 }
-                                <li class="nav-item" id="STRIPEInvoicesTAB">
-                                    <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
-                                        <span class="sidenav-mini-icon"> P </span>
-                                        <span class="nav-link-text ms-2 ps-1">Payments</span>
-                                    </a>
-                                </li>
+
                             </ul>
                         </div>
                     </li>
@@ -1951,14 +1963,21 @@
                     </li>
 
                     <!-- Payments -->
-              
+
                 }
+
                 @if (User.IsInRole("Super Admin"))
                 {
                     <!-- Companies -->
                     <li class="nav-item " id="CompaniesTAB">
                         <a class="nav-link text-dark " href="@Url.Action("Index", "Company")">
                             <span class="sidenav-normal  ms-2  ps-1"> Companies </span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item " id="UsersTAB">
+                        <a class="nav-link text-dark " href="@Url.Action("Index", "User")">
+                            <span class="sidenav-normal  ms-2  ps-1"> Users </span>
                         </a>
                     </li>
 

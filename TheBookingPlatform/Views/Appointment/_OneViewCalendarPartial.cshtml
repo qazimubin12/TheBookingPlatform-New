@@ -40,10 +40,11 @@
 
 
 <style>
-  
-    #appointmentModal{
-        padding-left:20px !important;
+
+    #appointmentModal {
+        padding-left: 20px !important;
     }
+
     .fc-direction-ltr .fc-timegrid-now-indicator-arrow {
         left: 0;
         border-width: 10px 33px 10px 11px;
@@ -56,8 +57,8 @@
         display: flex;
     }
 
-    
-    
+
+
 
     .fc-timegrid-now-indicator-label {
         position: absolute;
@@ -273,7 +274,7 @@
         font-size: 12px;
         margin-bottom: 0px;
         float: left;
-        margin-top:10px;
+        margin-top: 10px;
     }
 
 
@@ -295,8 +296,9 @@
         background: repeating-linear-gradient( -45deg, rgba(255, 255, 0, 0.5), /* Yellow with 50% opacity */
         rgba(255, 255, 0, 0.5) 10px, rgba(255, 255, 255, 0.5) 10px, /* White with 50% opacity */
         rgba(255, 255, 255, 0.5) 20px );
-        color:black !important;
+        color: black !important;
     }
+
     .loading-spinner-overlay {
         display: none; /* Initially hidden */
         position: fixed;
@@ -351,10 +353,10 @@
     .fc-timegrid-slot[data-time$=":00:00"] .fc-timegrid-slot-label-cushion {
         color: gray; /* Black or darker color */
     }
-
 </style>
 
 <input type="hidden" value="@Model.LoggedInUser.IntervalCalendar" id="IntervalFinal" />
+<input type="hidden" value="@Model.EmployeeID" id="EmployeeID" />
 <div style="background-color:white; padding:10px;border-radius:10px;" id="fullCalendar"></div>
 
 <div class="modal  fade center" id="actionModal" style="z-index:56;" tabindex="-1" role="dialog">
@@ -471,7 +473,7 @@
             now: new Date(),
             editable: true,
 
-            initialView: 'resourceTimeGridDay',
+            initialView: 'timeGridWeek',
             nowIndicator: 'true',
 
             //timeZone: clientTimeZoneNameToBeUsed, //NEED TO COMMENT THIS
@@ -1412,10 +1414,12 @@ else
             events: function (info, successCallback, failureCallback) {
                 var startDate = info.startStr;
                 var events = [];
+                var employeeId = $("#EmployeeID").val(); // Get the selected employee ID
+
                 $.ajax({
-                    url: '@Url.Action("GetTheDateEvents", "Appointment")', // Replace with your actual API endpoint
+                    url: '@Url.Action("GetTheDateEventsOneView", "Appointment")', // Replace with your actual API endpoint
                     method: 'GET',
-                    data: { startDate: startDate },
+                    data: { startDate: startDate, employeeId: employeeId },
                     success: function (data) {
                         if (data && data.Appointments) {
                             console.log('Received Appointments:', data.Appointments);
@@ -1429,12 +1433,11 @@ else
                                 var customer = FromGCAL
                                     ? "Appointment from Google Calendar"
                                     : appointment.Services.some(x => x.Category === "ABSENSE") ? "Walk In" : title;
-                                var blockedEvent = appointment.BlockedEvent;                                    
+                                var blockedEvent = appointment.BlockedEvent;
                                 var customerPhone = appointment.MobileNumber || "";
                                 var notes = appointment.Notes ? appointment.Notes.replace("\r\n", "").replace("\n", " ") : "";
                                 var startDate = parseDotNetDate(appointment.Date);
                                 var startTime = parseDotNetDate(appointment.Time);
-                                debugger
                                 startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
                                 var endDate = addMinutes(startDate, appointment.TotalDuration);
                                 var haveBuffer = appointment.Buffers.length > 0 ? "true" : "false";
@@ -1612,7 +1615,7 @@ else
                 hour12: false
             },
             eventContent: function (arg) {
-                
+
                 showLoadingSpinner();
                 var clientDate = new Date();
                 var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
@@ -1628,7 +1631,7 @@ else
 
                 const timeString = arg.event.extendedProps.testingEnd;
                 var blocked = arg.event.extendedProps.blockedEvent;
-                
+
                 var eventContent = document.createElement('div');
                 eventContent.classList.add('fc-event-main');
                 if (blocked) {
@@ -1670,7 +1673,7 @@ else
 
                     var timeElement = document.createElement('div');
                     timeElement.classList.add('fc-time'); // Add the FullCalendar time class
-                    
+
                     if (arg.backgroundColor == "#5DAF4D") {
                         timeElement.classList.add('fc-time-green'); // Add the FullCalendar time class
                     }
@@ -1853,7 +1856,7 @@ else
             //    const eventContent = document.createElement('div');
             //    eventContent.classList.add('fc-event-main');
 
-            
+
 
             //    // Format start time and end time
             //    let serviceStartTime = arg.event.start;
@@ -2005,7 +2008,7 @@ else
                 }
                 else {
                     // When an event is clicked, open the modal and fetch appointment details from the controller
-                    
+
                     var FromGCAL = calEvent.event.extendedProps.FromGCAL;
 
                     $.ajax({
@@ -2038,13 +2041,8 @@ else
                             }
                             var servicesList = $('#Services'); // Target the <ul>
                             servicesList.empty(); // Clear existing items
-                            var containabsense = false;
+
                             $.each(appointmentDetails.ServicesNew, function (index, service) {
-                                
-                                var ServiceCategory = service.Category;
-                                if (ServiceCategory == "ABSENSE") {
-                                    containabsense = true;
-                                }
                                 var listItem = `
         <li>
             <span class="text-sm">${service.Service}</span>
@@ -2064,7 +2062,7 @@ else
                             $('#CardsBody').html("");
                             if (appointmentDetails.Customer != null) {
                                 let cardItems = '';
-                                cardItems += '<div  class="card-body"style="padding: 0.5rem !important;">';
+
                                 // Referral Card
                                 cardItems += `
     <div class="d-flex mb-2">
@@ -2126,7 +2124,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
                                 if (cardItems === '') {
                                     cardItems = '<p class="text-center">No Gift Cards or Loyalty Cards Available</p>';
                                 }
-                                cardItems += '</div>';
+
                                 // Insert structured divs into the container
                                 $('#CardsBody').append(cardItems);
                             }
@@ -2149,6 +2147,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
 
 
 
+                            var containabsense = false;
 
                             var servicesList = $('#Services'); // Target the <ul>
                             servicesList.empty(); // Clear existing items
@@ -2163,7 +2162,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
 
 
 
-                            debugger
+
                             if (containabsense && !FromGCAL) {
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #WhatsappCustomerButton, #CallCustomerButton").hide();
                                 $("#DeleteAppointmentButton").show();
@@ -2192,7 +2191,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
                                 $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + editUrl + "'");
                                 $("#Popupservice").text("Services:");
                                 $("#PopupTitle").text("Appointment Details");
-                             
+
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #SendReminderBtn").show();
                             }
 
@@ -2234,7 +2233,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
             eventDragStart: function (event, delta, revertFunc) {
 
                 var blocked = event.event.extendedProps.blockedEvent;
-                
+
                 if (blocked) {
                     alert("Cannot Move this Appointment");
                     location.reload();
@@ -2402,7 +2401,8 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
         calendar.render();
         function setCustomTitle() {
             var customTitle = '@DateTime.Parse(Model.GoToDate).ToString("ddd, MMM dd, yyyy")';
-            $(".fc-toolbar-title").text(customTitle);
+            var EmpName = $("#Emp_Name").val();
+            $(".fc-toolbar-title").text(customTitle +" - "+ EmpName);
         }
 
       // Initial setting of the custom title

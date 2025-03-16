@@ -365,21 +365,24 @@ namespace TheBookingPlatform.Controllers
             if (company != null)
             {
                 var package = PackageServices.Instance.GetPackage(company.Package);
-                StripeConfiguration.ApiKey = package.APIKEY;
-                var invoiceService = new InvoiceService();
-                var invoices = invoiceService.List(new InvoiceListOptions
+                if (package != null)
                 {
-                    Subscription = payments.SubcriptionID, // Replace with your Subscription ID
-                    Limit = 10 // Set appropriate limit
-                });
-                var pendingInvoices = invoices.Where(i => i.Status == "draft" || i.Status == "open").ToList();
-                if (payments != null && payments.LastPaidDate != null)
-                {
-                    var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
-
-                    if (remainderDays < 1 && pendingInvoices.Count() > 0)
+                    StripeConfiguration.ApiKey = package.APIKEY;
+                    var invoiceService = new InvoiceService();
+                    var invoices = invoiceService.List(new InvoiceListOptions
                     {
-                        paymentreminder = true;
+                        Subscription = payments.SubcriptionID, // Replace with your Subscription ID
+                        Limit = 10 // Set appropriate limit
+                    });
+                    var pendingInvoices = invoices.Where(i => i.Status == "draft" || i.Status == "open").ToList();
+                    if (payments != null && payments.LastPaidDate != null)
+                    {
+                        var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
+
+                        if (remainderDays < 1 && pendingInvoices.Count() > 0)
+                        {
+                            paymentreminder = true;
+                        }
                     }
                 }
             }

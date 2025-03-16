@@ -80,6 +80,27 @@ namespace TheBookingPlatform.Services
             }
         }
 
+        public async Task<List<WaitingList>> GetWaitingListAsyncWRTEmployeeID(string Business, int Day, int Month, int Year, string NotCreatedStatus,int EmployeeID)
+        {
+            using (var context = new DSContext())
+            {
+                // Use a single DateTime object for comparison to reduce the complexity of the Where clause
+                var targetDate = new DateTime(Year, Month, Day);
+
+                // Query optimization
+                return await context.WaitingLists
+                    .AsNoTracking() // Disable change tracking for better performance
+                    .Where(x => x.Date.Year == Year
+                                &&x.EmployeeID == EmployeeID
+                                && x.Date.Month == Month
+                                && x.Date.Day == Day
+                                && x.Business == Business
+                                && x.WaitingListStatus != NotCreatedStatus)
+                    .OrderBy(x => x.BookingDate)
+                    .ToListAsync();
+            }
+        }
+
 
         public async Task<List<WaitingList>> GetWaitingListAsync(string Business, int Day, int Month, int Year, string NotCreatedStatus, int EmployeeID)
         {

@@ -334,7 +334,7 @@ namespace TheBookingPlatform.Controllers
             if (Services != "")
             {
                 var finalIDsInt = Services.Split(',').Select(int.Parse).ToList();
-                var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == employee.Business).FirstOrDefault();
+                var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == employee?.Business).FirstOrDefault();
                 if (EmployeeID != 0)
                 {
                     var employeeServices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(employee.Business, EmployeeID);
@@ -983,7 +983,6 @@ namespace TheBookingPlatform.Controllers
 
         }
 
-        #region oldNotOptimizedCode
 
         [HttpGet]
         public async Task<JsonResult> GetTheDateEvents(DateTime startDate)
@@ -1343,7 +1342,436 @@ namespace TheBookingPlatform.Controllers
             }
         }
 
-        #endregion
+
+        [HttpGet]
+        public async Task<JsonResult> GetTheDateEventsOneView(DateTime startDate,int employeeId)
+        {
+            var LoggedInUser = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            var AppointmentModel = new List<AppointmentModel>();
+            var WaitingListModel = new List<WaitingListModel>();
+            var remindershouldbeSent = false;
+
+            if (startDate.Date >= DateTime.Now.Date)
+            {
+                remindershouldbeSent = true;
+            }
+            if (LoggedInUser.Role != "Super Admin")
+            {
+                var selectedWaitingLists = await WaitingListServices.Instance.GetWaitingListAsyncWRTEmployeeID(LoggedInUser.Company, startDate.Day, startDate.Month, startDate.Year, "Created",employeeId);
+
+
+                var company = CompanyServices.Instance.GetCompanyByName(LoggedInUser.Company);
+            
+
+                var groupedData = selectedWaitingLists.SelectMany(waitingList =>
+                {
+                    var employeeIds = waitingList.EmployeeIDs?.Split(',') ?? new string[] { waitingList.EmployeeID.ToString() };
+                    return employeeIds.Select(emp => new WaitingListModel
+                    {
+                        Date = waitingList.Date,
+                        EmployeeID = int.Parse(emp),
+                        Count = 1
+                    });
+                })
+                .GroupBy(newmode => new { newmode.Date, newmode.EmployeeID })
+                .Select(group => new WaitingListModel
+                {
+                    Date = group.Key.Date,
+                    EmployeeID = group.Key.EmployeeID,
+                    Count = group.Count()
+                })
+                .ToList();
+                //Assign the result to your model
+                var WaitingLists = groupedData;
+
+
+                var StartDate = startDate;
+                var EndDate = startDate.AddDays(7);
+                var appointments = await AppointmentServices.Instance.GetAllAppointmentWRTBusinessNEO(LoggedInUser.Company,false,employeeId,StartDate,EndDate,false);
+                appointments = appointments.Distinct(new AppointmentComparer()).ToList();
+                foreach (var item in appointments)
+                {
+
+                    if (item.IsPaid == false && item.DepositMethod == "Online" && item.IsCancelled == false && (DateTime.Now - item.BookingDate).TotalMinutes > 15)
+                    {
+                        item.IsCancelled = true;
+                        AppointmentServices.Instance.UpdateAppointmentNew(item);
+                        var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                        var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
+                        //delete previous one
+                        var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(item.Business);
+                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                        var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(item.Business);
+                        var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
+                        if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                        {
+                            if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
+                            {
+                                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
+                                ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
+                            }
+                        }
+                        foreach (var gcalId in ToBeInputtedIDs)
+                        {
+                            if (gcalId.Key != null && !gcalId.Key.Disabled)
+                            {
+                                try
+                                {
+                                    var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + gcalId.Value + "/events/" + item.GoogleCalendarEventID);
+                                    var restClient = new RestClient(url);
+                                    var request = new RestRequest();
+
+                                    request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                                    request.AddHeader("Authorization", "Bearer " + gcalId.Key.AccessToken);
+                                    request.AddHeader("Accept", "application/json");
+                                    var response = restClient.Delete(request);
+                                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                                    {
+                                        var history = new History();
+                                        history.Date = DateTime.Now;
+                                        history.AppointmentID = item.ID;
+                                        history.Note = "Appointment got deleted from GCalendar";
+                                        history.Business = item.Business;
+                                        HistoryServices.Instance.SaveHistory(history);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    continue;
+                                }
+
+
+
+                            }
+                        }
+                       
+
+
+                        continue;
+                    }
+                    if (item.DepositMethod == "Pin" && item.IsPaid == false)
+                    {
+                        item.IsPaid = true;
+                        AppointmentServices.Instance.UpdateAppointmentNew(item);
+
+                    }
+                    int TotalDuration = 0;
+                    var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
+                    var serviceList = new List<ServiceModelForCustomerProfile>();
+                    bool BlockedEvent = item.Business != LoggedInUser.Company ? true : false;
+                    if (item.Service != null)
+                    {
+                        var ServiceListCommand = item.Service.Split(',').ToList();
+                        var ServiceDuration = item.ServiceDuration.Split(',').ToList();
+
+
+                        for (int i = 0; i < ServiceListCommand.Count && i < ServiceDuration.Count; i++)
+                        {
+                            var Service = ServiceServices.Instance.GetService(int.Parse(ServiceListCommand[i]));
+                            if (Service != null)
+                            {
+                                var serviceViewModel = new ServiceModelForCustomerProfile
+                                {
+
+                                    Name = Service.Name,
+                                    Duration = ServiceDuration[i],
+                                    Price = Service.Price,
+                                    Category = Service.Category,
+                                    ID = Service.ID
+                                };
+                                serviceList.Add(serviceViewModel);
+                                TotalDuration += int.Parse(serviceViewModel.Duration.ToLower().Replace("mins", "").Replace(" ", "").Trim());
+
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        TotalDuration += int.Parse(Math.Round((item.EndTime.TimeOfDay - item.Time.TimeOfDay).TotalMinutes, 0).ToString());
+
+                    }
+                    if (customer == null)
+                    {
+
+
+                        AppointmentModel.Add(new AppointmentModel
+                        {
+                            Date = item.Date,
+                            AppointmentEndTime = item.EndTime,
+                            Time = item.Time,
+                            Color = item.Color,
+                            ID = item.ID,
+                            Notes = item.Notes,
+                            IsPaid = item.IsPaid,
+                            IsCancelled = item.IsCancelled,
+                            EmployeeID = item.EmployeeID,
+                            CustomerFirstName = "Walk In",
+                            IsRepeat = item.IsRepeat,
+                            CustomerLastName = "",
+                            Services = serviceList,
+                            FromGCAL = item.FromGCAL,
+                            ReminderSent = remindershouldbeSent && item.Reminder,
+                            TotalDuration = TotalDuration,
+                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            BlockedEvent = BlockedEvent
+                        });
+                    }
+                    else
+                    {
+                        bool NewCustomer = false;
+                        DateTime today = DateTime.Now.Date; // Assuming you want to check appointments before today
+                        bool hasPreviousAppointments = AppointmentServices.Instance.HasPreviousAppointments(LoggedInUser.Company, customer.ID, item.ID, today);
+
+
+                        if (!hasPreviousAppointments)
+                        {
+                            NewCustomer = true;
+                        }
+                        AppointmentModel.Add(new AppointmentModel
+                        {
+                            IsRepeat = item.IsRepeat,
+                            AnyEmployeeSelected = item.AnyAvailableEmployeeSelected,
+                            NewCustomer = NewCustomer,
+                            Date = item.Date,
+                            AppointmentEndTime = item.EndTime,
+                            Time = item.Time,
+                            Color = item.Color,
+                            ID = item.ID,
+                            Notes = item.Notes,
+                            IsPaid = item.IsPaid,
+                            IsCancelled = item.IsCancelled,
+                            EmployeeID = item.EmployeeID,
+                            CustomerFirstName = customer.FirstName,
+                            CustomerLastName = customer.LastName,
+                            MobileNumber = customer.MobileNumber,
+                            Services = serviceList,
+                            TotalDuration = TotalDuration,
+                            ReminderSent = remindershouldbeSent && item.Reminder,
+                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            BlockedEvent = BlockedEvent
+                        });
+
+                    }
+                }
+                var AppointmentLists = AppointmentModel;
+                return Json(new { success = true, Appointments = AppointmentLists, WaitingLists = WaitingLists }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+        [HttpGet]
+        public ActionResult OneViewCalendar(int EmployeeID)
+        {
+            AppointmentListingViewModel model = new AppointmentListingViewModel();
+            var AppointmentModel = new List<AppointmentModel>();
+            var WaitingListModel = new List<WaitingListModel>();
+            var Allshifts = new List<ShiftOfEmployeeModel>();
+
+
+            model.SelectedDate = DateTime.Now;
+            model.GoToDate = DateTime.Now.ToString("yyyy-MM-dd");
+            model.EmployeeID = EmployeeID;
+            model.Name = EmployeeServices.Instance.GetEmployee(EmployeeID).Name;
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+
+            if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
+            model.LoggedInUser = LoggedInUser;
+            model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business == LoggedInUser.Company).FirstOrDefault();
+            if (LoggedInUser.Role != "Super Admin")
+            {
+                model.Holidays = HolidayServices.Instance.GetHolidayWRTBusiness(LoggedInUser.Company, "");
+                if (model.Holidays != null)
+                {
+                    if (model.Holidays.Select(X => X.Date).Contains(model.SelectedDate))
+                    {
+                        model.TodayOff = true;
+                    }
+                    else
+                    {
+                        model.TodayOff = false;
+                    }
+                }
+                else
+                {
+                    model.TodayOff = false;
+                }
+                var userAssignedemployees = CalendarManageServices.Instance.GetCalendarManage(LoggedInUser.Company, LoggedInUser.Id);
+                var employees = new List<Employee>();
+                var List = new List<EmployeeTimeTableModel>();
+                if (userAssignedemployees != null)
+                {
+                    var listofTimeTable = new List<TimeTableModel>();
+                    employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                    foreach (var emp in employees)
+                    {
+                        var shifts = new List<ShiftModel>();
+                        var pricechange = EmployeePriceChangeServices.Instance
+                            .GetEmployeePriceChangeWRTBusiness(emp.ID, LoggedInUser.Company)
+                            .Where(x => x.StartDate.Date <= model.SelectedDate.Date && x.EndDate.Date >= model.SelectedDate.Date).FirstOrDefault();
+                        var shiftslist = ShiftServices.Instance.GetShiftWRTBusiness(LoggedInUser.Company, emp.ID);
+                        foreach (var item in shiftslist)
+                        {
+                            var roster = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(item.EmployeeID);
+                            var recurringShifts = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(LoggedInUser.Company, item.ID);
+                            if (recurringShifts != null)
+                            {
+                                if (recurringShifts.RecurEnd == "Custom Date" && recurringShifts.RecurEndDate != "")
+                                {
+                                    var RecurrEndDate = DateTime.Parse(recurringShifts.RecurEndDate);
+
+                                    if (recurringShifts.Frequency == "Bi-Weekly")
+                                    {
+                                        if (roster != null)
+                                        {
+                                            if (GetNextDayStatus(model.SelectedDate, item.Date, item.Day.ToString()) == "YES")
+                                            {
+                                                var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(LoggedInUser.Company, item.ID);
+                                                shifts.Add(new ShiftModel { Shift = item, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(LoggedInUser.Company, item.ID);
+                                        shifts.Add(new ShiftModel { Shift = item, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (recurringShifts.Frequency == "Bi-Weekly")
+                                    {
+                                        if (roster != null)
+                                        {
+                                            if (GetNextDayStatus(model.SelectedDate, item.Date, item.Day.ToString()) == "YES")
+                                            {
+                                                var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(LoggedInUser.Company, item.ID);
+                                                shifts.Add(new ShiftModel { Shift = item, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(LoggedInUser.Company, item.ID);
+                                        shifts.Add(new ShiftModel { Shift = item, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var exceptionShiftByShiftID = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusinessAndShift(LoggedInUser.Company, item.ID);
+                                if (exceptionShiftByShiftID != null)
+                                {
+                                    shifts.Add(new ShiftModel { Shift = item, RecurShift = recurringShifts, ExceptionShift = exceptionShiftByShiftID });
+                                }
+                                else
+                                {
+                                    shifts.Add(new ShiftModel { Shift = item, RecurShift = recurringShifts });
+
+                                }
+
+                            }
+                        }
+                        Allshifts.Add(new ShiftOfEmployeeModel { Employee = emp, Shifts = shifts, PriceChange = pricechange, DisplayOrder = emp.DisplayOrder });
+                    }
+
+
+                }
+
+                if (Allshifts.Count() != 0)
+                {
+                    model.Employees = Allshifts.OrderBy(x => x.Employee.DisplayOrder).ToList();
+                }
+            }
+            DateTime selectedDate = DateTime.Now;
+
+            // Get the day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+            DayOfWeek dayOfWeek = selectedDate.DayOfWeek;
+
+            // Get the day name
+            string dayName = dayOfWeek.ToString();
+            var openingHours = OpeningHourServices.Instance.GetOpeningHourWRTBusiness(LoggedInUser.Company, dayName);
+            model.TodayOpeningHours = openingHours.Time;
+
+
+            var employee = EmployeeServices.Instance.GetEmployeeWithLinkedUserID(LoggedInUser.Id);
+            if (employee != null)
+            {
+                DateTime gotoDate = DateTime.Parse(model.GoToDate, new CultureInfo("en-US"));
+                DateTime now = DateTime.Now;
+
+                switch (employee.LimitCalendarHistory)
+                {
+                    case "Do not limit":
+                        return View(model);
+
+                    case "Do not show previous days":
+                        if (gotoDate < now)
+                        {
+                            model.SelectedDate = DateTime.Now;
+                            model.GoToDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+                        }
+                        break;
+
+                    case "1 day before":
+                        if (gotoDate.Date < now.AddDays(-1).Date)
+                        {
+                            model.SelectedDate = DateTime.Now;
+                            model.GoToDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        break;
+
+                    case "3 days before":
+                        if (gotoDate.Date < now.AddDays(-3).Date)
+                        {
+                            model.SelectedDate = DateTime.Now;
+                            model.GoToDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        break;
+
+                    case "7 days before":
+                        if (gotoDate.Date < now.AddDays(-7).Date)
+                        {
+                            model.SelectedDate = DateTime.Now;
+                            model.GoToDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        break;
+
+                    case "1 month before":
+                        if (gotoDate.Date < now.AddMonths(-1).Date)
+                        {
+                            model.SelectedDate = DateTime.Now;
+                            model.GoToDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        break;
+
+                    case "3 months before":
+                        if (gotoDate.Date < now.AddMonths(-3).Date)
+                        {
+                            model.SelectedDate = DateTime.Now;
+                            model.GoToDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        break;
+
+                    case "6 months before":
+                        if (gotoDate.Date < now.AddMonths(-6).Date)
+                        {
+                            model.SelectedDate = DateTime.Now;
+                            model.GoToDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        break;
+                }
+            }
+
+            return View(model);
+        }
 
 
 
@@ -4159,40 +4587,43 @@ namespace TheBookingPlatform.Controllers
                 //delete previous one
                 RefreshToken(appointment.Business);
                 var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
-                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-                var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                if (googleKey != null)
                 {
-                    if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
+                    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
+                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
+                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
                     {
-                        RefreshToken(employee.Business);
-
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                        ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                    }
-                }
-                
-
-                foreach (var item in ToBeInputtedIDs)
-                {
-                    if (item.Key != null && !item.Key.Disabled)
-                    {
-                        if (appointment.GoogleCalendarEventID != null)
+                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
                         {
-                            var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + item.Value + "/events/" + appointment.GoogleCalendarEventID);
-                            RestClient restClient = new RestClient(url);
-                            RestRequest request = new RestRequest();
+                            RefreshToken(employee.Business);
 
-                            request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                            request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
-                            request.AddHeader("Accept", "application/json");
-
-                            var response = restClient.Delete(request);
-
+                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
+                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
                         }
                     }
 
+
+                    foreach (var item in ToBeInputtedIDs)
+                    {
+                        if (item.Key != null && !item.Key.Disabled)
+                        {
+                            if (appointment.GoogleCalendarEventID != null)
+                            {
+                                var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + item.Value + "/events/" + appointment.GoogleCalendarEventID);
+                                RestClient restClient = new RestClient(url);
+                                RestRequest request = new RestRequest();
+
+                                request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                                request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
+                                request.AddHeader("Accept", "application/json");
+
+                                var response = restClient.Delete(request);
+
+                            }
+                        }
+
+                    }
                 }
 
 
@@ -6915,7 +7346,7 @@ namespace TheBookingPlatform.Controllers
                         var response = restClient.Delete(request);
 
                     }
-                    
+
                 }
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
 
@@ -6937,7 +7368,7 @@ namespace TheBookingPlatform.Controllers
                     {
                         DeleteFromGCal(Appointment, item.Key, item.Value, Appointment.GoogleCalendarEventID);
                     }
-               
+
                 }
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
 
@@ -6969,36 +7400,50 @@ namespace TheBookingPlatform.Controllers
                     //    ServicesList.Add(new ServiceModel { ServiceCategory = item, Services = ServicesWRTCategory, Company = model.Company });
                     //}
                     model.AbsenseServices = ServiceServices.Instance.GetServiceWRTCategory(LoggedInUser.Company, "ABSENSE").Where(x => x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
-                    var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true).OrderBy(x => x.DisplayOrder).ToList();
-
-                    var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(model.Company.ID);
-                    foreach (var item in employeerequests)
+                    if (User.IsInRole("Calendar"))
                     {
-                        if (item.Accepted)
+                        var employees = new List<Employee>();
+                        var userAssignedemployees = CalendarManageServices.Instance.GetCalendarManage(LoggedInUser.Company, LoggedInUser.Id);
+                        if (userAssignedemployees != null)
                         {
-                            var employeeCompany = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                            if (!employees.Select(x => x.ID).Contains(employeeCompany.ID))
-                            {
-                                employees.Add(employeeCompany);
-                            }
+                            var listofTimeTable = new List<TimeTableModel>();
+                            employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                            model.EmployeesForAction = employees;
                         }
+                        else
+                        {
+                            employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true).OrderBy(x => x.DisplayOrder).ToList();
+
+                            var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(model.Company.ID);
+                            foreach (var item in employeerequests)
+                            {
+                                if (item.Accepted)
+                                {
+                                    var employeeCompany = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                                    if (!employees.Select(x => x.ID).Contains(employeeCompany.ID))
+                                    {
+                                        employees.Add(employeeCompany);
+                                    }
+                                }
+                            }
+                            model.EmployeesForAction = employees;
+                        }
+
+
+
+
                     }
-
-
-                    model.EmployeesForAction = employees;
-
-
-                }
-                else
-                {
-                    //var categories = ServicesCategoriesServices.Instance.GetServiceCategories().OrderBy(x => x.DisplayOrder).ToList();
-                    //foreach (var item in categories)
-                    //{
-                    //    var ServicesWRTCategory = ServiceServices.Instance.GetService().Where(x => x.Category == item.Name && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
-                    //    ServicesList.Add(new ServiceModel { ServiceCategory = item, Services = ServicesWRTCategory, Company = model.Company });
-                    //}
-                    //model.AbsenseServices = ServiceServices.Instance.GetService().Where(x => x.Category == "ABSENSE" && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
-                    model.EmployeesForAction = EmployeeServices.Instance.GetEmployee().Where(x => x.IsActive == true).OrderBy(x => x.DisplayOrder).ToList();
+                    else
+                    {
+                        //var categories = ServicesCategoriesServices.Instance.GetServiceCategories().OrderBy(x => x.DisplayOrder).ToList();
+                        //foreach (var item in categories)
+                        //{
+                        //    var ServicesWRTCategory = ServiceServices.Instance.GetService().Where(x => x.Category == item.Name && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
+                        //    ServicesList.Add(new ServiceModel { ServiceCategory = item, Services = ServicesWRTCategory, Company = model.Company });
+                        //}
+                        //model.AbsenseServices = ServiceServices.Instance.GetService().Where(x => x.Category == "ABSENSE" && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
+                        model.EmployeesForAction = EmployeeServices.Instance.GetEmployee().Where(x => x.IsActive == true).OrderBy(x => x.DisplayOrder).ToList();
+                    }
                 }
                 model.EmployeeID = employeeID;
                 //model.Date = DateTime.Parse(date);
@@ -7508,7 +7953,7 @@ namespace TheBookingPlatform.Controllers
             history.Date = DateTime.Now;
             history.Type = "Absense";
             history.AppointmentID = appointment.ID;
-            history.EmployeeName = employee.Name;
+            history.EmployeeName = employee?.Name;
             history.Note = $"Event Saved for: {history.EmployeeName} by {loggedInUser.Name}";
             history.Name = "Appointment Created";
             HistoryServices.Instance.SaveHistory(history);
@@ -8046,7 +8491,20 @@ namespace TheBookingPlatform.Controllers
             {
 
                 model.AbsenseServices = ServiceServices.Instance.GetServiceWRTCategory(LoggedInUser.Company, "ABSENSE").Where(x => x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
-                model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true).OrderBy(x => x.DisplayOrder).ToList();
+                if (User.IsInRole("Calendar"))
+                {
+                    var userAssignedemployees = CalendarManageServices.Instance.GetCalendarManage(LoggedInUser.Company, LoggedInUser.Id);
+                    if (userAssignedemployees != null)
+                    {
+                        var listofTimeTable = new List<TimeTableModel>();
+                        var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                        model.Employees = employees;
+                    }
+                }
+                else
+                {
+                    model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true).OrderBy(x => x.DisplayOrder).ToList();
+                }
             }
             else
             {

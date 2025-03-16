@@ -37,6 +37,7 @@ namespace TheBookingPlatform.ViewModels
         //For Appointment Model
         public List<ServiceModel> Services { get; set; }
         public Company Company { get; set; }
+        public string Name { get;  set; }
     }
 
     public class CancelByEmailViewModel
@@ -178,6 +179,7 @@ namespace TheBookingPlatform.ViewModels
     {
         public string ReferralCode { get; set; }
         public List<GiftCardModel> GiftCardCodes { get; set; }
+        public bool CancelledByEmail { get; set; }
         public List<LoyaltyCardModel2> LoyaltyCards { get; set; }
         public int NoOfAppointments { get; set; }
         public int NoOfNoShows { get; set; }

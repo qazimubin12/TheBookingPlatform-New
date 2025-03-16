@@ -103,6 +103,7 @@ namespace TheBookingPlatform.Models
         public List<IdentityRole> Roles { get; set; }
         public string RoleID { get; set; }
         public string Package { get;  set; }
+        public string Country { get; set; }
         public int NoOfUsers { get; set; }
         public int NoOfUserAllowed { get; set; }
         public User LoggedInUser { get;  set; }

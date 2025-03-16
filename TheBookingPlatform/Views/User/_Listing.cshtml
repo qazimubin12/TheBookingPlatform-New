@@ -21,7 +21,9 @@
                                 <th class="text-center">
                                     Contact
                                 </th>
-                              
+                                <th>
+                                    Country
+                                </th>
                                 @if (User.IsInRole("Super Admin"))
                                 {
                                     <th class="text-center">
@@ -51,6 +53,7 @@
                                     <td class="text-center">@item.Name</td>
                                     <td class="text-center">@item.Email</td>
                                     <td class="text-center">@item.PhoneNumber</td>
+                                    <td class="text-center">@item.Country</td>
                                     @if (User.IsInRole("Super Admin"))
                                     {
                                         <td class="text-center">@item.Company</td>

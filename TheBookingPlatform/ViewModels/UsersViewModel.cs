@@ -96,6 +96,7 @@ namespace TheBookingPlatform.ViewModels
         public string LoggedInOwnerID { get; set; }
         public string Role { get; set; }
         public string ID { get; set; }
+        public string Country { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public int IntervalCalendar { get; set; }

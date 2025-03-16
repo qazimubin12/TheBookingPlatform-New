@@ -8819,18 +8819,19 @@ fieldset[disabled] .form-group.is-focused .togglebutton label {
 }
 
 .full-page:after, .full-page:before {
-    display: block;
+    display: none;
     content: "";
     position: absolute;
     width: 100%;
     height: 100%;
     top: 0;
+    
     left: 0;
     z-index: 2;
 }
 
 .full-page:before {
-    background-color: rgba(0, 0, 0, 0.5);
+    display:none;
 }
 
 .full-page[filter-color="purple"]:after, .full-page[filter-color="primary"]:after {

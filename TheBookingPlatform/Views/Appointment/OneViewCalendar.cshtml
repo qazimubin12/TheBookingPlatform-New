@@ -174,6 +174,7 @@
         cursor: pointer;
         user-select: none;
     }
+
     .copy-overlay {
         position: absolute;
         top: 0;
@@ -238,14 +239,14 @@
                 foreach (var item in Model.Employees)
                 {
                     <li>
-                        <a href="@Url.Action("OneViewCalendar", "Appointment", new {EmployeeID=item.Employee.ID})" class="dropdown-item" >
+                        <a href="@Url.Action("OneViewCalendar", "Appointment", new {EmployeeID=item.Employee.ID})" class="dropdown-item">
                             @item.Employee.Name
                         </a>
                     </li>
                 }
             }
             <li>
-                <a href="javascript:void(0);" class="dropdown-item" onclick="updateCalendar('0')">
+                <a href="@Url.Action("Calendar", "Appointment", new {date=DateTime.Now.ToString("yyyy-MM-dd")})" class="dropdown-item">
                     VIEW ALL
                 </a>
             </li>
@@ -257,13 +258,14 @@
 
 </div>
 <input type="hidden" id="MainOpeningHours" value="@Model.TodayOpeningHours" />
+<input type="hidden" id="Emp_Name" value="@Model.Name" />
 <div id="calendarPartialContainer">
     @{
-        Html.RenderPartial("_CalendarPartial", Model);
+        Html.RenderPartial("_OneViewCalendarPartial", Model);
 
 
 
-}
+    }
 </div>
 
 
@@ -337,9 +339,7 @@
                             <div class="d-flex">
                                 <textarea class="form-control border-0 bg-light shadow-sm p-1 small" id="AppointmentNotes" readonly rows="2"></textarea>
                             </div>
-                            <div class="d-flex justify-content-center">
-                                <span class="text-sm" id="BusinessDEET"></span>
-                            </div>
+
                         </div>
                     </div>
 
@@ -354,49 +354,42 @@
                     <div class="card-body" style=" display: flex; justify-content: center; gap: 20px;padding:10px !important;padding:0.5rem;">
                         @if (!User.IsInRole("Calendar"))
                         {
-
-
                             <button style="background: #F0F3F8; color: #6E727B !important;margin-bottom:0px !important; width:50px; display: flex; justify-content: center;align-items:center;" class="btn btn-sm " data-tooltip="Appointment Info" id="moreButton">
                                 <i class="material-icons ppff">info</i>
                             </button>
-
-
                             <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm " data-tooltip="Checkout" id="checkoutButn">
                                 <i class="material-icons ppff">shopping_cart</i>
                             </button>
-
-
                             <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn  btn-smf" data-tooltip="Edit" id="EditAppointmentBtn">
                                 <i class="material-icons ppff">edit</i>
                             </button>
-
-
                             <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm  " data-tooltip="Delete" id="DeleteAppointmentButton">
                                 <i class="material-icons ppff">delete</i>
                             </button>
-
-
                             <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm " data-tooltip="Send Reminder" id="SendReminderBtn">
                                 <i class="material-icons ppff">mail</i>
                             </button>
 
                         }
-                        else
-                        {
-                            <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn  btn-smf" data-tooltip="Edit" id="EditAppointmentBtn">
-                                <i class="material-icons ppff">edit</i>
-                            </button>
-                            <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm  " data-tooltip="Delete" id="DeleteAppointmentButton">
-                                <i class="material-icons ppff">delete</i>
-                            </button>
-                        }
                     </div>
                 </div>
-                
 
-                <div class="card mb-2" id="CardsBody" style="border: 1px solid #e5e5e5;">
-                    <div  class="card-body"style="padding: 0.5rem !important;">
-                        
+
+                <div class="card mb-2" style="border: 1px solid #e5e5e5;">
+                    <div class="card-body" style="padding: 0.5rem !important;">
+                        <div id="CardsBody">
+                            <div class="d-flex">
+                                <div id="" class="circular-box TypeOfCard"></div>
+                                <div class="my-auto ms-3">
+                                    <div class="h-100">
+                                        <h5 class="mb-0 CardCode"></h5>
+                                        <p class="mb-0 text-sm ExpiresIn"></p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-secondary ms-auto me-3 my-auto AmountinCard"></p>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
 
