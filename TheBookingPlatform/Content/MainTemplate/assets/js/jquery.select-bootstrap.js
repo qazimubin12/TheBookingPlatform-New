@@ -377,7 +377,7 @@
      liveSearchStyle: 'contains',
      actionsBox: false,
      iconBase: 'material-icons',
-     tickIcon: 'done',
+     tickIcon: 'check',
      showTick: false,
      template: {
        caret: '<span class="caret"></span>'
@@ -590,7 +590,7 @@
              (that.options.liveSearchNormalize ? ' data-normalized-text="' + normalizeToBase(htmlEscape($(text).html())) + '"' : '') +
              (typeof tokens !== 'undefined' || tokens !== null ? ' data-tokens="' + tokens + '"' : '') +
              ' role="option">' + text +
-             '<span class="' + that.options.iconBase + '  check-mark"> ' + that.options.tickIcon + ' </span>' +
+             '<i class="' + that.options.iconBase + '  check">'+ that.options.tickIcon + '</i>' +
              '</a>';
        };
 

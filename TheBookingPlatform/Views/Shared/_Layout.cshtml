@@ -29,6 +29,7 @@
 
 <head>
     <meta charset="utf-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="~/Content/MainTemplate2/assets/img/apple-icon.png">
     <link rel="icon" type="image/png" href="~/Content/TBPContent/v2color.png">
@@ -674,64 +675,9 @@
                     }
 
                     <!-- Employees -->
-                    <li class="nav-item">
-                        <a data-bs-toggle="collapse" href="#staffTDD" class="nav-link text-dark" aria-controls="staffTDD" role="button" aria-expanded="false">
-                            <i class="material-icons-round opacity-10">account_circle</i>
-                            <span class="nav-link-text ms-2 ps-1">Employees</span>
-                        </a>
-                        <div class="collapse" id="staffTDD">
-                            @if (inTrial == "No")
-                            {
-                                <ul class="nav">
-                                    @if (package.Split(',').Contains("Employees"))
-                                    {
-                                        <li class="nav-item " id="EmployeeTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Employee")">
-                                                <span class="sidenav-mini-icon"> ES </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Employee Setup </span>
-                                            </a>
-                                        </li>
-                                    }
-                                    @if (package.Split(',').Contains("Reviews"))
-                                    {
-                                        <li class="nav-item " id="ReviewsTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Review")">
-                                                <span class="sidenav-mini-icon"> R </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Reviews </span>
-                                            </a>
-                                        </li>
-                                    }
 
-                                </ul>
-                            }
-                            else
-                            {
-                                <ul class="nav">
-                                    <li class="nav-item " id="EmployeeTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Employee")">
-                                            <span class="sidenav-mini-icon"> ES </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Employee Setup </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="ReviewsTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Review")">
-                                            <span class="sidenav-mini-icon"> R </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Reviews </span>
-                                        </a>
-                                    </li>
 
-                                </ul>
-                            }
-                        </div>
-                    </li>
 
-                    <!-- Database (formerly Customers) -->
-                    <li class="nav-item" id="CustomersTAB">
-                        <a class="nav-link text-dark" href="@Url.Action("Index", "Customer")">
-                            <i class="material-icons">people</i>
-                            <span class="nav-link-text ms-2 ps-1">Database</span>
-                        </a>
-                    </li>
 
                     <!-- Reports -->
                     <li class="nav-item">
@@ -783,13 +729,6 @@
                         </div>
                     </li>
 
-                    <!-- Work Schedule -->
-                    <li class="nav-item" id="ShiftTAB">
-                        <a class="nav-link text-dark" href="@Url.Action("Index", "Shift")">
-                            <i class="material-icons">schedule</i>
-                            <span class="nav-link-text ms-2 ps-1">Work Schedule</span>
-                        </a>
-                    </li>
 
                     <!-- Settings -->
                     <li class="nav-item">
@@ -799,47 +738,33 @@
                         </a>
                         <div class="collapse" id="settingsDD">
                             <ul class="nav">
-                                <li class="nav-item " id="SettingsTAB">
-                                    <a class="nav-link text-dark " href="@Url.Action("Settings", "User")">
-                                        <span class="sidenav-mini-icon"> S </span>
-                                        <span class="sidenav-normal  ms-2  ps-1"> Settings </span>
-                                    </a>
-                                </li>
+
                                 @if (inTrial == "No")
                                 {
-                                    if (package.Split(',').Contains("Users"))
+                                    if (package.Split(',').Contains("Services Categories"))
                                     {
-                                        <li class="nav-item " id="UserTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "User")">
-                                                <span class="sidenav-mini-icon"> U </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Users </span>
+                                        <li class="nav-item " id="ServiceCategoryTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "ServiceCategory")">
+                                                <span class="sidenav-mini-icon"> SC </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Service Categories </span>
                                             </a>
                                         </li>
                                     }
-                                    if (package.Split(',').Contains("Opening Hours"))
+                                    if (package.Split(',').Contains("Services"))
                                     {
-                                        <li class="nav-item " id="OpeningHoursTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "OpeningHour")">
-                                                <span class="sidenav-mini-icon"> OH </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Opening Hours </span>
+                                        <li class="nav-item " id="ServicesTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Service")">
+                                                <span class="sidenav-mini-icon"> S </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Services </span>
                                             </a>
                                         </li>
                                     }
-                                    if (package.Split(',').Contains("Company Holidays"))
+                                    if (package.Split(',').Contains("VAT"))
                                     {
-                                        <li class="nav-item " id="OpeningHoursTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Holiday")">
-                                                <span class="sidenav-mini-icon"> CH </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Company Holidays </span>
-                                            </a>
-                                        </li>
-                                    }
-                                    if (package.Split(',').Contains("Integrations"))
-                                    {
-                                        <li class="nav-item " id="IntegrationsTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "EmployeeRequest")">
-                                                <span class="sidenav-mini-icon"> I </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Integrations </span>
+                                        <li class="nav-item " id="VatTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Vat")">
+                                                <span class="sidenav-mini-icon"> V </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Vat </span>
                                             </a>
                                         </li>
                                     }
@@ -852,114 +777,32 @@
                                 }
                                 else
                                 {
-                                    <li class="nav-item " id="UserTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "User")">
-                                            <span class="sidenav-mini-icon"> U </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Users </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="OpeningHoursTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "OpeningHour")">
-                                            <span class="sidenav-mini-icon"> OH </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Opening Hours </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="OpeningHoursTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Holiday")">
-                                            <span class="sidenav-mini-icon"> CH </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Company Holidays </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="IntegrationsTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "EmployeeRequest")">
-                                            <span class="sidenav-mini-icon"> I </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Integrations </span>
-                                        </a>
-                                    </li>
 
+                                    <li class="nav-item " id="ServiceCategoryTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "ServiceCategory")">
+                                            <span class="sidenav-mini-icon"> SC </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Service Categories </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item " id="ServicesTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Service")">
+                                            <span class="sidenav-mini-icon"> S </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Services </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item " id="VatTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Vat")">
+                                            <span class="sidenav-mini-icon"> V </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Vat </span>
+                                        </a>
+                                    </li>
                                 }
 
                             </ul>
                         </div>
                     </li>
 
-                    <!-- Marketing Tools -->
-                    <li class="nav-item">
-                        <a data-bs-toggle="collapse" href="#marketingDD" class="nav-link text-dark" aria-controls="marketingDD" role="button" aria-expanded="false">
-                            <i class="material-icons">campaign</i>
-                            <span class="nav-link-text ms-2 ps-1">Marketing Tools</span>
-                        </a>
-                        <div class="collapse" id="marketingDD">
-                            <ul class="nav">
-                                @if (inTrial == "No")
-                                {
-                                    if (package.Split(',').Contains("Gift Cards"))
-                                    {
-                                        <li class="nav-item " id="GiftCardTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "GiftCard")">
-                                                <span class="sidenav-mini-icon"> GC </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Gift Cards </span>
-                                            </a>
-                                        </li>
-                                    }
-                                    if (package.Split(',').Contains("Referrals"))
-                                    {
-                                        <li class="nav-item " id="ReferralsTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Referral")">
-                                                <span class="sidenav-mini-icon"> R </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Referrals </span>
-                                            </a>
-                                        </li>
-                                    }
-                                    if (package.Split(',').Contains("Coupons"))
-                                    {
-                                        <li class="nav-item " id="CouponTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Coupon")">
-                                                <span class="sidenav-mini-icon"> C </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Coupons </span>
-                                            </a>
-                                        </li>
-                                    }
-                                    if (package.Split(',').Contains("Loyalty Cards"))
-                                    {
-                                        <li class="nav-item " id="LoyaltyCardsTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "LoyaltyCard")">
-                                                <span class="sidenav-mini-icon"> LC </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Loyalty Cards </span>
-                                            </a>
-                                        </li>
-                                    }
-                                }
-                                else
-                                {
-                                    <li class="nav-item " id="GiftCardTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "GiftCard")">
-                                            <span class="sidenav-mini-icon"> GC </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Gift Cards </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="ReferralsTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Referral")">
-                                            <span class="sidenav-mini-icon"> R </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Referrals </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="CouponTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Coupon")">
-                                            <span class="sidenav-mini-icon"> C </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Coupons </span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item " id="LoyaltyCardsTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "LoyaltyCard")">
-                                            <span class="sidenav-mini-icon"> LC </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Loyalty Cards </span>
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </li>
+
 
                     <!-- Products -->
                     <li class="nav-item" id="ProductsTAB">
@@ -1003,6 +846,7 @@
                         </li>
                     }
 
+
                     <!-- Employees -->
                     <li class="nav-item">
                         <a data-bs-toggle="collapse" href="#staffTDD" class="nav-link text-dark" aria-controls="staffTDD" role="button" aria-expanded="false">
@@ -1022,15 +866,7 @@
                                             </a>
                                         </li>
                                     }
-                                    @if (package.Split(',').Contains("Reviews"))
-                                    {
-                                        <li class="nav-item " id="ReviewsTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Review")">
-                                                <span class="sidenav-mini-icon"> R </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Reviews </span>
-                                            </a>
-                                        </li>
-                                    }
+
 
                                 </ul>
                             }
@@ -1043,18 +879,12 @@
                                             <span class="sidenav-normal  ms-2  ps-1"> Employee Setup </span>
                                         </a>
                                     </li>
-                                    <li class="nav-item " id="ReviewsTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Review")">
-                                            <span class="sidenav-mini-icon"> R </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Reviews </span>
-                                        </a>
-                                    </li>
+
 
                                 </ul>
                             }
                         </div>
                     </li>
-
                     <!-- Database (formerly Customers) -->
                     <li class="nav-item" id="CustomersTAB">
                         <a class="nav-link text-dark" href="@Url.Action("Index", "Customer")">
@@ -1137,17 +967,6 @@
                                 </li>
                                 @if (inTrial == "No")
                                 {
-                                    if (package.Split(',').Contains("Users"))
-                                    {
-                                        <li class="nav-item " id="UserTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "User")">
-                                                <span class="sidenav-mini-icon"> U </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Users </span>
-                                            </a>
-                                        </li>
-                                    }
-
-
                                     if (package.Split(',').Contains("Opening Hours"))
                                     {
                                         <li class="nav-item " id="OpeningHoursTAB">
@@ -1175,12 +994,7 @@
                                             </a>
                                         </li>
                                     }
-                                    <li class="nav-item" id="STRIPEInvoicesTAB">
-                                        <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
-                                            <span class="sidenav-mini-icon"> P </span>
-                                            <span class="nav-link-text ms-2 ps-1">Payments</span>
-                                        </a>
-                                    </li>
+
                                 }
                                 else
                                 {
@@ -1307,6 +1121,7 @@
                 @if (User.IsInRole("Admin"))
                 {
                     <!-- Dashboard -->
+                    <!-- Dashboard -->
                     <li class="nav-item" id="DashboardTAB">
                         <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Dashboard", "Admin")">
                             <i class="material-icons">dashboard</i>
@@ -1314,28 +1129,7 @@
                         </a>
                     </li>
 
-                    <!-- Invoice Maker -->
-                    if (inTrial == "No")
-                    {
-                        if (package.Split(',').Contains("Invoice Maker"))
-                        {
-                            <li class="nav-item" id="InvoiceMakerTAB">
-                                <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "NInvoice")">
-                                    <i class="material-icons">money</i>
-                                    <span class="nav-link-text ms-2 ps-1">Invoice Maker</span>
-                                </a>
-                            </li>
-                        }
-                    }
-                    else
-                    {
-                        <li class="nav-item" id="InvoiceMakerTAB">
-                            <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "NInvoice")">
-                                <i class="material-icons">money</i>
-                                <span class="nav-link-text ms-2 ps-1">Invoice Maker</span>
-                            </a>
-                        </li>
-                    }
+                 
 
                     <!-- Employees -->
                     <li class="nav-item">
@@ -1407,15 +1201,6 @@
                             @if (inTrial == "No")
                             {
                                 <ul class="nav">
-                                    @if (package.Split(',').Contains("Report"))
-                                    {
-                                        <li class="nav-item " id="AnalysisTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Analysis", "Admin")">
-                                                <span class="sidenav-mini-icon"> A </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
-                                            </a>
-                                        </li>
-                                    }
                                     @if (package.Split(',').Contains("Appointments"))
                                     {
                                         <li class="nav-item " id="AppointmentsTAB">
@@ -1430,12 +1215,7 @@
                             else
                             {
                                 <ul class="nav">
-                                    <li class="nav-item " id="AnalysisTAB">
-                                        <a class="nav-link text-dark " href="@Url.Action("Analysis", "Admin")">
-                                            <span class="sidenav-mini-icon"> A </span>
-                                            <span class="sidenav-normal  ms-2  ps-1"> Analysis </span>
-                                        </a>
-                                    </li>
+                                    
                                     <li class="nav-item " id="AppointmentsTAB">
                                         <a class="nav-link text-dark " href="@Url.Action("Index", "Appointment")">
                                             <span class="sidenav-mini-icon"> AP </span>
@@ -1480,24 +1260,25 @@
                                             </a>
                                         </li>
                                     }
-                                    if (package.Split(',').Contains("Opening Hours"))
-                                    {
-                                        <li class="nav-item " id="OpeningHoursTAB">
-                                            <a class="nav-link text-dark " href="@Url.Action("Index", "OpeningHour")">
-                                                <span class="sidenav-mini-icon"> OH </span>
-                                                <span class="sidenav-normal  ms-2  ps-1"> Opening Hours </span>
-                                            </a>
-                                        </li>
-                                    }
                                     if (package.Split(',').Contains("Company Holidays"))
                                     {
-                                        <li class="nav-item " id="CompanyHolidaysTAB">
+                                        <li class="nav-item " id="OpeningHoursTAB">
                                             <a class="nav-link text-dark " href="@Url.Action("Index", "Holiday")">
-                                                <span class="sidenav-mini-icon"> CH</span>
+                                                <span class="sidenav-mini-icon"> CH </span>
                                                 <span class="sidenav-normal  ms-2  ps-1"> Company Holidays </span>
                                             </a>
                                         </li>
                                     }
+                                    if (package.Split(',').Contains("VAT"))
+                                    {
+                                        <li class="nav-item " id="VatTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Vat")">
+                                                <span class="sidenav-mini-icon"> V </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Vat </span>
+                                            </a>
+                                        </li>
+                                    }
+
                                     if (package.Split(',').Contains("Integrations"))
                                     {
                                         <li class="nav-item " id="IntegrationsTAB">
@@ -1507,12 +1288,25 @@
                                             </a>
                                         </li>
                                     }
-                                    <li class="nav-item" id="STRIPEInvoicesTAB">
-                                        <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
-                                            <span class="sidenav-mini-icon"> P </span>
-                                            <span class="nav-link-text ms-2 ps-1">Payments</span>
-                                        </a>
-                                    </li>
+                                    if (package.Split(',').Contains("Services Categories"))
+                                    {
+                                        <li class="nav-item " id="ServiceCategoryTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "ServiceCategory")">
+                                                <span class="sidenav-mini-icon"> SC </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Service Categories </span>
+                                            </a>
+                                        </li>
+                                    }
+                                    if (package.Split(',').Contains("Services"))
+                                    {
+                                        <li class="nav-item " id="ServicesTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Service")">
+                                                <span class="sidenav-mini-icon"> S </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Services </span>
+                                            </a>
+                                        </li>
+                                    }
+
                                 }
                                 else
                                 {
@@ -1522,23 +1316,41 @@
                                             <span class="sidenav-normal  ms-2  ps-1"> Users </span>
                                         </a>
                                     </li>
-
                                     <li class="nav-item " id="OpeningHoursTAB">
                                         <a class="nav-link text-dark " href="@Url.Action("Index", "OpeningHour")">
                                             <span class="sidenav-mini-icon"> OH </span>
                                             <span class="sidenav-normal  ms-2  ps-1"> Opening Hours </span>
                                         </a>
                                     </li>
-                                    <li class="nav-item " id="HolidaysTAB">
+                                    <li class="nav-item " id="OpeningHoursTAB">
                                         <a class="nav-link text-dark " href="@Url.Action("Index", "Holiday")">
                                             <span class="sidenav-mini-icon"> CH </span>
                                             <span class="sidenav-normal  ms-2  ps-1"> Company Holidays </span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item " id="VatTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Vat")">
+                                            <span class="sidenav-mini-icon"> V </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Vat </span>
                                         </a>
                                     </li>
                                     <li class="nav-item " id="IntegrationsTAB">
                                         <a class="nav-link text-dark " href="@Url.Action("Index", "EmployeeRequest")">
                                             <span class="sidenav-mini-icon"> I </span>
                                             <span class="sidenav-normal  ms-2  ps-1"> Integrations </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item " id="ServiceCategoryTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "ServiceCategory")">
+                                            <span class="sidenav-mini-icon"> SC </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Service Categories </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item " id="ServicesTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Service")">
+                                            <span class="sidenav-mini-icon"> S </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Services </span>
                                         </a>
                                     </li>
                                 }
@@ -1837,6 +1649,34 @@
                                             </a>
                                         </li>
                                     }
+                                    if (package.Split(',').Contains("Services Categories"))
+                                    {
+                                        <li class="nav-item " id="ServiceCategoryTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "ServiceCategory")">
+                                                <span class="sidenav-mini-icon"> SC </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Service Categories </span>
+                                            </a>
+                                        </li>
+                                    }
+                                    if (package.Split(',').Contains("Services"))
+                                    {
+                                        <li class="nav-item " id="ServicesTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Service")">
+                                                <span class="sidenav-mini-icon"> S </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Services </span>
+                                            </a>
+                                        </li>
+                                    }
+                                    if (package.Split(',').Contains("VAT"))
+                                    {
+                                        <li class="nav-item " id="VatTAB">
+                                            <a class="nav-link text-dark " href="@Url.Action("Index", "Vat")">
+                                                <span class="sidenav-mini-icon"> V </span>
+                                                <span class="sidenav-normal  ms-2  ps-1"> Vat </span>
+                                            </a>
+                                        </li>
+                                    }
+
                                     <li class="nav-item" id="STRIPEInvoicesTAB">
                                         <a class="nav-link text-dark" aria-controls="dashboardsExamples" role="button" aria-expanded="false" href="@Url.Action("Index", "StripeInvoices")">
                                             <span class="sidenav-mini-icon"> P </span>
@@ -1868,6 +1708,25 @@
                                         <a class="nav-link text-dark " href="@Url.Action("Index", "EmployeeRequest")">
                                             <span class="sidenav-mini-icon"> I </span>
                                             <span class="sidenav-normal  ms-2  ps-1"> Integrations </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item " id="ServiceCategoryTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "ServiceCategory")">
+                                            <span class="sidenav-mini-icon"> SC </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Service Categories </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item " id="ServicesTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Service")">
+                                            <span class="sidenav-mini-icon"> S </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Services </span>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item " id="VatTAB">
+                                        <a class="nav-link text-dark " href="@Url.Action("Index", "Vat")">
+                                            <span class="sidenav-mini-icon"> V </span>
+                                            <span class="sidenav-normal  ms-2  ps-1"> Vat </span>
                                         </a>
                                     </li>
                                 }

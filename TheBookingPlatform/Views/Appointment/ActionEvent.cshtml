@@ -14,6 +14,17 @@
         margin-left: 0px;
         margin-bottom: 0px;
         margin-top: 10px;
+        font-size: smaller;
+        font-weight: bold;
+        color: #344767;
+    }
+
+    .input-group.input-group-dynamic .form-control:not(:first-child), .input-group.input-group-static .form-control:not(:first-child) {
+        border-left: 0;
+        padding-left: 0;
+        font-size: smaller;
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
     }
     .autocomplete-suggestions {
         box-sizing: border-box;
@@ -172,21 +183,21 @@
 
     <form id="AbsenceForm">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div style="margin:0px;" class="card">
                     <div class="card-body">
 
-                        <h2 class="card-title">
-                            Update Event
-                        </h2>
+                        <h6 class="card-title font-weight-bolder">
+                            Update Absence
+                        </h6>
                         <div id="MainAbsenseContainer">
 
                             <div class="row" id="AbsenseServiceRow_0">
                                 <input type="hidden" id="IDAB" name="ID" value="@Model.ID" />
-                                <div class="col-md-6">
+                                <div class="col-6">
                                     <div class="form-group">
                                         <label>Select Event</label>
-                                        <select class="form-control" name="Service" id="ServiceAB">
+                                        <select class="form-control" style="border-bottom:solid 0.5px darkgray;border-radius:0px;" name="Service" id="ServiceAB">
                                             @foreach (var item in Model.AbsenseServices)
                                             {
                                                 if (Model.Service == item.ID.ToString())
@@ -206,7 +217,7 @@
                                     </div>
 
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-6">
                                     <div class="form-group">
                                         <div class="input-group input-group-dynamic">
                                             <label>
@@ -226,7 +237,7 @@
 
                         <div class="row">
 
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-6">
                                 <div class="input-group input-group-dynamic">
                                     <label>
                                         Start Time
@@ -236,7 +247,7 @@
                                 </div>
 
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-6">
                                 <div class="input-group input-group-dynamic">
 
                                     <label>
@@ -251,29 +262,31 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <label>Select Employee</label>
-                                <select onchange="CheckIfEmployeeProvideTheService()" class="form-control choices__input" name="EmployeeID" id="EmployeeIDAB">
-                                    @foreach (var item in Model.Employees)
-                                    {
-
-                                        if (item.ID == Model.EmployeeID)
+                                <div class="form-group">
+                                    <label>Select Employee</label>
+                                    <select onchange="CheckIfEmployeeProvideTheService()" class="form-control choices__input" name="EmployeeID" id="EmployeeIDAB">
+                                        @foreach (var item in Model.Employees)
                                         {
-                                            <option selected value="@item.ID">@item.Name</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@item.ID">@item.Name</option>
+
+                                            if (item.ID == Model.EmployeeID)
+                                            {
+                                                <option selected value="@item.ID">@item.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.ID">@item.Name</option>
+
+                                            }
 
                                         }
-
-                                    }
-                                </select>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div id="AllEmployeePanel" class="col-md-6">
-                                <div class="form-check">
+                                <div class="form-check" style="padding-left:0px !important; ">
                                     <label>
                                         <input type="checkbox" class="form-check-input" name="AllEmployeesCB" id="AllEmployeesCB">
                                         All Employees
@@ -293,24 +306,14 @@
 
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <div class="input-group input-group-dynamic">
-
-                                    <label>Select Color</label>
-
-                                    <input class="form-control" type="color" name="Color" value="#D28D00" id="ColorAB" />
-
-                                </div>
-                            </div>
-                        </div>
+                        
 
                     </div>
                 </div>
 
 
             </div>
-            <div class="col-md-5">
+            <div class="col-md-5 d-none">
                 <div style="margin:0px;" class="card">
                     <hr />
                     <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
@@ -328,16 +331,18 @@
                         </div>
 
 
-                        <button type="button" id="ABactionButton" class="btn btn-primary btn-block btn-rounded">Update Event</button>
-                        <span id="validationTextAB" class="text-danger"></span><br />
-                        <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+                        
 
                     </div>
 
                 </div>
             </div>
 
-
+            <div class="d-flex justify-content-center mt-2">
+                <button type="button" id="ABactionButton" class="btn btn-primary btn-block btn-rounded">Update Absence</button>
+                <span id="validationTextAB" class="text-danger"></span><br />
+                <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+            </div> 
 
         </div>
     </form>

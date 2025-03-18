@@ -16,7 +16,18 @@
         margin-left: 0px;
         margin-bottom: 0px;
         margin-top: 10px;
+        font-size: smaller;
+        font-weight: bold;
+        color: #344767;
     }
+    .input-group.input-group-dynamic .form-control:not(:first-child), .input-group.input-group-static .form-control:not(:first-child) {
+        border-left: 0;
+        padding-left: 0;
+        font-size: smaller;
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+    }
+
     .autocomplete-suggestions {
         box-sizing: border-box;
         border-radius: 5px;
@@ -29,6 +40,7 @@
         /* Customize the scrollbar */
         scrollbar-width: thin; /* For Firefox */
         scrollbar-color: #999 #FFF; /* For Firefox */
+        width: 75% !important;
     }
 
         .autocomplete-suggestions::-webkit-scrollbar {
@@ -172,7 +184,13 @@
             border: none;
             border-radius: 20px;
         }
-
+    .form-control {
+        font-size: smaller !important;
+        padding-bottom: 0px !important;
+    }
+    .form-check{
+        padding-left:0px !important; 
+    }
     
 </style>
 <form id="ActionForm">
@@ -182,15 +200,15 @@
                 <div class="card-body">
                     @if (Model.ID == 0)
                     {
-                        <h4 class="card-title">
+                        <h6 class="card-title font-weight-bolder">
                             Create Appointment
-                        </h4>
+                        </h6>
                     }
                     else
                     {
-                        <h4 class="card-title">
+                        <h6 class="card-title font-weight-bolder">
                             Edit Appointment
-                        </h4>
+                        </h6>
                     }
                     <input type="hidden" id="WaitingListID" value="@Model.WaitingListID" name="WaitingListID" />
                     <input type="hidden" value="@Model.Service" name="Service" id="ConcatenatedServices" />
@@ -200,7 +218,7 @@
                     {
                         if (Model.ServiceAlotted.Any(x => x.Service == "Break"))
                         {
-                        <input type="hidden" value="#Absence" id="SelectedOption" />
+                            <input type="hidden" value="#Absence" id="SelectedOption" />
                         }
                     }
                     else if (Model.CustomerID == 0)
@@ -219,53 +237,51 @@
                     <input type="hidden" value="@Model.Days" name="Days" id="Days" />
                     <input type="hidden" value="@Model.ID" name="ID" id="ID" />
                     <input type="hidden" value="@Model.WaitingListID" name="WaitingListID" id="WaitingListID" />
-                    <div id="MainContainer">
+                    <div id="MainContainer" class="mb-3">
                         @if (Model.ID == 0)
                         {
                             <div class="row" id="ServiceRow_0">
-                                <div class="col-md-6">
+                                <div class="col-md-6 col-sm-12">
                                     <div class="input-group input-group-dynamic">
-                                        <div class="form-group">
+                                        <div class="form-group w-100">
                                             <label>Select Services</label>
                                             <input class="form-control serviceid-input" id="ServiceID" type="hidden" name="ServiceID" />
                                             <input class="form-control serviceprice-input" id="ServicePrice" type="hidden" name="ServicePrice" />
-                                            <input class="form-control autocomplete" type="text" name="ServiceNames" id="Service" />
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i onclick="removeService(0)" class="fa fa-close text-danger" style="cursor:pointer;"></i>
+                                                <input class="form-control autocomplete" type="text" name="ServiceNames" id="Service" />
+                                            </div>
                                         </div>
                                     </div>
-
                                 </div>
 
-
-                                <div class="col-md-2">
+                                <!-- Duration & Discount side by side -->
+                                <div class="col-md-3 col-6">
                                     <div class="input-group input-group-dynamic">
-                                        <div class="form-group">
+                                        <div class="form-group w-100">
                                             <label>Duration</label>
                                             <input type="text" id="Duration" autocomplete="off" name="ServiceDurationInput" class="form-control duration-input">
                                         </div>
                                     </div>
-
                                 </div>
-                                <div id="DiscountPanel" class="col-md-2">
 
+                                <div class="col-md-3 col-6" id="DiscountPanel">
                                     <div class="input-group input-group-dynamic">
-                                        <div class="form-group">
-                                            <label style="white-space:nowrap;">Discount %</label>
+                                        <div class="form-group w-100">
+                                            <label>Discount %</label>
                                             @if (Model.OnlinePriceChange != 0)
                                             {
-                                                <input type="number" id="Duration" name="ServiceDiscountInput" disabled value="0" class="form-control discount-input">
+                                                <input type="number" id="Discount" name="ServiceDiscountInput" disabled value="0" class="form-control discount-input">
                                             }
                                             else
                                             {
-                                                <input type="number" id="Duration" name="ServiceDiscountInput" value="0" class="form-control discount-input">
-
+                                                <input type="number" id="Discount" name="ServiceDiscountInput" value="0" class="form-control discount-input">
                                             }
                                         </div>
                                     </div>
-
                                 </div>
-                                <button class="btn btn-danger btn-sm" type="button" onclick="removeService(0)">X</button>
-
                             </div>
+
                         }
                         else
                         {
@@ -274,32 +290,34 @@
                                 foreach (var item in Model.ServiceAlotted)
                                 {
                                     <div class="row" id="ServiceRowNew_@NewCount">
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-sm-12">
                                             <div class="input-group input-group-dynamic">
-                                                <div class="form-group">
+                                                <div class="form-group w-100">
                                                     <label>Select Services</label>
                                                     <input class="form-control serviceid-input" id="ServiceID" type="hidden" value="@item.ID" name="ServiceID" />
                                                     <input class="form-control serviceprice-input" id="ServicePrice" value="@item.Price" type="hidden" name="ServicePrice" />
-                                                    <input class="form-control autocomplete" type="text" value="@item.Service" name="ServiceNames" id="Service" />
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <i onclick="removeServicePresent(@NewCount)" class="fa fa-close text-danger" style="cursor:pointer;"></i>
+                                                        <input class="form-control autocomplete" type="text" value="@item.Service" name="ServiceNames" id="Service" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
 
+                                        <!-- Duration & Discount side by side -->
+                                        <div class="col-md-3 col-6">
                                             <div class="input-group input-group-dynamic">
-                                                <div class="form-group">
+                                                <div class="form-group w-100">
                                                     <label>Duration</label>
                                                     <input type="text" value="@item.Duration.Trim()" autocomplete="off" name="ServiceDurationInput" id="Duration" class="form-control duration-input">
                                                 </div>
                                             </div>
-
                                         </div>
 
-                                        <div id="DiscountPanel" class="col-md-2">
-
+                                        <div class="col-md-3 col-6" id="DiscountPanel">
                                             <div class="input-group input-group-dynamic">
-                                                <div class="form-group">
-                                                    <label style="white-space:nowrap">Discount %</label>
+                                                <div class="form-group w-100">
+                                                    <label>Discount %</label>
                                                     @if (Model.OnlinePriceChange != 0)
                                                     {
                                                         <input type="number" value="@item.Discount" disabled name="ServiceDiscountInput" id="Discount" class="form-control discount-input">
@@ -307,191 +325,71 @@
                                                     else
                                                     {
                                                         <input type="number" value="@item.Discount" name="ServiceDiscountInput" id="Discount" class="form-control discount-input">
-
                                                     }
                                                 </div>
                                             </div>
-
                                         </div>
-                                        <button class="btn btn-danger btn-sm" type="button" onclick="removeServicePresent(@NewCount)">X</button>
                                     </div>
                                     NewCount++;
+
                                 }
                             }
                             else
                             {
                                 <div class="row" id="ServiceRow_0">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-sm-12">
                                         <div class="input-group input-group-dynamic">
-                                            <div class="form-group">
+                                            <div class="form-group w-100">
                                                 <label>Select Services</label>
                                                 <input class="form-control serviceid-input" id="ServiceID" type="hidden" name="ServiceID" />
                                                 <input class="form-control serviceprice-input" id="ServicePrice" type="hidden" name="ServicePrice" />
-                                                <input class="form-control autocomplete" type="text" name="ServiceNames" id="Service" />
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i onclick="removeService(0)" class="fa fa-close text-danger" style="cursor:pointer;"></i>
+                                                    <input class="form-control autocomplete" type="text" name="ServiceNames" id="Service" />
+                                                </div>
                                             </div>
                                         </div>
-
                                     </div>
-                                    <div class="col-md-2">
 
+                                    <!-- Duration & Discount side by side -->
+                                    <div class="col-md-3 col-6">
                                         <div class="input-group input-group-dynamic">
-
-                                            <div class="form-group">
+                                            <div class="form-group w-100">
                                                 <label>Duration</label>
                                                 <input type="text" id="Duration" name="ServiceDurationInput" class="form-control duration-input">
                                             </div>
                                         </div>
-
                                     </div>
-                                    <div class="col-md-2">
 
+                                    <div class="col-md-3 col-6" id="DiscountPanel">
                                         <div class="input-group input-group-dynamic">
-
-                                            <div id="DiscountPanel" class="form-group">
+                                            <div class="form-group w-100">
                                                 <label style="white-space:nowrap;">Discount %</label>
                                                 @if (Model.OnlinePriceChange != 0)
                                                 {
-
-
                                                     <input type="number" id="Discount" value="0" disabled name="ServiceDiscountInput" class="form-control discount-input">
                                                 }
                                                 else
                                                 {
                                                     <input type="number" id="Discount" value="0" name="ServiceDiscountInput" class="form-control discount-input">
-
                                                 }
                                             </div>
                                         </div>
-
                                     </div>
-                                    <button class="btn btn-danger btn-sm" type="button" onclick="removeService(0)">X</button>
-
-
                                 </div>
+
                             }
                         }
                     </div>
-                    <button class="btn btn-primary btn-sm" type="button" onclick="addService()">Add More</button>
+
+                    <span id="AddMoreBtn" class="my-2 text-primary" style="cursor:pointer;"><u><i class="fa fa-plus mx-1"></i> Add More Services</u></span>
+                </div>
+            </div>
+            @*<button class="btn btn-primary btn-sm" type="button" onclick="addService()">Add More</button>*@
 
 
-                    <div class="row">
-
-                        <div id="DepositPanel" class="row">
-                            <div class="form-group col-md-6">
-                                <div class="input-group input-group-dynamic">
-
-                                    <label>Deposit Amount</label>
-                                    <input  class="form-control" value="@Model.Deposit" type="number" name="Deposit" id="Deposit" />
-                                </div>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <div class="input-group input-group-dynamic">
-
-                                    <label>Deposit Method</label>
-                                    <select  name="DepositMethod" id="DepositMethod" class="form-control choices__input">
-                                        @if (Model.DepositMethod == "Cash")
-                                        {
-                                            <option selected value="Cash">Cash</option>
-                                            <option value="Card">Card</option>
-                                            <option value="Online">Online</option>
-                                            <option value="GiftCard">GiftCard</option>
-                                        }
-                                        else if (Model.DepositMethod == "Card")
-                                        {
-                                            <option value="Cash">Cash</option>
-                                            <option selected value="Card">Card</option>
-                                            <option value="Online">Online</option>
-                                            <option value="GiftCard">GiftCard</option>
-                                        }
-                                        else if (Model.DepositMethod == "Online")
-                                        {
-                                            <option value="Cash">Cash</option>
-                                            <option value="Card">Card</option>
-                                            <option selected value="Online">Online</option>
-                                            <option value="GiftCard">GiftCard</option>
-                                        }
-                                        else if (Model.DepositMethod == "GiftCard")
-                                        {
-                                        
-
-                                            <option value="Pin">Pin</option>
-                                            <option value="Cash">Cash</option>
-                                            <option value="Card">Card</option>
-                                            <option value="Online">Online</option>
-                                            <option selected value="GiftCard">GiftCard</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="Cash">Cash</option>
-                                            <option value="Card">Card</option>
-                                            <option value="Online">Online</option>
-                                            <option value="GiftCard">GiftCard</option>
-                                        }
-
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-
-                            <div class="form-group col-md-6">
-                                <div class="input-group input-group-dynamic">
-
-                                    <label>
-                                        Select Date
-                                    </label>
-                                    @if (Model.ID == 0)
-                                    {
-                                        <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="Date">
-
-                                    }
-                                    else
-                                    {
-                                        <input type="date" id="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
-                                    }
-                                </div>
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <div class="input-group input-group-dynamic">
-
-                                    <label>
-                                        Select Time
-                                    </label>
-                                    @if (Model.ID == 0)
-                                    {
-                                        <input type="text" id="Time" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="Time">
-
-                                    }
-                                    else
-                                    {
-                                        <input type="text" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
-                                    }
-                                </div>
-                            </div>
-
-
-
-                        </div>
-
-                    </div>
-                    @if (Model.PriceChangeOnline != null)
-                    {
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="input-group input-group-dynamic">
-
-                                    <label>Online Price Change</label>
-                                    <input type="text" readonly class="form-control" value="@Model.PriceChangeOnline.Percentage %  (@Model.PriceChangeOnline.TypeOfChange)" />
-
-
-                                </div>
-                            </div>
-
-                        </div>
-                    }
+            <div class="card mt-3">
+                <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="input-group input-group-dynamic">
@@ -516,6 +414,123 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+
+                        <div class="form-group col-6">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Select Date
+                                </label>
+                                @if (Model.ID == 0)
+                                {
+                                    <input type="date" id="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" name="Date">
+
+                                }
+                                else
+                                {
+                                    <input type="date" id="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group col-6">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>
+                                    Select Time
+                                </label>
+                                @if (Model.ID == 0)
+                                {
+                                    <input type="text" id="Time" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="Time">
+
+                                }
+                                else
+                                {
+                                    <input type="text" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
+                                }
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <div id="DepositPanel" class="row">
+                        <div class="form-group col-6">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Deposit Amount</label>
+                                <input class="form-control" value="@Model.Deposit" type="number" name="Deposit" id="Deposit" />
+                            </div>
+                        </div>
+                        <div class="form-group col-6">
+                            <div class="input-group input-group-dynamic">
+
+                                <label>Deposit Method</label>
+                                <select name="DepositMethod" id="DepositMethod" class="form-control choices__input">
+                                    @if (Model.DepositMethod == "Cash")
+                                    {
+                                        <option selected value="Cash">Cash</option>
+                                        <option value="Card">Card</option>
+                                        <option value="Online">Online</option>
+                                        <option value="GiftCard">GiftCard</option>
+                                    }
+                                    else if (Model.DepositMethod == "Card")
+                                    {
+                                        <option value="Cash">Cash</option>
+                                        <option selected value="Card">Card</option>
+                                        <option value="Online">Online</option>
+                                        <option value="GiftCard">GiftCard</option>
+                                    }
+                                    else if (Model.DepositMethod == "Online")
+                                    {
+                                        <option value="Cash">Cash</option>
+                                        <option value="Card">Card</option>
+                                        <option selected value="Online">Online</option>
+                                        <option value="GiftCard">GiftCard</option>
+                                    }
+                                    else if (Model.DepositMethod == "GiftCard")
+                                    {
+
+
+                                        <option value="Pin">Pin</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Card">Card</option>
+                                        <option value="Online">Online</option>
+                                        <option selected value="GiftCard">GiftCard</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Cash">Cash</option>
+                                        <option value="Card">Card</option>
+                                        <option value="Online">Online</option>
+                                        <option value="GiftCard">GiftCard</option>
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    @if (Model.PriceChangeOnline != null)
+                    {
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group input-group-dynamic">
+
+                                    <label>Online Price Change</label>
+                                    <input type="text" readonly class="form-control" value="@Model.PriceChangeOnline.Percentage %  (@Model.PriceChangeOnline.TypeOfChange)" />
+
+
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+
 
                     <div class="row">
                         <div class="col-md-6">
@@ -939,34 +954,20 @@
                         <div class="input-group input-group-dynamic">
 
                             <label>Note</label>
-                            <textarea rows="3" class="form-control" id="Notes" name="Notes">@Model.Notes</textarea>
+                            <textarea rows="1" class="form-control" id="Notes" name="Notes">@Model.Notes</textarea>
 
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="input-group input-group-dynamic">
-                            <div class="form-group">
-                                <label>Select Color</label>
-                                @if (Model.ID == 0)
-                                {
-                                    <input class="form-control" type="color" name="Color" value="#D28D00" id="Color" />
 
-                                }
-                                else
-                                {
-                                    <input class="form-control" type="color" name="Color" value="@Model.Color" id="Color" />
-                                }
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
             </div>
-
-
         </div>
+
+
+
         <div class="col-md-6">
-            <div style="margin:0px;" class="card">
+            <div style="margin:0px;" class="card mt-3">
                 <div class="card-body">
 
                     <h4 class="card-title">
@@ -985,7 +986,7 @@
                                         <input type="text" placeholder="Enter First Name." class="form-control" id="FirstName" name="FirstName" />
                                     </div>
                                 </div>
-                                </div>
+                            </div>
 
                             <div class="col-md-6">
                                 <div class="input-group input-group-dynamic">
@@ -997,8 +998,8 @@
                                         <input type="text" placeholder="Enter Last Name." class="form-control" id="LastName" name="LastName" />
                                     </div>
                                 </div>
-                                </div>
                             </div>
+                        </div>
 
                         <div class="row">
                             <div class="col-md-12">
@@ -1010,8 +1011,8 @@
                                         </label>
                                         <input id="Email" type="text" placeholder="Enter Email." class="form-control" name="Email" />
                                     </div>
-                                    </div>
                                 </div>
+                            </div>
                             <div class="col-md-12">
                                 <div class="input-group input-group-dynamic">
 
@@ -1024,13 +1025,12 @@
 
                                     </div>
                                 </div>
-                                </div>
-
                             </div>
+
+                        </div>
 
 
                     </div>
-                    <hr />
                     <div id="CustomerPanel">
                         <div class="input-group input-group-dynamic">
 
@@ -1058,16 +1058,13 @@
                                 }
                             </div>
                         </div>
-                        </div>
                     </div>
+                </div>
             </div>
 
-            <hr />
-            <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
+            <div id="AppointmentSummaryCard"  class="card mt-3">
                 <div class="card-body">
-                    <h4 class="card-title">Appointment Summary</h4>
-                    <hr />
-                    <div class="col-md-6">
+                    <div class="col-md-6 d-none">
                         <label>Date and Time</label>
                         @if (Model.ID == 0)
                         {
@@ -1111,35 +1108,36 @@
 
             @if (Model.ID == 0)
             {
-                <button type="button" id="actionButton" class="btn text-center btn-primary btn-block btn-rounded">Create Appointment</button>
+                <div class="d-flex justify-content-center mt-2" style="gap:20px;">
+                    <button type="button" id="actionButton" class="btn text-center btn-primary w-auto btn-rounded">Create Appointment</button>
+                    <span id="validationText" class="text-danger"></span><br />
+                    <span id="validationTextForEmployeeService" class="text-danger"></span>
+                </div>
             }
             else
             {
 
-        <div class="row my-3 ml-2">
-            <div class="col-md-6">
-                <button type="button" id="actionButton" class="btn text-center btn-secondary btn-block btn-rounded">Save Appointment</button>
+        <div class="row my-3 ml-2 justify-content-center mt-2"style="gap:20px;">
+            <button type="button" id="actionButton" class="btn text-center btn-secondary w-auto btn-rounded">Save Appointment</button>
+            @if (User.IsInRole("Calendar"))
+            {
+                <button type="button" onclick='window.location.href="@Url.Action("Calendar", "Appointment", new {date=Model.Date.ToString("yyyy-MM-dd")})"' class="btn btn-secondary w-auto btn-rounded">CANCEL</button>
 
-            </div>
-            <div class="col-md-6">
-                @if (User.IsInRole("Calendar"))
-                {
-                    <button type="button" onclick='window.location.href="@Url.Action("Calendar", "Appointment", new {date=Model.Date.ToString("yyyy-MM-dd")})"' class="btn btn-secondary btn-block btn-rounded">CANCEL</button>
-
-                }
-                else
-                {
-                    <button type="button" onclick='window.location.href="@Url.Action("Calendar", "Appointment", new {date=Model.Date.ToString("yyyy-MM-dd")})"' class="btn btn-secondary btn-cancel btn-block btn-rounded">CANCEL</button>
-                }
-
-            </div>
-        </div>
             }
+            else
+            {
+                <button type="button" onclick='window.location.href="@Url.Action("Calendar", "Appointment", new {date=Model.Date.ToString("yyyy-MM-dd")})"' class="btn btn-secondary btn-cancel w-auto btn-rounded">CANCEL</button>
+            }
+
+           
             <span id="validationText" class="text-danger"></span><br />
             <span id="validationTextForEmployeeService" class="text-danger"></span>
         </div>
-    </div>
+            }
 
+        </div>
+
+    </div>
 
 
 
@@ -1587,40 +1585,31 @@
             var servicePrice = 'ServicePrice_' + serviceCount;
 
             newRow.innerHTML = `
-                <div class="col-md-6">
-                                    <div class="input-group input-group-dynamic">
-
-                    <div class="form-group">
+                <div class="col-md-6 col-sm-12">
+                    <div class="form-group w-100">
                         <label>Select Services</label>
                          <input class="form-control serviceprice-input" type="hidden" name="ServicePrice" id="${servicePrice}"/>
                         <input class="form-control serviceid-input" type="hidden" name="ServiceID" id="${serviceidElemtn}"/>
-                        <input class="form-control autocomplete" type="text" name="ServiceNames" id="${serviceId}"   />
+                        <div class="d-flex" style="gap:10px;align-items:center;">
+                        <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i> 
+                        <input class="form-control autocomplete" style="border-bottom:solid 1px gray;border-radius:0px;" type="text" name="ServiceNames" id="${serviceId}"   />
+                        </div>
                     </div>
                 </div>
-                </div>
 
-                <div class="col-md-2">
-                                    <div class="input-group input-group-dynamic">
-
-                    <div class="form-group">
+                <div class="col-md-3 col-6">
+                    <div class="form-group w-100">
                         <label>Duration</label>
-                        <input type="text" id="${durationId}" name='ServiceDurationInput'  class="form-control duration-input">
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2">
-                                    <div class="input-group input-group-dynamic">
-
-                    <div class="form-group">
-                        <label style="white-space:nowrap;">Discount %</label>
-                        <input type="number" id="${discountId}" name='ServiceDiscountInput' value='0'  class="form-control discount-input">
+                        <input type="text" id="${durationId}" style="border-bottom:solid 1px gray;border-radius:0px;" name='ServiceDurationInput'  class="form-control duration-input">
                     </div>
                 </div>
+
+                <div class="col-md-3 col-6">
+                    <div class="form-group w-100">
+                        <label style="white-space:nowrap">Discount %</label>
+                        <input type="number" id="${discountId}"style="border-bottom:solid 1px gray;border-radius:0px;"  value='0' name='ServiceDiscountInput'  class="form-control discount-input">
+                    </div>
                 </div>
-                                <button class="btn btn-danger btn-sm" type="button" onclick="removeService(${serviceCount})">X</button>
-
-
             `;
 
             document.querySelector('#MainContainer').appendChild(newRow);
@@ -2192,40 +2181,31 @@
                 var servicePrice = 'ServicePrice_' + serviceCount;
 
                 newRow.innerHTML = `
-                <div class="col-md-6">
-                    <div class="input-group input-group-dynamic">
-
-                    <div class="form-group">
+                <div class="col-md-6 col-sm-12">
+                    <div class="form-group w-100">
                         <label>Select Services</label>
                          <input class="form-control serviceprice-input" type="hidden" name="ServicePrice" id="${servicePrice}"/>
                         <input class="form-control serviceid-input" type="hidden" name="ServiceID" id="${serviceidElemtn}"/>
-                        <input class="form-control autocomplete" type="text" name="ServiceNames" id="${serviceId}"   />
-                    </div>
+                        <div class="d-flex" style="gap:10px;align-items:center;">
+                        <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i> 
+                        <input class="form-control autocomplete" style="border-bottom:solid 1px gray;border-radius:0px;" type="text" name="ServiceNames" id="${serviceId}"   />
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-2">
-                
-                                    <div class="input-group input-group-dynamic">
-
-                    <div class="form-group">
+                <div class="col-md-3 col-6">
+                    <div class="form-group w-100">
                         <label>Duration</label>
-                        <input type="text" id="${durationId}" name='ServiceDurationInput'  class="form-control duration-input">
-                    </div>
+                        <input type="text" id="${durationId}" style="border-bottom:solid 1px gray;border-radius:0px;" name='ServiceDurationInput'  class="form-control duration-input">
                     </div>
                 </div>
 
-                <div class="col-md-2">
-                                    <div class="input-group input-group-dynamic">
-
-                    <div class="form-group">
+                <div class="col-md-3 col-6">
+                    <div class="form-group w-100">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="number" id="${discountId}" name='ServiceDiscountInput' value="0" class="form-control discount-input">
-                    </div>
+                        <input type="number" id="${discountId}"style="border-bottom:solid 1px gray;border-radius:0px;"  value='0' name='ServiceDiscountInput'  class="form-control discount-input">
                     </div>
                 </div>
-                                <button class="btn btn-danger btn-sm" type="button" onclick="removeService(${serviceCount})">X</button>
-
             `;
 
                 document.querySelector('#MainContainer').appendChild(newRow);

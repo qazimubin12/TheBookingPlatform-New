@@ -140,30 +140,28 @@
                         {
                             if (inTrial == "No")
                             {
-                                @*if (package.Split(',').Contains("Employees"))
-                    {
-
-
-                        <li id="Employees" class="nav-item">
-                            <a class="nav-link mb-0 px-0 py-1 active" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="true">
-                                Emloyees
-                            </a>
-                        </li>
-
-
-                    }*@
-                               
-                                if (package.Split(',').Contains("Logs"))
+                                if (package.Split(',').Contains("Services"))
                                 {
 
-                                    <li id="Logs" class="nav-item">
-                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#logs-2" role="tab" aria-controls="logs" aria-selected="false">
-                                            Logs
+
+                                    <li id="Services" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#services-1" role="tab" aria-controls="services" aria-selected="false">
+                                            Services
+                                        </a>
+                                    </li>
+
+                                }
+                                if (package.Split(',').Contains("Employees"))
+                                {
+                                    <li id="Employees" class="nav-item">
+                                        <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="false">
+                                            Emloyees
                                         </a>
                                     </li>
 
                                 }
 
+                               
 
                                 if (package.Split(',').Contains("Price Changes"))
                                 {
@@ -179,21 +177,24 @@
 
 
 
-                             
-
-                                <li id="Logs" class="nav-item">
-                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#logs-2" role="tab" aria-controls="logs" aria-selected="false">
-                                        Logs
+                                <li id="Services" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#services-1" role="tab" aria-controls="services" aria-selected="false">
+                                        Services
                                     </a>
                                 </li>
 
+
+                                <li id="Employees" class="nav-item">
+                                    <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#employees-1" role="tab" aria-controls="profile" aria-selected="false">
+                                        Emloyees
+                                    </a>
+                                </li>
 
                                 <li id="PriceChange" class="nav-item">
                                     <a class="nav-link mb-0 px-0 py-1" data-bs-toggle="tab" href="#pricechanges-2" role="tab" aria-controls="price-change" aria-selected="false">
                                         Price Changes
                                     </a>
                                 </li>
-
 
                             }
                         }
@@ -228,7 +229,7 @@
                                     </li>
 
                                 }
-                               
+
                                 if (package.Split(',').Contains("Logs"))
                                 {
                                     <li id="Logs" class="nav-item">
@@ -258,7 +259,7 @@
                                     </li>
 
                                 }
-                               
+
                                 if (package.Split(',').Contains("Price Changes"))
                                 {
                                     <li id="PriceChange" class="nav-item">
@@ -283,7 +284,7 @@
                                     </a>
                                 </li>
 
-                               
+
 
 
 

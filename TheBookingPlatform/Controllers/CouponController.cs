@@ -65,6 +65,7 @@ namespace TheBookingPlatform.Controllers
             SignInManager = signInManager;
         }
         // GET: Coupon
+        [Authorize(Roles = "Accountant,Manager,Admin,Owner")]
         public ActionResult Index()
         {
             CouponListingViewModel model = new CouponListingViewModel();

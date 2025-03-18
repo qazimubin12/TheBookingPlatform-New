@@ -143,12 +143,12 @@
             white-space: nowrap
         }
 
-            .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+         /*   .dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
                 color: #262626;
                 text-decoration: none;
                 background-color: #f5f5f5
             }
-
+*//*
         .dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
             color: #fff;
             text-decoration: none;
@@ -166,7 +166,7 @@
                 background-color: transparent;
                 background-image: none;
                 filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)
-            }
+            }*/
 
     .open > .dropdown-menu {
         display: block
@@ -408,11 +408,11 @@
                 outline: 0;
             }
 
-                .bootstrap-select.btn-group .dropdown-menu li a:focus, .bootstrap-select.btn-group .dropdown-menu li a:hover {
+                /*.bootstrap-select.btn-group .dropdown-menu li a:focus, .bootstrap-select.btn-group .dropdown-menu li a:hover {
                     box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4);
                     background-color: seagreen;
                     color: white;
-                }
+                }*/
 
                 .bootstrap-select.btn-group .dropdown-menu li a.opt {
                     position: relative;
@@ -612,6 +612,17 @@
         margin-bottom: 10px;
         margin-top: 0px;
     }
+
+
+    .dropdown-menu .selected {
+        background: #2E8B57 !important; /* Change the background color */
+        color:white !important;
+    }
+        .dropdown-menu .selected .text {
+            color: white !important;
+        }
+
+
 </style>
 <div class="container">
     <div class="row">

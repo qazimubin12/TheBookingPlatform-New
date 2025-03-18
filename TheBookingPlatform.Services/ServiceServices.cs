@@ -69,13 +69,13 @@ namespace TheBookingPlatform.Services
             {
                 if (SearchTerm != "")
                 {
-                    return context.Services.Where(p => p.Business == Business && p.Category == Category&& p.Name != null && p.Name.ToLower().Contains(SearchTerm.ToLower()))
+                    return context.Services.Where(p => p.Business == Business && p.Category.Trim() == Category.Trim() && p.Name != null && p.Name.ToLower().Contains(SearchTerm.ToLower()))
                                             .OrderBy(x => x.DisplayOrder)
                                             .ToList();
                 }
                 else
                 {
-                    return context.Services.Where(p=> p.Business == Business && p.Category == Category ).OrderBy(x => x.DisplayOrder).ToList();
+                    return context.Services.Where(p=> p.Business == Business && p.Category.Trim() == Category.Trim() ).OrderBy(x => x.DisplayOrder).ToList();
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace TheBookingPlatform.Services
             {
 
 
-                return context.Services.Where(p => p.Category == Category).OrderBy(x => x.DisplayOrder).ToList();
+                return context.Services.Where(p => p.Category.Trim() == Category.Trim()).OrderBy(x => x.DisplayOrder).ToList();
 
             }
         }
@@ -96,7 +96,7 @@ namespace TheBookingPlatform.Services
             {
 
 
-                return context.Services.Where(p => p.Business == Business && p.Category == Category).OrderBy(x => x.DisplayOrder).ToList();
+                return context.Services.Where(p => p.Business == Business && p.Category.Trim() == Category.Trim()).OrderBy(x => x.DisplayOrder).ToList();
 
             }
         }
@@ -116,7 +116,7 @@ namespace TheBookingPlatform.Services
             {
 
 
-                return context.Services.Where(p => p.Business == Business && p.Category == Category && p.CanBookOnline == CanBookOnline).OrderBy(x => x.DisplayOrder).ToList();
+                return context.Services.Where(p => p.Business == Business && p.Category.Trim() == Category.Trim() && p.CanBookOnline == CanBookOnline).OrderBy(x => x.DisplayOrder).ToList();
 
             }
         }

@@ -331,14 +331,14 @@ namespace TheBookingPlatform.Controllers
         public ActionResult Action(int ID = 0)
         {
             ServiceActionViewModel model = new ServiceActionViewModel();
-                        var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if(LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
             if (LoggedInUser.Role != "Super Admin")
             {
                 model.Tools = ResourceServices.Instance.GetResource().Where(x => x.Type == "Tool" && x.Business == LoggedInUser.Company).ToList();
                 model.Rooms = ResourceServices.Instance.GetResource().Where(x => x.Type == "Room" && x.Business == LoggedInUser.Company).ToList();
                 model.Vats = VatServices.Instance.GetVat();
                 model.ServiceCategories = ServicesCategoriesServices.Instance.GetServiceCategories().Where(x => x.Business == LoggedInUser.Company).ToList();
-                var employees = EmployeeServices.Instance.GetEmployee().Where(x => x.Business == LoggedInUser.Company).ToList();
+                var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true);
 
                 var company = CompanyServices.Instance.GetCompany().Where(X => X.Business == LoggedInUser.Company).FirstOrDefault();
                 var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
@@ -346,7 +346,10 @@ namespace TheBookingPlatform.Controllers
                 {
                     if (item.Accepted)
                     {
-                        employees.Add(EmployeeServices.Instance.GetEmployee(item.EmployeeID));
+                        if (!employees.Select(x => x.ID).ToList().Contains(item.EmployeeID))
+                        {
+                            employees.Add(EmployeeServices.Instance.GetEmployee(item.EmployeeID));
+                        }
                     }
                 }
                 model.Employees = employees;

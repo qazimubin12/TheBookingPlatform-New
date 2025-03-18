@@ -2150,26 +2150,20 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
 
 
 
-                            var servicesList = $('#Services'); // Target the <ul>
-                            servicesList.empty(); // Clear existing items
-
-                            $.each(appointmentDetails.ServicesNew, function (index, service) {
-                                var listItem = `
-<li>
-    <span class="text-sm">${service.Service}</span>
-</li>`;
-                                servicesList.append(listItem);
-                            });
-
+                         
 
 
                             debugger
+                            $("#ABSENCE_BOX").show();
+
                             if (containabsense && !FromGCAL) {
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #WhatsappCustomerButton, #CallCustomerButton").hide();
                                 $("#DeleteAppointmentButton").show();
-                                $("#PopupTitle").text("Event Details");
-                                $("#Popupservice").text("Events:");
+                                $("#PopupTitle").text("Absence Details");
+                                
+                                $("#Popupservice").text("Name:");
                                 $("#pills-cards-tab").hide();
+                                $("#ABSENCE_BOX").hide();
                                 $("#pills-summary-tab").hide();
                                 $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + eventEditURl + "'");
                             } else if (FromGCAL) {

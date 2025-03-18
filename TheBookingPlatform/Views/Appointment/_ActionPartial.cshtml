@@ -3,6 +3,9 @@
     ViewBag.Title = "Action";
     int NewCount = 0;}
 
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
 <link rel="stylesheet" href="~/Content/build/css/intlTelInput.css" />
 <link rel="stylesheet" href="~/Content/build/css/demo.css" />
 <link href="~/Content/TBPContent/autocomplete/content/styles.css" rel="stylesheet" />
@@ -22,7 +25,7 @@
         padding-left: 0;
         font-size: smaller;
         padding-top: 0px !important;
-        padding-bottom: 10px !important;
+        padding-bottom: 0px !important;
     }
 
 
@@ -115,6 +118,10 @@
         }
     }
 
+    .form-control {
+        font-size: smaller !important;
+        padding-bottom: 0px !important;
+    }
 
     .autocomplete-no-suggestion {
         padding: 2px 5px;
@@ -310,35 +317,33 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="row">
+                                                <div class="form-group col-6">
+                                                    <div class="input-group input-group-dynamic">
 
-                                                    <div class="form-group col-6">
-                                                        <div class="input-group input-group-dynamic">
+                                                        <label>
+                                                            Select Date
+                                                        </label>
 
-                                                            <label>
-                                                                Select Date
-                                                            </label>
+                                                        <input type="date" id="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
 
-                                                            <input type="date" id="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" name="Date">
-
-                                                        </div>
                                                     </div>
-                                                    <div class="form-group col-6">
-                                                        <div class="input-group input-group-dynamic">
-
-                                                            <label>
-                                                                Select Time
-                                                            </label>
-
-                                                            <input type="time" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
-
-
-                                                        </div>
-                                                    </div>
-
-
-
                                                 </div>
+
+                                                <div class="form-group col-6">
+                                                    <div class="input-group input-group-dynamic">
+
+                                                        <label>
+                                                            Select Time
+                                                        </label>
+
+                                                        <input type="time" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
+
+
+                                                    </div>
+                                                </div>
+
+
+
                                                 <div id="DepositPanel" class="col-md-12">
                                                     <div class="row">
                                                         <div class="form-group col-6">
@@ -350,8 +355,8 @@
                                                         <div class="form-group col-6">
                                                             <label>Deposit Method</label>
                                                             <select name="DepositMethod" id="DepositMethod" class="form-control choices__input">
-                                                                <option value="Cash">Cash</option>
                                                                 <option value="Card">Card</option>
+                                                                <option value="Cash">Cash</option>
                                                                 <option value="Online">Online</option>
                                                                 <option value="GiftCard">GiftCard</option>
 
@@ -477,7 +482,7 @@
 
 
                                     </div>
-                                    <div id="AppointmentSummaryCard" style="margin:0px;" class="card mt-3 mb-1">
+                                    <div id="AppointmentSummaryCard" style="margin: 0px; padding-bottom: 10px; padding-top: 10px; " class="card mt-3 mb-1">
                                         <div class="card-body">
                                             <div  class="col-md-6 d-none">
                                                 <label>Date and Time</label>
@@ -487,7 +492,7 @@
                                             </div>
 
                                             <div id="TotalCostPanel" class="col-md-6">
-                                                <label>Total Cost</label>
+                                                <h6 class="card-title">Total Cost</h6>
                                                 <h6 id="TotalCost" name="TotalCost">
                                                     @Model.Company.Currency 0.00
                                                 </h6>
@@ -496,11 +501,11 @@
                                         </div>
                                     </div>
 
-
-                                    <button type="button" id="actionButton" class="btn btn-primary btn-block btn-rounded">Create Appointment</button>
-                                    <span id="validationText" class="text-danger"></span><br />
-                                    <span id="validationTextForEmployeeService" class="text-danger"></span>
-
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" id="actionButton" class="btn btn-primary btn-block btn-rounded">Create Appointment</button>
+                                        <span id="validationText" class="text-danger"></span><br />
+                                        <span id="validationTextForEmployeeService" class="text-danger"></span>
+                                    </div>
                                 </div>
 
 
@@ -515,22 +520,22 @@
                     <div class="tab-pane" id="description-1">
                         <form id="AbsenceForm">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div style="margin:0px;" class="card">
                                         <div class="card-body">
 
                                             <h6 class="card-title">
-                                                Create Event
+                                                Create Absence
                                             </h6>
                                             <div id="MainAbsenseContainer">
 
                                                 <div class="row" id="AbsenseServiceRow_0">
 
-                                                    <div class="col-md-6">
+                                                    <div class="col-6">
                                                         <div class="form-group">
                                                             <div class="input-group input-group-dynamic">
-                                                                <label>Select Event</label>
-                                                                <select class="form-control" name="Service" id="ServiceAB">
+                                                                <label>Select Absence</label>
+                                                                <select class="form-control" style="height:35px !important;" name="Service" id="ServiceAB">
                                                                     @foreach (var item in Model.AbsenseServices)
                                                                     {
                                                                         <option data-duration="@item.Duration" value="@item.ID">@item.Name</option>
@@ -540,7 +545,7 @@
                                                         </div>
 
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-6">
                                                         <div class="form-group">
                                                             <div class="input-group input-group-dynamic">
 
@@ -558,10 +563,11 @@
 
                                             </div>
 
+
                                             <div class="row">
 
 
-                                                <div class="form-group col-md-6">
+                                                <div class="form-group col-6">
                                                     <div class="input-group input-group-dynamic">
 
                                                         <label>
@@ -574,7 +580,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="form-group col-md-6">
+                                                <div class="form-group col-6">
                                                     <div class="input-group input-group-dynamic">
 
                                                         <label>
@@ -614,7 +620,7 @@
 
 
                                             </div>
-                                            
+
 
                                             <div class="row">
                                                 <div class="col-md-6">
@@ -750,7 +756,7 @@
                                                 <div class="input-group input-group-dynamic">
 
                                                     <label>Note</label>
-                                                    <textarea rows="3" class="form-control" id="NotesAB" name="Notes"></textarea>
+                                                    <textarea rows="1" class="form-control" id="NotesAB" name="Notes"></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-md-12 d-none">
@@ -769,7 +775,7 @@
                                     </div>
 
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-5 d-none">
                                     <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
                                         <div class="card-body">
                                             <h6 class="card-title">Event Summary</h6>
@@ -786,13 +792,14 @@
                                     </div>
 
 
-                                    <button type="button" id="ABactionButton" class="btn btn-primary btn-block my-2 btn-rounded">Create Event</button>
-                                    <span id="validationTextAB" class="text-danger"></span><br />
-                                    <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+
 
                                 </div>
-
-
+                                <div class="d-flex justify-content-center">
+                                    <button type="button" id="ABactionButton" class="btn btn-primary btn-block my-2 btn-rounded">Create Absence</button>
+                                    <span id="validationTextAB" class="text-danger"></span><br />
+                                    <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+                                </div>
 
                             </div>
                         </form>
@@ -805,22 +812,22 @@
                     <div class="tab-pane active" id="description-1">
                         <form id="AbsenceForm">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div style="margin:0px;" class="card">
                                         <div class="card-body">
 
                                             <h6 class="card-title">
-                                                Create Event
+                                                Create Absence
                                             </h6>
                                             <div id="MainAbsenseContainer">
 
                                                 <div class="row" id="AbsenseServiceRow_0">
 
-                                                    <div class="col-md-6">
+                                                    <div class="col-6">
                                                         <div class="form-group">
                                                             <div class="input-group input-group-dynamic">
-                                                                <label>Select Event</label>
-                                                                <select class="form-control" name="Service" id="ServiceAB">
+                                                                <label>Select Absence</label>
+                                                                <select class="form-control" style="height:35px !important;" name="Service" id="ServiceAB">
                                                                     @foreach (var item in Model.AbsenseServices)
                                                                     {
                                                                         <option data-duration="@item.Duration" value="@item.ID">@item.Name</option>
@@ -830,7 +837,7 @@
                                                         </div>
 
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-6">
                                                         <div class="form-group">
                                                             <div class="input-group input-group-dynamic">
 
@@ -851,7 +858,7 @@
                                             <div class="row">
 
 
-                                                <div class="form-group col-md-6">
+                                                <div class="form-group col-6">
                                                     <div class="input-group input-group-dynamic">
 
                                                         <label>
@@ -864,7 +871,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="form-group col-md-6">
+                                                <div class="form-group col-6">
                                                     <div class="input-group input-group-dynamic">
 
                                                         <label>
@@ -907,7 +914,7 @@
 
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="form-check">
+                                                    <div class="form-check" style="padding-left:0px !important; ">
                                                         <label>
                                                             <input type="checkbox" class="form-check-input" name="IsRepeatCB" id="IsRepeatCB">
                                                             Repeat
@@ -916,7 +923,7 @@
                                                     </div>
                                                 </div>
                                                 <div id="AllEmployeePanel" class="col-md-6">
-                                                    <div class="form-check">
+                                                    <div class="form-check" style="padding-left:0px !important; ">
                                                         <label>
                                                             <input type="checkbox" class="form-check-input" name="AllEmployeesCB" id="AllEmployeesCB">
                                                             All Employees
@@ -1058,11 +1065,10 @@
                                     </div>
 
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-5 mt-3 d-none">
                                     <div id="AppointmentSummaryCard" style="margin:0px;" class="card">
                                         <div class="card-body">
                                             <h6 class="card-title">Event Summary</h6>
-                                            <hr />
                                             <div class="col-md-6">
                                                 <label>Date and Time</label>
                                                 <h6>
@@ -1075,13 +1081,14 @@
                                     </div>
 
 
-                                    <button type="button" id="ABactionButton" class="btn btn-primary btn-block my-2 btn-rounded">Create Event</button>
-                                    <span id="validationTextAB" class="text-danger"></span><br />
-                                    <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+
 
                                 </div>
-
-
+                                <div class="d-flex justify-content-center">
+                                    <button type="button" id="ABactionButton" class="btn btn-primary btn-block my-2 btn-rounded">Create Absence</button>
+                                    <span id="validationTextAB" class="text-danger"></span><br />
+                                    <span id="validationTextForEmployeeServiceAB" class="text-danger"></span>
+                                </div>
 
                             </div>
                         </form>
@@ -1203,7 +1210,7 @@
                         <input class="form-control serviceid-input" type="hidden" name="ServiceID" id="${serviceidElemtn}"/>
                         <div class="d-flex" style="gap:10px;align-items:center;">
                         <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i> 
-                        <input class="form-control autocomplete" style="border-bottom:solid 1px gray;" type="text" name="ServiceNames" id="${serviceId}"   />
+                        <input class="form-control autocomplete" style="border-bottom:solid 1px gray;border-radius:0px;" type="text" name="ServiceNames" id="${serviceId}"   />
                         </div>
                     </div>
                 </div>
@@ -1211,14 +1218,14 @@
                 <div class="col-md-3 col-6">
                     <div class="form-group w-100">
                         <label>Duration</label>
-                        <input type="text" id="${durationId}" style="border-bottom:solid 1px gray;" name='ServiceDurationInput'  class="form-control duration-input">
+                        <input type="text" id="${durationId}" style="border-bottom:solid 1px gray;border-radius:0px;" name='ServiceDurationInput'  class="form-control duration-input">
                     </div>
                 </div>
 
                 <div class="col-md-3 col-6">
                     <div class="form-group w-100">
                         <label style="white-space:nowrap">Discount %</label>
-                        <input type="number" id="${discountId}"style="border-bottom:solid 1px gray;"  value='0' name='ServiceDiscountInput'  class="form-control discount-input">
+                        <input type="number" id="${discountId}"style="border-bottom:solid 1px gray;border-radius:0px;"  value='0' name='ServiceDiscountInput'  class="form-control discount-input">
                     </div>
                 </div>
             `;

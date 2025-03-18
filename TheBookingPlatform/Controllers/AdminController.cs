@@ -868,6 +868,7 @@ namespace TheBookingPlatform.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Accountant,Manager,Owner,Super Admin")]
         public ActionResult Analysis()
         {
             AnalysisViewModel model = new AnalysisViewModel();

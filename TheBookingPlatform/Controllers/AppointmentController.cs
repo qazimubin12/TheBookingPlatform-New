@@ -1792,6 +1792,7 @@ namespace TheBookingPlatform.Controllers
         }
 
         [NoCache]
+        [Authorize(Roles = "Accountant,Manager,Admin,Owner")]
         public ActionResult Index(string StartDate = "", string EndDate = "")
         {
 
@@ -2530,6 +2531,7 @@ namespace TheBookingPlatform.Controllers
 
 
         [NoCache]
+        [Authorize(Roles = "Accountant,Manager,Admin,Owner")]
         public ActionResult Action(int ID = 0)
         {
             AppointmentActionViewModel model = new AppointmentActionViewModel();
