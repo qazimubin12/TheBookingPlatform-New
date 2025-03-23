@@ -1123,6 +1123,7 @@
     // Run function after modal is completely hidden
  
     function CloseModal() {
+        debugger
         var modal = $('#actionModal');
 
         modal.find(':focus').blur();
@@ -2342,6 +2343,7 @@
                                                     }
                                                 });
                                         } else {
+                                            hideLoadingSpinner();
                                             // User clicked "Cancel" in the confirmation dialog, do nothing
                                         }
                                     });
@@ -2417,9 +2419,8 @@
                                             @*var Date = $("#Date").val();
                                             let encodedDate = encodeURIComponent(Date);
                                             window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();*@
-                                            refreshCalendarEvents();  // Refresh calendar events
+                                            CloseModal();
 
-                                            hideLoadingSpinner();
 
                                         }
                                         else {

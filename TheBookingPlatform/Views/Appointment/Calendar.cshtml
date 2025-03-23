@@ -500,6 +500,27 @@
     });
 
 
+    function CloseModalDEl() {
+        var modal = $('#appointmentModal');
+
+        modal.find(':focus').blur();
+
+        // Remove `aria-hidden` to allow interactions
+        modal.removeAttr('aria-hidden');
+
+        // Properly hide the modal
+        modal.modal('hide');
+
+        // Remove any leftover backdrops (if any)
+        $('.modal-backdrop').remove();
+
+        // Ensure the body is interactive again
+        $('body').removeClass('modal-open');
+        $('body').removeAttr('aria-hidden');
+        refreshCalendarEvents();
+        hideLoadingSpinner();
+    }
+
     function copyToClipboard() {
         /* Get the text field */
         var emailContent = document.getElementById('CustomerEmail').value;
@@ -580,7 +601,7 @@
                         hideLoadingSpinner();
 
                         if (data.success) {
-                            location.reload();
+                            CloseModal();
                         } else {
                             alert(data.Message);
                         }
@@ -605,10 +626,9 @@
                 url: '@Url.Action("DeleteFinally", "Appointment")',
                 data: { ID: ID },
                 success: function (data) {
-                    hideLoadingSpinner();
 
                     if (data.success) {
-                        location.reload();
+                    CloseModalDEl();
                     } else {
                         alert(data.Message);
                     }

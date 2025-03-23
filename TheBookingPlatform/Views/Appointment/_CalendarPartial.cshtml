@@ -2409,7 +2409,9 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
 
     function refreshCalendarEvents() {
         if (calendar) {
+            showLoadingSpinner();
             calendar.refetchEvents(); // Refetch events from the source
+            hideLoadingSpinner();
         }
     }
     //function checkForEventOverlaps(events) {
