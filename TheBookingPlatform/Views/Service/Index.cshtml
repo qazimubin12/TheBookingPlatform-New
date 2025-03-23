@@ -20,7 +20,16 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <select class="form-control choices__input" id="SelectedType">
+                            <option value="All">All</option>
+                            <option selected value="Single">Single Service</option>
+                            <option value="Package">Package Service</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
                     <div class="input-group input-group-dynamic">
                         <input type="text" name="searchterm" class="form-control" placeholder="Search." value="@Model.SearchTerm">
                     </div>
@@ -99,7 +108,28 @@
             $("#NonDeletedServices").hide();
 
         }
+
+
+        var SelectedType = $("#SelectedType").val();
+        if (SelectedType == "All") {
+            $(".Single_Type").show();
+            $(".Package_Type").show();
+            
+
+        }
+        else if (SelectedType == "Package") {
+            $(".Single_Type").hide();
+            $(".Package_Type").show();
+
+
+        } else {
+            $(".Single_Type").show();
+            $(".Package_Type").hide();
+
+        }
     });
+
+
 
     $("#SelectedOption").on("change", function () {
         var Selectedo = $("#SelectedOption").val();
@@ -124,6 +154,25 @@
             $("#NonDeletedServices").hide();
 
         }
+    });
+    $("#SelectedType").on("change", function () {
+         var SelectedType = $("#SelectedType").val();
+         if (SelectedType == "All") {
+             $(".Single_Type").show();
+             $(".Package_Type").show();
+
+
+         }
+         else if (SelectedType == "Package") {
+             $(".Single_Type").hide();
+             $(".Package_Type").show();
+
+
+         } else {
+             $(".Single_Type").show();
+             $(".Package_Type").hide();
+
+         }
     });
 
 </script>

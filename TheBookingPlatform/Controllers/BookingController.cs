@@ -747,14 +747,13 @@ namespace TheBookingPlatform.Controllers
                 var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                 ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                 var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-                var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                foreach (var item in employeeRequest)
                 {
-                    if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                    {
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                        ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                    }
+
+                    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
                 }
 
                 foreach (var item in ToBeInputtedIDs)
@@ -900,21 +899,13 @@ namespace TheBookingPlatform.Controllers
             #region WEbhookWrok
 
             Employee employee = null;
-            RequestedEmployee requestedEmployee = null;
             GoogleCalendarIntegration gcal = null;
             try
             {
                 employee = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(uri);
-                if (employee == null)
-                {
-                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(uri);
-                    employee = EmployeeServices.Instance.GetEmployee(requestedEmployee.EmployeeID);
-                    gcal = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                }
-                else
-                {
+               
                     gcal = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                }
+                
             }
             catch (Exception ex)
             {
@@ -955,29 +946,16 @@ namespace TheBookingPlatform.Controllers
                                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                                    foreach (var ee in employeeRequest)
                                     {
-                                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                                        {
-                                            RefreshToken(requestedEmployee.Business);
-                                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                                        }
+
+                                        var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
                                     }
                                 }
-                                else
-                                {
-                                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(uri);
-                                    RefreshToken(requestedEmployee.Business);
-                                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-
-                                    employee = EmployeeServices.Instance.GetEmployee(requestedEmployee.EmployeeID);
-                                    RefreshToken(employee.Business);
-                                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                }
+                              
 
 
 
@@ -1060,11 +1038,7 @@ namespace TheBookingPlatform.Controllers
                                                         if (item.Organizer != null)
                                                         {
                                                             var newem = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(item.Organizer.Email);
-                                                            if (newem == null)
-                                                            {
-                                                                requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(item.Organizer.Email);
-                                                                newem = EmployeeServices.Instance.GetEmployee(requestedEmployee.EmployeeID);
-                                                            }
+                                                          
                                                             appointment.EmployeeID = newem.ID;
                                                         }
                                                         AppointmentServices.Instance.UpdateAppointment(appointment);
@@ -1229,29 +1203,16 @@ namespace TheBookingPlatform.Controllers
                                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                                    foreach (var ee in employeeRequest)
                                     {
-                                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                                        {
-                                            RefreshToken(requestedEmployee.Business);
-                                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                                        }
+
+                                        var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
                                     }
                                 }
-                                else
-                                {
-                                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(uri);
-                                    RefreshToken(requestedEmployee.Business);
-                                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-
-                                    employee = EmployeeServices.Instance.GetEmployee(requestedEmployee.EmployeeID);
-                                    RefreshToken(employee.Business);
-                                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                }
+   
 
                                 foreach (var gg in ToBeInputtedIDs)
                                 {
@@ -1368,21 +1329,13 @@ namespace TheBookingPlatform.Controllers
             #region WEbhookWrok
 
             Employee employee = null;
-            RequestedEmployee requestedEmployee = null;
             GoogleCalendarIntegration gcal = null;
             try
             {
                 employee = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(uri);
-                if (employee == null)
-                {
-                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(uri);
-                    employee = EmployeeServices.Instance.GetEmployee(requestedEmployee.EmployeeID);
-                    gcal = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                }
-                else
-                {
-                    gcal = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                }
+
+                gcal = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
+
             }
             catch (Exception ex)
             {
@@ -1423,29 +1376,16 @@ namespace TheBookingPlatform.Controllers
                                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                                    foreach (var ee in employeeRequest)
                                     {
-                                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                                        {
-                                            RefreshToken(requestedEmployee.Business);
-                                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                                        }
+
+                                        var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
                                     }
                                 }
-                                else
-                                {
-                                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(uri);
-                                    RefreshToken(requestedEmployee.Business);
-                                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
 
-                                    employee = EmployeeServices.Instance.GetEmployee(requestedEmployee.EmployeeID);
-                                    RefreshToken(employee.Business);
-                                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                }
 
 
 
@@ -1528,11 +1468,7 @@ namespace TheBookingPlatform.Controllers
                                                         if (item.Organizer != null)
                                                         {
                                                             var newem = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(item.Organizer.Email);
-                                                            if (newem == null)
-                                                            {
-                                                                requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(item.Organizer.Email);
-                                                                newem = EmployeeServices.Instance.GetEmployee(requestedEmployee.EmployeeID);
-                                                            }
+
                                                             appointment.EmployeeID = newem.ID;
                                                         }
                                                         AppointmentServices.Instance.UpdateAppointment(appointment);
@@ -1697,29 +1633,16 @@ namespace TheBookingPlatform.Controllers
                                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                                    foreach (var ee in employeeRequest)
                                     {
-                                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                                        {
-                                            RefreshToken(requestedEmployee.Business);
-                                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                                        }
+
+                                        var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
                                     }
                                 }
-                                else
-                                {
-                                    requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(uri);
-                                    RefreshToken(requestedEmployee.Business);
-                                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
 
-                                    employee = EmployeeServices.Instance.GetEmployee(requestedEmployee.EmployeeID);
-                                    RefreshToken(employee.Business);
-                                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                }
 
                                 foreach (var gg in ToBeInputtedIDs)
                                 {
@@ -2393,15 +2316,13 @@ namespace TheBookingPlatform.Controllers
             var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
             ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
             var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-            var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-            if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+            foreach (var item in employeeRequest)
             {
-                if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                {
-                    RefreshToken(employee.Business);
-                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                    ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                }
+
+                var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
             }
             var historyNew = new History();
             historyNew.Business = appointment.Business;
@@ -3214,14 +3135,13 @@ namespace TheBookingPlatform.Controllers
             var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
             ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
             var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-            var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-            if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+            foreach (var item in employeeRequest)
             {
-                if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                {
-                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                    ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                }
+
+                var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
             }
             StripeConfiguration.ApiKey = company.APIKEY;
             string ConcatenatedServices = "";
@@ -3410,14 +3330,13 @@ namespace TheBookingPlatform.Controllers
             var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
             ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
             var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-            var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-            if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+            foreach (var item in employeeRequest)
             {
-                if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                {
-                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                    ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                }
+
+                var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
             }
             foreach (var item in ToBeInputtedIDs)
             {
@@ -3630,14 +3549,13 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                    foreach (var item in employeeRequest)
                     {
-                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                        {
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                        }
+
+                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
                     }
                 }
                 else
@@ -3645,14 +3563,13 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                    foreach (var item in employeeRequest)
                     {
-                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                        {
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
-                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                        }
+
+                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
                     }
                 }
 
@@ -3765,16 +3682,13 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(old.ID);
-                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(old.ID);
-                    if (employeeRequest.Any(x => x.EmployeeID == old.ID))
+                    foreach (var item in employeeRequest)
                     {
-                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                        {
-                            RefreshToken(requestedEmployee.Business);
 
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                        }
+                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
+
                     }
                 }
                 else
@@ -3783,15 +3697,13 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(old.Business);
                     ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(old.ID);
-                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(old.ID);
-                    if (employeeRequest.Any(x => x.EmployeeID == old.ID))
+                    foreach (var item in employeeRequest)
                     {
-                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                        {
-                            RefreshToken(appointment.Business);
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
-                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                        }
+
+                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
+
                     }
                 }
 
@@ -3828,14 +3740,13 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
-                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(newemp.ID);
-                    if (employeeRequest.Any(x => x.EmployeeID == newemp.ID))
+                    foreach (var item in employeeRequest)
                     {
-                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                        {RefreshToken(requestedEmployee.Business);
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                        }
+
+                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
+
                     }
                 }
                 else
@@ -3844,15 +3755,13 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(newemp.Business);
                     ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
-                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(newemp.ID);
-                    if (employeeRequest.Any(x => x.EmployeeID == newemp.ID))
+                    foreach (var item in employeeRequest)
                     {
-                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                        {
-                            RefreshToken(appointment.Business);
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
-                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                        }
+
+                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
+
                     }
                 }
                 foreach (var item in ToBeInputtedIDs)
@@ -5669,15 +5578,13 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                    foreach (var item in employeeRequest)
                     {
-                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
-                        {
-                            RefreshToken(requestedEmployee.Business);
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(requestedEmployee.Business);
-                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
-                        }
+
+                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
                     }
 
                 }
@@ -5687,67 +5594,72 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    var requestedEmployee = RequestedEmployeeServices.Instance.GetRequestedEmployeeWRTEmployeeID(employee.ID);
-                    if (employeeRequest.Any(x => x.EmployeeID == employee.ID))
+                    foreach (var item in employeeRequest)
                     {
-                        if (requestedEmployee != null && requestedEmployee.GoogleCalendarID != null && requestedEmployee.GoogleCalendarID != "")
+
+                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
+                    }
+
+                }
+                string LastSavedGoogleCalendarID = "";
+                foreach (var item in ToBeInputtedIDs)
+                {
+                    if(LastSavedGoogleCalendarID != item.Value)
+                    {
+                        LastSavedGoogleCalendarID = item.Value;
+
+                        var url = "https://www.googleapis.com/calendar/v3/calendars/" + item.Value + "/events";
+                        var finalUrl = new System.Uri(url);
+                        RestClient restClient = new RestClient(finalUrl);
+                        RestRequest request = new RestRequest();
+                        var calendarEvent = new Event();
+                        calendarEvent.Summary = "Appointment at: " + Business;
+                        calendarEvent.Description = Services + "ID: " + appointment.ID;
+                        var TimeZone = TimeZoneInfo.Local.Id;
+                        calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+                        calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+
+                        var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
                         {
-                            RefreshToken(appointment.Business);
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
-                            ToBeInputtedIDs.Add(googleKey, requestedEmployee.GoogleCalendarID);
+                            ContractResolver = new CamelCasePropertyNamesContractResolver()
+                        });
+
+                        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                        request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
+                        request.AddHeader("Accept", "application/json");
+                        request.AddHeader("Content-Type", "application/json");
+                        request.AddParameter("application/json", model, ParameterType.RequestBody);
+
+                        var response = restClient.Post(request);
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            JObject jsonObj = JObject.Parse(response.Content);
+                            //if (appointment.GoogleCalendarEventID != null)
+                            //{
+                            //    appointment.GoogleCalendarEventID = String.Join(",",appointment.GoogleCalendarEventID, jsonObj["id"]?.ToString());
+                            //}
+                            //else
+                            //{
+                            appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+
+                            // }
+                            AppointmentServices.Instance.UpdateAppointment(appointment);
+                        }
+                        else
+                        {
+                            var history = new History();
+                            history.Note = "Error" + response.Content;
+                            history.Business = "Error";
+                            history.Date = DateTime.Now;
+                            HistoryServices.Instance.SaveHistory(history);
+
                         }
                     }
                    
-                }
-                foreach (var item in ToBeInputtedIDs)
-                {
-                    var url = "https://www.googleapis.com/calendar/v3/calendars/" + item.Value + "/events";
-                    var finalUrl = new System.Uri(url);
-                    RestClient restClient = new RestClient(finalUrl);
-                    RestRequest request = new RestRequest();
-                    var calendarEvent = new Event();
-                    calendarEvent.Summary = "Appointment at: " + Business;
-                    calendarEvent.Description = Services + "ID: " + appointment.ID;
-                    var TimeZone = TimeZoneInfo.Local.Id;
-                    calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
-                    calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
-
-                    var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
-
-                    request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                    request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
-                    request.AddHeader("Accept", "application/json");
-                    request.AddHeader("Content-Type", "application/json");
-                    request.AddParameter("application/json", model, ParameterType.RequestBody);
-
-                    var response = restClient.Post(request);
-
-                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    {
-                        JObject jsonObj = JObject.Parse(response.Content);
-                        //if (appointment.GoogleCalendarEventID != null)
-                        //{
-                        //    appointment.GoogleCalendarEventID = String.Join(",",appointment.GoogleCalendarEventID, jsonObj["id"]?.ToString());
-                        //}
-                        //else
-                        //{
-                            appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
-
-                       // }
-                        AppointmentServices.Instance.UpdateAppointment(appointment);
-                    }
-                    else
-                    {
-                        var history = new History();
-                        history.Note = "Error" + response.Content;
-                        history.Business = "Error";
-                        history.Date = DateTime.Now;
-                        HistoryServices.Instance.SaveHistory(history);
-
-                    }
                 }
                 return "Saved";
 

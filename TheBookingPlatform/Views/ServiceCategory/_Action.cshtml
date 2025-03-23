@@ -33,6 +33,15 @@
                     </div>
                 </div>
 
+                <div class="form-group col-md-12">
+                    <div class="input-group input-group-dynamic">
+                        <label>Select Type</label>
+                        <select name="Type" id="Type" class="form-select">
+                            <option @(Model.Type == "Single"? "selected":"") value="Single">Single</option>
+                            <option @(Model.Type == "Package"? "selected":"") value="Package">Package</option>
+                        </select>
+                    </div>
+                </div>
             </form>
 
             <div class="errorDiv">

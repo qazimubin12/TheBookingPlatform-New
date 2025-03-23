@@ -58,6 +58,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
     @*<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>*@
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src='~/Content/fullcalendar-scheduler-6.1.8/dist/index.global.js'></script>
 
     <script>
         if ('serviceWorker' in navigator) {
@@ -122,23 +123,27 @@
             font-weight: 600 !important;
             margin-left: 6px;
         }
-     
+
         .mini-navbar #calendar-block {
             position: absolute;
             top: 0;
             left: 70px
         }
+
         .navbar-vertical.navbar-expand-xs .navbar-nav > .nav-item {
             margin-top: 0.125rem;
             width: auto;
         }
+
         .btn.btn-sm i, .btn-group-sm > .btn i {
             font-size: 1rem;
         }
+
         td.ui-datepicker-today a {
             background: black !important;
             border-radius: 5px;
         }
+
         .autocomplete-suggestions {
             width: 35% !important;
         }
@@ -153,16 +158,18 @@
             z-index: 9999; /* Ensure it appears above all other content */
             background-color: rgba(0,0,0,0.5); /* Transparent black */
         }
+
         #mainContainerflu .material-icons {
             color: white !important;
         }
+
             #mainContainerflu .material-icons.ppff {
                 color: gray !important;
             }
 
         /*#sidenav-scrollbar {
             max-height: 100vh;*/ /* Adjust based on your needs */
-            /*overflow: hidden;
+        /*overflow: hidden;
         }*/
         .spinner {
             border: 16px solid #f3f3f3;
@@ -361,7 +368,7 @@
             color: #4a5054;
             background: 0 0
         }
-        
+
         .ui-datepicker .work a {
             color: #a7b1c2;
             background: 0 0
@@ -376,6 +383,10 @@
         .calendar-container .ui-datepicker .ui-datepicker-calendar .ui-state-hover, .calendar-container .ui-datepicker .ui-datepicker-current-day a {
             background: #FACA00 !important;
             color: black;
+        }
+        .ui-state-active {
+            background: #FACA00 !important;
+            border-radius:20% !important;
         }
 
         #master_cal .ui-datepicker .ui-datepicker-calendar .ui-state-hover, #master_cal .ui-datepicker .ui-datepicker-current-day a {
@@ -470,7 +481,7 @@
             background-color: #FFF; /* Color of the scrollbar corner */
         }
 
-       /* .navbar-vertical.navbar-expand-xs .navbar-nav > .nav-item {
+        /* .navbar-vertical.navbar-expand-xs .navbar-nav > .nav-item {
             margin-top: 0.125rem;
             background: white;
         }*/
@@ -479,9 +490,9 @@
             margin-left: 0px !important;
             padding: 0.5rem 1rem !important;
         }
-  
 
-            .text-dark {
+
+        .text-dark {
             color: #262626 !important;
             font-weight: 400 !important;
         }
@@ -490,25 +501,31 @@
             background-color: white !important;
             border: solid 1px lightgray !important;
         }
+
         .sidenav .navbar-brand {
             padding-top: 1.5em !important;
             padding-left: 1em !important;
         }
+
         .material-icons {
             color: #8D8D8D !important;
             font-size: 20px !important;
         }
+
         .material-icons-round {
             color: #8D8D8D !important;
         }
+
         .sidenav .collapse .nav-item .nav-link.active {
             color: #fff !important;
             background-image: linear-gradient(195deg, #262626, #262626);
         }
+
         .navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapse .nav-item.active .nav-link.active, .navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapsing .nav-item.active .nav-link.active {
             background-image: linear-gradient(195deg, #262626, #262626);
             color: #fff !important;
         }
+
         button .material-icons {
             color: white !important; /* Change to your desired color */
         }
@@ -516,7 +533,8 @@
         body {
             font-family: sans-serif !important
         }
-        h1, h2, h3, h3, h4, h5, h6, p, span, a, button, select, input,label,th,td {
+
+        h1, h2, h3, h3, h4, h5, h6, p, span, a, button, select, input, label, th, td {
             font-family: sans-serif !important;
         }
 
@@ -2153,7 +2171,7 @@
                 success: function (data) {
                     // Handle the response here
                     hideLoadingSpinner();
-                    
+
                     if (data.success == false) {
 
                     } else {
@@ -2256,32 +2274,53 @@
                 showOtherMonths: true, // Show days from other months
                 selectOtherMonths: true, // Allow selecting days from other months
                 todayHighlight: true, // Highlight today's date
-                language: browserLanguage,
                 format: dateFormat,
                 firstDay: 1, // Set Monday as the first day of the week
                 language: browserLanguage, // Language setting
 
                 beforeShowDay: function (date) {
-                    // Convert the date to a string in the format yyyy-mm-dd
                     var dateString = $.datepicker.formatDate('yy-mm-dd', date);
-
-                    // Add a data-date attribute to the day element
-                    return [true, '', '' + dateString + '"'];
+                    return [true, 'custom-day-class', dateString]; // Add class and title
                 },
+
                 onSelect: function (selectedDate) {
+                    if ($('#fullCalendar').length) { // Check if FullCalendar exists
+                        debugger
+                        // Convert selectedDate to a valid Date object
+                        var parsedDate = new Date(selectedDate);
+                        if (!isNaN(parsedDate.getTime())) {
+                            var datetobesent = parsedDate.getFullYear() + '-' +
+                                String(parsedDate.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(parsedDate.getDate()).padStart(2, '0');
+                            var dateString = datetobesent;
+                            var date = new Date(dateString);
 
-                    // Handle date selection
-                    showLoadingSpinner();
-                    var url = '@Url.Action("Calendar","Appointment")'; // Replace with the actual URL of your full calendar page
-                    var selectedDateParam = encodeURIComponent(selectedDate);
-                    // Add the selected date as a query parameter
-                    url += '?date=' + selectedDateParam;
-                    // Navigate to the full calendar page with the selected date
-                    window.location.href = url;
+                            // Format the date using JavaScript
+                            var options = {
+                                weekday: 'short',
+                                month: 'short',
+                                day: '2-digit',
+                                year: 'numeric'
+                            };
+
+                            var formattedDate = date.toLocaleDateString('en-US', options);
+                            setTimeout(function () {
+                                $("#fc-dom-1").text(formattedDate);
+                            }, 500); // Delay to ensure FullCalendar has finished updating
+                            calendar.gotoDate(datetobesent); // Ensure correct format
+                            showLoadingSpinner();
+                            calendar.refetchEvents();
+                            hideLoadingSpinner();
+                        } else {
+                            console.error("Invalid date format:", selectedDate);
+                        }
+                    } else {
+                        // Navigate if FullCalendar is not present
+                        var url = '@Url.Action("Calendar","Appointment")';
+                        window.location.href = url + '?date=' + encodeURIComponent(selectedDate);
+                    }
                 }
-
             });
-
             SetDadte();
             var $sidebar = $(".sidebar");
             var $body = $("body");
@@ -2322,11 +2361,9 @@
 
         });
 
-    function SetDadte() {
-        // Set the datepicker's date to the selected date
-        $('#datepicker-container').datepicker('setDate', $("#FINALDATEO").val());
-
-    }
+        function SetDadte() {
+            $('#datepicker-container').datepicker('setDate', $("#FINALDATEO").val());
+        }
 
     function showLoadingSpinner() {
         document.getElementById('loadingSpinner').style.display = 'block';

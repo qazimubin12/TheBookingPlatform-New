@@ -95,6 +95,7 @@ namespace TheBookingPlatform.Controllers
                 model.ID = ServiceCategories.ID;
                 model.Business = ServiceCategories.Business;
                 model.Name = ServiceCategories.Name;
+                model.Type = ServiceCategories.Type;
           
             }
             return PartialView("_Action", model);
@@ -122,6 +123,7 @@ namespace TheBookingPlatform.Controllers
                 ServiceCategories.ID = model.ID;
                 var oldName = ServiceCategories.Name;
                 ServiceCategories.Name = model.Name;
+                ServiceCategories.Type = model.Type;
                 ServicesCategoriesServices.Instance.UpdateServiceCategory(ServiceCategories);
 
                 var serviceList = ServiceServices.Instance.GetService().Where(x=> x.IsActive && x.Business ==  ServiceCategories.Business && x.Category == oldName).ToList();
@@ -143,7 +145,7 @@ namespace TheBookingPlatform.Controllers
                     serviceCategories.Business = LoggedInUser.Company;
                 }
                 serviceCategories.Name = model.Name;
-
+               serviceCategories.Type = model.Type;
                 ServicesCategoriesServices.Instance.SaveServiceCategory(serviceCategories);
             }
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);

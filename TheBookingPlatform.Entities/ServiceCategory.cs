@@ -10,5 +10,6 @@ namespace TheBookingPlatform.Entities
     {
         public string Name { get; set; }
         public int DisplayOrder { get; set; }
+        public string Type { get; set; } //Single //Package
     }
 }

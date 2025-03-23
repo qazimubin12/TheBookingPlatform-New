@@ -120,51 +120,50 @@ namespace TheBookingPlatform.Controllers
             CalendarManageActionViewModel model = new CalendarManageActionViewModel();
             model.User = UserManager.FindById(ID);
             var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == model.User.Company).FirstOrDefault();
-            var calendarManage = CalendarManageServices.Instance.GetCalendarManage().Where(x=>x.Business == model.User.Company && x.UserID == model.User.Id).FirstOrDefault();
-            if (calendarManage != null)
+            var calendarManage = CalendarManageServices.Instance.GetCalendarManage().Where(x => x.Business == model.User.Company && x.UserID == model.User.Id).FirstOrDefault();
+            if (calendarManage != null && calendarManage.ManageOf != null)
             {
-                if (calendarManage.ManageOf != null)
+
+                var listofCalendarManageModel = calendarManage.ManageOf.Split(',').ToList();
+                var AssignedEmployeeList = new List<Employee>();
+                foreach (var item in listofCalendarManageModel)
                 {
-                    var listofCalendarManageModel = calendarManage.ManageOf.Split(',').ToList();
-                    var AssignedEmployeeList = new List<Employee>();
-                    foreach (var item in listofCalendarManageModel)
+                    var employee = EmployeeServices.Instance.GetEmployee(int.Parse(item));
+                    if (employee != null)
                     {
-                        var employee = EmployeeServices.Instance.GetEmployee(int.Parse(item));
-                        if (employee != null)
-                        {
-                            AssignedEmployeeList.Add(employee);
-                        }
+                        AssignedEmployeeList.Add(employee);
                     }
-                    var exceptUsers = EmployeeServices.Instance.GetEmployee()
-                                    .Where(emp =>
-                                       emp.Business == model.User.Company  // Filter users with Business equal to "SomeBusiness"
-                                        && !listofCalendarManageModel.Any(s => s.Contains(emp.ID.ToString()))  // Users not in listofCalendarManageModel
-                                    )
-                                    .ToList();
-                    var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
-                    foreach (var item in employeerequests)
-                    {
-                        if (item.Accepted)
-                        {
-                            
-                            var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                            if (!exceptUsers.Select(x => x.ID).Contains(employee.ID) && !AssignedEmployeeList.Select(x => x.ID).Contains(item.EmployeeID))
-                            {
-                                exceptUsers.Add(employee);
-                            }
-                        }
-                    }
-                    model.ExceptUsers = exceptUsers;
-                    model.ManageOf = calendarManage.ManageOf;
-                    model.AssignedUsers = AssignedEmployeeList;
                 }
+                var exceptUsers = EmployeeServices.Instance.GetEmployee()
+                                .Where(emp =>
+                                   emp.Business == model.User.Company  // Filter users with Business equal to "SomeBusiness"
+                                    && !listofCalendarManageModel.Any(s => s.Contains(emp.ID.ToString()))  // Users not in listofCalendarManageModel
+                                )
+                                .ToList();
+                var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
+                foreach (var item in employeerequests)
+                {
+                    if (item.Accepted)
+                    {
+
+                        var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                        if (!exceptUsers.Select(x => x.ID).Contains(employee.ID) && !AssignedEmployeeList.Select(x => x.ID).Contains(item.EmployeeID))
+                        {
+                            exceptUsers.Add(employee);
+                        }
+                    }
+                }
+                model.ExceptUsers = exceptUsers;
+                model.ManageOf = calendarManage.ManageOf;
+                model.AssignedUsers = AssignedEmployeeList;
+
             }
             else
             {
                 var exceptUsers = EmployeeServices.Instance.GetEmployee()
                               .Where(emp =>
                                    emp.Business == model.User.Company)  // Filter users with Business equal to "SomeBusiness"
-                              
+
                               .ToList();
                 var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
                 foreach (var item in employeerequests)

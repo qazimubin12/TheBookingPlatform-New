@@ -70,9 +70,10 @@
 
                                     }
                                 }
-
-                                @foreach (var item in Model.ExceptUsers)
+                                @if (Model.ExceptUsers != null)
                                 {
+                                    foreach (var item in Model.ExceptUsers)
+                                    {
                                     <li class="list-group-item" data-user-id="@item.ID" data-user-name="@item.Name">
                                         <label>
                                             <input onchange="FillData()" class="user-checkbox" type="checkbox" />
@@ -80,6 +81,7 @@
                                         </label>
                                     </li>
 
+                                    }
                                 }
                             </ul>
                         </div>

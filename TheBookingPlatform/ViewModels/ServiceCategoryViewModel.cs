@@ -18,5 +18,6 @@ namespace TheBookingPlatform.ViewModels
         public string Business { get; set; }
 
         public string Name { get; set; }
+        public string Type { get;  set; }
     }
 }

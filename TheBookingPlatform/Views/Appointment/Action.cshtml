@@ -442,12 +442,12 @@
                                 </label>
                                 @if (Model.ID == 0)
                                 {
-                                    <input type="text" id="Time" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="Time">
+                                    <input type="time" id="Time" class="form-control timepicker" value="@DateTime.Now.ToString("HH:mm")" name="Time">
 
                                 }
                                 else
                                 {
-                                    <input type="text" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
+                                    <input type="time" id="Time" class="form-control timepicker" value="@Model.Time.ToString("HH:mm")" name="Time">
                                 }
                             </div>
                         </div>
@@ -1117,19 +1117,19 @@
             else
             {
 
-        <div class="row my-3 ml-2 justify-content-center mt-2"style="gap:20px;">
+        <div class="row my-3 ml-2 justify-content-center mt-2" style="gap:20px;">
             <button type="button" id="actionButton" class="btn text-center btn-secondary w-auto btn-rounded">Save Appointment</button>
             @if (User.IsInRole("Calendar"))
             {
-                <button type="button" onclick='window.location.href="@Url.Action("Calendar", "Appointment", new {date=Model.Date.ToString("yyyy-MM-dd")})"' class="btn btn-secondary w-auto btn-rounded">CANCEL</button>
+                <button type="button" onclick="CloseModal()" class="btn btn-secondary w-auto btn-rounded">CANCEL</button>
 
             }
             else
             {
-                <button type="button" onclick='window.location.href="@Url.Action("Calendar", "Appointment", new {date=Model.Date.ToString("yyyy-MM-dd")})"' class="btn btn-secondary btn-cancel w-auto btn-rounded">CANCEL</button>
+                <button type="button" onclick="CloseModal()" class="btn btn-secondary btn-cancel w-auto btn-rounded">CANCEL</button>
             }
 
-           
+          
             <span id="validationText" class="text-danger"></span><br />
             <span id="validationTextForEmployeeService" class="text-danger"></span>
         </div>
@@ -1143,10 +1143,32 @@
 
 </form>
 <script src="~/Content/build/js/intlTelInput.js"></script>
+<script>
+    function CloseModal() {
+        var modal = $('#UpdateActionModal');
 
+        modal.find(':focus').blur();
+
+        // Remove `aria-hidden` to allow interactions
+        modal.removeAttr('aria-hidden');
+
+        // Properly hide the modal
+        modal.modal('hide');
+
+        // Remove any leftover backdrops (if any)
+        $('.modal-backdrop').remove();
+
+        // Ensure the body is interactive again
+        $('body').removeClass('modal-open');
+        $('body').removeAttr('aria-hidden');
+        refreshCalendarEvents();
+        hideLoadingSpinner();
+    }
+</script>
 @if (Model.OnlinePriceChange == 0)
 {
     <script>
+
       function CheckIfEmployeeProvideTheService() {
             var serviceValues = [];
             $('#MainContainer .row').each(function () {
@@ -1174,10 +1196,10 @@
                     success: function (data) {
                         if (data.success == false) {
                             $("#validationTextForEmployeeService").text(data.Message);
-                            hideLoadingSpinner();
+                        //    hideLoadingSpinner();
                         } else {
                             $("#validationTextForEmployeeService").text("");
-                            hideLoadingSpinner();
+                            //hideLoadingSpinner();
 
                         }
                     },
@@ -1327,7 +1349,7 @@
             AdjustTheControls();
         });
 
-    let serviceCount = 1;
+        var serviceCount = 1;
         var input = document.querySelector("#MobileNumber");
         window.intlTelInput(input, {
             // allowDropdown: false,
@@ -1591,7 +1613,7 @@
                          <input class="form-control serviceprice-input" type="hidden" name="ServicePrice" id="${servicePrice}"/>
                         <input class="form-control serviceid-input" type="hidden" name="ServiceID" id="${serviceidElemtn}"/>
                         <div class="d-flex" style="gap:10px;align-items:center;">
-                        <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i> 
+                        <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i>
                         <input class="form-control autocomplete" style="border-bottom:solid 1px gray;border-radius:0px;" type="text" name="ServiceNames" id="${serviceId}"   />
                         </div>
                     </div>
@@ -1771,47 +1793,45 @@
 
 
         }
-    function CheckAvailability() {
+        function CheckAvailability() {
             showLoadingSpinner();
 
-        updateServiceInput();
-        var date = $("#Date").val();
-        var time = $("#Time").val();
-        var serviceDuration = $("#ServiceDuration").val();
+            updateServiceInput();
+            var date = $("#Date").val();
+            var time = $("#Time").val();
+            var serviceDuration = $("#ServiceDuration").val();
             var ID = $("#ID").val();
             var EmployeeID = $("#EmployeeID").val();
-        $.ajax({
-            url: '@Url.Action("CheckSlotAvailability", "Appointment")',
-            type: 'POST',
-            data: {
-                date: date,
-                time: time,
-                serviceDuration: serviceDuration,
-                EmployeeID: EmployeeID,
-                ID:ID
-            },
-            success: function (data) {
-
-                if (data.isSlotAvailable) {
-
-                    $("#actionButton").removeAttr("disabled");
-                    // Slot is available, you can proceed with saving the appointment
-                    // or display a success message.
-                    $("#validationText").text("");
-                    hideLoadingSpinner();
-
-
-                } else {
-                    $("#validationText").text("Slot is already booked, please try different slot");
-                    hideLoadingSpinner();
-
+            $.ajax({
+                url: '@Url.Action("CheckSlotAvailability", "Appointment")',
+                type: 'POST',
+                data: {
+                    date: date,
+                    time: time,
+                    serviceDuration: serviceDuration,
+                    EmployeeID: EmployeeID,
+                    ID: ID
+                },
+                beforeSend: function () {
+                    showLoadingSpinner(); // Show loading spinner before request starts
                 }
-            },
-            error: function () {
-            //    alert("An error occurred while checking slot availability.");
-            }
-        });
-    }
+            })
+                .done(function (data) {
+                    if (data.isSlotAvailable) {
+                        $("#actionButton").removeAttr("disabled");
+                        $("#validationText").text("");
+                    } else {
+                        $("#validationText").text("Slot is already booked, please try a different slot.");
+                    }
+                })
+                .fail(function () {
+                    $("#validationText").text("An error occurred while checking slot availability. Please try again.");
+                    hideLoadingSpinner();
+                })
+                .always(function () {
+                    hideLoadingSpinner(); // Hide spinner after request completion (success or failure)
+                });
+        }
     function initializeAutocompleteForCustomers() {
             showLoadingSpinner();
             var $createCustomerBtn = $("#createCustomerBtn");
@@ -2040,7 +2060,7 @@
 
         return hours + ":" + minutes + " " + ampm;
     }
-       
+
 
         function enforceDiscountInput() {
             $('.discount-input').each(function () {
@@ -2051,45 +2071,302 @@
             });
         }
 
-    $(document).ready(function () {
+
+
+        $("#actionButton").click(function () {
+            debugger
+            showLoadingSpinner();
+            $(this).attr("disabled", "disabled");
+            CheckIfEmployeeProvideTheService();
+            updateServiceInput();
+            if ($("#EmployeeID").val() == "0") {
+                alert("Please Select Employee");
+                return;
+            }
+
+            updateServiceInput();
+            if ($("#EmployeeID").val() == "0") {
+                alert("Please Select Employee");
+                hideLoadingSpinner();
+                return;
+            }
+            var ValidTime = CheckTime();
+            if (ValidTime == false) {
+                alert("Entered time should not be before 9:00");
+                return;
+            }
+
+            if ($("#ConcatenatedServices").val() == "") {
+                alert("Please Select Any Services");
+                hideLoadingSpinner();
+                return;
+            }
+            var msg = $("#validationText").text();
+            var firstName = $("#FirstName").val();
+            var lastName = $("#LastName").val();
+            var email = $("#Email").val();
+            var mobileNumber = $("#MobileNumber").val()
+            var CustomerID = $("#CustomerID").val();
+            if ($('#CreateCustomerPanel').is(':visible')) {
+                if (firstName == "" || lastName == "" || email == "" || !/^\+\d+/.test(mobileNumber)) {
+                    alert("Please Fill Customer Details");
+                    return;
+                }
+                else {
+                    $.ajax({
+                        url: '@Url.Action("SaveNewCustomer", "Appointment")',
+                        type: "post",
+                        data: { FirstName: firstName, LastName: lastName, Email: email, MobileNumber: mobileNumber }
+                    })
+                        .done(function (response) {
+                            if (response.success) {
+
+                                $("#MainCustomerSelectedContainer").empty();
+                                var DivToBeAdded = '<div class="suggestion-container">' +
+                                    '<button  style="float:right;" onclick="ClearTheCustomer()" type="button" class="close-button" aria-label="Close">' +
+                                    '<span aria-hidden="true">&times;</span>' +
+                                    '</button>' +
+                                    '<table class="table table-hovered">' +
+                                    '<tbody>' +
+                                    '<tr>' +
+                                    '<td style="width:70px;" class="suggestion-initial">' +
+                                    '<div class="circular-box">' + response.customer.FirstName.charAt(0) + response.customer.LastName.charAt(0) + '</div>' +
+                                    '</td>' +
+                                    '<td class="suggestion-details">' +
+                                    '<input type="hidden" name="CustomerID" id="CustomerID" value=' + response.customer.ID + ' class="customer-id">' +
+                                    '<div class="customer-name">' + response.customer.FirstName + " " + response.customer.LastName + '</div>' +
+                                    '<div class="customer-email">' + response.customer.Email + '</div>' +
+                                    '<div class="customer-mobile">' + response.customer.MobileNumber + '</div>' +
+                                    '</td>' +
+                                    '</tr>' +
+                                    '</tbody>' +
+                                    '</table>' +
+                                    '</div>';
+
+                                $("#MainCustomerSelectedContainer").append(DivToBeAdded);
+                                if (msg == "Slot is already booked, please try different slot") {
+                                    hideLoadingSpinner();
+
+                                    // Show a SweetAlert confirmation dialog
+
+                                    Swal.fire({
+                                        title: "Confirm",
+                                        text: "Slot is already booked. Do you want to proceed?",
+                                        type: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonClass: 'btn btn-success',
+                                        cancelButtonClass: 'btn btn-danger',
+                                        confirmButtonText: 'Yes',
+                                        cancelButtonText: 'No',
+                                        buttonsStyling: false
+                                    })
+                                        .then((willProceed) => {
+                                            if (willProceed.isConfirmed) {
+                                                showLoadingSpinner();
+                                                // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
+                                                $.ajax({
+                                                    url: '@Url.Action("Action", "Appointment")',
+                                                    type: "post",
+                                                    data: $("#ActionForm").serialize(),
+                                                    beforeSend: function () {
+                                                        showLoadingSpinner(); // Show spinner before the request starts
+                                                    }
+                                                })
+                                                    .done(function (response) {
+                                                        if (response.success) {
+                                                            var Date = $("#Date").val();
+                                                            let encodedDate = encodeURIComponent(Date);
+
+                                                            CloseModal();
+                                                        } else {
+                                                            $(".errorDiv").html(response.Message);
+                                                        }
+                                                    })
+                                                    .fail(function () {
+                                                        $(".errorDiv").html("An error occurred. Please try again.");
+                                                        hideLoadingSpinner();
+
+                                                    })
+                                                    .always(function () {
+                                                    //    hideLoadingSpinner(); // Hide spinner on both failure and completion
+                                                    });
+                                            } else {
+                                                $(this).removeAttr("disabled");
+
+                                                // User clicked "Cancel" in the confirmation dialog, do nothing
+                                            }
+                                        });
+                                }
+                                else {
+                                    var Date = $("#Date").val();
+                                    showLoadingSpinner();
+                                    // If not the specific validation message, proceed with the AJAX request directly
+                                    $.ajax({
+                                        url: '@Url.Action("Action", "Appointment")',
+                                        type: "post",
+                                        data: $("#ActionForm").serialize(),
+                                        beforeSend: function () {
+                                            showLoadingSpinner(); // Show spinner before the request starts
+                                        }
+                                    })
+                                        .done(function (response) {
+                                            if (response.success) {
+                                                var Date = $("#Date").val();
+                                                let encodedDate = encodeURIComponent(Date);
+
+                                                CloseModal();
+                                            } else {
+                                                $(".errorDiv").html(response.Message);
+                                            }
+                                        })
+                                        .fail(function () {
+                                            $(".errorDiv").html("An error occurred. Please try again.");
+                                            hideLoadingSpinner();
+
+                                        })
+                                        .always(function () {
+                                        //    hideLoadingSpinner(); // Hide spinner on both failure and completion
+                                        });
+                                }
+                            }
+                            else {
+                                $(".errorDiv").html(response.Message);
+                                hideLoadingSpinner();
+                                $(this).removeAttr("disabled");
+                            }
+                        });
+                }
+            }
+            else {
+                if (msg == "Slot is already booked, please try different slot") {
+                    hideLoadingSpinner();
+
+                    // Show a SweetAlert confirmation dialog
+
+                    Swal.fire({
+                        title: "Confirm",
+                        text: "Slot is already booked. Do you want to proceed?",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonClass: 'btn btn-success',
+                        cancelButtonClass: 'btn btn-danger',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        buttonsStyling: false
+                    })
+                        .then((willProceed) => {
+                            if (willProceed.isConfirmed) {
+                                showLoadingSpinner();
+                                // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
+                                $.ajax({
+                                    url: '@Url.Action("Action", "Appointment")',
+                                    type: "post",
+                                    data: $("#ActionForm").serialize(),
+                                    beforeSend: function () {
+                                        showLoadingSpinner(); // Show spinner before the request starts
+                                    }
+                                })
+                                    .done(function (response) {
+                                        if (response.success) {
+                                            var Date = $("#Date").val();
+                                            let encodedDate = encodeURIComponent(Date);
+
+                                            CloseModal();
+                                        } else {
+                                            $(".errorDiv").html(response.Message);
+                                        }
+                                    })
+                                    .fail(function () {
+                                        $(".errorDiv").html("An error occurred. Please try again.");
+                                        hideLoadingSpinner();
+
+                                    })
+                                    .always(function () {
+                                    //    hideLoadingSpinner(); // Hide spinner on both failure and completion
+                                    });
+                            } else {
+
+                                // User clicked "Cancel" in the confirmation dialog, do nothing
+                            }
+                        });
+                }
+                else {
+                    var Date = $("#Date").val();
+                    showLoadingSpinner();
+                    // If not the specific validation message, proceed with the AJAX request directly
+                    $.ajax({
+                        url: '@Url.Action("Action", "Appointment")',
+                        type: "post",
+                        data: $("#ActionForm").serialize(),
+                        beforeSend: function () {
+                            showLoadingSpinner(); // Show spinner before the request starts
+                        }
+                    })
+                        .done(function (response) {
+                            if (response.success) {
+                                var Date = $("#Date").val();
+                                let encodedDate = encodeURIComponent(Date);
+
+                                CloseModal();
+                            } else {
+                                $(".errorDiv").html(response.Message);
+                            }
+                        })
+                        .fail(function () {
+                            $(".errorDiv").html("An error occurred. Please try again.");
+                            hideLoadingSpinner();
+
+                        })
+                        .always(function () {
+                            /*hideLoadingSpinner(); */
+                        });
+                }
+            }
+
+
+
+
+
+        });
+        $(document).ready(function () {
             initializeAutocomplete();
             initializeAutocompleteForCustomers();
-        updateDeleteButtonVisibility();
-        
-        // Run the function when the page loads
+            updateDeleteButtonVisibility();
 
-        // Optionally, run the function whenever any discount input loses focus
+            // Run the function when the page loads
+
+            // Optionally, run the function whenever any discount input loses focus
 
 
-        // Run the function when the page loads
-        enforceDiscountInput();
+            // Run the function when the page loads
+            enforceDiscountInput();
 
-        $(document).on('input', '.discount-input', function () {
-            // If the current input is empty, set it to 0
-            if ($(this).val().trim() === "") {
-                $(this).val(0);
-            }
-        });
+            $(document).on('input', '.discount-input', function () {
+                // If the current input is empty, set it to 0
+                if ($(this).val().trim() === "") {
+                    $(this).val(0);
+                }
+            });
 
-        // Also apply the check on blur
-        $(document).on('blur', '.discount-input', function () {
-            if ($(this).val().trim() === "") {
-                $(this).val(0);
-            }
-        });
+            // Also apply the check on blur
+            $(document).on('blur', '.discount-input', function () {
+                if ($(this).val().trim() === "") {
+                    $(this).val(0);
+                }
+            });
 
-        $(document).on('change', '.discount-input', function () {
-            if ($(this).val().trim() === "") {
-                $(this).val(0);
-            }
-        });
-        var activeTab = $(".nav-pills li.active");
-        // Get the href attribute of the active tab
-        var activeTabHref = activeTab.find("a").attr("href");
-        $("#SelectedOption").val(activeTabHref);
+            $(document).on('change', '.discount-input', function () {
+                if ($(this).val().trim() === "") {
+                    $(this).val(0);
+                }
+            });
+            var activeTab = $(".nav-pills li.active");
+            // Get the href attribute of the active tab
+            var activeTabHref = activeTab.find("a").attr("href");
+            $("#SelectedOption").val(activeTabHref);
             CheckIsRepeatRow();
-        CheckFrequency();
-        //AdjustTheControls();
+            CheckFrequency();
+            //AdjustTheControls();
             CheckFreqAndEnd();
             updateTotal();
             var dateIwantotsend = $("#Date").val();
@@ -2097,7 +2374,7 @@
             $(".btn-cancel").attr("href", url);
             const buttons = $('.day-button');
             const today = new Date().toLocaleString('en-us', { weekday: 'long' });
-            let selectedDays = []; // Create an array to store selected days
+            var selectedDays = []; // Create an array to store selected days
             buttons.each(function () {
                 const button = $(this);
                 const day = button.data('day');
@@ -2187,7 +2464,7 @@
                          <input class="form-control serviceprice-input" type="hidden" name="ServicePrice" id="${servicePrice}"/>
                         <input class="form-control serviceid-input" type="hidden" name="ServiceID" id="${serviceidElemtn}"/>
                         <div class="d-flex" style="gap:10px;align-items:center;">
-                        <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i> 
+                        <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i>
                         <input class="form-control autocomplete" style="border-bottom:solid 1px gray;border-radius:0px;" type="text" name="ServiceNames" id="${serviceId}"   />
                         </div>
                     </div>
@@ -2234,258 +2511,36 @@
                 }
             });
 
-        $('#FirstName').on('input', function () {
-            // Get the input value
-            var inputValue = $(this).val();
+            $('#FirstName').on('input', function () {
+                // Get the input value
+                var inputValue = $(this).val();
 
-            // Check if the input contains an apostrophe
-            if (inputValue.includes("'")) {
-                // If an apostrophe is found, remove it from the input value
-                $(this).val(inputValue.replace("'", ''));
-            }
-        });
-        $('#LastName').on('input', function () {
-            // Get the input value
-            var inputValue = $(this).val();
-
-            // Check if the input contains an apostrophe
-            if (inputValue.includes("'")) {
-                // If an apostrophe is found, remove it from the input value
-                $(this).val(inputValue.replace("'", ''));
-            }
-        });
-        });
-
-
-        $("#actionButton").click(function () {
-            $(this).attr("disabled", "disabled");
-            CheckIfEmployeeProvideTheService();
-            updateServiceInput();
-            if ($("#EmployeeID").val() == "0") {
-                alert("Please Select Employee");
-                return;
-            }
-            showLoadingSpinner();
-
-            updateServiceInput();
-            if ($("#EmployeeID").val() == "0") {
-                alert("Please Select Employee");
-                hideLoadingSpinner();
-                return;
-            }
-            var ValidTime = CheckTime();
-            if (ValidTime == false) {
-                alert("Entered time should not be before 9:00");
-                return;
-            }
-
-            if ($("#ConcatenatedServices").val() == "") {
-                alert("Please Select Any Services");
-                hideLoadingSpinner();
-                return;
-            }
-            var msg = $("#validationText").text();
-            var firstName = $("#FirstName").val();
-            var lastName = $("#LastName").val();
-            var email = $("#Email").val();
-            var mobileNumber = $("#MobileNumber").val()
-            var CustomerID = $("#CustomerID").val();
-            if ($('#CreateCustomerPanel').is(':visible')) {
-                if (firstName == "" || lastName == "" || email == "" || !/^\+\d+/.test(mobileNumber)) {
-                    alert("Please Fill Customer Details");
-                    return;
+                // Check if the input contains an apostrophe
+                if (inputValue.includes("'")) {
+                    // If an apostrophe is found, remove it from the input value
+                    $(this).val(inputValue.replace("'", ''));
                 }
-                else {
-                    $.ajax({
-                        url: '@Url.Action("SaveNewCustomer", "Appointment")',
-                        type: "post",
-                        data: { FirstName: firstName, LastName: lastName, Email: email, MobileNumber: mobileNumber }
-                    })
-                        .done(function (response) {
-                            if (response.success) {
+            });
+            $('#LastName').on('input', function () {
+                // Get the input value
+                var inputValue = $(this).val();
 
-                                $("#MainCustomerSelectedContainer").empty();
-                                var DivToBeAdded = '<div class="suggestion-container">' +
-                                    '<button  style="float:right;" onclick="ClearTheCustomer()" type="button" class="close-button" aria-label="Close">' +
-                                    '<span aria-hidden="true">&times;</span>' +
-                                    '</button>' +
-                                    '<table class="table table-hovered">' +
-                                    '<tbody>' +
-                                    '<tr>' +
-                                    '<td style="width:70px;" class="suggestion-initial">' +
-                                    '<div class="circular-box">' + response.customer.FirstName.charAt(0) + response.customer.LastName.charAt(0) + '</div>' +
-                                    '</td>' +
-                                    '<td class="suggestion-details">' +
-                                    '<input type="hidden" name="CustomerID" id="CustomerID" value=' + response.customer.ID + ' class="customer-id">' +
-                                    '<div class="customer-name">' + response.customer.FirstName + " " + response.customer.LastName + '</div>' +
-                                    '<div class="customer-email">' + response.customer.Email + '</div>' +
-                                    '<div class="customer-mobile">' + response.customer.MobileNumber + '</div>' +
-                                    '</td>' +
-                                    '</tr>' +
-                                    '</tbody>' +
-                                    '</table>' +
-                                    '</div>';
-
-                                $("#MainCustomerSelectedContainer").append(DivToBeAdded);
-                                if (msg == "Slot is already booked, please try different slot") {
-                                    hideLoadingSpinner();
-
-                                    // Show a SweetAlert confirmation dialog
-
-                                    Swal.fire({
-                                        title: "Confirm",
-                                        text: "Slot is already booked. Do you want to proceed?",
-                                        type: 'warning',
-                                        showCancelButton: true,
-                                        confirmButtonClass: 'btn btn-success',
-                                        cancelButtonClass: 'btn btn-danger',
-                                        confirmButtonText: 'Yes',
-                                        cancelButtonText: 'No',
-                                        buttonsStyling: false
-                                    })
-                                        .then((willProceed) => {
-                                            if (willProceed.isConfirmed) {
-                                                showLoadingSpinner();
-                                                // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
-                                                $.ajax({
-                                                    url: '@Url.Action("Action", "Appointment")',
-                                                    type: "post",
-                                                    data: $("#ActionForm").serialize()
-                                                })
-                                                    .done(function (response) {
-                                                        if (response.success) {
-                                                            var Date = $("#Date").val();
-                                                            let encodedDate = encodeURIComponent(Date);
-                                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
-                                                            hideLoadingSpinner();
-                                                        }
-                                                        else {
-                                                            hideLoadingSpinner();
-                                                            $(this).removeAttr("disabled");
-                                                            $(".errorDiv").html(response.Message);
-                                                        }
-                                                    });
-                                            } else {
-                                                $(this).removeAttr("disabled");
-                                                // User clicked "Cancel" in the confirmation dialog, do nothing
-                                            }
-                                        });
-                                }
-                                else {
-                                    var Date = $("#Date").val();
-                                    showLoadingSpinner();
-                                    // If not the specific validation message, proceed with the AJAX request directly
-                                    $.ajax({
-                                        url: '@Url.Action("Action", "Appointment")',
-                                        type: "post",
-                                        data: $("#ActionForm").serialize()
-                                    })
-                                        .done(function (response) {
-                                            if (response.success) {
-                                                let encodedDate = encodeURIComponent(Date);
-                                                window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
-                                                hideLoadingSpinner();
-                                            }
-                                            else {
-                                                hideLoadingSpinner();
-                                                $(this).removeAttr("disabled");
-                                                $(".errorDiv").html(response.Message);
-                                            }
-                                        });
-                                }
-                            }
-                            else {
-                                $(".errorDiv").html(response.Message);
-                                hideLoadingSpinner();
-                                $(this).removeAttr("disabled");
-                            }
-                        });
+                // Check if the input contains an apostrophe
+                if (inputValue.includes("'")) {
+                    // If an apostrophe is found, remove it from the input value
+                    $(this).val(inputValue.replace("'", ''));
                 }
-            }
-            else {
-                if (msg == "Slot is already booked, please try different slot") {
-                    hideLoadingSpinner();
-
-                    // Show a SweetAlert confirmation dialog
-
-                    Swal.fire({
-                        title: "Confirm",
-                        text: "Slot is already booked. Do you want to proceed?",
-                        type: 'warning',
-                        showCancelButton: true,
-                        confirmButtonClass: 'btn btn-success',
-                        cancelButtonClass: 'btn btn-danger',
-                        confirmButtonText: 'Yes',
-                        cancelButtonText: 'No',
-                        buttonsStyling: false
-                    })
-                        .then((willProceed) => {
-                            if (willProceed.isConfirmed) {
-                                showLoadingSpinner();
-                                // User clicked "OK" in the confirmation dialog, so proceed with the AJAX request
-                                $.ajax({
-                                    url: '@Url.Action("Action", "Appointment")',
-                                    type: "post",
-                                    data: $("#ActionForm").serialize()
-                                })
-                                    .done(function (response) {
-                                        if (response.success) {
-                                            var Date = $("#Date").val();
-                                            let encodedDate = encodeURIComponent(Date);
-                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
-                                            hideLoadingSpinner();
-
-                                        }
-                                        else {
-                                            hideLoadingSpinner();
-                                            $(".errorDiv").html(response.Message);
-                                            $(this).removeAttr("disabled");
-                                        }
-                                    });
-                            } else {
-
-                                // User clicked "Cancel" in the confirmation dialog, do nothing
-                            }
-                        });
-                }
-                else {
-                    var Date = $("#Date").val();
-                    showLoadingSpinner();
-                    // If not the specific validation message, proceed with the AJAX request directly
-                    $.ajax({
-                        url: '@Url.Action("Action", "Appointment")',
-                        type: "post",
-                        data: $("#ActionForm").serialize()
-                    })
-                        .done(function (response) {
-                            if (response.success) {
-                                let encodedDate = encodeURIComponent(Date);
-                                window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
-                                hideLoadingSpinner();
-                            }
-                            else {
-                                hideLoadingSpinner();
-                                $(this).removeAttr("disabled");
-                                $(".errorDiv").html(response.Message);
-                            }
-                        });
-                }
-            }
-
-
-
-
-
+            });
         });
     </script>
 
 }
 else
 {
-    <script>
+<script>
 
 
-        let serviceCount = 1;
+        var serviceCount = 1;
         var input = document.querySelector("#MobileNumber");
         window.intlTelInput(input, {
             // allowDropdown: false,
@@ -3126,31 +3181,27 @@ else
                 time: time,
                 serviceDuration: serviceDuration,
                 EmployeeID: EmployeeID,
-                ID:ID
+                ID: ID
             },
-            success: function (data) {
-
-                if (data.isSlotAvailable) {
-
-                    $("#actionButton").removeAttr("disabled");
-                    // Slot is available, you can proceed with saving the appointment
-                    // or display a success message.
-                    $("#validationText").text("");
-                    hideLoadingSpinner();
-
-
-                } else {
-                    $("#validationText").text("Slot is already booked, please try different slot");
-                    hideLoadingSpinner();
-
-                }
-            },
-            error: function () {
-                //    alert("An error occurred while checking slot availability.");
-                hideLoadingSpinner();
-
+            beforeSend: function () {
+                showLoadingSpinner(); // Show loading spinner before request starts
             }
-        });
+        })
+            .done(function (data) {
+                if (data.isSlotAvailable) {
+                    $("#actionButton").removeAttr("disabled");
+                    $("#validationText").text("");
+                } else {
+                    $("#validationText").text("Slot is already booked, please try a different slot.");
+                }
+            })
+            .fail(function () {
+                $("#validationText").text("An error occurred while checking slot availability. Please try again.");
+                hideLoadingSpinner();
+            })
+            .always(function () {
+                hideLoadingSpinner(); // Hide spinner after request completion (success or failure)
+            });
     }
     function initializeAutocompleteForCustomers() {
         showLoadingSpinner();
@@ -3395,7 +3446,7 @@ else
 
         // Run the function when the page loads
         enforceDiscountInput();
-     
+
 
 
     $(document).ready(function () {
@@ -3419,12 +3470,12 @@ else
         $(".btn-cancel").attr("href", url);
         //AdjustTheControls();
 
-      
+
 
         // Run the function when the page loads
 
         // Optionally, run the function whenever any discount input loses focus
- 
+
 
         $(document).on('input', '.discount-input', function () {
             // If the current input is empty, set it to 0
@@ -3447,7 +3498,7 @@ else
         });
         const buttons = $('.day-button');
         const today = new Date().toLocaleString('en-us', { weekday: 'long' });
-        let selectedDays = []; // Create an array to store selected days
+        var selectedDays = []; // Create an array to store selected days
         buttons.each(function () {
             const button = $(this);
             const day = button.data('day');
@@ -3622,7 +3673,8 @@ else
         });
 
     });
-        $("#actionButton").click(function () {
+    $("#actionButton").click(function () {
+        debugger
             showLoadingSpinner();
             CheckIfEmployeeProvideTheService();
             updateServiceInput();
@@ -3707,22 +3759,28 @@ else
                                                 $.ajax({
                                                     url: '@Url.Action("Action", "Appointment")',
                                                     type: "post",
-                                                    data: $("#ActionForm").serialize()
+                                                    data: $("#ActionForm").serialize(),
+                                                    beforeSend: function () {
+                                                        showLoadingSpinner(); // Show spinner before the request starts
+                                                    }
                                                 })
                                                     .done(function (response) {
                                                         if (response.success) {
                                                             var Date = $("#Date").val();
                                                             let encodedDate = encodeURIComponent(Date);
-                                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
-                                                            hideLoadingSpinner();
 
-                                                        }
-                                                        else {
-                                                            hideLoadingSpinner();
-                                                            $(this).removeAttr("disabled");
-
+                                                            CloseModal();
+                                                        } else {
                                                             $(".errorDiv").html(response.Message);
                                                         }
+                                                    })
+                                                    .fail(function () {
+                                                        $(".errorDiv").html("An error occurred. Please try again.");
+                                                        hideLoadingSpinner();
+
+                                                    })
+                                                    .always(function () {
+                                                     /*   hideLoadingSpinner();*/ // Hide spinner on both failure and completion
                                                     });
                                             } else {
                                                 $(this).removeAttr("disabled");
@@ -3734,24 +3792,31 @@ else
                                 else {
                                     var Date = $("#Date").val();
 
-                                    // If not the specific validation message, proceed with the AJAX request directly
                                     $.ajax({
                                         url: '@Url.Action("Action", "Appointment")',
                                         type: "post",
-                                        data: $("#ActionForm").serialize()
+                                        data: $("#ActionForm").serialize(),
+                                        beforeSend: function () {
+                                            showLoadingSpinner(); // Show spinner before the request starts
+                                        }
                                     })
                                         .done(function (response) {
                                             if (response.success) {
+                                                var Date = $("#Date").val();
                                                 let encodedDate = encodeURIComponent(Date);
-                                                window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
-                                                hideLoadingSpinner();
-                                            }
-                                            else {
-                                                hideLoadingSpinner();
-                                                $(this).removeAttr("disabled");
 
+                                                CloseModal();
+                                            } else {
                                                 $(".errorDiv").html(response.Message);
                                             }
+                                        })
+                                        .fail(function () {
+                                            $(".errorDiv").html("An error occurred. Please try again.");
+                                            hideLoadingSpinner();
+
+                                        })
+                                        .always(function () {
+                                            /*hideLoadingSpinner();*/ // Hide spinner on both failure and completion
                                         });
                                 }
                             }
@@ -3788,21 +3853,28 @@ else
                                 $.ajax({
                                     url: '@Url.Action("Action", "Appointment")',
                                     type: "post",
-                                    data: $("#ActionForm").serialize()
+                                    data: $("#ActionForm").serialize(),
+                                    beforeSend: function () {
+                                        showLoadingSpinner(); // Show spinner before the request starts
+                                    }
                                 })
                                     .done(function (response) {
                                         if (response.success) {
                                             var Date = $("#Date").val();
                                             let encodedDate = encodeURIComponent(Date);
-                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
-                                            hideLoadingSpinner();
-                                        }
-                                        else {
-                                            hideLoadingSpinner();
-                                            $(this).removeAttr("disabled");
 
+                                            CloseModal();
+                                        } else {
                                             $(".errorDiv").html(response.Message);
                                         }
+                                    })
+                                    .fail(function () {
+                                        $(".errorDiv").html("An error occurred. Please try again.");
+                                        hideLoadingSpinner();
+
+                                    })
+                                    .always(function () {
+                                        /*hideLoadingSpinner();*/ // Hide spinner on both failure and completion
                                     });
                             } else {
                                 $(this).removeAttr("disabled");
@@ -3817,21 +3889,28 @@ else
                     $.ajax({
                         url: '@Url.Action("Action", "Appointment")',
                         type: "post",
-                        data: $("#ActionForm").serialize()
+                        data: $("#ActionForm").serialize(),
+                        beforeSend: function () {
+                            showLoadingSpinner(); // Show spinner before the request starts
+                        }
                     })
                         .done(function (response) {
                             if (response.success) {
+                                var Date = $("#Date").val();
                                 let encodedDate = encodeURIComponent(Date);
-                                window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
-                                hideLoadingSpinner();
 
-                            }
-                            else {
-                                $(this).removeAttr("disabled");
-
-                                hideLoadingSpinner();
+                                CloseModal();
+                            } else {
                                 $(".errorDiv").html(response.Message);
                             }
+                        })
+                        .fail(function () {
+                            $(".errorDiv").html("An error occurred. Please try again.");
+                            hideLoadingSpinner();
+
+                        })
+                        .always(function () {
+                            /*hideLoadingSpinner();*/ // Hide spinner on both failure and completion
                         });
                 }
             }
@@ -3840,5 +3919,5 @@ else
 
 
         });
-    </script>
+</script>
 }

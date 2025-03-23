@@ -589,7 +589,7 @@ namespace TheBookingPlatform.Services
             }
         }
 
-        public void SaveAppointment(Appointment Appointment)
+        public void SaveAppointment(Appointment Appointment,int ServicePackageAppointmentID = 0)
         {
             if (Appointment.Status == null || Appointment.Status == "")
             {
@@ -604,12 +604,85 @@ namespace TheBookingPlatform.Services
                 }
                
             }
+            var serviceSession = ServiceSessionServices.Instance.GetServiceSessionWRTBusiness(Appointment.Business, ServicePackageAppointmentID);
+            if(serviceSession.Count() > 0)
+            {
+                Appointment.TotalCost = 0;
+            }
+
+            using (var context = new DSContext())
+            {
+                
+                context.Appointments.Add(Appointment);
+                context.SaveChanges();
+            }
+
+            if (serviceSession == null || serviceSession.Count() == 0)
+            {
+                var servicelist = Appointment.Service.Split(',').ToList();
+                foreach (var item in servicelist)
+                {
+                    var service = ServiceServices.Instance.GetService(int.Parse(item));
+                    var serviceCategory = ServicesCategoriesServices.Instance.GetServiceCategoriesWRTBusiness(Appointment.Business, service.Category).FirstOrDefault();
+                    if (serviceCategory.Type == "Package")
+                    {
+                        var sessionService = new ServiceSession();
+                        sessionService.Business = Appointment.Business;
+                        sessionService.AppointmentID = ServicePackageAppointmentID == 0 ? Appointment.ID : ServicePackageAppointmentID;
+                        sessionService.Done = 1;
+                        sessionService.Remaining = service.NumberofSessions - sessionService.Done;
+                        sessionService.Date = Appointment.Date;
+                        ServiceSessionServices.Instance.SaveServiceSession(sessionService);
+                    }
+                }
+            }
+            else
+            {
+                 var servicelist = Appointment.Service.Split(',').ToList();
+                foreach (var item in servicelist)
+                {
+                    var service = ServiceServices.Instance.GetService(int.Parse(item));
+                    var serviceCategory = ServicesCategoriesServices.Instance.GetServiceCategoriesWRTBusiness(Appointment.Business, service.Category).FirstOrDefault();
+                    if (serviceCategory.Type == "Package")
+                    {
+                        var serviceSessions = serviceSession.Count();
+
+                        var sessionService = new ServiceSession();
+                        sessionService.Business = Appointment.Business;
+                        sessionService.AppointmentID = ServicePackageAppointmentID == 0 ? Appointment.ID : ServicePackageAppointmentID;
+                        sessionService.Done = serviceSessions+1;
+                        sessionService.Remaining = service.NumberofSessions - sessionService.Done;
+                        sessionService.Date = Appointment.Date;
+                        ServiceSessionServices.Instance.SaveServiceSession(sessionService);
+                    }
+                }
+            }
+        }
+
+        public void SaveAppointment(Appointment Appointment)
+        {
+            if (Appointment.Status == null || Appointment.Status == "")
+            {
+                Appointment.Status = "Pending";
+            }
+            if (Appointment.Service != null && Appointment.Service != "")
+            {
+                if ((Appointment.Service?.Split(',').ToList() ?? new List<string>()).Count !=
+                    (Appointment.ServiceDiscount?.Split(',').ToList() ?? new List<string>()).Count)
+                {
+                    Appointment.ServiceDiscount = string.Join(",", Enumerable.Repeat("0", Appointment.Service.Count(c => c == ',') + 1));
+                }
+
+            }
+          
+
             using (var context = new DSContext())
             {
 
                 context.Appointments.Add(Appointment);
                 context.SaveChanges();
             }
+
         }
 
         public void UpdateAppointment(Appointment Appointment)

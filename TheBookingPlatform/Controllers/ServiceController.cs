@@ -286,6 +286,7 @@ namespace TheBookingPlatform.Controllers
             var newServiceCategory = new ServiceCategory();
             newServiceCategory.Name = model.Name;
             newServiceCategory.Business = LoggedInUser.Company;
+            newServiceCategory.Type = model.Type;
             ServicesCategoriesServices.Instance.SaveServiceCategory(newServiceCategory);
             return Json(new {success=true,NameOfCategory=newServiceCategory.Name},JsonRequestBehavior.AllowGet);
         }
@@ -305,6 +306,7 @@ namespace TheBookingPlatform.Controllers
             service.Price = Service.Price;
             service.VAT = Service.VAT;
             service.Duration = Service.Duration;
+            service.AddOn = Service.AddOn;
             service.Setup = Service.Setup;
             service.Processing = Service.Processing;
             service.DoesRequiredProcessing = Service.DoesRequiredProcessing;
@@ -314,6 +316,7 @@ namespace TheBookingPlatform.Controllers
             service.Room = Service.Room;
             service.Notes = Service.Notes;
             service.CanBookOnline = Service.CanBookOnline;
+            service.NumberofSessions = Service.NumberofSessions;
             ServiceServices.Instance.SaveService(service);
 
             return RedirectToAction("Index", "Service");
@@ -372,6 +375,7 @@ namespace TheBookingPlatform.Controllers
                 model.Category = Service.Category;
                 model.Price = Service.Price;
                 model.VAT = Service.VAT;
+                model.AddOn = Service.AddOn;
                 model.Duration = Service.Duration;
                 model.Setup = Service.Setup;
                 model.Processing = Service.Processing;
@@ -380,6 +384,7 @@ namespace TheBookingPlatform.Controllers
                 model.Tool = Service.Tool;
                 model.Room = Service.Room;
                 model.Notes = Service.Notes;
+                model.NumberofSessions = Service.NumberofSessions;
                 model.CanBookOnline = Service.CanBookOnline;
                 string ServiceEmployee = "";
                 var Employee_Service =  EmployeeServiceServices.Instance.GetEmployeeService().Where(x=>x.ServiceID == ID).ToList();
@@ -416,8 +421,10 @@ namespace TheBookingPlatform.Controllers
                 Service.Price = model.Price;
                 Service.VAT = model.VAT;
                 Service.Duration = model.Duration;
+                Service.AddOn = model.AddOn;
                 Service.Setup = model.Setup;
                 Service.Processing = model.Processing;
+                Service.NumberofSessions = model.NumberofSessions;
                 Service.Finish = model.Finish;
                 Service.DoesRequiredProcessing = model.DoesRequiredProcessing;
                 Service.Tool = model.Tool;
@@ -477,9 +484,11 @@ namespace TheBookingPlatform.Controllers
                 Service.Price = model.Price;
                 Service.VAT = model.VAT;
                 Service.Duration = model.Duration;
+                Service.AddOn = model.AddOn;
                 Service.DoesRequiredProcessing = model.DoesRequiredProcessing;
                 Service.Setup = model.Setup;
                 Service.Processing = model.Processing;
+                Service.NumberofSessions = model.NumberofSessions;
                 Service.Finish = model.Finish;
                 Service.IsActive = true;
 

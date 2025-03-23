@@ -33,17 +33,17 @@
 
 }
 
-<script src='~/Content/fullcalendar-scheduler-6.1.8/dist/index.global.js'></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
 
 
 <style>
-  
-    #appointmentModal{
-        padding-left:20px !important;
+
+    #appointmentModal {
+        padding-left: 20px !important;
     }
+
     .fc-direction-ltr .fc-timegrid-now-indicator-arrow {
         left: 0;
         border-width: 10px 33px 10px 11px;
@@ -56,8 +56,8 @@
         display: flex;
     }
 
-    
-    
+
+
 
     .fc-timegrid-now-indicator-label {
         position: absolute;
@@ -273,7 +273,7 @@
         font-size: 12px;
         margin-bottom: 0px;
         float: left;
-        margin-top:10px;
+        margin-top: 10px;
     }
 
 
@@ -295,8 +295,9 @@
         background: repeating-linear-gradient( -45deg, rgba(255, 255, 0, 0.5), /* Yellow with 50% opacity */
         rgba(255, 255, 0, 0.5) 10px, rgba(255, 255, 255, 0.5) 10px, /* White with 50% opacity */
         rgba(255, 255, 255, 0.5) 20px );
-        color:black !important;
+        color: black !important;
     }
+
     .loading-spinner-overlay {
         display: none; /* Initially hidden */
         position: fixed;
@@ -351,16 +352,28 @@
     .fc-timegrid-slot[data-time$=":00:00"] .fc-timegrid-slot-label-cushion {
         color: gray; /* Black or darker color */
     }
-
 </style>
 
 <input type="hidden" value="@Model.LoggedInUser.IntervalCalendar" id="IntervalFinal" />
 <div style="background-color:white; padding:10px;border-radius:10px;" id="fullCalendar"></div>
-
-<div class="modal  fade center" id="actionModal" style="z-index:56;" tabindex="-1" role="dialog">
+<!-- Updated actionModal with modal-content -->
+<div class="modal fade center" id="actionModal" tabindex="-1">
     <div class="modal-dialog modal-xl custom-modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- AJAX/content will load here -->
+        </div>
     </div>
 </div>
+
+<!-- Existing UpdateActionModal (already correct) -->
+<div class="modal fade center" id="UpdateActionModal" tabindex="-1">
+    <div class="modal-dialog modal-xl custom-modal-dialog">
+        <div class="modal-content mt-3">
+            <!-- AJAX response will load here -->
+        </div>
+    </div>
+</div>
+
 
 <input type="hidden" id="YesShow" value="@YesShow" />
 
@@ -378,7 +391,6 @@
 
 
     function CreateNewAppointment(date, time, employeeId) {
-
         if (time != "24:00") {
             showLoadingSpinner();
             $.ajax({
@@ -386,18 +398,75 @@
                 data: { date: date, time: time, employeeID: employeeId }
             })
                 .done(function (response) {
+                    var modal = $("#actionModal");
 
-                    $("#actionModal .modal-dialog").html(response);
+                    // Ensure the modal is fully reset
+                    modal.off('hidden.bs.modal'); // Remove any previous event handlers
+                    modal.on('hidden.bs.modal', function () {
+                        $(this).find('.modal-content').html(''); // Clear content on close
+                    });
+
+                    modal.find(".modal-content").html(response);
                     hideLoadingSpinner();
-                    $("#actionModal").modal('show'); // Initialize and show the modal
-
+                    modal.modal('show');
                 });
-
         } else {
             return;
         }
     }
 
+    $(document).on('click', '#EditAppointmentBtn', function (e) {
+        e.preventDefault();
+        const appointmentId = $(this).data('appointment-id');
+        const $secondModal = $("#UpdateActionModal"); // Reference the second modal
+        const url = '@Url.Action("Action", "Appointment")';
+
+        showLoadingSpinner();
+
+        $.ajax({
+            url: url,
+            data: { ID: appointmentId },
+            success: function (response) {
+                $("#appointmentModal").modal("hide");
+
+                // Reset the modal by removing previous content when hidden
+                $secondModal.off('hidden.bs.modal'); // Remove previous event handlers
+                $secondModal.on('hidden.bs.modal', function () {
+                    $(this).find('.modal-content').html(''); // Clear modal content
+                });
+
+                // Populate the modal with new content and show it
+                $secondModal.find(".modal-content").html(response);
+                $secondModal.modal("show");
+            },
+            error: function (xhr, status, error) {
+                console.error('Request failed:', status, error);
+                alert('Failed to load appointment details.');
+            },
+            complete: function () {
+                hideLoadingSpinner();
+            }
+        });
+    });
+
+    function updateCalendarDate(newDate) {
+        showLoadingSpinner();
+
+        // Update hidden input
+        $("#GoToDate").val(newDate.toISOString().split('T')[0]);
+
+        // Refresh calendar
+        if (calendar) {
+            // Update calendar view date
+            calendar.gotoDate(newDate);
+            // Refetch events for new date
+            calendar.refetchEvents();
+            setCustomTitle(); // Update the title here
+
+        }
+
+        hideLoadingSpinner();
+    }
 
 
 
@@ -439,7 +508,7 @@
 
     // Adding event listeners for hover
 
-
+    var calendar;
     function ViewCalendar() {
         var YesShow = $("#YesShow").val();
         showLoadingSpinner();
@@ -466,7 +535,7 @@
         var openingHours = parseOpeningHours($("#MainOpeningHours").val());
 
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        calendar = new FullCalendar.Calendar(calendarEl, {
 
             now: new Date(),
             editable: true,
@@ -1429,12 +1498,12 @@ else
                                 var customer = FromGCAL
                                     ? "Appointment from Google Calendar"
                                     : appointment.Services.some(x => x.Category === "ABSENSE") ? "Walk In" : title;
-                                var blockedEvent = appointment.BlockedEvent;                                    
+                                var blockedEvent = appointment.BlockedEvent;
                                 var customerPhone = appointment.MobileNumber || "";
                                 var notes = appointment.Notes ? appointment.Notes.replace("\r\n", "").replace("\n", " ") : "";
                                 var startDate = parseDotNetDate(appointment.Date);
                                 var startTime = parseDotNetDate(appointment.Time);
-                                debugger
+
                                 startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
                                 var endDate = addMinutes(startDate, appointment.TotalDuration);
                                 var haveBuffer = appointment.Buffers.length > 0 ? "true" : "false";
@@ -1612,7 +1681,7 @@ else
                 hour12: false
             },
             eventContent: function (arg) {
-                
+
                 showLoadingSpinner();
                 var clientDate = new Date();
                 var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
@@ -1628,7 +1697,7 @@ else
 
                 const timeString = arg.event.extendedProps.testingEnd;
                 var blocked = arg.event.extendedProps.blockedEvent;
-                
+
                 var eventContent = document.createElement('div');
                 eventContent.classList.add('fc-event-main');
                 if (blocked) {
@@ -1670,7 +1739,7 @@ else
 
                     var timeElement = document.createElement('div');
                     timeElement.classList.add('fc-time'); // Add the FullCalendar time class
-                    
+
                     if (arg.backgroundColor == "#5DAF4D") {
                         timeElement.classList.add('fc-time-green'); // Add the FullCalendar time class
                     }
@@ -1839,136 +1908,7 @@ else
                 return { domNodes: [eventContent] };
 
             },
-            //eventContent: function (arg) {
-            //    showLoadingSpinner();
 
-            //    const clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            //    const timeFormatter = new Intl.DateTimeFormat('en-US', {
-            //        hour: '2-digit',
-            //        minute: '2-digit',
-            //        hour12: false,
-            //        timeZone: clientTimeZoneName
-            //    });
-
-            //    const eventContent = document.createElement('div');
-            //    eventContent.classList.add('fc-event-main');
-
-            
-
-            //    // Format start time and end time
-            //    let serviceStartTime = arg.event.start;
-            //    let serviceEndTime = arg.event.end;
-
-            //    const formattedStartTime = timeFormatter.format(serviceStartTime);
-            //    const formattedEndTime = timeFormatter.format(serviceEndTime);
-
-            //    const timeElement = document.createElement('div');
-            //    timeElement.classList.add('fc-time');
-
-            //    // Apply the right class based on background color
-            //    if (arg.backgroundColor === "#5DAF4D") {
-            //        timeElement.classList.add('fc-time-green');
-            //    } else if (arg.backgroundColor === "darkgray") {
-            //        timeElement.classList.add('fc-time-gray');
-            //    } else if (arg.backgroundColor === "#952AB2") {
-            //        timeElement.classList.add('fc-time-purple');
-            //    } else if (arg.backgroundColor === "#E94234") {
-            //        timeElement.classList.add('fc-time-red');
-            //    } else if (arg.backgroundColor === "#F79700") {
-            //        timeElement.classList.add('fc-time-yellow');
-            //    } else if (arg.backgroundColor === "#dff0e3") {
-            //        timeElement.classList.add('fc-time-Gcal');
-            //    }
-
-            //    timeElement.textContent = `${formattedStartTime} - ${formattedEndTime}`;
-            //    eventContent.appendChild(timeElement);
-
-            //    // Add customer details block at the top
-            //    if (arg.backgroundColor !== "darkgray" && YesShow === "true") {
-            //        const customerName = arg.event.extendedProps.customer || "Customer Name";
-            //        const customerPhone = arg.event.extendedProps.customerphone || "Phone Number";
-
-            //        const customerInfoElement = document.createElement('div');
-            //        customerInfoElement.classList.add('customer-info');
-            //        customerInfoElement.innerHTML = `${customerName}<br> ${customerPhone}`;
-            //        eventContent.appendChild(customerInfoElement);
-            //    }
-            //    // Initialize a Map to track added buffers for each ServiceID + index combination
-            //    var addedBuffers = new Map();
-
-            //    // Loop through each service name and display it followed by its specific buffer(s)
-            //    serviceNames.forEach((serviceName, index) => {
-            //        // Trim any extra spaces from the service name
-            //        serviceName = serviceName.trim();
-
-            //        // Service Name Block
-            //        const serviceNameElement = document.createElement('div');
-            //        serviceNameElement.classList.add('fc-service-name');
-            //        serviceNameElement.textContent = `${serviceName}`;
-            //        eventContent.appendChild(serviceNameElement);
-
-            //        if (Buffers.length > 0) {
-            //            var SerID = ServiceIDs[index];
-            //            var filteredArray = [];
-            //            //debugger
-            //            //// Filter Buffers where the ServiceID matches SerID
-            //            if (Array.isArray(Buffers) && SerID != undefined) {
-            //                // Initialize a Set for the current service index to track added buffer IDs
-            //                if (!addedBuffers.has(index)) {
-            //                    addedBuffers.set(index, new Set());
-            //                }
-
-            //                // Filter Buffers where ServiceID matches SerID and the buffer hasn't been added to the current service
-            //                filteredArray = Buffers.filter(buffer => {
-            //                    const bufferHasBeenAdded = addedBuffers.get(index).has(buffer.ID);
-            //                    return buffer.ServiceID === SerID && !bufferHasBeenAdded;
-            //                });
-            //            } else {
-            //                console.log('Invalid Buffers array or SerID.');
-            //            }
-            //            const result = filteredArray.length > 0 ? filteredArray[0] : null;
-
-            //            //filteredArray.forEach((buffer) => {
-            //            // Add the buffer ID to the current service's Set of added buffers
-            //            if (result != null) {
-            //                addedBuffers.get(index).add(result.ID);
-
-            //                const bufferStartTime = timeFormatter.format(new Date(result.start));
-            //                const bufferEndTime = timeFormatter.format(new Date(result.end));
-            //                var color = darkenHexColor(arg.backgroundColor, 30);
-
-            //                // Create buffer element
-            //                const bufferElement = document.createElement('div');
-            //                bufferElement.classList.add('fc-buffer');
-            //                bufferElement.style.backgroundColor = color;
-            //                bufferElement.style.color = "white";
-            //                bufferElement.style.padding = "5px";
-            //                bufferElement.style.marginTop = "5px";
-
-            //                const bufferDurationInMinutes = (result.end - result.start) / (1000 * 60);
-            //                bufferElement.textContent = `Buffer: ${bufferDurationInMinutes} minutes`;
-
-            //                eventContent.appendChild(bufferElement);
-
-            //            }
-            //        }
-            //    });
-
-
-            //    // Add Notes Block (if applicable)
-            //    const notes = arg.event.extendedProps.notes;
-            //    if (notes) {
-            //        const notesElement = document.createElement('div');
-            //        notesElement.classList.add('event-notes');
-            //        notesElement.textContent = notes;
-            //        eventContent.appendChild(notesElement);
-            //    }
-
-            //    hideLoadingSpinner();
-
-            //    // Return the updated event content with customer info at the top, followed by service and buffer pairs
-            //    return { domNodes: [eventContent] };
-            //},
 
             eventsSet: function (events) {
                 // This callback fires after events are initially rendered or when events are added/changed/removed
@@ -2005,7 +1945,7 @@ else
                 }
                 else {
                     // When an event is clicked, open the modal and fetch appointment details from the controller
-                    
+
                     var FromGCAL = calEvent.event.extendedProps.FromGCAL;
 
                     $.ajax({
@@ -2040,7 +1980,7 @@ else
                             servicesList.empty(); // Clear existing items
                             var containabsense = false;
                             $.each(appointmentDetails.ServicesNew, function (index, service) {
-                                
+
                                 var ServiceCategory = service.Category;
                                 if (ServiceCategory == "ABSENSE") {
                                     containabsense = true;
@@ -2150,7 +2090,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
 
 
 
-                         
+
 
 
                             debugger
@@ -2160,12 +2100,13 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #WhatsappCustomerButton, #CallCustomerButton").hide();
                                 $("#DeleteAppointmentButton").show();
                                 $("#PopupTitle").text("Absence Details");
-                                
+
                                 $("#Popupservice").text("Name:");
                                 $("#pills-cards-tab").hide();
                                 $("#ABSENCE_BOX").hide();
                                 $("#pills-summary-tab").hide();
-                                $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + eventEditURl + "'");
+                                $("#EditAppointmentBtn")
+                                    .attr("data-appointment-id", appointmentDetails.ID);
                             } else if (FromGCAL) {
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #WhatsappCustomerButton, #BusinessDEET, #EditAppointmentBtn, #SendReminderBtn, #CallCustomerButton").hide();
                                 $("#PopupTitle").text("Event Details");
@@ -2183,10 +2124,11 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
                                     $("#pills-cards-tab").hide();
                                     $("#pills-summary-tab").hide();
                                 }
-                                $("#EditAppointmentBtn").attr("onclick", "window.location.href='" + editUrl + "'");
+                                $("#EditAppointmentBtn")
+                                    .attr("data-appointment-id", appointmentDetails.ID);
                                 $("#Popupservice").text("Services:");
                                 $("#PopupTitle").text("Appointment Details");
-                             
+
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #SendReminderBtn").show();
                             }
 
@@ -2228,7 +2170,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
             eventDragStart: function (event, delta, revertFunc) {
 
                 var blocked = event.event.extendedProps.blockedEvent;
-                
+
                 if (blocked) {
                     alert("Cannot Move this Appointment");
                     location.reload();
@@ -2287,6 +2229,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
                                     if (response.success) {
                                         // Event updated successfully
                                         showSuccessAlert();
+                                        refreshCalendarEvents();
                                     } else {
                                         // Handle error if the update fails
                                         revertFunc(); // Revert the event to its original position
@@ -2394,9 +2337,23 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
         //}, 3600000);  // 1 hour interval
 
         calendar.render();
+        setupCalendarNavigation();
+
         function setCustomTitle() {
-            var customTitle = '@DateTime.Parse(Model.GoToDate).ToString("ddd, MMM dd, yyyy")';
-            $(".fc-toolbar-title").text(customTitle);
+            // Get the date from the hidden input instead of Razor
+            var dateString = $("#GoToDate").val();
+            var date = new Date(dateString);
+
+            // Format the date using JavaScript
+            var options = {
+                weekday: 'short',
+                month: 'short',
+                day: '2-digit',
+                year: 'numeric'
+            };
+
+            var formattedDate = date.toLocaleDateString('en-US', options);
+            $(".fc-toolbar-title").text(formattedDate);
         }
 
       // Initial setting of the custom title
@@ -2450,6 +2407,11 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
         hideLoadingSpinner();
     }
 
+    function refreshCalendarEvents() {
+        if (calendar) {
+            calendar.refetchEvents(); // Refetch events from the source
+        }
+    }
     //function checkForEventOverlaps(events) {
     //    for (let i = 0; i < events.length; i++) {
     //        for (let j = i + 1; j < events.length; j++) {
@@ -2567,25 +2529,33 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
         //demo.initFullCalendar();
         $(".navbar-transparent").hide();
         adjustMent();
-        $(".fc-next-button").click(function () {
-            showLoadingSpinner();
-            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = nextDate })';
-        });
 
-        $(".fc-prev-button").click(function () {
-            showLoadingSpinner();
-            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = prevdate })';
-        });
-
-        $(".fc-today-button").click(function () {
-            showLoadingSpinner();
-            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = DateTime.Now.ToString("yyyy-MM-dd") })';
-        });
 
         var formattedDate = '@DateTime.Parse(Model.GoToDate).ToString("MM/dd/yyyy")';
         $("#FINALDATEO").val(formattedDate);
     });
 
+    function setupCalendarNavigation() {
+        $(".fc-next-button").click(function (e) {
+            e.preventDefault();
+            var currentDate = new Date($("#GoToDate").val());
+            var nextDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+            updateCalendarDate(nextDate);
+        });
+
+        $(".fc-prev-button").click(function (e) {
+            e.preventDefault();
+            var currentDate = new Date($("#GoToDate").val());
+            var prevDate = new Date(currentDate.setDate(currentDate.getDate() - 1));
+            updateCalendarDate(prevDate);
+        });
+
+        $(".fc-today-button").click(function (e) {
+            e.preventDefault();
+            var today = new Date();
+            updateCalendarDate(today);
+        });
+    }
 
     function parseOpeningHours(openingHoursStr) {
         var times = openingHoursStr.split(' - ');

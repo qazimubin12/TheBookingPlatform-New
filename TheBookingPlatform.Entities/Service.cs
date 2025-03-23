@@ -9,6 +9,7 @@ namespace TheBookingPlatform.Entities
     public class Service : BaseEntity
     {
         public string Name { get; set; }
+        public bool AddOn { get; set; }
         public string Category { get; set; }
         public float Price { get; set; }
         public string VAT { get; set; }
@@ -43,5 +44,6 @@ namespace TheBookingPlatform.Entities
 
         public bool IsActive { get; set; }
 
+        public int NumberofSessions { get; set; }
     }
 }

@@ -235,6 +235,7 @@
                 {
                     <div class="tab-pane active" id="schedule-1">
                         <form id="ActionForm">
+                            <input type="hidden" id="ServicePackageAppointmentID" name="ServicePackageAppointmentID" />
                             <div class="row">
                                 <div class="col-md-6">
                                     <div style="margin:0px;" class="card">
@@ -490,7 +491,9 @@
                                                     <span id="DateToBeSet">@Model.Date.ToString("yyyy-MM-dd")</span> - <br /> <span id="TimeToBeSet">@Model.Time.ToString("H:mm")</span>
                                                 </h6>
                                             </div>
+                                            <div id="SessionContainer" class="col-md-12">
 
+                                            </div>
                                             <div id="TotalCostPanel" class="col-md-6">
                                                 <h6 class="card-title">Total Cost</h6>
                                                 <h6 id="TotalCost" name="TotalCost">
@@ -501,8 +504,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="d-flex justify-content-center">
-                                        <button type="button" id="actionButton" class="btn btn-primary btn-block btn-rounded">Create Appointment</button>
+                                    <div class="d-flex justify-content-center" style="gap:20px;">
+                                        <button type="button" id="actionButton" class="btn btn-primary w-auto btn-rounded">Create Appointment</button>
+                                        @*<button type="button" onclick="CloseModal()" class="btn btn-secondary btn-cancel w-auto btn-rounded">CANCEL</button>*@
+
                                         <span id="validationText" class="text-danger"></span><br />
                                         <span id="validationTextForEmployeeService" class="text-danger"></span>
                                     </div>
@@ -1113,6 +1118,30 @@
 
 <script>
 
+   
+
+    // Run function after modal is completely hidden
+ 
+    function CloseModal() {
+        var modal = $('#actionModal');
+
+        modal.find(':focus').blur();
+
+        // Remove `aria-hidden` to allow interactions
+        modal.removeAttr('aria-hidden');
+
+        // Properly hide the modal
+        modal.modal('hide');
+
+        // Remove any leftover backdrops (if any)
+        $('.modal-backdrop').remove();
+
+        // Ensure the body is interactive again
+        $('body').removeClass('modal-open');
+        $('body').removeAttr('aria-hidden');
+        refreshCalendarEvents();
+        hideLoadingSpinner();
+    }
     function enforceDiscountInput() {
         $('.discount-input').each(function () {
             // If the input is empty, set it to 0
@@ -1209,7 +1238,7 @@
                          <input class="form-control serviceprice-input" type="hidden" name="ServicePrice" id="${servicePrice}"/>
                         <input class="form-control serviceid-input" type="hidden" name="ServiceID" id="${serviceidElemtn}"/>
                         <div class="d-flex" style="gap:10px;align-items:center;">
-                        <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i> 
+                        <i onclick="removeService(${serviceCount})" class="fa fa-close text-danger" style="cursor:pointer;"></i>
                         <input class="form-control autocomplete" style="border-bottom:solid 1px gray;border-radius:0px;" type="text" name="ServiceNames" id="${serviceId}"   />
                         </div>
                     </div>
@@ -1262,7 +1291,7 @@
             CheckAvailability();
         });
 
-      
+
 
 
         $('#FirstName').on('input', function () {
@@ -1749,7 +1778,7 @@
         CheckAvailability();
 
     }
-    
+
     function initializeAutocomplete() {
 
         var $inputField = $(".autocomplete");
@@ -2100,6 +2129,7 @@
                                 } else {
                                     $("#actionButton").removeAttr("disabled");
                                 }
+                                GetTheServiceSessions();
                                 hideLoadingSpinner();
                             },
                             error: function (error) {
@@ -2296,9 +2326,11 @@
                                             })
                                                 .done(function (response) {
                                                     if (response.success) {
-                                                        var Date = $("#Date").val();
+                                                        @*var Date = $("#Date").val();
                                                         let encodedDate = encodeURIComponent(Date);
-                                                        window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
+                                                        window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();*@
+                                                        CloseModal();
+
                                                         hideLoadingSpinner();
 
                                                     }
@@ -2326,7 +2358,9 @@
                                     .done(function (response) {
                                         if (response.success) {
                                             let encodedDate = encodeURIComponent(Date);
-                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
+                                            CloseModal();
+
+                                            @*window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;*@
                                             hideLoadingSpinner();
                                         }
                                         else {
@@ -2380,9 +2414,11 @@
                                 })
                                     .done(function (response) {
                                         if (response.success) {
-                                            var Date = $("#Date").val();
+                                            @*var Date = $("#Date").val();
                                             let encodedDate = encodeURIComponent(Date);
-                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();
+                                            window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate; hideLoadingSpinner();*@
+                                            refreshCalendarEvents();  // Refresh calendar events
+
                                             hideLoadingSpinner();
 
                                         }
@@ -2412,7 +2448,10 @@
                         .done(function (response) {
                             if (response.success) {
                                 let encodedDate = encodeURIComponent(Date);
-                                window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;
+                                CloseModal();
+
+
+                                @*window.location.href = '@Url.Action("Calendar", "Appointment")' + '?date=' + encodedDate;*@
                                 hideLoadingSpinner();
                             }
                             else {
@@ -2515,6 +2554,55 @@
 
 
     });
+
+    function GetTheServiceSessions() {
+        var CustomerID = $("#CustomerID").val();
+        var Service = $("#ServiceID").val();
+        debugger
+        showLoadingSpinner();
+        // If not the specific validation message, proceed with the AJAX request directly
+        $.ajax({
+            url: '@Url.Action("GetServiceSessionAppointments", "Appointment")',
+            type: "get",
+            data: { CustomerID: CustomerID, Service: Service }
+        })
+            .done(function (response) {
+                if (response.success) {
+                    console.log(response.ServiceSessions);
+                    debugger
+                    if (response.ServiceSessions) {
+                        let totalSessions = response.ServiceSessions.ServiceSession.Remaining + response.ServiceSessions.ServiceSession.Done;
+                        let remainingSessions = response.ServiceSessions.ServiceSession.Remaining; // Set to 0 as per request
+                        let doneSessions = response.ServiceSessions.ServiceSession.Done;
+
+                        let cardHtml = `
+            <div class="card">
+                <div class="card-body d-flex">
+                <span><strong>Number of Sessions:</strong> ${totalSessions}</span>
+                <span><strong>Remaining Sessions:</strong> ${remainingSessions}</span>
+                <span><strong>Done Sessions:</strong> ${doneSessions}</span>
+            </div>
+                        </div>
+
+        `;
+
+                        $("#SessionContainer").html(cardHtml);
+                        $("#ServicePackageAppointmentID").val(response.AppointmentID);
+                        if (response.AppointmentID != "0") {
+                            $("#TotalCost").text('@Model.Company.Currency' + "0.00");
+                        }
+                    }
+                    hideLoadingSpinner();
+                }
+                else {
+                    hideLoadingSpinner();
+
+                    $(".errorDiv").html(response.Message);
+                }
+            });
+    }
+
+
 
 
 

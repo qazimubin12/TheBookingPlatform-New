@@ -271,6 +271,7 @@ namespace TheBookingPlatform.ViewModels
         public List<Service> AbsenseServices { get; set; }
         public int WaitingListID { get; set; }
 
+        public int ServicePackageAppointmentID { get; set; }
         public string Start { get; set; }
         public string End { get; set; }
         public int ID { get; set; }
@@ -331,5 +332,13 @@ namespace TheBookingPlatform.ViewModels
         public Company Company { get; set; }
         public bool IsWaitingList { get; set; }
         public DateTime EndTime { get; set; }
+    }
+
+
+
+    public class ServiceSessionModel
+    {
+        public ServiceSession ServiceSession { get; set; }
+        public Appointment Appointment { get; set; }
     }
 }

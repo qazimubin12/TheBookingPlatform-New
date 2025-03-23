@@ -95,6 +95,8 @@ namespace TheBookingPlatform.ViewModels
 
         //OnlineBooking
         public bool CanBookOnline { get; set; }
-        public bool DoesRequiredProcessing { get; internal set; }
+        public bool DoesRequiredProcessing { get;  set; }
+        public int NumberofSessions { get;  set; }
+        public bool AddOn { get;  set; }
     }
 }

@@ -191,6 +191,18 @@
     <Compile Include="Migrations\202503130653421_userscountry.Designer.cs">
       <DependentUpon>202503130653421_userscountry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503181719150_servicecategoryandservicesessions.cs" />
+    <Compile Include="Migrations\202503181719150_servicecategoryandservicesessions.Designer.cs">
+      <DependentUpon>202503181719150_servicecategoryandservicesessions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503200542472_serviceaddon.cs" />
+    <Compile Include="Migrations\202503200542472_serviceaddon.Designer.cs">
+      <DependentUpon>202503200542472_serviceaddon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503200953112_requestedempremoved.cs" />
+    <Compile Include="Migrations\202503200953112_requestedempremoved.Designer.cs">
+      <DependentUpon>202503200953112_requestedempremoved.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -295,6 +307,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503130653421_userscountry.resx">
       <DependentUpon>202503130653421_userscountry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503181719150_servicecategoryandservicesessions.resx">
+      <DependentUpon>202503181719150_servicecategoryandservicesessions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503200542472_serviceaddon.resx">
+      <DependentUpon>202503200542472_serviceaddon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503200953112_requestedempremoved.resx">
+      <DependentUpon>202503200953112_requestedempremoved.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

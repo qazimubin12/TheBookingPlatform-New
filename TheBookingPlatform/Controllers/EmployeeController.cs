@@ -103,7 +103,7 @@ namespace TheBookingPlatform.Controllers
                     }
                     var count = 0;
                     var calendarmanage = CalendarManageServices.Instance.GetCalendarManage().Where(x => x.UserID == item.LinkedEmployee).FirstOrDefault();
-                    if (calendarmanage != null)
+                    if (calendarmanage != null && calendarmanage.ManageOf != null)
                     {
                         count = calendarmanage.ManageOf.Split(',').ToList().Count();
                     }
@@ -146,7 +146,7 @@ namespace TheBookingPlatform.Controllers
 
                     var count = 0;
                     var calendarmanage = CalendarManageServices.Instance.GetCalendarManage().Where(x => x.UserID == item.LinkedEmployee).FirstOrDefault();
-                    if (calendarmanage != null)
+                    if (calendarmanage != null && calendarmanage.ManageOf != null)
                     {
                         count = calendarmanage.ManageOf.Split(',').ToList().Count();
                     }
