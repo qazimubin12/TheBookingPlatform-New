@@ -770,26 +770,35 @@ namespace TheBookingPlatform.Controllers
                             request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
                             request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
                             request.AddHeader("Accept", "application/json");
-                            var response = restClient.Delete(request);
-                            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                            try
                             {
-                                var history = new History();
-                                history.Date = DateTime.Now;
-                                history.Note = "Appointment got deleted from GCalendar";
-                                history.Business = appointment.Business;
-                                history.Name = "Appointment Deleted";
-                                history.AppointmentID = appointment.ID;
-                                HistoryServices.Instance.SaveHistory(history);
+                                var response = restClient.Delete(request);
+                                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                                {
+                                    var history = new History();
+                                    history.Date = DateTime.Now;
+                                    history.Note = "Appointment got deleted from GCalendar";
+                                    history.Business = appointment.Business;
+                                    history.Name = "Appointment Deleted";
+                                    history.AppointmentID = appointment.ID;
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
+                                else
+                                {
+
+                                    var history = new History();
+                                    history.Date = DateTime.Now;
+                                    history.Note = response.Content;
+                                    history.Business = "Error";
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
                             }
-                            else
+                            catch (Exception ex)
                             {
 
-                                var history = new History();
-                                history.Date = DateTime.Now;
-                                history.Note = response.Content;
-                                history.Business = "Error";
-                                HistoryServices.Instance.SaveHistory(history);
+                                continue;
                             }
+                           
                         }
                         catch (Exception ex)
                         {
@@ -1087,14 +1096,13 @@ namespace TheBookingPlatform.Controllers
                                                         int Count = 0;
                                                         foreach (var tt in checkTthe)
                                                         {
-                                                            if (ToBeInputtedIDs.Count() > Count)
-                                                            {
+                                                            
                                                                 if (await CheckOnGCal(gg.Key.Business, gg.Value, appointment.GoogleCalendarEventID, gg.Key.AccessToken) == false)
                                                                 {
                                                                     GenerateOnGCal(appointment, gg.Key, gg.Value);
                                                                     Count++;
                                                                 }
-                                                            }
+                                                            
                                                         }
 
                                                     }
@@ -1517,15 +1525,13 @@ namespace TheBookingPlatform.Controllers
                                                         int Count = 0;
                                                         foreach (var tt in checkTthe)
                                                         {
-                                                            if (ToBeInputtedIDs.Count() > Count)
+                                                            if (await CheckOnGCal(gg.Key.Business, gg.Value, appointment.GoogleCalendarEventID, gg.Key.AccessToken) == false)
                                                             {
-                                                                if (await CheckOnGCal(gg.Key.Business, gg.Value, appointment.GoogleCalendarEventID, gg.Key.AccessToken) == false)
-                                                                {
-                                                                    GenerateOnGCal(appointment, gg.Key, gg.Value);
-                                                                    Count++;
-                                                                }
+                                                                GenerateOnGCal(appointment, gg.Key, gg.Value);
+                                                                Count++;
                                                             }
                                                         }
+                                                        
 
                                                     }
                                                 }
@@ -2348,7 +2354,16 @@ namespace TheBookingPlatform.Controllers
                         request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
                         request.AddHeader("Accept", "application/json");
 
-                        var response = restClient.Delete(request);
+                        try
+                        {
+                            var response = restClient.Delete(request);
+
+                        }
+                        catch (Exception ex)
+                        {
+
+                            continue;
+                        }
 
                     }
                 }
@@ -3202,27 +3217,36 @@ namespace TheBookingPlatform.Controllers
                             request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
                             request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
                             request.AddHeader("Accept", "application/json");
-                            var response = restClient.Delete(request);
-                            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                            try
                             {
-                                var history = new History();
-                                history.Date = DateTime.Now;
-                                history.Note = "Appointment got deleted from GCalendar";
-                                history.Business = appointment.Business;
-                                history.Name = "Appointment Deleted";
+                                var response = restClient.Delete(request);
+                                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                                {
+                                    var history = new History();
+                                    history.Date = DateTime.Now;
+                                    history.Note = "Appointment got deleted from GCalendar";
+                                    history.Business = appointment.Business;
+                                    history.Name = "Appointment Deleted";
 
-                                history.AppointmentID = appointment.ID;
-                                HistoryServices.Instance.SaveHistory(history);
+                                    history.AppointmentID = appointment.ID;
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
+                                else
+                                {
+
+                                    var history = new History();
+                                    history.Date = DateTime.Now;
+                                    history.Note = response.Content;
+                                    history.Business = "Error";
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
                             }
-                            else
+                            catch (Exception ex)
                             {
 
-                                var history = new History();
-                                history.Date = DateTime.Now;
-                                history.Note = response.Content;
-                                history.Business = "Error";
-                                HistoryServices.Instance.SaveHistory(history);
+                                continue;
                             }
+                            
                         }
                         catch (Exception ex)
                         {
@@ -3351,25 +3375,34 @@ namespace TheBookingPlatform.Controllers
                         request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
                         request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
                         request.AddHeader("Accept", "application/json");
-                        var response = restClient.Delete(request);
-                        if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                        try
                         {
-                            var history = new History();
-                            history.Date = DateTime.Now;
-                            history.Note = "Appointment got deleted from GCalendar";
-                            history.Business = appointment.Business;
-                            history.Name = "Appointment Deleted";
-                            history.AppointmentID = appointment.ID;
-                            HistoryServices.Instance.SaveHistory(history);
+                            var response = restClient.Delete(request);
+                            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                            {
+                                var history = new History();
+                                history.Date = DateTime.Now;
+                                history.Note = "Appointment got deleted from GCalendar";
+                                history.Business = appointment.Business;
+                                history.Name = "Appointment Deleted";
+                                history.AppointmentID = appointment.ID;
+                                HistoryServices.Instance.SaveHistory(history);
+                            }
+                            else
+                            {
+                                var history = new History();
+                                history.Date = DateTime.Now;
+                                history.Note = response.Content;
+                                history.Business = "Error";
+                                HistoryServices.Instance.SaveHistory(history);
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            var history = new History();
-                            history.Date = DateTime.Now;
-                            history.Note = response.Content;
-                            history.Business = "Error";
-                            HistoryServices.Instance.SaveHistory(history);
+
+                            continue;
                         }
+                        
                     }
                     catch (Exception ex)
                     {

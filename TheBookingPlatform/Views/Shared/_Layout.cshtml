@@ -2304,13 +2304,24 @@
                             };
 
                             var formattedDate = date.toLocaleDateString('en-US', options);
-                            setTimeout(function () {
-                                $("#fc-dom-1").text(formattedDate);
-                            }, 500); // Delay to ensure FullCalendar has finished updating
+                            
                             calendar.gotoDate(datetobesent); // Ensure correct format
+
+                            $.getJSON(`/Appointment/Resources?date=${datetobesent}`)
+                                .done(function (data) {
+                                    calendar.setOption('resources', data.resources);
+                                    debugger;
+                                    // Update calendar resources here
+                                })
+                                .fail(function (jqXHR, textStatus, errorThrown) {
+                                    console.error("Error fetching resources:", textStatus, errorThrown);
+                                });
+
                             showLoadingSpinner();
                             calendar.refetchEvents();
                             hideLoadingSpinner();
+                            $(".fc-toolbar-title").html("");
+
                         } else {
                             console.error("Invalid date format:", selectedDate);
                         }

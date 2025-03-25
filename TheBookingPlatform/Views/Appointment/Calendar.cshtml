@@ -364,9 +364,9 @@
                             </button>
 
 
-                            <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn  btn-smf" data-tooltip="Edit" type="button" id="EditAppointmentBtn">
+                            <a style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn  btn-sm" data-tooltip="Edit"  id="EditAppointmentBtn">
                                 <i class="material-icons ppff">edit</i>
-                            </button>
+                            </a>
 
 
                             <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm  " data-tooltip="Delete" id="DeleteAppointmentButton">
@@ -381,9 +381,9 @@
                         }
                         else
                         {
-                            <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn  btn-smf" data-tooltip="Edit" id="EditAppointmentBtn">
+                            <a style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn  btn-sm" data-tooltip="Edit" id="EditAppointmentBtn">
                                 <i class="material-icons ppff">edit</i>
-                            </button>
+                            </a>
                             <button style="background: #F0F3F8; color: #6E727B !important; margin-bottom: 0px !important; width: 50px; display: flex; justify-content: center; align-items: center; " class="btn btn-sm  " data-tooltip="Delete" id="DeleteAppointmentButton">
                                 <i class="material-icons ppff">delete</i>
                             </button>
@@ -499,7 +499,6 @@
 
     });
 
-
     function CloseModalDEl() {
         var modal = $('#appointmentModal');
 
@@ -601,7 +600,7 @@
                         hideLoadingSpinner();
 
                         if (data.success) {
-                            CloseModal();
+                            location.reload();
                         } else {
                             alert(data.Message);
                         }
@@ -628,7 +627,7 @@
                 success: function (data) {
 
                     if (data.success) {
-                    CloseModalDEl();
+                        location.reload();
                     } else {
                         alert(data.Message);
                     }

@@ -16,5 +16,6 @@ namespace TheBookingPlatform.Entities
         public bool InitialSetup { get; set; }
 
         public string TypeOfIntegration { get; set; } //All In One or Separate for each employee
+        public DateTime ExpirationDate { get; set; }
     }
 }

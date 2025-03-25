@@ -2,32 +2,32 @@
 @using System.Globalization
 
 @{
-    ViewBag.Title = "_CalendarPartial";
+ViewBag.Title = "_CalendarPartial";
 
-    var enUsCulture = new CultureInfo("en-US");
-    DateTime goToDate = DateTime.Parse(Model.GoToDate, enUsCulture);
-    var nextDate = goToDate.AddDays(1).ToString("yyyy-MM-dd", enUsCulture);
-    var prevdate = goToDate.AddDays(-1).ToString("yyyy-MM-dd", enUsCulture);
-    //var customTitle = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("ddd, MMM dd, yyyy");
+var enUsCulture = new CultureInfo("en-US");
+DateTime goToDate = DateTime.Parse(Model.GoToDate, enUsCulture);
+var nextDate = goToDate.AddDays(1).ToString("yyyy-MM-dd", enUsCulture);
+var prevdate = goToDate.AddDays(-1).ToString("yyyy-MM-dd", enUsCulture);
+//var customTitle = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("ddd, MMM dd, yyyy");
 
-    string customTitle = string.Empty;
+string customTitle = string.Empty;
 
-    if (DateTime.TryParse(Model.GoToDate, enUsCulture, DateTimeStyles.None, out goToDate))
-    {
-        customTitle = goToDate.ToString("ddd, MMM dd, yyyy", enUsCulture);
-    }
-    else
-    {
-        customTitle = "Invalid date";
-    }
+if (DateTime.TryParse(Model.GoToDate, enUsCulture, DateTimeStyles.None, out goToDate))
+{
+    customTitle = goToDate.ToString("ddd, MMM dd, yyyy", enUsCulture);
+}
+else
+{
+    customTitle = "Invalid date";
+}
 
-    var formattedDate = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("MM/dd/yyyy");
+var formattedDate = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("MM/dd/yyyy");
 
-    string YesShow = "false";
-    if (!User.IsInRole("Calendar"))
-    {
-        YesShow = "true";
-    }
+string YesShow = "false";
+if (!User.IsInRole("Calendar"))
+{
+    YesShow = "true";
+}
 
 
 
@@ -394,7 +394,7 @@
         if (time != "24:00") {
             showLoadingSpinner();
             $.ajax({
-                url: '@Url.Action("ActionPartial","Appointment")',
+                url: '@Url.Action("ActionPartial", "Appointment")',
                 data: { date: date, time: time, employeeID: employeeId }
             })
                 .done(function (response) {
@@ -415,7 +415,7 @@
         }
     }
 
-    $(document).on('click', '#EditAppointmentBtn', function (e) {
+    @*$(document).on('click', '#EditAppointmentBtn', function (e) {
         e.preventDefault();
         const appointmentId = $(this).data('appointment-id');
         const $secondModal = $("#UpdateActionModal"); // Reference the second modal
@@ -447,27 +447,54 @@
                 hideLoadingSpinner();
             }
         });
-    });
+    });*@
 
     function updateCalendarDate(newDate) {
         showLoadingSpinner();
-
+        var datetobesent = newDate.getFullYear() + '-' +
+            String(newDate.getMonth() + 1).padStart(2, '0') + '-' +
+            String(newDate.getDate()).padStart(2, '0');
         // Update hidden input
         $("#GoToDate").val(newDate.toISOString().split('T')[0]);
 
         // Refresh calendar
         if (calendar) {
             // Update calendar view date
-            calendar.gotoDate(newDate);
+            calendar.gotoDate(datetobesent);
+            setCustomTitle(); // Update the title here
             // Refetch events for new date
             calendar.refetchEvents();
-            setCustomTitle(); // Update the title here
+            $.getJSON(`/Appointment/Resources?date=${datetobesent}`)
+                .done(function (data) {
+                    calendar.setOption('resources', data.resources);
+                    debugger;
+                    // Update calendar resources here
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error("Error fetching resources:", textStatus, errorThrown);
+                });
+
 
         }
 
         hideLoadingSpinner();
     }
+    function setCustomTitle() {
 
+        var dateString = $("#GoToDate").val();
+        if (!dateString) return; // Ensure there is a valid date input
+
+        var date = new Date(dateString);
+        if (isNaN(date.getTime())) return; // Handle invalid dates
+
+        var options = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' };
+        var formattedDate = date.toLocaleDateString('en-US', options);
+
+        // Ensure only one update happens
+        if ($(".fc-toolbar-title").text().trim() === "") {
+            $(".fc-toolbar-title").html(formattedDate);
+        }
+    }
 
 
     function showSuccessAlert() {
@@ -511,6 +538,9 @@
     var calendar;
     function ViewCalendar() {
         var YesShow = $("#YesShow").val();
+
+        
+
         showLoadingSpinner();
         var calendarEl = document.getElementById('fullCalendar');
         today = new Date();
@@ -590,13 +620,12 @@
             },
             resources: [
 
-                @if (Model.EmployeeID == 0)
-                {
-                    var orderedEmployees = Model.Employees.OrderBy(n=>n.DisplayOrder).ToList();
-                    foreach (var item in orderedEmployees)
-                    {
+              
+                    @{var orderedEmployees = Model.Employees.OrderBy(n => n.DisplayOrder).ToList();
+                                    foreach (var item in orderedEmployees)
+                                    {
 
-                        bool ShiftAdded = false;
+                                        bool ShiftAdded = false;
 
                         <text>
                 {
@@ -611,7 +640,7 @@
                     businessHours:
                         [
                             @if (item.Shifts.Count() == 0 || Model.TodayOff)
-                            {
+                                        {
                             <text>
                             {
                                 startTime: '00:00',
@@ -621,8 +650,6 @@
                             </text>
                                 ShiftAdded = true;
                             }
-
-
                             else
                             {
                                 var shiftsWithinRange = item.Shifts.Where(s => s.Shift.Date.DayOfWeek.ToString() == Model.SelectedDate.DayOfWeek.ToString());
@@ -657,7 +684,7 @@
                                 startTime: '@shiftExceptionShift.StartTime.Trim()',
                                 endTime: '@shiftExceptionShift.EndTime.Trim()',
                                                 @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
-                                                {
+                                                                        {
                                                 <text>daysOfWeek: [1]</text>
                                                 }
                                                 else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Tuesday")
@@ -706,7 +733,7 @@
                                 startTime: '@shift.Shift.StartTime.Trim()',
                                 endTime: '@shift.Shift.EndTime.Trim()',
 @if (shift.Shift.Day == "Monday")
-{
+                                                                        {
 <text>daysOfWeek: [1]</text>
 }
 else if (shift.Shift.Day == "Tuesday")
@@ -741,17 +768,17 @@ else
 
 
                             },</text>
-                                                                        ShiftAdded = true;
+                                                            ShiftAdded = true;
                                                         }
                                                         else if (shift.RecurShift.RecurEnd == "Never")
                                                         {
-                                                                    if (shift.Shift.IsRecurring)
-                                                                    {
+                                                            if (shift.Shift.IsRecurring)
+                                                            {
                                                                         <text>{
                                 startTime: '@shift.Shift.StartTime.Trim()',
                                 endTime: '@shift.Shift.EndTime.Trim()',
 @if (shift.Shift.Day == "Monday")
-{
+                                                                            {
 <text>daysOfWeek: [1]</text>
 }
 else if (shift.Shift.Day == "Tuesday")
@@ -786,29 +813,29 @@ else
 
 
                             },</text>
-                                                                        ShiftAdded = true;
-                                                                    }
-                                                                       else
-                                                                       {
+                                                                ShiftAdded = true;
+                                                            }
+                                                            else
+                                                            {
                                                                          <text>{
                                 startTime: '00:00',
                                 endTime: '23:59',
                                 daysOfWeek: []
                             },
                                                                             </text>
-                                                                           ShiftAdded = true;
-                                                                       }
-                            }
+                                                                ShiftAdded = true;
+                                                            }
+                                                        }
                                                         else
-                                                {
+                                                        {
                                                                      <text>{
                                 startTime: '00:00',
                                 endTime: '23:59',
                                 daysOfWeek: []
                             },
                                                                         </text>
-                                                                       ShiftAdded = true;
-                                                }
+                                                            ShiftAdded = true;
+                                                        }
 
                                                     }
 
@@ -823,7 +850,7 @@ else
                                 startTime: '@shift.Shift.StartTime.Trim()',
                                 endTime: '@shift.Shift.EndTime.Trim()',
                                                 @if (shift.Shift.Day == "Monday")
-                                                {
+                                                                        {
                                                 <text>daysOfWeek: [1]</text>
                                                 }
                                                 else if (shift.Shift.Day == "Tuesday")
@@ -866,7 +893,7 @@ else
                                 startTime: '@shift.Shift.StartTime.Trim()',
                                 endTime: '@shift.Shift.EndTime.Trim()',
                                                 @if (shift.Shift.Day == "Monday")
-                                                {
+                                                                        {
                                                 <text>daysOfWeek: [1]</text>
                                                 }
                                                 else if (shift.Shift.Day == "Tuesday")
@@ -946,7 +973,7 @@ else
                                 daysOfWeek: []
                             },
                                                                  </text>
-                                                                 ShiftAdded = true;
+                                                                    ShiftAdded = true;
 
                                                                 }
                                                                 else
@@ -955,7 +982,7 @@ else
                                 startTime: '@shiftExceptionShift.StartTime.Trim()',
                                 endTime: '@shiftExceptionShift.EndTime.Trim()',
                                                      @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
-                                                     {
+                                                                                {
                                                      <text>daysOfWeek: [1]</text>
                                                      }
                                                      else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Tuesday")
@@ -981,13 +1008,13 @@ else
                                                      else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Sunday")
                                                      {
                                                      <text>daysOfWeek: [0]</text>
-                                                         }
-                                                         else
-                                                         {
+                                                     }
+                                                     else
+                                                     {
                                                             <text> daysOfWeek: []</text>
 
 
-                                                         }
+                                                     }
                             },</text>
                                                                     ShiftAdded = true;
 
@@ -1016,7 +1043,7 @@ else
                                 daysOfWeek: []
                             },
                                                                     </text>
-                                                                ShiftAdded = true;
+                                                            ShiftAdded = true;
 
 
                                                         }
@@ -1033,7 +1060,7 @@ else
                                 startTime: '@shift.Shift.StartTime.Trim()',
                                 endTime: '@shift.Shift.EndTime.Trim()',
                                                 @if (shift.Shift.Day == "Monday")
-                                                    {
+                                                                    {
                             <text>daysOfWeek: [1]</text>
                                                 }
                                                 else if (shift.Shift.Day == "Tuesday")
@@ -1061,10 +1088,10 @@ else
                             <text>daysOfWeek: [0]</text>
                                                 }
                                                 else
-                                            {
+                                                {
                                                 <text>daysOfWeek: []</text>
 
-                                            }
+                                                }
                             },</text>
                                                         ShiftAdded = true;
 
@@ -1106,7 +1133,7 @@ else
                                     ShiftAdded = true;
                                 }
 
-                                if(ShiftAdded == false)
+                                if (ShiftAdded == false)
                                 {
                                    <text>{
                                 startTime: '00:00',
@@ -1114,7 +1141,7 @@ else
                                 daysOfWeek: []
                             },
                                     </text>
-                                   ShiftAdded = true;
+                                    ShiftAdded = true;
                                 }
                             }
 
@@ -1123,430 +1150,89 @@ else
                 },
                         </text>
 
-                    }
-
-
-
-                }
-                else
-                {
-                    foreach (var item in Model.Employees.Where(x => x.Employee.ID == Model.EmployeeID).OrderBy(n => n.DisplayOrder).ToList())
-                    {
-                         <text>
-                {
-                    id: '@item.Employee.ID',
-                    title: '@item.Employee.Name',
-                    displayorder: @item.Employee.DisplayOrder,
-
-                    image: '@item.Employee.Photo',
-                    Specialization: '@item.Employee.Specialization',
-                    pricechangePercentage: '@(item.PriceChange != null ? item.PriceChange.Percentage : '0')',
-                    pricechangeType: '@(item.PriceChange != null ? item.PriceChange.TypeOfChange : "")',
-                    pricechangeID: '@(item.PriceChange != null ? item.PriceChange.ID : 0)',
-                    businessHours:
-                        [
-                                @if (item.Shifts.Count() == 0)
-                            {
-                            <text>
-                            {
-                                startTime: '00:00',
-                                endTime: '23:59',
-                                daysOfWeek: []
                             }
-                            </text>
-                            }
-                                else
-                                {
-                                     foreach (var tt in item.Shifts)
-                                     {
-                                        if (tt.RecurShift != null)
-                                    {
-                                        if (tt.ExceptionShift.Count() != 0)
-                                            {
-                                                bool exceptionFound = false;
-                                                foreach (var ttExceptionShift in tt.ExceptionShift)
-                                                {
-                                                    if (ttExceptionShift.ShiftID == tt.Shift.ID && ttExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd") && ttExceptionShift.IsNotWorking == false)
-                                                    {
-                                                     <text>{
-                                startTime: '@ttExceptionShift.StartTime.Trim()',
-                                endTime: '@ttExceptionShift.EndTime.Trim()',
-                                                     @if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
-                                                        {
-                            <text>daysOfWeek: [1]</text>
-                                                     }
-                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Tuesday")
-                                                     {
-                            <text>daysOfWeek: [2]</text>
-                                                     }
-                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Wednesday")
-                                                     {
-                            <text>daysOfWeek: [3]</text>
-                                                     }
-                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Thursday")
-                                                     {
-                            <text>daysOfWeek: [4]</text>
-                                                     }
-                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Friday")
-                                                     {
-                            <text>daysOfWeek: [5]</text>
-                                                     }
-                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Saturday")
-                                                     {
-                            <text>daysOfWeek: [6]</text>
-                                                     }
-                                                     else if (ttExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Sunday")
-                                                     {
-                            <text>daysOfWeek: [0]</text>
-                                                     }
-                                                     else
-                                            {
-                                                <text>daysOfWeek: []</text>
-
-                                            }
-                            },</text>
-                                                    exceptionFound = true;
-                                                    break; // Break if an exception is found
-
-
-                                                }
-                                                    else if (ttExceptionShift.ShiftID == tt.Shift.ID && ttExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd") && ttExceptionShift.IsNotWorking == true)
-                                                {
-                                                    <text>{
-                                startTime: '00:00',
-                                endTime: '23:59',
-                                daysOfWeek: []
-                            },
-                                                    </text>
-                                                    exceptionFound = true;
-                                                    break; // Break if an exception is found
-                                                }
-                                                }
-                                            if (!exceptionFound)
-                                            {
-                                                <text>{
-                                startTime: '@tt.Shift.StartTime.Trim()',
-                                endTime: '@tt.Shift.EndTime.Trim()',
-                                                @if (tt.Shift.Day == "Monday")
-                                                    {
-                            <text>daysOfWeek: [1]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Tuesday")
-                                                {
-                            <text>daysOfWeek: [2]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Wednesday")
-                                                {
-                            <text>daysOfWeek: [3]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Thursday")
-                                                {
-                            <text>daysOfWeek: [4]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Friday")
-                                                {
-                            <text>daysOfWeek: [5]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Saturday")
-                                                {
-                            <text>daysOfWeek: [6]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Sunday")
-                                                {
-                            <text>daysOfWeek: [0]</text>
-                                                }
-                                                else
-                                            {
-                                                <text>daysOfWeek: []</text>
-
-                                            }
-                            },</text>
-
-                                            }
-
-                                            }
-                                        else
-                                            {
-                                            if (tt.Shift.Day == DateTime.Parse(Model.GoToDate).DayOfWeek.ToString())
-                                            {
-                                                <text>{
-                                startTime: '@tt.Shift.StartTime.Trim()',
-                                endTime: '@tt.Shift.EndTime.Trim()',
-                                             @if (tt.Shift.Day == "Monday")
-                                                    {
-                                             <text>daysOfWeek: [1]</text>
-                                             }
-                                             else if (tt.Shift.Day == "Tuesday")
-                                             {
-                            <text>daysOfWeek: [2]</text>
-                                             }
-                                             else if (tt.Shift.Day == "Wednesday")
-                                             {
-                            <text>daysOfWeek: [3]</text>
-                                             }
-                                             else if (tt.Shift.Day == "Thursday")
-                                             {
-                            <text>daysOfWeek: [4]</text>
-                                             }
-                                             else if (tt.Shift.Day == "Friday")
-                                             {
-                            <text>daysOfWeek: [5]</text>
-                                             }
-                                             else if (tt.Shift.Day == "Saturday")
-                                             {
-                            <text>daysOfWeek: [6]</text>
-                                             }
-                                             else if (tt.Shift.Day == "Sunday")
-                                             {
-                            <text>daysOfWeek: [0]</text>
-                                             }
-                                             else
-                                            {
-                                                <text>daysOfWeek: []</text>
-
-                                            }
-                            },</text>
-                                            }
-
-                                        }
-                                    }
-                                        else
-                                    {
-                                        if (tt.Shift.IsRecurring && tt.RecurShift != null && DateTime.Parse(tt.RecurShift.RecurEndDate) >= DateTime.Parse(Model.GoToDate))
-                                        {
-                                                <text>{
-                                startTime: '@tt.Shift.StartTime.Trim()',
-                                endTime: '@tt.Shift.EndTime.Trim()',
-                                                @if (tt.Shift.Day == "Monday")
-                                                {
-                            <text>daysOfWeek: [1]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Tuesday")
-                                                {
-                            <text>daysOfWeek: [2]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Wednesday")
-                                                {
-                            <text>daysOfWeek: [3]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Thursday")
-                                                {
-                            <text>daysOfWeek: [4]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Friday")
-                                                {
-                            <text>daysOfWeek: [5]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Saturday")
-                                                {
-                            <text>daysOfWeek: [6]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Sunday")
-                                                {
-                            <text>daysOfWeek: [0]</text>
-                                                }
-
-
-                            },</text>
-                                        }
-                                        else
-                                        {
-                                            if (tt.ExceptionShift != null)
-                                                {
-                                                    if (tt.ExceptionShift.Where(x => x.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd")).Any())
-                                                    {
-                                                        bool exceptionFound = false;
-                                                        foreach (var shiftExceptionShift in tt.ExceptionShift)
-                                                        {
-                                                            if (shiftExceptionShift.ShiftID == tt.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd"))
-                                                            {
-                                                                if (shiftExceptionShift.IsNotWorking)
-                                                                {
-                                                                       <text>
-                            {
-                                startTime: '00:00',
-                                endTime: '23:59',
-                                daysOfWeek: []
-                            },
-                                                                       </text>
-                                                                }
-                                                                else
-                                                                {
-                                                                       <text>{
-                                startTime: '@shiftExceptionShift.StartTime.Trim()',
-                                endTime: '@shiftExceptionShift.EndTime.Trim()',
-                                                @if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Monday")
-                                                {
-                                                    <text>daysOfWeek: [1]</text>
-                                                }
-                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Tuesday")
-                                                {
-                                                    <text>daysOfWeek: [2]</text>
-                                                }
-                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Wednesday")
-                                                {
-                                                    <text>daysOfWeek: [3]</text>
-                                                }
-                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Thursday")
-                                                {
-                                                    <text>daysOfWeek: [4]</text>
-                                                }
-                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Friday")
-                                                {
-                                                    <text>daysOfWeek: [5]</text>
-                                                }
-                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Saturday")
-                                                {
-                                                    <text>daysOfWeek: [6]</text>
-                                                }
-                                                else if (shiftExceptionShift.ExceptionDate.DayOfWeek.ToString() == "Sunday")
-                                                {
-                                                    <text>daysOfWeek: [0]</text>
-                                                }
-                                                else
-                                            {
-                                                <text>daysOfWeek: []</text>
-
-                                            }
-
-                            },</text>
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (tt.Shift.Date.ToString("yyyy-MM-dd") == DateTime.Parse(Model.GoToDate).ToString("yyyy-MM-dd"))
-                                                {
-                                                      <text>{
-                                startTime: '@tt.Shift.StartTime.Trim()',
-                                endTime: '@tt.Shift.EndTime.Trim()',
-                                                @if (tt.Shift.Day == "Monday")
-                                                {
-                            <text>daysOfWeek: [1]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Tuesday")
-                                                {
-                            <text>daysOfWeek: [2]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Wednesday")
-                                                {
-                            <text>daysOfWeek: [3]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Thursday")
-                                                {
-                            <text>daysOfWeek: [4]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Friday")
-                                                {
-                            <text>daysOfWeek: [5]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Saturday")
-                                                {
-                            <text>daysOfWeek: [6]</text>
-                                                }
-                                                else if (tt.Shift.Day == "Sunday")
-                                                {
-                            <text>daysOfWeek: [0]</text>
-                                                }
-                                                else
-                                            {
-                                                <text>daysOfWeek: []</text>
-
-                                            }
-
-                            },</text>
-                                                }
-                                            }
-                                        }
-                                    }
-                                     }
                                 }
-                        ]
-                },
-                         </text>
 
-                    }
 
-                }
 
+                
+                
             ],
             editable: true,  // Allow general event editing globally
 
             resourceOrder: 'displayorder', // Sorting resources by title
             loading: function (isLoading) {
-                console.log("Calendar loading:", isLoading);
-            },
+                                    console.log("Calendar loading:", isLoading);
+                                },
             events: function (info, successCallback, failureCallback) {
-                var startDate = info.startStr;
-                var events = [];
+                                    var startDate = info.startStr;
+                                    var events = [];
                 $.ajax({
-                    url: '@Url.Action("GetTheDateEvents", "Appointment")', // Replace with your actual API endpoint
+                                    url: '@Url.Action("GetTheDateEvents", "Appointment")', // Replace with your actual API endpoint
                     method: 'GET',
                     data: { startDate: startDate },
                     success: function (data) {
-                        if (data && data.Appointments) {
-                            console.log('Received Appointments:', data.Appointments);
-                            data.Appointments.forEach(function (appointment) {
-                                var services = appointment.Services.map(s => "- " + s.Name);
-                                var serviceIDs = appointment.Services.map(s => s.ID, ",");
-                                var serviceList = services.join(",");
-                                var title = appointment.CustomerFirstName + " " + appointment.CustomerLastName;
-                                var eventId = appointment.ID;
-                                var FromGCAL = appointment.FromGCAL;
-                                var customer = FromGCAL
-                                    ? "Appointment from Google Calendar"
-                                    : appointment.Services.some(x => x.Category === "ABSENSE") ? "Walk In" : title;
-                                var blockedEvent = appointment.BlockedEvent;
-                                var customerPhone = appointment.MobileNumber || "";
-                                var notes = appointment.Notes ? appointment.Notes.replace("\r\n", "").replace("\n", " ") : "";
-                                var startDate = parseDotNetDate(appointment.Date);
-                                var startTime = parseDotNetDate(appointment.Time);
+                                            if (data && data.Appointments) {
+                                                console.log('Received Appointments:', data.Appointments);
+                                                data.Appointments.forEach(function (appointment) {
+                                                    var services = appointment.Services.map(s => "- " + s.Name);
+                                                    var serviceIDs = appointment.Services.map(s => s.ID, ",");
+                                                    var serviceList = services.join(",");
+                                                    var title = appointment.CustomerFirstName + " " + appointment.CustomerLastName;
+                                                    var eventId = appointment.ID;
+                                                    var FromGCAL = appointment.FromGCAL;
+                                                    var customer = FromGCAL
+                                                        ? "Appointment from Google Calendar"
+                                                        : appointment.Services.some(x => x.Category === "ABSENSE") ? "Walk In" : title;
+                                                    var blockedEvent = appointment.BlockedEvent;
+                                                    var customerPhone = appointment.MobileNumber || "";
+                                                    var notes = appointment.Notes ? appointment.Notes.replace("\r\n", "").replace("\n", " ") : "";
+                                                    var startDate = parseDotNetDate(appointment.Date);
+                                                    var startTime = parseDotNetDate(appointment.Time);
 
-                                startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
-                                var endDate = addMinutes(startDate, appointment.TotalDuration);
-                                var haveBuffer = appointment.Buffers.length > 0 ? "true" : "false";
+                                                    startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+                                                    var endDate = addMinutes(startDate, appointment.TotalDuration);
+                                                    var haveBuffer = appointment.Buffers.length > 0 ? "true" : "false";
 
 
-                                var bufferList = [];
+                                                    var bufferList = [];
 
-                                // Check if there are buffers in the appointment object
-                                if (appointment.Buffers.length > 0) {
-                                    let lastBufferEndTime = null; // To store the last buffer's EndTime
+                                                    // Check if there are buffers in the appointment object
+                                                    if (appointment.Buffers.length > 0) {
+                                                        let lastBufferEndTime = null; // To store the last buffer's EndTime
 
-                                    appointment.Buffers.forEach(function (buffer) {
-                                        var bufferStart = parseDotNetDate(buffer.Date);
-                                        var bufferStartTime = parseDotNetDate(buffer.Time);
-                                        bufferStart.setHours(bufferStartTime.getHours(), bufferStartTime.getMinutes(), bufferStartTime.getSeconds());
+                                                        appointment.Buffers.forEach(function (buffer) {
+                                                            var bufferStart = parseDotNetDate(buffer.Date);
+                                                            var bufferStartTime = parseDotNetDate(buffer.Time);
+                                                            bufferStart.setHours(bufferStartTime.getHours(), bufferStartTime.getMinutes(), bufferStartTime.getSeconds());
 
-                                        var bufferEndTime = parseDotNetDate(buffer.EndTime);
-                                        var bufferEnd = new Date(bufferStart); // Clone the start date
-                                        bufferEnd.setHours(bufferEndTime.getHours(), bufferEndTime.getMinutes(), bufferEndTime.getSeconds());
+                                                            var bufferEndTime = parseDotNetDate(buffer.EndTime);
+                                                            var bufferEnd = new Date(bufferStart); // Clone the start date
+                                                            bufferEnd.setHours(bufferEndTime.getHours(), bufferEndTime.getMinutes(), bufferEndTime.getSeconds());
 
-                                        // Store the last buffer's end time
-                                        lastBufferEndTime = bufferEndTime;
+                                                            // Store the last buffer's end time
+                                                            lastBufferEndTime = bufferEndTime;
 
-                                        var bufferDesc = buffer.Description;
-                                        var serviceIdforbuffer = buffer.ServiceID;
+                                                            var bufferDesc = buffer.Description;
+                                                            var serviceIdforbuffer = buffer.ServiceID;
 
-                                        // Push the buffer details to the list
-                                        bufferList.push({
-                                            ID: buffer.ID,
+                                                            // Push the buffer details to the list
+                                                            bufferList.push({
+                                                            ID: buffer.ID,
                                             start: bufferStart,
                                             end: bufferEnd,
                                             description: bufferDesc,
                                             ServiceID: serviceIdforbuffer
-                                        });
-                                    });
+                                                            });
+                                                        });
 
-                                    // Set endDate after the loop with the last buffer's EndTime
-                                    if (lastBufferEndTime) {
-                                        endDate.setHours(lastBufferEndTime.getHours(), lastBufferEndTime.getMinutes(), lastBufferEndTime.getSeconds());
-                                    }
-                                }
-                                events.push({
-                                    id: eventId,
+                                                        // Set endDate after the loop with the last buffer's EndTime
+                                                        if (lastBufferEndTime) {
+                                                            endDate.setHours(lastBufferEndTime.getHours(), lastBufferEndTime.getMinutes(), lastBufferEndTime.getSeconds());
+                                                        }
+                                                    }
+                                                    events.push({
+                                                    id: eventId,
                                     title: title,
                                     blockedEvent: blockedEvent,
                                     content: serviceList,
@@ -1570,92 +1256,92 @@ else
                                     havebuffer: haveBuffer,
                                     Buffers: bufferList,
                                     ServiceIDs: serviceIDs
-                                });
-                            });
-                        }
+                                                    });
+                                                });
+                                            }
 
-                        // Handle Waiting Lists
-                        if (data && data.WaitingLists) {
-                            console.log('Received WaitingLists:', data.WaitingLists);
-                            data.WaitingLists.forEach(function (waitingList) {
-                                var startDate = parseDotNetDateForWaitingList(waitingList.Date);
-                                events.push({
-                                    id: '000',
+                                            // Handle Waiting Lists
+                                            if (data && data.WaitingLists) {
+                                                console.log('Received WaitingLists:', data.WaitingLists);
+                                                data.WaitingLists.forEach(function (waitingList) {
+                                                    var startDate = parseDotNetDateForWaitingList(waitingList.Date);
+                                                    events.push({
+                                                    id: '000',
                                     start: startDate,
                                     description: "Waiting List (" + waitingList.Count + ")",
                                     allday: true,
                                     resourceId: waitingList.EmployeeID,
                                     employeeID: waitingList.EmployeeID,
                                     backgroundColor: 'cadetblue'
-                                });
-                            });
-                        }
+                                                    });
+                                                });
+                                            }
 
-                        // Debugging: Confirm events array before passing to callback
-                        console.log('Events array before callback:', events);
-                        try {
-                            successCallback(events);
+                                            // Debugging: Confirm events array before passing to callback
+                                            console.log('Events array before callback:', events);
+                                            try {
+                                                successCallback(events);
 
-                        } catch (e) {
+                                            } catch (e) {
 
-                        }
-                        console.log('Events array after callback:', events);
+                                            }
+                                            console.log('Events array after callback:', events);
 
-                        // Utility Functions
-                        function addMinutes(date, minutes) {
-                            return new Date(date.getTime() + minutes * 60000);
-                        }
-                        function parseDotNetDate(dotNetDate) {
-                            var match = dotNetDate.match(/\d+/);  // Extract the numeric part
-                            if (match) {
-                                return new Date(parseInt(match[0], 10)); // Convert to Date object
-                            }
-                            return null; // Or handle invalid format as needed
-                        }
-                        function parseDotNetDateForWaitingList(dotNetDate) {
-                            var match = dotNetDate.match(/\d+/);  // Extract the numeric part
-                            if (match) {
-                                var milliseconds = parseInt(match[0], 10);
-                                var parsedDate = new Date(milliseconds);
+                                            // Utility Functions
+                                            function addMinutes(date, minutes) {
+                                                return new Date(date.getTime() + minutes * 60000);
+                                            }
+                                            function parseDotNetDate(dotNetDate) {
+                                                var match = dotNetDate.match(/\d+/);  // Extract the numeric part
+                                                if (match) {
+                                                    return new Date(parseInt(match[0], 10)); // Convert to Date object
+                                                }
+                                                return null; // Or handle invalid format as needed
+                                            }
+                                            function parseDotNetDateForWaitingList(dotNetDate) {
+                                                var match = dotNetDate.match(/\d+/);  // Extract the numeric part
+                                                if (match) {
+                                                    var milliseconds = parseInt(match[0], 10);
+                                                    var parsedDate = new Date(milliseconds);
 
-                                // Format the date as "yyyy-MM-dd"
-                                var formattedDate = parsedDate.getFullYear() + '-' +
-                                    ('0' + (parsedDate.getMonth() + 1)).slice(-2) + '-' +
-                                    ('0' + parsedDate.getDate()).slice(-2);
+                                                    // Format the date as "yyyy-MM-dd"
+                                                    var formattedDate = parsedDate.getFullYear() + '-' +
+                                                        ('0' + (parsedDate.getMonth() + 1)).slice(-2) + '-' +
+                                                        ('0' + parsedDate.getDate()).slice(-2);
 
-                                return formattedDate;
-                            }
-                            return null; // Or handle invalid format as needed
-                        }
-                    },
+                                                    return formattedDate;
+                                                }
+                                                return null; // Or handle invalid format as needed
+                                            }
+                                        },
                     error: function (error) {
-                        console.error('Error fetching events: ', error);
-                        failureCallback(error);
-                    },
+                                            console.error('Error fetching events: ', error);
+                                            failureCallback(error);
+                                        },
                     complete: function () {
-                        console.log('AJAX request complete.');
-                        hideLoadingSpinner();
-                    }
-                });
-            },
+                                            console.log('AJAX request complete.');
+                                            hideLoadingSpinner();
+                                        }
+                                    });
+                                },
             dateClick: function (info) {
 
-                var referenceId = '0';
+                                    var referenceId = '0';
 
-                if (info.resource == null) {
+                                    if (info.resource == null) {
 
-                } else {
-                    referenceId = info.resource._resource.id;
-                }
-                var dateObject = new Date(info.date);
-                // Extract the date and time components separately
-                var date = dateObject.toString().split('T')[0]; // Get the date (YYYY-MM-DD)
+                                    } else {
+                                        referenceId = info.resource._resource.id;
+                                    }
+                                    var dateObject = new Date(info.date);
+                                    // Extract the date and time components separately
+                                    var date = dateObject.toString().split('T')[0]; // Get the date (YYYY-MM-DD)
 
-                var clientDate = new Date();
-                var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
-                var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
-                // Create a DateTimeFormat object for the desired time zone
-                var timeFormatter = new Intl.DateTimeFormat('en-US', {
+                                    var clientDate = new Date();
+                                    var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
+                                    var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
+                                                                             // Create a DateTimeFormat object for the desired time zone
+                                    var timeFormatter = new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false, // Set hour12 to false for 24-hour format
@@ -1663,17 +1349,17 @@ else
                 });
                 var startTime = timeFormatter.format(dateObject);
 
-                //if (selectedDate == "") {
-                CreateNewAppointment(dateObject, startTime, referenceId);
-                //} else {
-                //    CreateNewAppointment(date, startTime, referenceId);
-                //}
+                                //if (selectedDate == "") {
+                                CreateNewAppointment(dateObject, startTime, referenceId);
+                                //} else {
+                                //    CreateNewAppointment(date, startTime, referenceId);
+                                //}
 
-            },
+                            },
             resourceClick: function (info) {
-                // Handle the resource click event here
-                // You can access the resource ID using info.resource.id
-            },
+                                // Handle the resource click event here
+                                // You can access the resource ID using info.resource.id
+                            },
             slotLabelFormat: {
                 hour: 'numeric',
                 minute: '2-digit',
@@ -1682,314 +1368,314 @@ else
             },
             eventContent: function (arg) {
 
-                showLoadingSpinner();
-                var clientDate = new Date();
-                var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
-                var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
+                            showLoadingSpinner();
+                            var clientDate = new Date();
+                            var clientTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone; // Timezone name
+                            var targetTimeZone = clientTimeZoneName; // Replace with the desired time zone
 
-                // Create a DateTimeFormat object for the desired time zone
-                var timeFormatter = new Intl.DateTimeFormat('en-US', {
+                            // Create a DateTimeFormat object for the desired time zone
+                            var timeFormatter = new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false, // Set hour12 to false for 24-hour format
                     timeZone: targetTimeZone
                 });
 
-                const timeString = arg.event.extendedProps.testingEnd;
-                var blocked = arg.event.extendedProps.blockedEvent;
+                        const timeString = arg.event.extendedProps.testingEnd;
+                        var blocked = arg.event.extendedProps.blockedEvent;
 
-                var eventContent = document.createElement('div');
-                eventContent.classList.add('fc-event-main');
-                if (blocked) {
-                    eventContent.classList.add('blocked-event');
-                }
-                var Buffers = arg.event.extendedProps.Buffers || [];
+                        var eventContent = document.createElement('div');
+                        eventContent.classList.add('fc-event-main');
+                        if (blocked) {
+                            eventContent.classList.add('blocked-event');
+                        }
+                        var Buffers = arg.event.extendedProps.Buffers || [];
 
-                const ServiceIDs = arg.event.extendedProps.ServiceIDs || [];
-                let serviceNames = arg.event.extendedProps.description || "Service"; // Service names string
+                        const ServiceIDs = arg.event.extendedProps.ServiceIDs || [];
+                        let serviceNames = arg.event.extendedProps.description || "Service"; // Service names string
 
-                // Split service names based on a delimiter (e.g., comma)
-                serviceNames = serviceNames.split(",");  // You can change the delimiter if needed (e.g., `;`)
-
-
-                if (arg.event.id == "000") {
-
-                    var description = arg.event.extendedProps.description;
-                    if (description) {
-                        var descriptionElement = document.createElement('div');
-                        descriptionElement.classList.add('event-description');
-                        descriptionElement.textContent = description;
-                        eventContent.appendChild(descriptionElement);
-                    }
+                        // Split service names based on a delimiter (e.g., comma)
+                        serviceNames = serviceNames.split(",");  // You can change the delimiter if needed (e.g., `;`)
 
 
-                }
+                        if (arg.event.id == "000") {
+
+                            var description = arg.event.extendedProps.description;
+                            if (description) {
+                                var descriptionElement = document.createElement('div');
+                                descriptionElement.classList.add('event-description');
+                                descriptionElement.textContent = description;
+                                eventContent.appendChild(descriptionElement);
+                            }
+
+
+                        }
                 else {
 
-                    const startTime = timeFormatter.format(arg.event.start);
-                    const endTime = timeFormatter.format(arg.event.end);
+                            const startTime = timeFormatter.format(arg.event.start);
+                            const endTime = timeFormatter.format(arg.event.end);
 
-                    var description = arg.event.extendedProps.description;
-                    var notes = arg.event.extendedProps.notes;
-                    // Create a custom HTML element for the event content
-                    // Add the FullCalendar event class
-                    var customername = arg.event.extendedProps.customer;
-                    var customerphone = arg.event.extendedProps.customerphone;
-
-
-                    var timeElement = document.createElement('div');
-                    timeElement.classList.add('fc-time'); // Add the FullCalendar time class
-
-                    if (arg.backgroundColor == "#5DAF4D") {
-                        timeElement.classList.add('fc-time-green'); // Add the FullCalendar time class
-                    }
-                    else if (arg.backgroundColor == "darkgray") {
-                        timeElement.classList.add('fc-time-gray'); // Add the FullCalendar time class
-                    }
-                    else if (arg.backgroundColor == "#952AB2") {
-                        timeElement.classList.add('fc-time-purple'); // Add the FullCalendar time class
-                    }
-                    else if (arg.backgroundColor == "#E94234") {
-                        timeElement.classList.add('fc-time-red'); // Add the FullCalendar time class
-                    }
-                    else if (arg.backgroundColor == "#F79700") {
-                        timeElement.classList.add('fc-time-yellow'); // Add the FullCalendar time class
-                    }
-                    else if (arg.backgroundColor == "#dff0e3") {
-                        timeElement.classList.add('fc-time-Gcal'); // Add the FullCalendar time class
-
-                    }
-                    const dateObject = new Date(timeString);
-
-                    // Get hours and minutes
-                    const hours = dateObject.getHours();
-                    const minutes = dateObject.getMinutes();
-
-                    // Format the time as HH:mm
-                    const formattedTime = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
-
-                    timeElement.textContent = startTime + ' - ' + formattedTime;
-                    var lock = '<i style="float:right;margin-right:5px;margin-top:4px;" class="fa fa-lock"></i>';
-                    var unlock = '<i style="float:right;margin-right:5px;margin-top:5px;" class="fa fa-unlock"></i>';
-                    var newClient = '<i style="float:right;margin-right:5px;margin-top:5px;" class="fa fa-user-plus"></i>';
-                    var reminder = '<i style="float:right;margin-right:5px;margin-top: 4px;" class="fa fa-envelope"></i>';
-                    var repeat = '<i style="float:right;margin-right:5px;margin-top: 4px;" class="fa fa-repeat"></i>';
+                            var description = arg.event.extendedProps.description;
+                            var notes = arg.event.extendedProps.notes;
+                            // Create a custom HTML element for the event content
+                            // Add the FullCalendar event class
+                            var customername = arg.event.extendedProps.customer;
+                            var customerphone = arg.event.extendedProps.customerphone;
 
 
-                    if (arg.backgroundColor != "darkgray") {
-                        if (arg.event.extendedProps.AnyEmployeeSelected) {
-                            timeElement.insertAdjacentHTML('beforeend', unlock);
-                        } else {
-                            timeElement.insertAdjacentHTML('beforeend', lock);
-                        }
+                            var timeElement = document.createElement('div');
+                            timeElement.classList.add('fc-time'); // Add the FullCalendar time class
 
-                        if (arg.event.extendedProps.NewCustomer) {
+                            if (arg.backgroundColor == "#5DAF4D") {
+                                timeElement.classList.add('fc-time-green'); // Add the FullCalendar time class
+                            }
+                            else if (arg.backgroundColor == "darkgray") {
+                                timeElement.classList.add('fc-time-gray'); // Add the FullCalendar time class
+                            }
+                            else if (arg.backgroundColor == "#952AB2") {
+                                timeElement.classList.add('fc-time-purple'); // Add the FullCalendar time class
+                            }
+                            else if (arg.backgroundColor == "#E94234") {
+                                timeElement.classList.add('fc-time-red'); // Add the FullCalendar time class
+                            }
+                            else if (arg.backgroundColor == "#F79700") {
+                                timeElement.classList.add('fc-time-yellow'); // Add the FullCalendar time class
+                            }
+                            else if (arg.backgroundColor == "#dff0e3") {
+                                timeElement.classList.add('fc-time-Gcal'); // Add the FullCalendar time class
 
-                            timeElement.insertAdjacentHTML('beforeend', newClient);
-                        }
+                            }
+                            const dateObject = new Date(timeString);
 
-                        timeElement.insertAdjacentHTML('beforeend', reminder);
+                            // Get hours and minutes
+                            const hours = dateObject.getHours();
+                            const minutes = dateObject.getMinutes();
 
-                    } else {
-                        if (arg.event.extendedProps.IsRepeat) {
-                            timeElement.insertAdjacentHTML('beforeend', repeat);
+                            // Format the time as HH:mm
+                            const formattedTime = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
 
-                        }
-                    }
-                    //timeElement.insertAdjacentHTML('beforeend', noshowIcon);
-                    //timeElement.insertAdjacentHTML('beforeend', noofvisits);
+                            timeElement.textContent = startTime + ' - ' + formattedTime;
+                            var lock = '<i style="float:right;margin-right:5px;margin-top:4px;" class="fa fa-lock"></i>';
+                            var unlock = '<i style="float:right;margin-right:5px;margin-top:5px;" class="fa fa-unlock"></i>';
+                            var newClient = '<i style="float:right;margin-right:5px;margin-top:5px;" class="fa fa-user-plus"></i>';
+                            var reminder = '<i style="float:right;margin-right:5px;margin-top: 4px;" class="fa fa-envelope"></i>';
+                            var repeat = '<i style="float:right;margin-right:5px;margin-top: 4px;" class="fa fa-repeat"></i>';
 
-                    var icons = timeElement.querySelectorAll('.fa-close, .fa-check');
 
-                    icons.forEach(function (icon) {
-                        icon.addEventListener('mouseenter', showTooltip);
-                        icon.addEventListener('mouseleave', hideTooltip);
-                    });
-                    eventContent.appendChild(timeElement);
-                        // Add customer details block at the top
-                        if (arg.backgroundColor !== "darkgray" && YesShow === "true") {
-                            const customerName = arg.event.extendedProps.customer || "Customer Name";
-                            const customerPhone = arg.event.extendedProps.customerphone || "Phone Number";
-
-                            const customerInfoElement = document.createElement('div');
-                            customerInfoElement.classList.add('customer-info');
-                            customerInfoElement.innerHTML = `${customerName}<br> ${customerPhone}`;
-                            eventContent.appendChild(customerInfoElement);
-                        }
-                        // Initialize a Map to track added buffers for each ServiceID + index combination
-                        var addedBuffers = new Map();
-
-                        // Loop through each service name and display it followed by its specific buffer(s)
-                    serviceNames.forEach((serviceName, index) => {
-                        // Trim any extra spaces from the service name
-                        serviceName = serviceName.trim();
-
-                        // Service Name Block
-                        const serviceNameElement = document.createElement('div');
-                        serviceNameElement.classList.add('fc-service-name');
-                        serviceNameElement.textContent = `${serviceName}`;
-                        eventContent.appendChild(serviceNameElement);
-
-                        if (Buffers.length > 0) {
-                            var SerID = ServiceIDs[index];
-                            var filteredArray = [];
-                            //debugger
-                            //// Filter Buffers where the ServiceID matches SerID
-                            if (Array.isArray(Buffers) && SerID != undefined) {
-                                // Initialize a Set for the current service index to track added buffer IDs
-                                if (!addedBuffers.has(index)) {
-                                    addedBuffers.set(index, new Set());
+                            if (arg.backgroundColor != "darkgray") {
+                                if (arg.event.extendedProps.AnyEmployeeSelected) {
+                                    timeElement.insertAdjacentHTML('beforeend', unlock);
+                                } else {
+                                    timeElement.insertAdjacentHTML('beforeend', lock);
                                 }
 
-                                // Filter Buffers where ServiceID matches SerID and the buffer hasn't been added to the current service
-                                filteredArray = Buffers.filter(buffer => {
-                                    const bufferHasBeenAdded = addedBuffers.get(index).has(buffer.ID);
-                                    return buffer.ServiceID === SerID && !bufferHasBeenAdded;
-                                });
+                                if (arg.event.extendedProps.NewCustomer) {
+
+                                    timeElement.insertAdjacentHTML('beforeend', newClient);
+                                }
+
+                                timeElement.insertAdjacentHTML('beforeend', reminder);
+
                             } else {
-                                console.log('Invalid Buffers array or SerID.');
+                                if (arg.event.extendedProps.IsRepeat) {
+                                    timeElement.insertAdjacentHTML('beforeend', repeat);
+
+                                }
                             }
-                            const result = filteredArray.length > 0 ? filteredArray[0] : null;
+                            //timeElement.insertAdjacentHTML('beforeend', noshowIcon);
+                            //timeElement.insertAdjacentHTML('beforeend', noofvisits);
 
-                            //filteredArray.forEach((buffer) => {
-                            // Add the buffer ID to the current service's Set of added buffers
-                            if (result != null) {
-                                addedBuffers.get(index).add(result.ID);
+                            var icons = timeElement.querySelectorAll('.fa-close, .fa-check');
 
-                                const bufferStartTime = timeFormatter.format(new Date(result.start));
-                                const bufferEndTime = timeFormatter.format(new Date(result.end));
-                                var color = darkenHexColor(arg.backgroundColor, 30);
+                            icons.forEach(function (icon) {
+                                icon.addEventListener('mouseenter', showTooltip);
+                                icon.addEventListener('mouseleave', hideTooltip);
+                            });
+                            eventContent.appendChild(timeElement);
+                            // Add customer details block at the top
+                            if (arg.backgroundColor !== "darkgray" && YesShow === "true") {
+                                const customerName = arg.event.extendedProps.customer || "Customer Name";
+                                const customerPhone = arg.event.extendedProps.customerphone || "Phone Number";
 
-                                // Create buffer element
-                                const bufferElement = document.createElement('div');
-                                bufferElement.classList.add('fc-buffer');
-                                bufferElement.style.backgroundColor = color;
-                                bufferElement.style.color = "white";
-                                bufferElement.style.padding = "5px";
-                                bufferElement.style.marginTop = "5px";
+                                const customerInfoElement = document.createElement('div');
+                                customerInfoElement.classList.add('customer-info');
+                                customerInfoElement.innerHTML = `${customerName}<br> ${customerPhone}`;
+                                eventContent.appendChild(customerInfoElement);
+                            }
+                            // Initialize a Map to track added buffers for each ServiceID + index combination
+                            var addedBuffers = new Map();
 
-                                const bufferDurationInMinutes = (result.end - result.start) / (1000 * 60);
-                                bufferElement.textContent = `Buffer: ${bufferDurationInMinutes} minutes`;
+                            // Loop through each service name and display it followed by its specific buffer(s)
+                            serviceNames.forEach((serviceName, index) => {
+                                // Trim any extra spaces from the service name
+                                serviceName = serviceName.trim();
 
-                                eventContent.appendChild(bufferElement);
+                                // Service Name Block
+                                const serviceNameElement = document.createElement('div');
+                                serviceNameElement.classList.add('fc-service-name');
+                                serviceNameElement.textContent = `${serviceName}`;
+                                eventContent.appendChild(serviceNameElement);
 
+                                if (Buffers.length > 0) {
+                                    var SerID = ServiceIDs[index];
+                                    var filteredArray = [];
+                                    //debugger
+                                    //// Filter Buffers where the ServiceID matches SerID
+                                    if (Array.isArray(Buffers) && SerID != undefined) {
+                                        // Initialize a Set for the current service index to track added buffer IDs
+                                        if (!addedBuffers.has(index)) {
+                                            addedBuffers.set(index, new Set());
+                                        }
+
+                                        // Filter Buffers where ServiceID matches SerID and the buffer hasn't been added to the current service
+                                        filteredArray = Buffers.filter(buffer => {
+                                            const bufferHasBeenAdded = addedBuffers.get(index).has(buffer.ID);
+                                            return buffer.ServiceID === SerID && !bufferHasBeenAdded;
+                                        });
+                                    } else {
+                                        console.log('Invalid Buffers array or SerID.');
+                                    }
+                                    const result = filteredArray.length > 0 ? filteredArray[0] : null;
+
+                                    //filteredArray.forEach((buffer) => {
+                                    // Add the buffer ID to the current service's Set of added buffers
+                                    if (result != null) {
+                                        addedBuffers.get(index).add(result.ID);
+
+                                        const bufferStartTime = timeFormatter.format(new Date(result.start));
+                                        const bufferEndTime = timeFormatter.format(new Date(result.end));
+                                        var color = darkenHexColor(arg.backgroundColor, 30);
+
+                                        // Create buffer element
+                                        const bufferElement = document.createElement('div');
+                                        bufferElement.classList.add('fc-buffer');
+                                        bufferElement.style.backgroundColor = color;
+                                        bufferElement.style.color = "white";
+                                        bufferElement.style.padding = "5px";
+                                        bufferElement.style.marginTop = "5px";
+
+                                        const bufferDurationInMinutes = (result.end - result.start) / (1000 * 60);
+                                        bufferElement.textContent = `Buffer: ${bufferDurationInMinutes} minutes`;
+
+                                        eventContent.appendChild(bufferElement);
+
+                                    }
+                                }
+                            });
+
+
+
+
+                            // Create customer info block
+
+
+                            // Add the event time
+                            // Add the event description
+                            //if (description) {
+                            //    var descriptionElement = document.createElement('div');
+                            //    descriptionElement.classList.add('event-description');
+                            //    descriptionElement.textContent = description;
+                            //    eventContent.appendChild(descriptionElement);
+                            //}
+
+                            if (notes) {
+                                // Add any additional notes
+                                var notesElement = document.createElement('div');
+                                notesElement.classList.add('event-notes');
+                                notesElement.textContent = notes;
+                                eventContent.appendChild(notesElement);
                             }
                         }
-                    });
 
 
 
 
-                    // Create customer info block
-
-
-                    // Add the event time
-                    // Add the event description
-                    //if (description) {
-                    //    var descriptionElement = document.createElement('div');
-                    //    descriptionElement.classList.add('event-description');
-                    //    descriptionElement.textContent = description;
-                    //    eventContent.appendChild(descriptionElement);
-                    //}
-
-                    if (notes) {
-                        // Add any additional notes
-                        var notesElement = document.createElement('div');
-                        notesElement.classList.add('event-notes');
-                        notesElement.textContent = notes;
-                        eventContent.appendChild(notesElement);
-                    }
-                }
-
-
-
-
-                hideLoadingSpinner();
+                        hideLoadingSpinner();
                 return { domNodes: [eventContent] };
 
-            },
+                        },
 
 
             eventsSet: function (events) {
-                // This callback fires after events are initially rendered or when events are added/changed/removed
-                checkForEventOverlaps(events);
-            },
+                            // This callback fires after events are initially rendered or when events are added/changed/removed
+                            checkForEventOverlaps(events);
+                        },
 
             eventMouseover: function (event, jsEvent, view) {
-                // You can add custom hover behavior here if needed
-            },
+                            // You can add custom hover behavior here if needed
+                        },
             eventClick: function (calEvent, jsEvent, view) {
-                showLoadingSpinner();
+                            showLoadingSpinner();
 
-                if (calEvent.event.id == '000') {
-                    var Date = calEvent.event.startStr;
-                    var EmployeeID = calEvent.event.extendedProps.employeeID;
+                            if (calEvent.event.id == '000') {
+                                var Date = calEvent.event.startStr;
+                                var EmployeeID = calEvent.event.extendedProps.employeeID;
                     $.ajax({
-                        url: '@Url.Action("ShowWaitingLists","Appointment")', // Replace with your controller URL
+                                url: '@Url.Action("ShowWaitingLists","Appointment")', // Replace with your controller URL
                         data: { Date: Date, EmployeeID: EmployeeID }, // Send the appointment ID to the controller
                         type: 'GET',
                         success: function (data) {
                             // Populate the modal with appointment details
 
                             $("#actionModal .modal-dialog").html(data);
-                            hideLoadingSpinner();
+                                        hideLoadingSpinner();
                             $("#actionModal").modal('show'); // Initialize and show the modal
-                        },
+                                    },
                         error: function (error) {
-                            // Handle error if the controller request fails
-                            console.error('Error fetching appointment details:', error);
-                            hideLoadingSpinner();
+                                        // Handle error if the controller request fails
+                                        console.error('Error fetching appointment details:', error);
+                                        hideLoadingSpinner();
 
-                        }
-                    });
-                }
+                                    }
+                                });
+                            }
                 else {
-                    // When an event is clicked, open the modal and fetch appointment details from the controller
+                                // When an event is clicked, open the modal and fetch appointment details from the controller
 
-                    var FromGCAL = calEvent.event.extendedProps.FromGCAL;
+                                var FromGCAL = calEvent.event.extendedProps.FromGCAL;
 
                     $.ajax({
-                        url: '@Url.Action("GetAppointmentDetails","Appointment")', // Replace with your controller URL
+                                url: '@Url.Action("GetAppointmentDetails","Appointment")', // Replace with your controller URL
                         data: { appointmentId: calEvent.event.id }, // Send the appointment ID to the controller
                         type: 'GET',
                         dataType: 'json',
                         success: function (data) {
-                            // Populate the modal with appointment details
-                            var appointmentDetails = data;
+                                        // Populate the modal with appointment details
+                                        var appointmentDetails = data;
 
                             // Populate the modal inputs with appointment details
                             $('#CustomerName').text(appointmentDetails.CustomerFirstName + " " + appointmentDetails.CustomerLastName);
-                            let firstName = appointmentDetails.CustomerFirstName ? appointmentDetails.CustomerFirstName.charAt(0) : '';
-                            let lastName = appointmentDetails.CustomerLastName ? appointmentDetails.CustomerLastName.charAt(0) : '';
+                                        let firstName = appointmentDetails.CustomerFirstName ? appointmentDetails.CustomerFirstName.charAt(0) : '';
+                                        let lastName = appointmentDetails.CustomerLastName ? appointmentDetails.CustomerLastName.charAt(0) : '';
 
-                            let initials = firstName + (lastName ? "" + lastName : '');
+                                        let initials = firstName + (lastName ? "" + lastName : '');
 
 
                             $("#CustomerInitial").html(initials);
                             $("#CustomerEmail").text(appointmentDetails.CustomerEmail);
                             $("#CustomerPhoneNumber").text(appointmentDetails.MobileNumber);
                             $("#AppointmentNotes").val(appointmentDetails.Notes);
-                            var blocke = calEvent.event.extendedProps.blockedEvent;
-                            if (blocke) {
+                                        var blocke = calEvent.event.extendedProps.blockedEvent;
+                                        if (blocke) {
                                 $("#BusinessDEET").html("Appointment of: " + appointmentDetails.Business + ". <b>Please process the checkout through the Parent Company appointment.</b>");
-                            } else {
+                                        } else {
                                 $("#BusinessDEET").text("Appointment of: " + appointmentDetails.Business);
 
-                            }
-                            var servicesList = $('#Services'); // Target the <ul>
-                            servicesList.empty(); // Clear existing items
-                            var containabsense = false;
+                                        }
+                                        var servicesList = $('#Services'); // Target the <ul>
+                                        servicesList.empty(); // Clear existing items
+                                        var containabsense = false;
                             $.each(appointmentDetails.ServicesNew, function (index, service) {
 
-                                var ServiceCategory = service.Category;
-                                if (ServiceCategory == "ABSENSE") {
-                                    containabsense = true;
-                                }
-                                var listItem = `
+                                            var ServiceCategory = service.Category;
+                                            if (ServiceCategory == "ABSENSE") {
+                                                containabsense = true;
+                                            }
+                                            var listItem = `
         <li>
             <span class="text-sm">${service.Service}</span>
         </li>`;
-                                servicesList.append(listItem);
+                        servicesList.append(listItem);
                             });
 
 
@@ -2002,11 +1688,11 @@ else
                             $("#NoOfVisits").text(appointmentDetails.NoOfAppointments);
                             $("#NoOfNoShows").text(appointmentDetails.NoOfNoShows);
                             $('#CardsBody').html("");
-                            if (appointmentDetails.Customer != null) {
-                                let cardItems = '';
-                                cardItems += '<div  class="card-body"style="padding: 0.5rem !important;">';
-                                // Referral Card
-                                cardItems += `
+                        if (appointmentDetails.Customer != null) {
+                            let cardItems = '';
+                            cardItems += '<div  class="card-body"style="padding: 0.5rem !important;">';
+                            // Referral Card
+                            cardItems += `
     <div class="d-flex mb-2">
         <div class="circular-box_2 TypeOfCard">R</div>
         <div class="my-auto ms-3">
@@ -2020,10 +1706,10 @@ else
         </p>
     </div>`;
 
-                                // Gift Cards
-                                if (appointmentDetails.GiftCardCodes && appointmentDetails.GiftCardCodes.length > 0) {
-                                    appointmentDetails.GiftCardCodes.forEach(function (giftCard) {
-                                        cardItems += `
+                        // Gift Cards
+                        if (appointmentDetails.GiftCardCodes && appointmentDetails.GiftCardCodes.length > 0) {
+                            appointmentDetails.GiftCardCodes.forEach(function (giftCard) {
+                                cardItems += `
             <div class="d-flex mb-2">
                 <div data-code="${giftCard.GiftCardAssignment.AssignedCode}" class="circular-box_2 TypeOfCard">GC</div>
                 <div class="my-auto ms-3">
@@ -2043,8 +1729,8 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
 
                                 // Loyalty Cards
                                 if (appointmentDetails.LoyaltyCards && appointmentDetails.LoyaltyCards.length > 0) {
-                                    appointmentDetails.LoyaltyCards.forEach(function (loyaltyCard) {
-                                        cardItems += `
+                            appointmentDetails.LoyaltyCards.forEach(function (loyaltyCard) {
+                                cardItems += `
             <div class="d-flex mb-2">
                 <div data-code="${loyaltyCard.LoyaltyCardAssignment.CardNumber}" class="circular-box_2 TypeOfCard">LC</div>
                 <div class="my-auto ms-3">
@@ -2064,26 +1750,26 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
 
                                 // Check if no data is present
                                 if (cardItems === '') {
-                                    cardItems = '<p class="text-center">No Gift Cards or Loyalty Cards Available</p>';
-                                }
-                                cardItems += '</div>';
+                            cardItems = '<p class="text-center">No Gift Cards or Loyalty Cards Available</p>';
+                        }
+                        cardItems += '</div>';
                                 // Insert structured divs into the container
                                 $('#CardsBody').append(cardItems);
                             }
                             var paramValue = "your_parameter_value";
-                            var AppID = calEvent.event.id;
-                            // Generate the URL with the parameter using Url.Action
-                            var url = '@Url.Action("AppointmentDetails", "Appointment", new { AppointmentID = "paramValuePlaceholder" })';
+                        var AppID = calEvent.event.id;
+                        // Generate the URL with the parameter using Url.Action
+                        var url = '@Url.Action("AppointmentDetails", "Appointment", new { AppointmentID = "paramValuePlaceholder" })';
 
-                            var newUrl = '@Url.Action("AppointmentDetailsCheckOutView", "Appointment", new { AppointmentID = "paramValuePlaceholder" })';
+                        var newUrl = '@Url.Action("AppointmentDetailsCheckOutView", "Appointment", new { AppointmentID = "paramValuePlaceholder" })';
 
-                            var editUrl = '@Url.Action("Action", "Appointment", new { ID = "paramValuePlaceholder" })';
-                            var eventEditURl = '@Url.Action("ActionEvent", "Appointment", new {ID= "paramValuePlaceholder" })';
-                            // Replace the placeholder with the actual parameter value
-                            url = url.replace("paramValuePlaceholder", appointmentDetails.ID);
-                            newUrl = newUrl.replace("paramValuePlaceholder", appointmentDetails.ID);
-                            editUrl = editUrl.replace('paramValuePlaceholder', appointmentDetails.ID);
-                            eventEditURl = eventEditURl.replace('paramValuePlaceholder', appointmentDetails.ID);
+                        var editUrl = '@Url.Action("Action", "Appointment", new { ID = "paramValuePlaceholder" })';
+                        var eventEditURl = '@Url.Action("ActionEvent", "Appointment", new {ID= "paramValuePlaceholder" })';
+                        // Replace the placeholder with the actual parameter value
+                        url = url.replace("paramValuePlaceholder", appointmentDetails.ID);
+                        newUrl = newUrl.replace("paramValuePlaceholder", appointmentDetails.ID);
+                        editUrl = editUrl.replace('paramValuePlaceholder', appointmentDetails.ID);
+                        eventEditURl = eventEditURl.replace('paramValuePlaceholder', appointmentDetails.ID);
                             // Set the onclick attribute with the generated URL
                             $("#moreButton").attr("onclick", "window.location.href='" + url + "'");
 
@@ -2093,10 +1779,10 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
 
 
 
-                            debugger
+                        debugger
                             $("#ABSENCE_BOX").show();
 
-                            if (containabsense && !FromGCAL) {
+                        if (containabsense && !FromGCAL) {
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #WhatsappCustomerButton, #CallCustomerButton").hide();
                                 $("#DeleteAppointmentButton").show();
                                 $("#PopupTitle").text("Absence Details");
@@ -2104,54 +1790,52 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
                                 $("#Popupservice").text("Name:");
                                 $("#pills-cards-tab").hide();
                                 $("#ABSENCE_BOX").hide();
-                                $("#pills-summary-tab").hide();
-                                $("#EditAppointmentBtn")
-                                    .attr("data-appointment-id", appointmentDetails.ID);
-                            } else if (FromGCAL) {
+                            $("#pills-summary-tab").hide();
+                            $("#EditAppointmentBtn").attr("href", eventEditURl);
+                        } else if (FromGCAL) {
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #WhatsappCustomerButton, #BusinessDEET, #EditAppointmentBtn, #SendReminderBtn, #CallCustomerButton").hide();
                                 $("#PopupTitle").text("Event Details");
                                 $("#pills-cards-tab").hide();
                                 $("#pills-summary-tab").hide();
                                 $("#Popupservice").text("Events:");
-                            }
-                            else {
-                                if (appointmentDetails.CustomerFirstName !== "Walk In") {
+                        }
+                        else {
+                            if (appointmentDetails.CustomerFirstName !== "Walk In") {
                                     $("#CallCustomerButton").attr("href", 'tel:' + appointmentDetails.MobileNumber).show();
                                     $("#WhatsappCustomerButton").attr("href", 'https://wa.me/' + appointmentDetails.MobileNumber).show();
                                     $("#pills-cards-tab").show();
                                     $("#pills-summary-tab").show();
-                                } else {
+                            } else {
                                     $("#pills-cards-tab").hide();
                                     $("#pills-summary-tab").hide();
-                                }
-                                $("#EditAppointmentBtn")
-                                    .attr("data-appointment-id", appointmentDetails.ID);
+                            }
+                            $("#EditAppointmentBtn").attr("href", editUrl);
                                 $("#Popupservice").text("Services:");
                                 $("#PopupTitle").text("Appointment Details");
 
                                 $("#checkoutButn, #CustomerROW, #moreButton, #CustomerEmailROW, #SendReminderBtn").show();
-                            }
+                        }
 
                             $("#checkoutButn").attr("onclick", "window.location.href='" + newUrl + "'");
                             $("#DeleteAppointmentButton").attr("onclick", "DeleteAppointment('" + AppID + "','" + appointmentDetails.IsRepeat + "')");
                             $("#SendReminderBtn").attr("onclick", "SendAppointmentReminder('" + AppID + "')");
 
-                            if (!appointmentDetails.IsPaid) {
-                                if (!appointmentDetails.IsCancelled) {
-                                    alert("Awaiting PrePayment");
-                                } else {
-                                    $('#appointmentModal').modal('show');
-                                }
+                        if (!appointmentDetails.IsPaid) {
+                            if (!appointmentDetails.IsCancelled) {
+                                alert("Awaiting PrePayment");
                             } else {
-                                $('#appointmentModal').modal('show');
+                                    $('#appointmentModal').modal('show');
                             }
+                        } else {
+                                $('#appointmentModal').modal('show');
+                        }
 
-                            hideLoadingSpinner();
+                        hideLoadingSpinner();
 
-                            if (blocke) {
+                        if (blocke) {
                                 $("#DeleteAppointmentButton, #moreButton, #SendReminderBtn, #EditAppointmentBtn, #CallCustomerButton, #WhatsappCustomerButton, #checkoutButn, #HalfSideDetails2").hide();
                                 $('#HalfSideDetails').removeClass('col-md-6').addClass('col-md-12');
-                            }
+                        }
 
 
 
@@ -2169,162 +1853,162 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
             },
             eventDragStart: function (event, delta, revertFunc) {
 
-                var blocked = event.event.extendedProps.blockedEvent;
+                            var blocked = event.event.extendedProps.blockedEvent;
 
-                if (blocked) {
-                    alert("Cannot Move this Appointment");
-                    location.reload();
-                    revertFunc();
-                }
-                if (event.event.backgroundColor == "#5DAF4D") {
-                    alert("Cannot Move this Appointment");
-                    location.reload();
-                    revertFunc();
-                }
+                            if (blocked) {
+                                alert("Cannot Move this Appointment");
+                                location.reload();
+                                revertFunc();
+                            }
+                            if (event.event.backgroundColor == "#5DAF4D") {
+                                alert("Cannot Move this Appointment");
+                                location.reload();
+                                revertFunc();
+                            }
                 else if (event.event.backgroundColor == "#E94234" || event.event.backgroundColor == "#dff0e3") {
-                    alert("Cannot Move this Appointment");
-                    location.reload();
-                    revertFunc();
-                }
-            },
+                                alert("Cannot Move this Appointment");
+                                location.reload();
+                                revertFunc();
+                            }
+                        },
             eventDrop: function (event, delta, revertFunc) {
-                // This function will be called when an event is dropped
-                var startDate = event.event.start.toString();
-                var endDate = event.event.end.toString();
-                // Prepare the data to be sent to the server for updating
-                var eventData = {
+                            // This function will be called when an event is dropped
+                            var startDate = event.event.start.toString();
+                            var endDate = event.event.end.toString();
+                            // Prepare the data to be sent to the server for updating
+                            var eventData = {
                     id: event.event.id,
                     start: startDate, // Format the start date and time
                     end: endDate,
                     EmployeeID: event.event._def.resourceIds[0]// Format the end date and time
                 };
-                if (event.event.backgroundColor == "#5DAF4D") {
-                    revertFunc();
-                    alert("Cannot Move this Appointment");
-                    location.reload();
-                }
+                        if (event.event.backgroundColor == "#5DAF4D") {
+                            revertFunc();
+                            alert("Cannot Move this Appointment");
+                            location.reload();
+                        }
                 else if (event.event.backgroundColor == "#E94234" || event.event.backgroundColor == "#dff0e3") {
-                    alert("Cannot Move this Appointment");
-                    location.reload();
-                    revertFunc();
-                } else {
-                    var blocked = event.event.extendedProps.blockedEvent;
-                    if (!blocked) {
-                        // Display a confirmation dialog
-                        var userConfirmed = confirm("Do you want to update this event?");
+                            alert("Cannot Move this Appointment");
+                            location.reload();
+                            revertFunc();
+                        } else {
+                            var blocked = event.event.extendedProps.blockedEvent;
+                            if (!blocked) {
+                                // Display a confirmation dialog
+                                var userConfirmed = confirm("Do you want to update this event?");
 
-                        if (userConfirmed) {
+                                if (userConfirmed) {
                             // Send an Ajax request to update the event date and time
                             $.ajax({
-                                url: '@Url.Action("UpdateAppointment", "Appointment")', // Replace with your controller and action
+                                    url: '@Url.Action("UpdateAppointment", "Appointment")', // Replace with your controller and action
                                 data: eventData,
                                 type: 'POST', // Use POST or PUT depending on your API
                                 dataType: 'json',
                                 beforeSend: function () {
-                                    // Show loading spinner before the AJAX request is sent
-                                    showLoadingSpinner();
-                                },
+                                            // Show loading spinner before the AJAX request is sent
+                                            showLoadingSpinner();
+                                        },
                                 success: function (response) {
-                                    debugger
+                                            debugger
                                     if (response.success) {
-                                        // Event updated successfully
-                                        showSuccessAlert();
-                                        refreshCalendarEvents();
-                                    } else {
-                                        // Handle error if the update fails
-                                        revertFunc(); // Revert the event to its original position
-                                    }
-                                },
+                                                // Event updated successfully
+                                                showSuccessAlert();
+                                                refreshCalendarEvents();
+                                            } else {
+                                                // Handle error if the update fails
+                                                revertFunc(); // Revert the event to its original position
+                                            }
+                                        },
                                 error: function (error) {
-                                    // Handle error if the AJAX request fails
-                                    console.error('Error updating event:', error);
-                                    revertFunc(); // Revert the event to its original position
-                                },
+                                            // Handle error if the AJAX request fails
+                                            console.error('Error updating event:', error);
+                                            revertFunc(); // Revert the event to its original position
+                                        },
                                 complete: function () {
-                                    // Hide loading spinner once the AJAX request is completed
-                                    hideLoadingSpinner();
+                                            // Hide loading spinner once the AJAX request is completed
+                                            hideLoadingSpinner();
+
+                                        }
+                                    });
 
                                 }
-                            });
+                                else {
+                                    // If the user cancels the update, revert the event to its original position
+                                    revertFunc();
+                                }
+                            }
+                            else {
+                                revertFunc();
 
+                            }
                         }
-                        else {
-                            // If the user cancels the update, revert the event to its original position
-                            revertFunc();
-                        }
-                    }
-                    else {
-                        revertFunc();
-
-                    }
-                }
-            },
+                        },
             resourceLabelDidMount: function (info) {
 
-                var resource = info.resource;
-                var resourceCellElement = info.el;
+                            var resource = info.resource;
+                            var resourceCellElement = info.el;
 
-                // Add a click event listener to the resource cell element
-                resourceCellElement.addEventListener('click', function () {
-                    // Handle the click event here
-                    updateCalendar(resource.id);
-                });
-                if (resource.extendedProps.pricechangeType != "") {
+                            // Add a click event listener to the resource cell element
+                            resourceCellElement.addEventListener('click', function () {
+                                // Handle the click event here
+                                updateCalendar(resource.id);
+                            });
+                            if (resource.extendedProps.pricechangeType != "") {
 
-                    var pricechangeelem = document.createElement('div');
+                                var pricechangeelem = document.createElement('div');
 
-                    if (resource.extendedProps.pricechangeType == "Price Increase") {
-                        pricechangeelem.innerText = "(+" + resource.extendedProps.pricechangePercentage + "%)";
-                        pricechangeelem.className = 'employeePriceChange text-success';
-
-
-                    } else {
-                        pricechangeelem.innerText = "(-" + resource.extendedProps.pricechangePercentage + "%)";
-                        pricechangeelem.className = 'employeePriceChange text-danger';
+                                if (resource.extendedProps.pricechangeType == "Price Increase") {
+                                    pricechangeelem.innerText = "(+" + resource.extendedProps.pricechangePercentage + "%)";
+                                    pricechangeelem.className = 'employeePriceChange text-success';
 
 
-                    }
-                    pricechangeelem.id = resource.extendedProps.pricechangeID;
-
-                    info.el.appendChild(pricechangeelem); // Appending the specialization after the employee's name
-                }
-
-                if (resource.extendedProps.image) {
-                    var imageElement = document.createElement('img');
-                    imageElement.src = resource.extendedProps.image;
-                    imageElement.alt = resource.title;
-                    imageElement.className = 'employee-image';
+                                } else {
+                                    pricechangeelem.innerText = "(-" + resource.extendedProps.pricechangePercentage + "%)";
+                                    pricechangeelem.className = 'employeePriceChange text-danger';
 
 
-                    // Appending the image before the resource's title (assuming it's the first child)
-                    info.el.insertBefore(imageElement, info.el.firstChild);
-                }
-                if (resource.extendedProps.Specialization) {
-                    var specializationElement = document.createElement('div');
-                    specializationElement.innerText = resource.extendedProps.Specialization;
-                    specializationElement.className = 'employee-specialization';
+                                }
+                                pricechangeelem.id = resource.extendedProps.pricechangeID;
 
-                    info.el.appendChild(specializationElement); // Appending the specialization after the employee's name
-                }
+                                info.el.appendChild(pricechangeelem); // Appending the specialization after the employee's name
+                            }
+
+                            if (resource.extendedProps.image) {
+                                var imageElement = document.createElement('img');
+                                imageElement.src = resource.extendedProps.image;
+                                imageElement.alt = resource.title;
+                                imageElement.className = 'employee-image';
 
 
-            },
+                                // Appending the image before the resource's title (assuming it's the first child)
+                                info.el.insertBefore(imageElement, info.el.firstChild);
+                            }
+                            if (resource.extendedProps.Specialization) {
+                                var specializationElement = document.createElement('div');
+                                specializationElement.innerText = resource.extendedProps.Specialization;
+                                specializationElement.className = 'employee-specialization';
+
+                                info.el.appendChild(specializationElement); // Appending the specialization after the employee's name
+                            }
+
+
+                        },
             eventDidMount: function (info) {
-                let overlapCounts = checkForEventOverlaps(calendar.getEvents());
-                let eventId = info.event.id;
+                            let overlapCounts = checkForEventOverlaps(calendar.getEvents());
+                            let eventId = info.event.id;
 
-                if (overlapCounts[eventId]) {
-                    let widthPercentage = 100 / Math.max(1, overlapCounts[eventId].count);
-                    //if (info.el.style.width != "50%") {
-                    if (widthPercentage == 100) {
-                        info.el.style.width = 100 + '%';
-                    } else {
-                        info.el.style.width = 50 + '%';
+                            if (overlapCounts[eventId]) {
+                                let widthPercentage = 100 / Math.max(1, overlapCounts[eventId].count);
+                                //if (info.el.style.width != "50%") {
+                                if (widthPercentage == 100) {
+                                    info.el.style.width = 100 + '%';
+                                } else {
+                                    info.el.style.width = 50 + '%';
 
-                    }
-                    //   }
-                }
-            }
+                                }
+                                //   }
+                            }
+                        }
         });
         //setInterval(function () {
         //    var scrollerElement = $('.fc-scroller.fc-scroller-liquid-absolute');
@@ -2339,22 +2023,6 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
         calendar.render();
         setupCalendarNavigation();
 
-        function setCustomTitle() {
-            // Get the date from the hidden input instead of Razor
-            var dateString = $("#GoToDate").val();
-            var date = new Date(dateString);
-
-            // Format the date using JavaScript
-            var options = {
-                weekday: 'short',
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
-            };
-
-            var formattedDate = date.toLocaleDateString('en-US', options);
-            $(".fc-toolbar-title").text(formattedDate);
-        }
 
       // Initial setting of the custom title
         setCustomTitle();
@@ -2542,6 +2210,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
             e.preventDefault();
             var currentDate = new Date($("#GoToDate").val());
             var nextDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+            debugger
             updateCalendarDate(nextDate);
         });
 
@@ -2549,6 +2218,7 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
             e.preventDefault();
             var currentDate = new Date($("#GoToDate").val());
             var prevDate = new Date(currentDate.setDate(currentDate.getDate() - 1));
+            debugger
             updateCalendarDate(prevDate);
         });
 

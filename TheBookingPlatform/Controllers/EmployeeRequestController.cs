@@ -1220,6 +1220,7 @@ namespace TheBookingPlatform.Controllers
                     googleCalendarIntegration.ApiKEY = API_KEY;
                     googleCalendarIntegration.ClientID = CLIENT_ID;
                     googleCalendarIntegration.Disabled = false;
+                    googleCalendarIntegration.ExpirationDate = DateTime.Now.AddHours(1);
                     GoogleCalendarServices.Instance.SaveGoogleCalendarIntegration(googleCalendarIntegration);
                 }
                 else
@@ -1230,6 +1231,7 @@ namespace TheBookingPlatform.Controllers
                     googleCalendarIntegration.ApiKEY = API_KEY;
                     googleCalendarIntegration.ClientID = CLIENT_ID;
                     googleCalendarIntegration.Disabled = false;
+                    googleCalendarIntegration.ExpirationDate = DateTime.Now.AddHours(1);
                     GoogleCalendarServices.Instance.UpdateGoogleCalendarIntegration(googleCalendarIntegration);
                 }
                 return RedirectToAction("Index", "EmployeeRequest");
