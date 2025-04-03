@@ -358,35 +358,60 @@ namespace TheBookingPlatform.Controllers
 
         public JsonResult CheckPayment()
         {
-            var paymentreminder = false;
+            bool allowAccess = false;
             var user = UserManager.FindById(User.Identity.GetUserId());
             var payments = PaymentServices.Instance.GetPaymentWRTBusiness(user.Company).LastOrDefault();
             var company = CompanyServices.Instance.GetCompanyByName(user.Company);
             if (company != null)
             {
-                var package = PackageServices.Instance.GetPackage(company.Package);
-                if (package != null)
+                if (!company.OwnerCompany )
                 {
-                    StripeConfiguration.ApiKey = package.APIKEY;
-                    var invoiceService = new InvoiceService();
-                    var invoices = invoiceService.List(new InvoiceListOptions
+                    var package = PackageServices.Instance.GetPackage(company.Package);
+                    if (package != null)
                     {
-                        Subscription = payments.SubcriptionID, // Replace with your Subscription ID
-                        Limit = 10 // Set appropriate limit
-                    });
-                    var pendingInvoices = invoices.Where(i => i.Status == "draft" || i.Status == "open").ToList();
-                    if (payments != null && payments.LastPaidDate != null)
-                    {
-                        var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
-
-                        if (remainderDays < 1 && pendingInvoices.Count() > 0)
+                        StripeConfiguration.ApiKey = package.APIKEY;
+                        var invoiceService = new InvoiceService();
+                        var invoices = invoiceService.List(new InvoiceListOptions
                         {
-                            paymentreminder = true;
+                            Subscription = payments.SubcriptionID,
+                            Limit = 1 // Get only the latest invoice
+                        });
+                        var latestInvoice = invoices.FirstOrDefault();
+                        if (latestInvoice != null)
+                        {
+                            // Retrieve the PaymentIntent to check its status
+                            if (!string.IsNullOrEmpty(latestInvoice.PaymentIntentId))
+                            {
+                                var paymentIntentService = new PaymentIntentService();
+                                var paymentIntent = paymentIntentService.Get(latestInvoice.PaymentIntentId);
+
+                                if (paymentIntent.Status == "processing" || paymentIntent.Status == "requires_confirmation")
+                                {
+                                    allowAccess = true; // SEPA payments take time, allow access
+                                }
+                                else if (paymentIntent.Status == "succeeded")
+                                {
+                                    allowAccess = true; // Payment fully processed, allow access
+                                }
+                                else
+                                {
+                                    allowAccess = false; // Payment failed or needs action
+                                }
+                            }
                         }
+
                     }
                 }
+                else
+                {
+                    allowAccess = true;
+                }
             }
-            return Json(new { success = paymentreminder }, JsonRequestBehavior.AllowGet);
+            else if(user.Role == "Super Admin")
+            {
+                allowAccess = true;
+            }
+            return Json(new { success = !allowAccess }, JsonRequestBehavior.AllowGet);
         }
         public ActionResult Dashboard(string StartDate = "", string EndDate = "", string FilterDuration = "")
         {
@@ -873,7 +898,7 @@ namespace TheBookingPlatform.Controllers
         {
             AnalysisViewModel model = new AnalysisViewModel();
             var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
-            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company, "");
+            model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company,true);
             var Company = CompanyServices.Instance.GetCompanyByName(loggedInUser.Company);
             var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(Company.ID).ToList();
             foreach (var item in employeeRequest)

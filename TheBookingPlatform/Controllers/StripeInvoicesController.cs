@@ -120,19 +120,26 @@ namespace TheBookingPlatform.Controllers
                 }
                 else
                 {
-                    var paidInvoice = invoiceService.Pay(item.Id);
-                    if (paidInvoice.Status == "paid")
-                    {
-                        var payment = new Payment();
-                        payment.PackageID = package.ID;
-                        payment.SubcriptionID = company.SubscriptionID;
-                        payment.ProductID = existingSubscription.Items.Data[0].Id;
-                        payment.LastPaidDate = DateTime.Now;
-                        payment.Business = LoggedInUser.Company;
-                        payment.Total = item.AmountPaid;
-                        payment.UserID = User.Identity.GetUserId();
-                        PaymentServices.Instance.SavePayment(payment);
-                    }
+                        try
+                        {
+                            var paidInvoice = invoiceService.Pay(item.Id);
+                            if (paidInvoice.Status == "paid")
+                            {
+                                var payment = new Payment();
+                                payment.PackageID = package.ID;
+                                payment.SubcriptionID = company.SubscriptionID;
+                                payment.ProductID = existingSubscription.Items.Data[0].Id;
+                                payment.LastPaidDate = DateTime.Now;
+                                payment.Business = LoggedInUser.Company;
+                                payment.Total = item.AmountPaid;
+                                payment.UserID = User.Identity.GetUserId();
+                                PaymentServices.Instance.SavePayment(payment);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    
                 }
 
             }

@@ -90,5 +90,7 @@ namespace TheBookingPlatform.Database
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Buffer> Buffers { get; set; }
         public DbSet<ServiceSession> ServiceSessions { get; set; }
+
+        public DbSet<EventDeletion> EventDeletions { get; set; }
     }
 }

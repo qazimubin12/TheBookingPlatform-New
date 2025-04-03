@@ -3596,14 +3596,14 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                    }
+                    //}
                 }
 
                 foreach (var item in ToBeInputtedIDs)
@@ -3733,9 +3733,9 @@ namespace TheBookingPlatform.Controllers
                     foreach (var item in employeeRequest)
                     {
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
+                        //var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        //googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        //ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
 
                     }
                 }
@@ -3788,14 +3788,14 @@ namespace TheBookingPlatform.Controllers
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(newemp.Business);
                     ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
 
-                    }
+                    //}
                 }
                 foreach (var item in ToBeInputtedIDs)
                 {

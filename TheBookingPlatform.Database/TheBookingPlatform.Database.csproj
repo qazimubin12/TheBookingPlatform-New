@@ -207,6 +207,10 @@
     <Compile Include="Migrations\202503240009070_expirationDate.Designer.cs">
       <DependentUpon>202503240009070_expirationDate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503290855033_eventdeletionswitch.cs" />
+    <Compile Include="Migrations\202503290855033_eventdeletionswitch.Designer.cs">
+      <DependentUpon>202503290855033_eventdeletionswitch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -323,6 +327,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503240009070_expirationDate.resx">
       <DependentUpon>202503240009070_expirationDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503290855033_eventdeletionswitch.resx">
+      <DependentUpon>202503290855033_eventdeletionswitch.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

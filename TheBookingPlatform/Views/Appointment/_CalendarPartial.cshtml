@@ -539,7 +539,7 @@ if (!User.IsInRole("Calendar"))
     function ViewCalendar() {
         var YesShow = $("#YesShow").val();
 
-        
+
 
         showLoadingSpinner();
         var calendarEl = document.getElementById('fullCalendar');
@@ -620,7 +620,7 @@ if (!User.IsInRole("Calendar"))
             },
             resources: [
 
-              
+
                     @{var orderedEmployees = Model.Employees.OrderBy(n => n.DisplayOrder).ToList();
                                     foreach (var item in orderedEmployees)
                                     {
@@ -1155,8 +1155,8 @@ else
 
 
 
-                
-                
+
+
             ],
             editable: true,  // Allow general event editing globally
 
@@ -2209,23 +2209,20 @@ ${giftCard.GiftCardAssignment.Days > 0 ? 'Exp: ' + giftCard.GiftCardAssignment.D
         $(".fc-next-button").click(function (e) {
             e.preventDefault();
             var currentDate = new Date($("#GoToDate").val());
-            var nextDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
-            debugger
-            updateCalendarDate(nextDate);
+            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = nextDate })';
+
         });
 
         $(".fc-prev-button").click(function (e) {
             e.preventDefault();
             var currentDate = new Date($("#GoToDate").val());
-            var prevDate = new Date(currentDate.setDate(currentDate.getDate() - 1));
-            debugger
-            updateCalendarDate(prevDate);
+            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = prevdate })';
+
         });
 
         $(".fc-today-button").click(function (e) {
             e.preventDefault();
-            var today = new Date();
-            updateCalendarDate(today);
+            window.location.href = '@Url.Action("Calendar", "Appointment", new {date = DateTime.Now.ToString("yyyy-MM-dd") })';
         });
     }
 

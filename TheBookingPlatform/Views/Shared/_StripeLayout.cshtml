@@ -559,59 +559,12 @@
                 <div class="ms-md-auto d-flex align-items-center"></div>
                 <ul class="navbar-nav d-flex align-items-center justify-content-end gap-3 m-0 p-0">
                     <li class="nav-item mb-2 mt-0">
-                        <a data-bs-toggle="collapse" href="#ProfileNav" class="nav-link text-dark" aria-controls="ProfileNav" role="button" aria-expanded="false">
-                            <span style="font-size:smaller;" target="_blank" href="http://www.yourbookingplatform.com" class="simple-text logo-mini">
-                                YBP
-                            </span>
-                            <span id="TextOfUserName" style="white-space:normal; display:block;" class="nav-link-text ms-2 ps-1">
-                                Maricio Gerak
-                            </span>
-
-                        </a>
+                       
 
                         <input type="hidden" id="FINALDATEO" />
 
                         <div class="collapse" id="ProfileNav" style="">
-                            <div class="collapse" id="ProfileNav" style="">
-                                <ul class="nav">
-                                    @if (inTrial == "Yes")
-                                    {
-                                        <li class="nav-item">
-                                            <a class="nav-link text-dark" id="openModalBtn">
-                                                <span class="sidenav-mini-icon"> S </span>
-                                                <span class="sidenav-normal ms-3  ps-1"> Switch </span>
-                                            </a>
-                                        </li>
-                                    }
-                                    else
-                                    {
-                                        if (package.Split(',').Contains("Company Switch"))
-                                        {
-                                            <li class="nav-item">
-                                                <a class="nav-link text-dark" id="openModalBtn">
-                                                    <span class="sidenav-mini-icon"> S </span>
-                                                    <span class="sidenav-normal ms-3  ps-1"> Switch </span>
-                                                </a>
-                                            </li>
-                                        }
-                                    }
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" href="@Url.Action("UserProfile","Account")">
-                                            <span class="sidenav-mini-icon"> MP </span>
-                                            <span class="sidenav-normal ms-3  ps-1"> My Profile </span>
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" style="cursor:pointer" onclick="logout()">
-                                            <span class="sidenav-mini-icon"> L </span>
-                                            <span class="sidenav-normal ms-3  ps-1"> Logout </span>
-                                        </a>
-                                    </li>
-
-                                </ul>
-
-                            </div>
+                            
 
                         </div>
                     </li>

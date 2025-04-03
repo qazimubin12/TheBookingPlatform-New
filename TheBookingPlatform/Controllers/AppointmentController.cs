@@ -7135,106 +7135,183 @@ namespace TheBookingPlatform.Controllers
                 {
                     if (deleteOption == "Delete all recurring absences")
                     {
-                        var IDTobeUsed = 0;
-                        if (appointment.FirstRepeatedID == 0)
-                        {
-                            IDTobeUsed = appointment.ID;
-                        }
-                        else
-                        {
-                            IDTobeUsed = appointment.FirstRepeatedID;
-                        }
-                        var appointmentsoccurency = AppointmentServices.Instance.OtherRecurrencesAppointments(IDTobeUsed);
-                        var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
-                        var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
 
-                        var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
+                        var EventDeletion = new EventDeletion();
+                        EventDeletion.Business = appointment.Business;
+                        EventDeletion.EventID = appointment.ID;
+                        EventDeletion.DeleteSwitch = true;
+                        EventDeletionServices.Instance.SaveEventDeletion(EventDeletion);
+                        //var IDTobeUsed = 0;
+                        //if (appointment.FirstRepeatedID == 0)
+                        //{
+                        //    IDTobeUsed = appointment.ID;
+                        //}
+                        //else
+                        //{
+                        //    IDTobeUsed = appointment.FirstRepeatedID;
+                        //}
+                        //var appointmentsoccurency = AppointmentServices.Instance.OtherRecurrencesAppointments(IDTobeUsed);
+                        //var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                        //var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
 
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                        //var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
 
-                        var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
+                        //ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-
-                        foreach (var item in employeeRequest)
-                        {
-
-                            var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                            ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-
-                        }
-
-                        foreach (var item in appointmentsoccurency)
-                        {
-
-                            try
-                            {
-                                foreach (var gcalID in ToBeInputtedIDs)
-                                {
-                                    if (gcalID.Key != null && !gcalID.Key.Disabled)
-                                    {
-                                        var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + gcalID.Value + "/events/" + item.GoogleCalendarEventID);
-                                        RestClient restClient = new RestClient(url);
-                                        RestRequest request = new RestRequest();
-
-                                        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                                        request.AddHeader("Authorization", "Bearer " + gcalID.Key.AccessToken);
-                                        request.AddHeader("Accept", "application/json");
-                                        try
-                                        {
-                                            var response = restClient.Delete(request);
-                                            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
-                                            {
-                                                item.DELETED = true;
-                                                item.DeletedTime = DateTime.Now.ToString();
-                                                AppointmentServices.Instance.UpdateAppointment(item);
-                                            }
-                                            else
-                                            {
-                                                item.DELETED = true;
-                                                item.DeletedTime = DateTime.Now.ToString();
-                                                AppointmentServices.Instance.UpdateAppointment(item);
+                        //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
 
 
-                                                var history = new History();
-                                                history.Date = DateTime.Now;
-                                                history.Note = response.Content;
-                                                history.Business = "Error";
-                                                history.Type = "Error";
-                                                HistoryServices.Instance.SaveHistory(history);
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            continue;
-                                        }
+                        //foreach (var item in employeeRequest)
+                        //{
+
+                        //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
+                        //}
+
+                        //foreach (var item in appointmentsoccurency)
+                        //{
+
+                        //    try
+                        //    {
+                        //        foreach (var gcalID in ToBeInputtedIDs)
+                        //        {
+                        //            if (gcalID.Key != null && !gcalID.Key.Disabled)
+                        //            {
+                        //                var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + gcalID.Value + "/events/" + item.GoogleCalendarEventID);
+                        //                RestClient restClient = new RestClient(url);
+                        //                RestRequest request = new RestRequest();
+
+                        //                request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                        //                request.AddHeader("Authorization", "Bearer " + gcalID.Key.AccessToken);
+                        //                request.AddHeader("Accept", "application/json");
+                        //                try
+                        //                {
+                        //                    var response = restClient.Delete(request);
+                        //                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                        //                    {
+                        //                        item.DELETED = true;
+                        //                        item.DeletedTime = DateTime.Now.ToString();
+                        //                        AppointmentServices.Instance.UpdateAppointment(item);
+                        //                    }
+                        //                    else
+                        //                    {
+                        //                        item.DELETED = true;
+                        //                        item.DeletedTime = DateTime.Now.ToString();
+                        //                        AppointmentServices.Instance.UpdateAppointment(item);
+
+
+                        //                        var history = new History();
+                        //                        history.Date = DateTime.Now;
+                        //                        history.Note = response.Content;
+                        //                        history.Business = "Error";
+                        //                        history.Type = "Error";
+                        //                        HistoryServices.Instance.SaveHistory(history);
+                        //                    }
+                        //                }
+                        //                catch (Exception ex)
+                        //                {
+                        //                    continue;
+                        //                }
                                        
-                                    }
-                                    else
-                                    {
-                                        item.DELETED = true;
-                                        item.DeletedTime = DateTime.Now.ToString();
-                                        AppointmentServices.Instance.UpdateAppointment(item);
-                                    }
-                                }
+                        //            }
+                        //            else
+                        //            {
+                        //                item.DELETED = true;
+                        //                item.DeletedTime = DateTime.Now.ToString();
+                        //                AppointmentServices.Instance.UpdateAppointment(item);
+                        //            }
+                        //        }
 
-                            }
-                            catch (Exception ex)
-                            {
-                                var history = new History();
-                                history.Date = DateTime.Now;
-                                history.Note = ex.Message;
-                                history.Business = "Error";
-                                history.Type = "Error";
-                                HistoryServices.Instance.SaveHistory(history);
-                            }
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        var history = new History();
+                        //        history.Date = DateTime.Now;
+                        //        history.Note = ex.Message;
+                        //        history.Business = "Error";
+                        //        history.Type = "Error";
+                        //        HistoryServices.Instance.SaveHistory(history);
+                        //    }
 
-                        }
+                        //}
 
 
                     }
                     else
                     {
+                        var customer = CustomerServices.Instance.GetCustomer(appointment.ID);
+                        var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                        var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
+
+                        var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
+                        //delete previous one
+                        if (googleKey != null && !googleKey.Disabled)
+                        {
+                            ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
+                            foreach (var item in employeeRequest)
+                            {
+
+                                var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
+
+                            }
+                            if (customer != null)
+                            {
+                                var historyNew = new History();
+                                historyNew.Business = appointment.Business;
+                                historyNew.CustomerName = customer.FirstName + " " + customer.LastName;
+                                historyNew.Date = DateTime.Now;
+                                historyNew.AppointmentID = appointment.ID;
+                                historyNew.Note = "Appointment was deleted:" + historyNew.CustomerName + "By :" + LoggedInUser.Name;
+                                historyNew.EmployeeName = employee.Name;
+                                historyNew.Name = "Appointment Deleted";
+                                HistoryServices.Instance.SaveHistory(historyNew);
+
+                            }
+                            else
+                            {
+                                var historyNew = new History();
+                                historyNew.Business = appointment.Business;
+                                historyNew.CustomerName = "";
+                                historyNew.Date = DateTime.Now;
+                                historyNew.AppointmentID = appointment.ID;
+                                historyNew.Note = "Appointment was deleted:" + historyNew.CustomerName + "By :" + LoggedInUser.Name;
+                                historyNew.EmployeeName = employee.Name;
+                                historyNew.Name = "Appointment Deleted";
+                                HistoryServices.Instance.SaveHistory(historyNew);
+                            }
+                            foreach (var item in ToBeInputtedIDs)
+                            {
+                                try
+                                {
+                                    if (item.Key != null && !item.Key.Disabled)
+                                    {
+                                        var url = new System.Uri("https://www.googleapis.com/calendar/v3/calendars/" + item.Value + "/events/" + appointment.GoogleCalendarEventID);
+                                        RestClient restClient = new RestClient(url);
+                                        RestRequest request = new RestRequest();
+
+                                        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                                        request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
+                                        request.AddHeader("Accept", "application/json");
+
+                                        var response = restClient.Delete(request);
+
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    continue;
+                                }
+
+
+                            }
+                        }
                         appointment.DELETED = true;
                         appointment.DeletedTime = DateTime.Now.ToString();
                         AppointmentServices.Instance.UpdateAppointment(appointment);

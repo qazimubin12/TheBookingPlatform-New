@@ -994,7 +994,7 @@
                                             </a>
                                         </li>
                                     }
-                                    if (package.Split(',').Contains("Company Holidays"))
+                                    if (package.Split(',').Contains("Holidays"))
                                     {
                                         <li class="nav-item " id="CompanyHolidaysTAB">
                                             <a class="nav-link text-dark " href="@Url.Action("Index", "Holiday")">
@@ -1278,7 +1278,7 @@
                                             </a>
                                         </li>
                                     }
-                                    if (package.Split(',').Contains("Company Holidays"))
+                                    if (package.Split(',').Contains("Holidays"))
                                     {
                                         <li class="nav-item " id="OpeningHoursTAB">
                                             <a class="nav-link text-dark " href="@Url.Action("Index", "Holiday")">
@@ -1649,9 +1649,9 @@
                                             </a>
                                         </li>
                                     }
-                                    if (package.Split(',').Contains("Company Holidays"))
+                                    if (package.Split(',').Contains("Holidays"))
                                     {
-                                        <li class="nav-item " id="OpeningHoursTAB">
+                                        <li class="nav-item " id="HolidaysTAB">
                                             <a class="nav-link text-dark " href="@Url.Action("Index", "Holiday")">
                                                 <span class="sidenav-mini-icon"> CH </span>
                                                 <span class="sidenav-normal  ms-2  ps-1"> Company Holidays </span>
@@ -2285,7 +2285,7 @@
 
                 onSelect: function (selectedDate) {
                     if ($('#fullCalendar').length) { // Check if FullCalendar exists
-                        debugger
+                        
                         // Convert selectedDate to a valid Date object
                         var parsedDate = new Date(selectedDate);
                         if (!isNaN(parsedDate.getTime())) {
@@ -2304,24 +2304,9 @@
                             };
 
                             var formattedDate = date.toLocaleDateString('en-US', options);
-                            
-                            calendar.gotoDate(datetobesent); // Ensure correct format
-
-                            $.getJSON(`/Appointment/Resources?date=${datetobesent}`)
-                                .done(function (data) {
-                                    calendar.setOption('resources', data.resources);
-                                    debugger;
-                                    // Update calendar resources here
-                                })
-                                .fail(function (jqXHR, textStatus, errorThrown) {
-                                    console.error("Error fetching resources:", textStatus, errorThrown);
-                                });
-
-                            showLoadingSpinner();
-                            calendar.refetchEvents();
+                            var url = '@Url.Action("Calendar","Appointment")';
+                            window.location.href = url + '?date=' + encodeURIComponent(selectedDate);
                             hideLoadingSpinner();
-                            $(".fc-toolbar-title").html("");
-
                         } else {
                             console.error("Invalid date format:", selectedDate);
                         }
