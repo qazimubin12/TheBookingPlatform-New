@@ -912,9 +912,9 @@ namespace TheBookingPlatform.Controllers
             try
             {
                 employee = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(uri);
-               
-                    gcal = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                
+
+                gcal = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
+
             }
             catch (Exception ex)
             {
@@ -954,17 +954,17 @@ namespace TheBookingPlatform.Controllers
                                     RefreshToken(employee.Business);
                                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    foreach (var ee in employeeRequest)
-                                    {
+                                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                                    //foreach (var ee in employeeRequest)
+                                    //{
 
-                                        var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
-                                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                                    //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                                    }
+                                    //}
                                 }
-                              
+
 
 
 
@@ -1047,7 +1047,7 @@ namespace TheBookingPlatform.Controllers
                                                         if (item.Organizer != null)
                                                         {
                                                             var newem = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(item.Organizer.Email);
-                                                          
+
                                                             appointment.EmployeeID = newem.ID;
                                                         }
                                                         AppointmentServices.Instance.UpdateAppointment(appointment);
@@ -1096,14 +1096,13 @@ namespace TheBookingPlatform.Controllers
                                                         int Count = 0;
                                                         foreach (var tt in checkTthe)
                                                         {
-                                                            
-                                                                if (await CheckOnGCal(gg.Key.Business, gg.Value, appointment.GoogleCalendarEventID, gg.Key.AccessToken) == false)
-                                                                {
-                                                                    GenerateOnGCal(appointment, gg.Key, gg.Value);
-                                                                    Count++;
-                                                                }
-                                                            
+                                                            if (await CheckOnGCal(gg.Key.Business, gg.Value, appointment.GoogleCalendarEventID, gg.Key.AccessToken) == false)
+                                                            {
+                                                                GenerateOnGCal(appointment, gg.Key, gg.Value);
+                                                                Count++;
+                                                            }
                                                         }
+
 
                                                     }
                                                 }
@@ -1210,17 +1209,17 @@ namespace TheBookingPlatform.Controllers
                                     RefreshToken(employee.Business);
                                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    foreach (var ee in employeeRequest)
-                                    {
+                                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                                    //foreach (var ee in employeeRequest)
+                                    //{
 
-                                        var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
-                                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                                    //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                                    }
+                                    //}
                                 }
-   
+
 
                                 foreach (var gg in ToBeInputtedIDs)
                                 {
@@ -1259,7 +1258,7 @@ namespace TheBookingPlatform.Controllers
                             catch (Exception ex)
                             {
 
-                                history = new History();
+                                 history = new History();
                                 history.Date = DateTime.Now;
                                 history.Note = ex.Message + " " + JsonConvert.SerializeObject(item);
                                 history.Type = "NewStatus EX";
@@ -1383,15 +1382,15 @@ namespace TheBookingPlatform.Controllers
                                     RefreshToken(employee.Business);
                                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    foreach (var ee in employeeRequest)
-                                    {
+                                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                                    //foreach (var ee in employeeRequest)
+                                    //{
 
-                                        var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
-                                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                                    //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                                    }
+                                    //}
                                 }
 
 
@@ -1638,15 +1637,15 @@ namespace TheBookingPlatform.Controllers
                                     RefreshToken(employee.Business);
                                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    foreach (var ee in employeeRequest)
-                                    {
+                                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                                    //foreach (var ee in employeeRequest)
+                                    //{
 
-                                        var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
-                                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                                    //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                                    }
+                                    //}
                                 }
 
 
@@ -2048,11 +2047,11 @@ namespace TheBookingPlatform.Controllers
                     {
                         if (BestSellerServices.Contains(ser.ID.ToString()))
                         {
-                            serviceModel.Add(new ServiceModelFORBK { Service = ser, BestSeller = true });
+                            serviceModel.Add(new ServiceModelFORBK { Service = ser, BestSeller = true , Type = item.Type });
                         }
                         else
                         {
-                            serviceModel.Add(new ServiceModelFORBK { Service = ser, BestSeller = false });
+                            serviceModel.Add(new ServiceModelFORBK { Service = ser, BestSeller = false,Type = item.Type });
 
                         }
                     }
@@ -2800,7 +2799,160 @@ namespace TheBookingPlatform.Controllers
                 return RedirectToAction("NotFound", "Booking");
             }
         }
+        public int GetSalaryBasedOnExperience(float yearsOfExperience)
+        {
+            if (yearsOfExperience >= 10)
+                return 8000;
+            else if (yearsOfExperience >= 5)
+                return 6750;
+            else if (yearsOfExperience >= 3)
+                return 4000;
+            else if (yearsOfExperience >= 2)
+                return 3000;
+            else if (yearsOfExperience >= 1)
+                return 2000;
+            else
+                return 0; // for less than 1 year of experience
+        }
 
+
+        [HttpGet]
+        public ActionResult ShowEmpProfile(string businessName,int EmployeeID,string IDs)
+        {
+            BookingViewModel model = new BookingViewModel();
+            model.Employee = EmployeeServices.Instance.GetEmployee(EmployeeID);
+            var currentDate = DateTime.Now;
+            model.EmployeePriceChangeFull = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(EmployeeID,businessName)
+                .Where(p => currentDate >= p.StartDate && currentDate <= p.EndDate)
+                .FirstOrDefault();
+            model.ServiceIDs = IDs;
+            var reviews = ReviewServices.Instance.GetReviewWRTBusiness(businessName, "").Where(X => X.Rating != 0 && X.EmployeeID == EmployeeID).ToList();
+            var reviewModel = new List<ReviewModel>();
+            foreach (var item in reviews)
+            {
+                var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
+                reviewModel.Add(new ReviewModel { Review = item, CustomerName = customer.FirstName + " " + customer.LastName });
+            }
+            model.Reviews = reviewModel;
+            model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business.Trim() == businessName.Trim()).FirstOrDefault();
+            model.CustomersCount = GetSalaryBasedOnExperience(model.Employee.ExpYears);
+            return View("ShowEmpProfile", "_BookingLayout", model);
+        }
+
+        [HttpGet]
+        public ActionResult AvailEmps(string businessName, string IDs)
+        {
+            BookingViewModel model = new BookingViewModel();
+            model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business.Trim() == businessName.Trim()).FirstOrDefault();
+            if (IDs != null)
+            {
+                var servicelist = new List<ServiceFormModel>();
+                var FinalIDs = IDs.Split(',').ToList();
+                model.ServiceIDs = IDs;
+
+                model.CompanyID = model.Company.ID;
+                foreach (var item in FinalIDs)
+                {
+                    var serviceItem = ServiceServices.Instance.GetService(int.Parse(item));
+
+                    servicelist.Add(new ServiceFormModel { OnlyDuration = float.Parse(serviceItem.Duration.Replace("mins", "").Replace("Mins", "")), Name = serviceItem.Name, Duration = serviceItem.Duration, Price = serviceItem.Price });
+
+                }
+                var finalIDsInt = FinalIDs.Select(int.Parse).ToList();
+
+
+                var employeeservices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(model.Company.Business);
+
+                var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(model.Company.ID);
+                foreach (var item in employeeRequest)
+                {
+                    if (item.Accepted)
+                    {
+                        employeeservices.AddRange(EmployeeServiceServices.Instance.GetEmployeeServiceWRTEmployeeID(item.EmployeeID));
+                    }
+                }
+
+                var AvailableEmployeeList = new List<int>();
+
+
+                var employeeIDs = employeeservices
+                .Where(es => finalIDsInt.Contains(es.ServiceID))
+                .GroupBy(es => es.EmployeeID)
+                .Where(grp => grp.Select(g => g.ServiceID).Distinct().Count() == finalIDsInt.Count)
+                .Select(grp => grp.Key)
+                .ToList();
+
+                var listofemployee = new List<EmployeeNewModel>();
+                var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs);
+                foreach (var item in employees)
+                {
+                    var AllSpecificRating = ReviewServices.Instance
+                        .GetReviewWRTBusiness(model.Company.Business)
+                        .Where(x => x.EmployeeID == item.ID
+                        && x.Feedback != null)
+                        .Select(x => x.Rating)
+                        .DefaultIfEmpty(0);
+
+                    var CountOfTheRatigs = AllSpecificRating.Count();
+                    var RatingService = AllSpecificRating.Average();
+
+                    var listofReivew = new List<ReviewModel>();
+                    var reviews = ReviewServices.Instance
+                        .GetReviewWRTBusiness(model.Company.Business)
+                        .Where(x => x.EmployeeID == item.ID
+                        && x.Feedback != null).ToList();
+                    foreach (var rev in reviews)
+                    {
+                        var customer = CustomerServices.Instance.GetCustomer(rev.CustomerID);
+                        listofReivew.Add(new ReviewModel { Review = rev, CustomerName = customer.FirstName });
+                    }
+                    bool HavePricChange = false;
+                    var priceChange = new EmployeePriceChange();
+                    var employeePriceChange = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(item.ID, businessName);
+                    foreach (var empchange in employeePriceChange)
+                    {
+                        if (IsCurrentDateInRange(empchange.StartDate, empchange.EndDate))
+                        {
+                            HavePricChange = true;
+                            priceChange = empchange;
+                            break;
+                        }
+                    }
+                    listofemployee.Add(new EmployeeNewModel { Reviews = listofReivew, Employee = item, EmployeePriceChange = priceChange, HaveEmpPriceChange = HavePricChange, Rating = RatingService, Count = CountOfTheRatigs });
+                }
+                model.Employees = listofemployee;
+                if (model.Employees.Count() == 0)
+                {
+                    model.ErrorNote = "Yes";
+                }
+                else
+                {
+                    model.ErrorNote = "No";
+                }
+
+                if (servicelist.Count() == 0 || model.ErrorNote != "No")
+                {
+                    model.ErrorNote = "Yes";
+                }
+                else
+                {
+                    model.ErrorNote = "No";
+
+                }
+                model.ServicesOnly = servicelist;
+                float Deposit = 0;
+                foreach (var item in model.ServicesOnly)
+                {
+                    Deposit += item.Price;
+                }
+                model.Deposit = float.Parse(Convert.ToString(Deposit * (model.Company.Deposit / 100)));
+
+
+            }
+            return View("AvailEmps", "_BookingLayout", model);
+
+
+        }
         public bool IsCurrentDateInRange(DateTime startDate, DateTime endDate)
         {
             DateTime currentDate = DateTime.Now;
@@ -2828,142 +2980,152 @@ namespace TheBookingPlatform.Controllers
 
         [HttpGet]
         [NoCache]
-        public ActionResult Form(string businessName, string ids, int CustomerID = 0, string SentBy = "", int AppointmentID = 0, string By = "")
+        public ActionResult Form(string businessName, string ids, int CustomerID = 0, string SentBy = "", int AppointmentID = 0, string By = "",int SelectedEmployeeID = 0)
         {
             BookingViewModel model = new BookingViewModel();
             model.SentBy = SentBy;
+            model.SelectedEmployeeID = SelectedEmployeeID;
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business.Trim() == businessName.Trim()).FirstOrDefault();
-            var servicelist = new List<ServiceFormModel>();
-            var FinalIDs = ids.Replace("_", ",").Split(',').Where(x => x != "").ToList();
-            model.By = By;
-            if (SentBy == "Cancellation")
+            if (ids != null)
             {
-                model.Appointment = AppointmentServices.Instance.GetAppointment(AppointmentID);
-                if (model.Appointment.IsCancelled)
+                var servicelist = new List<ServiceFormModel>();
+                var FinalIDs = ids.Replace("_", ",").Split(',').Where(x => x != "").ToList();
+                model.By = By;
+                if (SentBy == "Cancellation")
                 {
-                    return RedirectToAction("CannotReschedule", "Appointment", new { ID = AppointmentID });
-                }
-                model.ServiceIDs = model.Appointment.Service;
-            }
-            else
-            {
-                model.ServiceIDs = String.Join(",", FinalIDs);
-            }
-            model.CompanyID = model.Company.ID;
-            foreach (var item in FinalIDs)
-            {
-                var serviceItem = ServiceServices.Instance.GetService(int.Parse(item));
-
-                servicelist.Add(new ServiceFormModel { OnlyDuration = float.Parse(serviceItem.Duration.Replace("mins", "").Replace("Mins", "")), Name = serviceItem.Name, Duration = serviceItem.Duration, Price = serviceItem.Price });
-
-            }
-            var finalIDsInt = FinalIDs.Select(int.Parse).ToList();
-
-            var employeeservices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(model.Company.Business);
-
-            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(model.Company.ID);
-            foreach (var item in employeeRequest)
-            {
-                if (item.Accepted)
-                {
-                    employeeservices.AddRange(EmployeeServiceServices.Instance.GetEmployeeServiceWRTEmployeeID(item.EmployeeID));
-                }
-            }
-
-            var AvailableEmployeeList = new List<int>();
-
-
-            var employeeIDs = employeeservices
-            .Where(es => finalIDsInt.Contains(es.ServiceID))
-            .GroupBy(es => es.EmployeeID)
-            .Where(grp => grp.Select(g => g.ServiceID).Distinct().Count() == finalIDsInt.Count)
-            .Select(grp => grp.Key)
-            .ToList();
-
-            var listofemployee = new List<EmployeeNewModel>();
-            var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs);
-            foreach (var item in employees)
-            {
-                var AllSpecificRating = ReviewServices.Instance
-                    .GetReviewWRTBusiness(model.Company.Business)
-                    .Where(x => x.EmployeeID == item.ID
-                    && x.Feedback != null)
-                    .Select(x => x.Rating)
-                    .DefaultIfEmpty(0);
-
-                var CountOfTheRatigs = AllSpecificRating.Count();
-                var RatingService = AllSpecificRating.Average();
-
-                var listofReivew = new List<ReviewModel>();
-                var reviews = ReviewServices.Instance
-                    .GetReviewWRTBusiness(model.Company.Business)
-                    .Where(x => x.EmployeeID == item.ID
-                    && x.Feedback != null).ToList();
-                foreach (var rev in reviews)
-                {
-                    var customer = CustomerServices.Instance.GetCustomer(rev.CustomerID);
-                    listofReivew.Add(new ReviewModel { Review = rev, CustomerName = customer.FirstName });
-                }
-                bool HavePricChange = false;
-                var priceChange = new EmployeePriceChange();
-                var employeePriceChange = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(item.ID, businessName);
-                foreach (var empchange in employeePriceChange)
-                {
-                    if (IsCurrentDateInRange(empchange.StartDate, empchange.EndDate))
+                    model.Appointment = AppointmentServices.Instance.GetAppointment(AppointmentID);
+                    if (model.Appointment.IsCancelled)
                     {
-                        HavePricChange = true;
-                        priceChange = empchange;
-                        break;
+                        return RedirectToAction("CannotReschedule", "Appointment", new { ID = AppointmentID });
                     }
-                }
-                listofemployee.Add(new EmployeeNewModel { Reviews = listofReivew, Employee = item, EmployeePriceChange = priceChange, HaveEmpPriceChange = HavePricChange, Rating = RatingService, Count = CountOfTheRatigs });
-            }
-            model.Employees = listofemployee;
-            if (model.Employees.Count() == 0)
-            {
-                model.ErrorNote = "Yes";
-            }
-            else
-            {
-                model.ErrorNote = "No";
-            }
-
-            if (servicelist.Count() == 0 || model.ErrorNote != "No")
-            {
-                model.ErrorNote = "Yes";
-            }
-            else
-            {
-                model.ErrorNote = "No";
-
-            }
-            model.ServicesOnly = servicelist;
-            float Deposit = 0;
-            foreach (var item in model.ServicesOnly)
-            {
-                Deposit += item.Price;
-            }
-            model.Deposit = float.Parse(Convert.ToString(Deposit * (model.Company.Deposit / 100)));
-            model.CustomerID = CustomerID;
-            if (SentBy == "Cancellation")
-            {
-                var customer = CustomerServices.Instance.GetCustomer(model.CustomerID);
-                if (customer != null)
-                {
-                    model.FirstName = customer.FirstName;
-                    model.LastName = customer.LastName;
-                    model.MobileNumber = customer.MobileNumber;
-                    model.Email = customer.Email;
-                }
-                DateTime combinedDateTime = new DateTime(model.Appointment.Date.Year, model.Appointment.Date.Month, model.Appointment.Date.Day, model.Appointment.Time.Hour, model.Appointment.Time.Minute, model.Appointment.Time.Second);
-                TimeSpan difference = combinedDateTime - DateTime.Now;
-                if (difference.TotalHours >= (int.Parse(model.Company.CancellationTime.Replace("Hours", "").Replace("Hour", ""))) || difference.TotalHours < 0)
-                {
-                    return View("Form", "_BookingLayout", model);
+                    model.ServiceIDs = model.Appointment.Service;
                 }
                 else
                 {
-                    return RedirectToAction("CannotReschedule", "Appointment", new { ID = AppointmentID });
+                    model.ServiceIDs = String.Join(",", FinalIDs);
+                }
+                model.CompanyID = model.Company.ID;
+                foreach (var item in FinalIDs)
+                {
+                    var serviceItem = ServiceServices.Instance.GetService(int.Parse(item));
+
+                    servicelist.Add(new ServiceFormModel { OnlyDuration = float.Parse(serviceItem.Duration.Replace("mins", "").Replace("Mins", "")), Name = serviceItem.Name, Duration = serviceItem.Duration, Price = serviceItem.Price });
+
+                }
+                var finalIDsInt = FinalIDs.Select(int.Parse).ToList();
+
+
+                var employeeservices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(model.Company.Business);
+
+                var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(model.Company.ID);
+                foreach (var item in employeeRequest)
+                {
+                    if (item.Accepted)
+                    {
+                        employeeservices.AddRange(EmployeeServiceServices.Instance.GetEmployeeServiceWRTEmployeeID(item.EmployeeID));
+                    }
+                }
+
+                var AvailableEmployeeList = new List<int>();
+
+
+                var employeeIDs = employeeservices
+                .Where(es => finalIDsInt.Contains(es.ServiceID))
+                .GroupBy(es => es.EmployeeID)
+                .Where(grp => grp.Select(g => g.ServiceID).Distinct().Count() == finalIDsInt.Count)
+                .Select(grp => grp.Key)
+                .ToList();
+
+                var listofemployee = new List<EmployeeNewModel>();
+                var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs);
+                foreach (var item in employees)
+                {
+                    var AllSpecificRating = ReviewServices.Instance
+                        .GetReviewWRTBusiness(model.Company.Business)
+                        .Where(x => x.EmployeeID == item.ID
+                        && x.Feedback != null)
+                        .Select(x => x.Rating)
+                        .DefaultIfEmpty(0);
+
+                    var CountOfTheRatigs = AllSpecificRating.Count();
+                    var RatingService = AllSpecificRating.Average();
+
+                    var listofReivew = new List<ReviewModel>();
+                    var reviews = ReviewServices.Instance
+                        .GetReviewWRTBusiness(model.Company.Business)
+                        .Where(x => x.EmployeeID == item.ID
+                        && x.Feedback != null).ToList();
+                    foreach (var rev in reviews)
+                    {
+                        var customer = CustomerServices.Instance.GetCustomer(rev.CustomerID);
+                        listofReivew.Add(new ReviewModel { Review = rev, CustomerName = customer.FirstName });
+                    }
+                    bool HavePricChange = false;
+                    var priceChange = new EmployeePriceChange();
+                    var employeePriceChange = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(item.ID, businessName);
+                    foreach (var empchange in employeePriceChange)
+                    {
+                        if (IsCurrentDateInRange(empchange.StartDate, empchange.EndDate))
+                        {
+                            HavePricChange = true;
+                            priceChange = empchange;
+                            break;
+                        }
+                    }
+                    listofemployee.Add(new EmployeeNewModel { Reviews = listofReivew, Employee = item, EmployeePriceChange = priceChange, HaveEmpPriceChange = HavePricChange, Rating = RatingService, Count = CountOfTheRatigs });
+                }
+                model.Employees = listofemployee;
+                if (model.Employees.Count() == 0)
+                {
+                    model.ErrorNote = "Yes";
+                }
+                else
+                {
+                    model.ErrorNote = "No";
+                }
+
+                if (servicelist.Count() == 0 || model.ErrorNote != "No")
+                {
+                    model.ErrorNote = "Yes";
+                }
+                else
+                {
+                    model.ErrorNote = "No";
+
+                }
+                model.ServicesOnly = servicelist;
+                float Deposit = 0;
+                foreach (var item in model.ServicesOnly)
+                {
+                    Deposit += item.Price;
+                }
+                model.Deposit = float.Parse(Convert.ToString(Deposit * (model.Company.Deposit / 100)));
+                model.CustomerID = CustomerID;
+                if (SentBy == "Cancellation")
+                {
+                    var customer = CustomerServices.Instance.GetCustomer(model.CustomerID);
+                    if (customer != null)
+                    {
+                        model.FirstName = customer.FirstName;
+                        model.LastName = customer.LastName;
+                        model.MobileNumber = customer.MobileNumber;
+                        model.Email = customer.Email;
+                    }
+                    DateTime combinedDateTime = new DateTime(model.Appointment.Date.Year, model.Appointment.Date.Month, model.Appointment.Date.Day, model.Appointment.Time.Hour, model.Appointment.Time.Minute, model.Appointment.Time.Second);
+                    TimeSpan difference = combinedDateTime - DateTime.Now;
+                    if (difference.TotalHours >= (int.Parse(model.Company.CancellationTime.Replace("Hours", "").Replace("Hour", ""))) || difference.TotalHours < 0)
+                    {
+                        return View("Form", "_BookingLayout", model);
+                    }
+                    else
+                    {
+                        return RedirectToAction("CannotReschedule", "Appointment", new { ID = AppointmentID });
+                    }
+                }
+                else
+                {
+                    return View("Form", "_BookingLayout", model);
+
                 }
             }
             else
@@ -3581,21 +3743,21 @@ namespace TheBookingPlatform.Controllers
                     //employee is in same business as appointment
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                    }
+                    //}
                 }
                 else
                 {
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
                     //foreach (var item in employeeRequest)
                     //{
 
@@ -3714,30 +3876,30 @@ namespace TheBookingPlatform.Controllers
                     RefreshToken(appointment.Business);
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(old.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(old.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
 
-                    }
+                    //}
                 }
                 else
                 {
                     RefreshToken(old.Business);
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(old.Business);
                     ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(old.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(old.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        //var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        //googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        //ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
+                    //    //var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    //googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    //ToBeInputtedIDs.Add(googleKey, old.GoogleCalendarID);
 
-                    }
+                    //}
                 }
 
                 foreach (var item in ToBeInputtedIDs)
@@ -3772,22 +3934,22 @@ namespace TheBookingPlatform.Controllers
 
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
 
-                    }
+                    //}
                 }
                 else
                 {
                     RefreshToken(newemp.Business);
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(newemp.Business);
                     ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
                     //foreach (var item in employeeRequest)
                     //{
 
@@ -5278,6 +5440,8 @@ namespace TheBookingPlatform.Controllers
         }
 
 
+
+
         public bool IsSlotWithinEmployeeTimeRange(DateTime slotStartTime, DateTime slotEndTime, DateTime employeeStartTime, DateTime employeeEndTime)
         {
             // Ensure slot times are within the employee's available times
@@ -5347,7 +5511,7 @@ namespace TheBookingPlatform.Controllers
                 {
                     var currentDate = DateTime.Now;
                     var FinalSelectedDate = DateTime.Now;
-                    if (monthYear != null)
+                    if (monthYear != null && monthYear != "Month Year")
                     {
                         if (PrevOrNext == "Next")
                         {

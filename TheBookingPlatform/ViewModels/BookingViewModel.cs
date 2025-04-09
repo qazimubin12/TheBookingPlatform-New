@@ -16,9 +16,13 @@ namespace TheBookingPlatform.ViewModels
         public string Services { get; set; }
 
     }
+
+
     public class BookingViewModel
     {
         public int ID { get; set; }
+        public EmployeePriceChange EmployeePriceChangeFull { get; set; }
+        public int CustomersCount { get; set; }
         public string SentBy { get; set; }
         public string By { get; set; }
         public bool AnyAvailableEmployeeSelected { get; set; }

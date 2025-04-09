@@ -24,8 +24,8 @@
                     <div class="form-group">
                         <select class="form-control choices__input" id="SelectedType">
                             <option value="All">All</option>
-                            <option selected value="Single">Single Service</option>
-                            <option value="Package">Package Service</option>
+                            <option selected value="Single Service">Single Service</option>
+                            <option value="Package Service">Package Service</option>
                         </select>
                     </div>
                 </div>
@@ -112,19 +112,19 @@
 
         var SelectedType = $("#SelectedType").val();
         if (SelectedType == "All") {
-            $(".Single_Type").show();
-            $(".Package_Type").show();
+            $(".SingleService_Type").show();
+            $(".PackageService_Type").show();
             
 
         }
-        else if (SelectedType == "Package") {
-            $(".Single_Type").hide();
-            $(".Package_Type").show();
+        else if (SelectedType == "Package Service") {
+            $(".SingleService_Type").hide();
+            $(".PackageService_Type").show();
 
 
         } else {
-            $(".Single_Type").show();
-            $(".Package_Type").hide();
+            $(".SingleService_Type").show();
+            $(".PackageService_Type").hide();
 
         }
     });
@@ -158,19 +158,19 @@
     $("#SelectedType").on("change", function () {
          var SelectedType = $("#SelectedType").val();
          if (SelectedType == "All") {
-             $(".Single_Type").show();
-             $(".Package_Type").show();
+             $(".SingleService_Type").show();
+             $(".PackageService_Type").show();
 
 
          }
-         else if (SelectedType == "Package") {
-             $(".Single_Type").hide();
-             $(".Package_Type").show();
+         else if (SelectedType == "Package Service") {
+             $(".SingleService_Type").hide();
+             $(".PackageService_Type").show();
 
 
          } else {
-             $(".Single_Type").show();
-             $(".Package_Type").hide();
+             $(".SingleService_Type").show();
+             $(".PackageService_Type").hide();
 
          }
     });

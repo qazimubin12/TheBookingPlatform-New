@@ -40,7 +40,8 @@ namespace TheBookingPlatform.ViewModels
         public float Percentage { get; set; }
 
         public string Type { get; set; }
-
+        public float ExpYears { get;  set; }
+        public string Experience { get;  set; }
     }
 
 }

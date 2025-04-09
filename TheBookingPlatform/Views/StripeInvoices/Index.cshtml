@@ -1,7 +1,7 @@
 ﻿@model TheBookingPlatform.ViewModels.StripeInvoicesListingViewModel
 @{
     ViewBag.Title = "Index";
-    var remainderDays = int.Parse(ViewData["ReminderDays"].ToString());
+    var remainderDays = Convert.ToInt32(Convert.ToString(ViewData["ReminderDays"]));
 
 }
 <style>

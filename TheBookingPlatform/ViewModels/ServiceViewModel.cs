@@ -30,6 +30,7 @@ namespace TheBookingPlatform.ViewModels
     {
         public Service Service { get; set; }
         public bool BestSeller { get; set; }
+        public string Type { get; set; }
     }
 
     public class ServiceModelForBooking

@@ -88,8 +88,8 @@
     }
 
     function checkLocalStorageCredentials() {
-        var email = localStorage.getItem('email');
-        var password = localStorage.getItem('password');
+        var email = localStorage.getItem('C_email');
+        var password = localStorage.getItem('C_password');
         if (email && password) {
             showLoadingSpinner();
             // Perform an AJAX request or any required mechanism to log in
@@ -102,7 +102,7 @@
                     if (response.success) {
                         hideLoadingSpinner();
                         var customerID = response.CustomerID;
-                        SaveName(response.Name);
+                        SaveName(response.Name, response.CustomerID);
                         window.location.href = '@Url.Action("CustomerProfile", "Booking", new {businessName = Model.Company.Business })' + '?CustomerID=' + customerID;
                     } else {
                         alert(response.Message);
@@ -132,9 +132,11 @@
     }
 
 
-    function SaveName(name) {
+    function SaveName(name,id) {
         
         var CustomerName = name;
+        var ID = id;
+        localStorage.setItem('C_ID', ID);
         localStorage.setItem('CustomerName', CustomerName);
     }    
 
@@ -143,8 +145,8 @@
         var password = document.getElementById('Password').value;
 
         // Store credentials in localStorage
-        localStorage.setItem('email', email);
-        localStorage.setItem('password', password);
+        localStorage.setItem('C_email', email);
+        localStorage.setItem('C_password', password);
 
         // Perform further actions like sending this information to the server
         // e.g., using fetch() or XMLHttpRequest to pass this information to the .NET MVC backend

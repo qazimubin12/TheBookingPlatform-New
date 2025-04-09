@@ -26,8 +26,8 @@
             </h2>
 
             <form id="actionForm">
-                <div class="row">
-                    <div class="col-md-6">
+                <div class="row " >
+                    <div class="col-md-6 mb-3">
                         <input type="hidden" name="ID" value="@Model.ID" />
                         <div class="form-group">
                             <div class="input-group input-group-dynamic">
@@ -68,11 +68,33 @@
                         </div>
                         <input style="display:none;" type="text" value="@Model.AllowOnlineBooking" name="AllowOnlineBooking" id="AllowOnlineBooking" />
 
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+                                <label>Years of Experience</label>
+                                <select class="form-control" name="ExpYears" id="ExpYears">
+                                    <option @(Model.ExpYears == 1 ? "selected":"") value="1">1 years +</option>
+                                    <option @(Model.ExpYears == 2 ? "selected":"") value="2">2 years +</option>
+                                    <option @(Model.ExpYears == 3 ? "selected":"") value="3">3 years +</option>
+                                    <option @(Model.ExpYears == 5 ? "selected":"") value="5">5 years +</option>
+                                    <option @(Model.ExpYears == 10 ? "selected":"") value="10">10 years +</option>
+                                </select>
+                                @*<input type="number" class="form-control" name="ExpYears" placeholder="Enter Experience Year." value="@Model.ExpYears">*@
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+                                <label>
+                                    Note for experience
+                                </label>
+                                <textarea rows="2" name="Experience" id="Experience" class="form-control">@Model.Experience</textarea>
+                            </div>
+                        </div>
 
 
 
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <div class="form-group">
                             <div class="input-group input-group-dynamic">
                                 <label>
@@ -80,53 +102,53 @@
                                 </label>
                                 <input type="text" class="form-control" name="Specialization" value="@Model.Specialization" placeholder="Enter Specialization" />
                             </div>
-                            </div>
+                        </div>
 
-                            <div class="form-group">
-                                <label>
-                                    Link Employee to User
-                                </label>
-                                <select class="form-control choices__input" name="LinkedEmployee" id="LinkedEmployee">
-                                    <option value="">----Select-----</option>
-                                    @foreach (var item in Model.Users)
+                        <div class="form-group">
+                            <label>
+                                Link Employee to User
+                            </label>
+                            <select class="form-control choices__input" name="LinkedEmployee" id="LinkedEmployee">
+                                <option value="">----Select-----</option>
+                                @foreach (var item in Model.Users)
+                                {
+                                    if (Model.LinkedEmployee == item.Id)
                                     {
-                                        if (Model.LinkedEmployee == item.Id)
-                                        {
-                                            <option selected value="@item.Id">@item.Name</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@item.Id">@item.Name</option>
-
-                                        }
-                                    }
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="input-group input-group-dynamic">
-                                    <label>Description</label>
-                                    <textarea name="Description" rows="3" class="col-md-12">@Model.Description</textarea>
-
-                                </div>
-                            </div>
-                                <div style="margin-top:50px;cursor:pointer;" class="form-group">
-                                    <label>Choose Image (Click on Image to Change)</label>
-                                    @if (Model.Photo == "" || Model.Photo == null)
-                                    {
-                                        <img id="MainThumb" style="width:150px;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                                        <option selected value="@item.Id">@item.Name</option>
                                     }
                                     else
                                     {
-                                        <img id="MainThumb" style="width:150px;" src="@Model.Photo" alt="...">
+                                        <option value="@item.Id">@item.Name</option>
 
                                     }
+                                }
+                            </select>
+                        </div>
 
-                                    <input value="@Model.Photo" type="hidden" name="Photo" id="Photo" />
-                                    <input type="file" id="PhotoUpload" accept="image/*" />
+                        <div class="form-group">
+                            <div class="input-group input-group-dynamic">
+                                <label>Description</label>
+                                <textarea name="Description" rows="3" class="col-md-12">@Model.Description</textarea>
 
-                                </div>
                             </div>
+                        </div>
+                        <div style="margin-top:50px;cursor:pointer;" class="form-group">
+                            <label>Choose Image (Click on Image to Change)</label>
+                            @if (Model.Photo == "" || Model.Photo == null)
+                            {
+                                <img id="MainThumb" style="width:150px;" src="/Content/MainTemplate/assets/img/placeholder.jpg" alt="...">
+                            }
+                            else
+                            {
+                                <img id="MainThumb" style="width:150px;" src="@Model.Photo" alt="...">
+
+                            }
+
+                            <input value="@Model.Photo" type="hidden" name="Photo" id="Photo" />
+                            <input type="file" id="PhotoUpload" accept="image/*" />
+
+                        </div>
+                    </div>
                     @if (Model.ID == 0)
                     {
                         if (Model.DisableRegister)
@@ -320,6 +342,7 @@ $("#PhotoUpload").change(function (event) {
         $("#ActionBtn").click(function () {
             if ($("#LinkedEmployee").val() == "") {
                 alert('Please link employee to a user, if you have not made a user yet, frist create one, go to "Users > Create"');
+                return;
             } else {
                 $("#ActionBtn").text("Loading...");
 

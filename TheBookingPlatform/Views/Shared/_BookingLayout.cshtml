@@ -30,7 +30,38 @@
 
 
     <style>
+        .btn-primary {
+            background: #24244B !important;
+            border-color: #24244B !important;
+        }
+        .footer-bottom-nav.active {
+            color: #24244B !important;
+        }
+            .footer-bottom-nav.active:after {
+                background: #24244B !important;
+            }
+        .btn-info {
+            background: #24244B !important;
+            border-color: #24244B !important;
+        }
 
+        .btn-outline-primary:hover {
+            background: #24244B !important;
+        }
+
+        .btn-outline-info:hover {
+            background: #24244B !important;
+        }
+
+        .btn-outline-primary {
+            color: #24244B !important;
+            border-color: #24244B !important;
+        }
+
+        .btn-outline-info {
+            color: #24244B !important;
+            border-color: #24244B !important;
+        }
 
         .fix-osahan-footer {
             position: fixed;
@@ -82,22 +113,23 @@
 
 <body class="bg-light">
     <div class="home d-flex flex-column">
-        <div class="bg-white shadow-sm">
+        <div  id="tpBAR" class="bg-white shadow-sm">
             <div class="d-flex align-items-center justify-content-between mb-auto p-3 osahan-header">
                 <div class="d-flex align-items-center gap-2 me-auto">
-                        <img src="~/Content/TBPContent/LogoBlack.png" alt=""
-                             class="img-fluid rounded-circle icon">
+                    <img src="~/Content/TBPContent/LogoBlack.png" alt=""
+                         class="img-fluid rounded-circle icon">
                     <div class="ps-1">
                         <p id="Customer_Name" class="fw-bold mb-0 text-primary fw-bold">Hey, User!</p>
                     </div>
                 </div>
 
             </div>
-            <div id="loadingSpinner" class="loading-spinner-overlay">
-                <div class="spinner"></div>
-            </div>
 
 
+
+        </div>
+        <div id="loadingSpinner" class="loading-spinner-overlay">
+            <div class="spinner"></div>
         </div>
         <!-- body -->
         <div id="MainPanel" class="my-auto overflow-auto body-fix-osahan-footer">
@@ -107,7 +139,7 @@
 
         </div>
         <!-- footer -->
-        <div id="FooterNAV"  class="footer mt-auto p-3 fix-osahan-footer">
+        <div id="FooterNAV" class="footer mt-auto p-3 fix-osahan-footer">
             <div class="d-flex align-items-center justify-content-between rounded-4 shadow overflow-hidden bottom-nav-main">
                 <a id="HomeNAVTAB" href="@Url.Action("Index", "Booking")" class="col footer-bottom-nav active">
                     <span class="mdi mdi-home-variant-outline mdi-24px"></span>

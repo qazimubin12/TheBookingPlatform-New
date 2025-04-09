@@ -118,7 +118,7 @@
                                     @if (item.Employee.AllowOnlineBooking == true)
                                     {
                                         <td class="text-center">
-                                            <select class="form-control choices__input" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
+                                            <select class="form-control" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
                                                 <option value="True" selected>Yes</option>
                                                 <option value="False">No</option>
                                             </select>
@@ -128,7 +128,7 @@
                                     else
                                     {
                                         <td class="text-center">
-                                            <select class="form-control choices__input" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
+                                            <select class="form-select choices__input" id="AllowOnlineBooking" onchange="ChangeOnlineBookingStatus('@item.Employee.ID')">
                                                 <option value="True">Yes</option>
                                                 <option selected value="False">No</option>
                                             </select>

@@ -12,7 +12,7 @@
 
             @foreach (var item in Model.Services)
             {
-                <div class="panel-group sortable-categories @(item.ServiceCategory.Type)_Type" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel-group sortable-categories @(item.ServiceCategory.Type?.Replace(" ",""))_Type" id="accordion" role="tablist" aria-multiselectable="true">
 
 
                     <div class="panel panel-default">
@@ -72,8 +72,8 @@
                                                         <td style="width:40px;" class="">
                                                             <input type="number" class="form-control" value="@service.DisplayOrder" onchange="ChangeOrderService('@service.ID', this.value)" />
                                                         </td>
-                                                        <td class="">@service.Name</td>
-                                                        <td class="">@service.Duration</td>
+                                                        <td class="">@service.Name @(service.NumberofSessions > 0 ? "("+service.NumberofSessions+"x)" : "")</td>
+                                                        <td class="">@service.Duration </td>
                                                         <td class="">@service.Price @item.Company.Currency</td>
 
                                                         <td class="">

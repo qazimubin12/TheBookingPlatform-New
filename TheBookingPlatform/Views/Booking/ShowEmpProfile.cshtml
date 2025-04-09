@@ -1,0 +1,162 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "ShowEmpProfile";
+}
+
+<div class="px-4 bg-primary">
+    <div class="d-flex align-items-center gap-4">
+        <img src="@Model.Employee.Photo" alt="" class="img-fluid appointment-doctor-img">
+        <div>
+            <h6 class="text-white">@Model.Employee.Name</h6>
+            @if (Model.EmployeePriceChangeFull != null)
+            {
+                <h6 class="text-white">@Model.EmployeePriceChangeFull.TypeOfChange</h6>
+                <h1 class="text-warning mb-0 fw-bold">
+                    @Model.EmployeePriceChangeFull.Percentage %
+                    <span class="text-white-50 fw-normal fs-6">Ends on: @Model.EmployeePriceChangeFull.EndDate.ToString("MMMM dd, yyyy")</span>
+                </h1>
+            }
+        </div>
+    </div>
+</div>
+<div class="p-3 bg-white">
+    <div class="mb-3">
+        <h6 class="mb-1">@Model.Employee.Name Profile</h6>
+        <p class="small">@Model.Employee.Specialization</p>
+    </div>
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3 col">
+            <span class="mdi mdi-account-supervisor-outline mdi-24px text-info"></span>
+            <div>
+                <p class="mb-0 small text-muted">Clients</p>
+                <p class="text-primary m-0 fw-bold">@Model.CustomersCount +</p>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3 col">
+            <span class="mdi mdi-star-outline mdi-24px text-info"></span>
+            <div>
+                <p class="mb-0 small text-muted">Reviews</p>
+                <p class="text-primary m-0 fw-bold">@Model.Reviews.Count()</p>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3 col">
+            <span class="mdi mdi-medal-outline mdi-24px text-info"></span>
+            <div>
+                <p class="mb-0 small text-muted">Experience</p>
+                <p class="text-primary m-0 fw-bold">@Model.Employee.ExpYears Years</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- tabs -->
+<div class="bg-white shadow-sm border-top">
+    <ul class="nav doctor-profile-tabs gap-1 p-0" id="pills-tab" role="tablist">
+        <li class="nav-item col" role="presentation">
+            <button class="nav-link w-100" id="pills-info-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-info" type="button" role="tab" aria-controls="pills-info"
+                    aria-selected="true">
+                Info
+            </button>
+        </li>
+        <li class="nav-item col" role="presentation">
+            <button class="nav-link w-100" id="pills-experience-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-experience" type="button" role="tab" aria-controls="pills-experience"
+                    aria-selected="false">
+                Experience
+            </button>
+        </li>
+        <li class="nav-item col" role="presentation">
+            <button class="nav-link w-100 active" id="pills-review-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-review" type="button" role="tab" aria-controls="pills-review"
+                    aria-selected="false">
+                Review
+            </button>
+        </li>
+    </ul>
+</div>
+<div class="mb-3">
+    <div class="tab-content" id="pills-tabContent">
+        <!-- about -->
+        <div class="tab-pane fade p-3" id="pills-info" role="tabpanel"
+             aria-labelledby="pills-info-tab" tabindex="0">
+            <h6 class="pb-2 mb-0">About @Model.Employee.Name</h6>
+            <p class="text-muted">
+                @Model.Employee.Description
+            </p>
+        </div>
+        <!-- experience -->
+        <div class="tab-pane fade p-3" id="pills-experience" role="tabpanel"
+             aria-labelledby="pills-experience-tab" tabindex="0">
+            <div class="bg-white rounded-4 p-3 mb-3 shadow-sm">
+                <h6 class="mb-3">Working at: @Model.Company.Business</h6>
+                <p class="text-muted mb-0">
+                    @Html.Raw(Model.Employee.Experience?.Replace("\n\n", "<br><br>"))
+                </p>
+
+            </div>
+
+        </div>
+        <!-- review -->
+        <div class="tab-pane fade show active" id="pills-review" role="tabpanel" aria-labelledby="pills-review-tab"
+             tabindex="0">
+            <h6 class="pb-3 px-3 pt-3 mb-0">Reviews @Model.Reviews.Count()</h6>
+            @foreach (var item in Model.Reviews)
+            {
+                <div class="bg-white shadow-sm d-flex align-items-center gap-2 py-2 px-3 border-bottom">
+                    <img src="~/Content/TBPContent/customer.png" alt="" class="img-fluid rounded-pill review-profile">
+                    <div>
+                        <p class="mb-0 fw-bold">@item.CustomerName</p>
+                        <p class="text-muted small m-0">@item.Review.Date.ToString("MMMM dd, yyyy")</p>
+                    </div>
+                    <div class="ms-auto text-center">
+                        <div class="d-flex align-items-center gap-1 small text-warning">
+                            @for (int i = 1; i <= item.Review.Rating; i++)
+                            {
+                                <span class="mdi mdi-star"></span>
+                            }
+                            <span class="badge rounded-pill text-bg-warning ms-1">@item.Review.Rating</span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+</div>
+
+<div  id="ff" class="footer d-grid mt-auto p-3">
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("AboutCompany","Booking")" class="btn btn-outline-info bg-light btn-lg col"><i class="bi bi-file-person-fill me-2"></i> About Company</a>
+        <button type="button" id="bookNow" class="btn btn-info btn-lg col">Choose Date</button>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#FooterNAV").html("");
+        $("#FooterNAV").html($("#ff").html());
+        document.getElementById("ff").style.setProperty("display", "none", "important");
+
+    });
+    $(document).on("click", "#bookNow", function () {
+        showLoadingSpinner();
+
+        var CustomerID = localStorage.getItem("C_ID") ?? "0";
+        var ids = '@Model.ServiceIDs';
+        var url = '@Url.Action("Form", "Booking")';
+        var By = '@Model.By';
+        var businessName = '@Model.Company.Business';
+
+        url = url + '?businessName=' + businessName +
+            '&IDs=' + ids +
+            '&CustomerID=' + CustomerID +
+            '&By=' + By +
+            '&SelectedEmployeeID=' + '@Model.Employee.ID';
+
+        // Redirect to the new page with data in the query string
+        window.location.href = url;
+    });
+</script>

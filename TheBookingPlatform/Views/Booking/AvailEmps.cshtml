@@ -1,0 +1,191 @@
+﻿@model TheBookingPlatform.ViewModels.BookingViewModel
+@{
+    ViewBag.Title = "AvailEmps";
+}
+
+<style>
+    .hidden-important {
+        display: none !important;
+    }
+
+</style>
+
+<div class="py-3">
+    <div class="px-3 pb-3">
+        
+            <div class="input-group rounded-4 shadow overflow-hidden border-0 py-1 ps-3 bg-light">
+                <span class="input-group-text bg-transparent text-muted border-0 p-0" id="search"><span class="mdi mdi-magnify mdi-24px text-primary"></span></span>
+                <input id="searchFil" type="text" class="form-control bg-transparent text-muted border-0 px-3 fs-14" placeholder="Search" aria-label="Search" aria-describedby="search">
+            </div>
+        
+    </div>
+    <!-- Specialist -->
+    <div>
+        <h6 class="mb-2 pb-1 px-3 fw-bold text-black">Available Employees</h6>
+        <!-- 1st -->
+        <div id="row_0" onclick="selectEmployee('','0')" style="cursor:pointer;" class="empRows d-flex align-items-center gap-3 bg-white justify-content-between border-bottom shadow-sm px-3 py-1">
+            <div class="ddeets" style=" display: flex; gap: 20px; width: auto; ">
+                <div>
+                    <img src="~/Content/TBPContent/people.png" alt="" class="img-fluid emp_Image rounded-4 favorite-img">
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div class="small">
+                        <h6 class="mb-1 fs-14 emp_Name">Any Available Specialist</h6>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        @foreach (var item in Model.Employees)
+        {
+            <div id="row_@(item.Employee.ID)" onclick="selectEmployee('@item.Employee.Name','@item.Employee.ID')" style="cursor:pointer;" class="empRows d-flex align-items-center gap-3 bg-white justify-content-between border-bottom shadow-sm px-3 py-1">
+                <div class="ddeets" style=" display: flex; gap: 20px; width: auto; ">
+                    <div>
+                        <img src="@item.Employee.Photo" alt="" class="img-fluid emp_Image rounded-4 favorite-img">
+                    </div>
+                    <div>
+                        <div class="small">
+                            <h6 class="mb-1 fs-14 emp_Name">@item.Employee.Name</h6>
+                            <div class="d-flex align-items-center emp_Rating gap-1 small">
+                                @for (int i = 1; i <= item.Rating; i++)
+                                {
+                                    <span class="mdi mdi-star text-warning"></span>
+                                }
+                                <span class="text-warning">@item.Rating.ToString("F2")</span>
+                                <span>(@(item.Count))</span>
+                            </div>
+                            @if (item.HaveEmpPriceChange)
+                            {
+                                <small style="margin-bottom: 0px; color: red; font-weight: bold;" class="text-muted">This staff has price @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</small>
+
+                            }
+                            <small class="text-muted emp_Specs">@item.Employee.Specialization</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="in" style="display:flex;">
+                    <a class="info-button btn" href="@Url.Action("ShowEmpProfile", "Booking", new {EmployeeID=item.Employee.ID,Ids=Model.ServiceIDs})">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="40" fill="#24244B" />
+                            <text x="50" y="50" text-anchor="middle" alignment-baseline="middle" font-size="40" fill="#fff">i</text>
+                        </svg>
+                    </a>
+
+                </div>
+
+            </div>
+        }
+
+        <!-- 2nd -->
+
+    </div>
+
+
+    @if (Model.ErrorNote == "Yes")
+    {
+        <h6 style="padding:20px;" class="text-danger px-3" id="NEWError">
+            You can't book further due to one of the reasons:<br /><br />
+            * You've selected service(s) that require the involvement of multiple employees.<br />
+            * You haven't chosen a "services" yet!<br /><br />
+            Please go back to the booking page
+            or call @Model.Company.Business for an appointment!
+        </h6>
+
+    }
+</div>
+<!-- Available doctors -->
+<div class="mb-3 d-none">
+    <h6 class="mb-2 pb-1 fw-bold px-3 text-black">Available Doctor</h6>
+    <div class="available-doctor ps-2 ms-1">
+        <div class="available-doctor-item">
+            <div class="bg-primary text-white rounded-4 p-3 doctor-book-back">
+                <h1 class="mb-1 doctor-book-back-title">
+                    Book Your Next
+                    <span class="h4 text-warning overflow-hidden rounded-4 m-0 bg-white">
+                        <b class="bg-light-subtle text-primary px-1 rounded">Appointment</b>
+                        <b class="bg-info fw-normal text-white px-1 rounded">Online!</b>
+                    </span>
+                </h1>
+                <p class="mb-2 text-white-50 small">Book Now and Get 30% OFF</p>
+                <a href="request-appointment.html" class="btn btn-sm btn-book btn-secondary">BOOK NOW <i class="bi bi-arrow-right"></i></a>
+                <div class="doctor-book-img">
+                    <img src="img/home/available-doctor-1.png" alt="" class="img-fluid">
+                </div>
+            </div>
+        </div>
+        <div class="available-doctor-item">
+            <div class="btn-info text-white rounded-4 p-3 doctor-book-back">
+                <h1 class="mb-1 doctor-book-back-title">
+                    <span class="h4 overflow-hidden m-0">
+                        <b class="text-primary">Find Your Dental</b>
+                    </span>
+                    Specialist Doctor
+                </h1>
+                <p class="mb-2 small">Dr. Samaro <span class="bg-white rounded-pill px-1 small text-orange"><i class="mdi mdi-star"></i> 4.9</span></p>
+                <a href="#" class="btn btn-sm btn-primary btn-book">BOOK NOW <i class="bi bi-arrow-right"></i></a>
+                <div class="doctor-book-img">
+                    <img src="img/home/available-doctor-3.png" alt="" class="img-fluid">
+                </div>
+            </div>
+        </div>
+        <div class="available-doctor-item">
+            <div class="btn-secondary text-white rounded-4 p-3 doctor-book-back">
+                <h1 class="mb-1 doctor-book-back-title">
+                    Find the Right <br>
+                    <span class="h4 text-warning overflow-hidden rounded-4 m-0">
+                        <b class="bg-warning text-black px-1 rounded">Doctor for Your</b>
+                        <b class="text-black">Needs!</b>
+                    </span>
+                </h1>
+                <p class="mb-2 text-white small">Book Now and Get 30% OFF</p>
+                <a href="#" class="btn btn-sm btn-dark btn-book">BOOK NOW <i class="bi bi-arrow-right"></i></a>
+                <div class="doctor-book-img">
+                    <img src="img/home/available-doctor-2.png" alt="" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function selectEmployee(Name, ID) {
+        showLoadingSpinner();
+        var CustomerID = localStorage.getItem("C_ID") ?? "0";
+        var ids = [];
+
+        const selectedService = localStorage.getItem('selectedServices');
+        const serviceArray = JSON.parse(selectedService);
+
+        // Get an array of all IDs
+        const serviceIds = serviceArray.map(service => service.id);
+        const idString = serviceIds.join(',');
+        var ids = idString;
+
+        var url = '@Url.Action("Form", "Booking")';
+        var By = '@Model.By';
+        var businessName = '@Model.Company.Business';
+        url = url + '?businessName=' + businessName + '&ids=' + ids + '&CustomerID=' + CustomerID + '&By=' + By + '&SelectedEmployeeID=' + ID;
+        window.location.href = url;
+    }
+
+    $(document).ready(function () {
+        $("#FooterNAV").hide();
+        $('#searchFil').on('keyup', function () {
+            var searchValue = $(this).val().toLowerCase();
+            
+            // Loop through each employee row
+            $('.empRows').each(function () {
+                var name = $(this).find('.emp_Name').text().toLowerCase();
+                debugger
+                // Check if the name includes the search value
+                if (name.includes(searchValue)) {
+                    $(this).removeClass('hidden-important');
+                } else {
+                    $(this).addClass('hidden-important');
+                }
+
+            });
+        });
+    });
+</script>

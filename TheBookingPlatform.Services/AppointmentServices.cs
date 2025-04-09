@@ -624,7 +624,7 @@ namespace TheBookingPlatform.Services
                 {
                     var service = ServiceServices.Instance.GetService(int.Parse(item));
                     var serviceCategory = ServicesCategoriesServices.Instance.GetServiceCategoriesWRTBusiness(Appointment.Business, service.Category).FirstOrDefault();
-                    if (serviceCategory.Type == "Package")
+                    if (serviceCategory.Type == "Package Service")
                     {
                         var sessionService = new ServiceSession();
                         sessionService.Business = Appointment.Business;
@@ -643,7 +643,7 @@ namespace TheBookingPlatform.Services
                 {
                     var service = ServiceServices.Instance.GetService(int.Parse(item));
                     var serviceCategory = ServicesCategoriesServices.Instance.GetServiceCategoriesWRTBusiness(Appointment.Business, service.Category).FirstOrDefault();
-                    if (serviceCategory.Type == "Package")
+                    if (serviceCategory.Type == "Package Service")
                     {
                         var serviceSessions = serviceSession.Count();
 

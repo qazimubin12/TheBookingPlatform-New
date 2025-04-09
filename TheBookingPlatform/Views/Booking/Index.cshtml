@@ -7,10 +7,11 @@
 }
 
 <script src="~/Content/MainTemplate/assets/js/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 
 <style>
-
+    /* Custom CSS */
     .table > :not(caption) > * > * {
         padding: 0rem 0rem;
         background-color: var(--bs-table-bg);
@@ -20,35 +21,95 @@
 
     .CategoryBtn {
         width: max-content;
+        transition: all 0.2s ease;
+        margin: 0 2px;
     }
-    /*#ServicesList {
-        height: 400px;*/ /* or any height */
-    /*overflow: auto;
-    }*/
+
+    .btn-secondary{
+        background:transparent !important;
+        border:none !important;
+        color:#24244B !important;
+    }
+    .btn-primary {
+        background: #24244B !important;
+    }
+    .CategoryBtn.active {
+        background: #24244B !important;
+        color: white !important;
+    }
 
     .body-fix-osahan-footer {
         padding-bottom: 40px;
     }
 
     .loading-spinner-overlay {
-        display: none; /* Initially hidden */
+        display: none;
         position: fixed;
         top: 0;
         left: 0;
         height: 100%;
         width: 100%;
-        z-index: 9999; /* Ensure it appears above all other content */
-        background-color: rgba(0,0,0,0.5); /* Transparent black */
+        z-index: 9999;
+        background-color: rgba(0,0,0,0.5);
     }
 
-    .sticky-div {
-        position: fixed;
+    .sticky-header {
+        position: sticky;
         top: 0;
-        left: 0;
-        width: 100%;
-        background: white; /* Adjust this as needed */
+        background: white;
         z-index: 100;
-        transition: transform 0.3s;
+        padding-top: 15px;
+    }
+
+    .doctor-profile-tabs button.active {
+        color: #24244B !important;
+    }
+
+    #categories-container {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 0px 0;
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+    }
+        /* Slim the scrollbar for WebKit browsers */
+        #categories-container::-webkit-scrollbar {
+            height: 6px; /* Slim height for horizontal scrollbar */
+        }
+
+        #categories-container::-webkit-scrollbar-track {
+            background: transparent; /* Or add a subtle color if needed */
+        }
+
+        #categories-container::-webkit-scrollbar-thumb {
+            background: #ccc; /* Color of the thumb */
+            border-radius: 3px;
+        }
+
+            /* Optional: on hover */
+            #categories-container::-webkit-scrollbar-thumb:hover {
+                background: #999;
+            }
+    #ServicesList {
+        height: calc(100vh - 250px);
+        overflow-y: auto;
+        padding: 15px;
+    }
+
+    #search::placeholder {
+        color: #24244B !important;
+    }
+
+    .service-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        border-bottom: 1px solid #dee2e6;
+        padding: 15px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     hr {
@@ -58,7 +119,6 @@
         border-top: var(--bs-border-width) solid;
         opacity: .25;
     }
-
 
     .spinner {
         border: 16px solid #f3f3f3;
@@ -82,106 +142,152 @@
             transform: translate(-50%, -50%) rotate(360deg);
         }
     }
+
+    #tpBAR{
+        display:none !important;
+    }
 </style>
 
 <div class="my-auto overflow-auto body-fix-osahan-footer">
     <div class="">
         <input type="hidden" id="CustomerID" value="@Model.CustomerID" />
-        <div style="margin-top:10px;" id="ServiceCategoriesList" class="table-responsive sticky-div">
-            <table class="table table-borderless">
-                <tr>
-                    <td style="border:none;">
-                        <div class="mx-3 px-3">
-                            <button data-category="0" class="CategoryBtn btn btn-primary btn-rounded">
-                                VIEW ALL
-                            </button>
-                        </div>
-                    </td>
+        <input type="hidden" id="Company" value="@Model.Company.ID" />
 
-                    @foreach (var item in Model.Services)
+        <!-- Sticky Header -->
+        <div class="sticky-header">
+            <!-- Search -->
+            <div style="position: relative; width: fit-content; margin: auto;">
+                <i class="fa fa-search" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); color: #24244B !important;"></i>
+                <input id="search" class="form-control mb-2 pb-1 px-4 fw-bold" type="text"
+                       placeholder="Search for services"
+                       style="background: white !important; color: #24244B !important; padding-left: 35px !important;">
+            </div>
+
+            <!-- Service Type Tabs -->
+            <div class="bg-white shadow-sm border-top">
+                <ul class="nav doctor-profile-tabs gap-1 p-0" id="pills-tab" role="tablist">
+                    @foreach (var type in Model.Services.Select(s => s.ServiceCategory.Type).Distinct())
                     {
-                        <td style="border:none;">
-                            <div class="mx-1 px-1">
-                                <button type="button" data-category="@item.ServiceCategory.ID" class="CategoryBtn btn btn-sm btn-secondary btn-rounded" id="@item.ServiceCategory.ID">
-                                    @item.ServiceCategory.Name
-                                </button>
-                            </div>
-                        </td>
-
+                        <li class="nav-item col" role="presentation">
+                            <button class="nav-link w-100 @(type == Model.Services.First().ServiceCategory.Type ? "active" : "")"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#pills-@type.Replace(" ","_")"
+                                    type="button" role="tab"
+                                    aria-controls="pills-@type.Replace(" ","_")"
+                                    aria-selected="true">
+                                @type
+                            </button>
+                        </li>
                     }
-                </tr>
-            </table>
+                </ul>
+            </div>
+
+            <!-- Categories Scroll -->
+            <div id="categories-container">
+                <div class="tab-content" id="pills-tabContent">
+                    @foreach (var type in Model.Services.Select(s => s.ServiceCategory.Type).Distinct())
+                    {
+                        <div class="tab-pane fade @(type == Model.Services.First().ServiceCategory.Type ? "show active" : "")"
+                             id="pills-@type.Replace(" ","_")" role="tabpanel">
+                            <table>
+                                <tr class="category-row" data-type="@type">
+                                    @foreach (var item in Model.Services.Where(x => x.ServiceCategory.Type == type))
+                                    {
+                                        <td style="border:none;">
+                                            <div class="mx-1 px-1 mb-2">
+                                                <button type="button" data-category="@item.ServiceCategory.ID"
+                                                        class="CategoryBtn btn btn-sm btn-secondary btn-rounded"
+                                                        id="@item.ServiceCategory.ID">
+                                                    @item.ServiceCategory.Name
+                                                </button>
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
-        <hr />
+
+        <!-- Services List -->
+        <div id="ServicesList">
+            <div class="tab-content" id="services-tabContent">
+                @foreach (var type in Model.Services.Select(s => s.ServiceCategory.Type).Distinct())
+                {
+                    <div class="tab-pane fade @(type == Model.Services.First().ServiceCategory.Type ? "show active" : "")"
+                         id="TAB_pills-@type.Replace(" ","_")" role="tabpanel">
+                        @foreach (var categoryGroup in Model.Services.Where(x => x.ServiceCategory.Type == type))
+                        {
+                            <div  class="service-item" id="Category_@categoryGroup.ServiceCategory.ID">
+                                @if (categoryGroup.Services.Any())
+                                {
+                                    <h6 style="margin-bottom: 0px; margin-top: 0px; padding-bottom: 5px !important;" class="p-2 mx-2">@categoryGroup.ServiceCategory.Name</h6>
+                                }
+                                @foreach (var service in categoryGroup.Services.Where(s => s.Service.CanBookOnline))
+                                {
+                                    <div class="service-card">
+                                        <div style="width:75%;">
+                                            <h6 class="mb-1 fs-14">
+                                                @service.Service.Name 
+                                                @if (categoryGroup.ServiceCategory.Type == "Package Service")
+                                                                                        {
+                                                                                            <text>
+                                                                                                (@(service.Service.NumberofSessions)x)
+                                                                                            </text>
+                                                                                        }
+                                            </h6>
+                                            <small class="text-muted">
+                                                <b>@service.Service.Duration</b> | @service.Service.Notes
+                                               
+                                            </small>
+                                            @if (service.BestSeller)
+                                            {
+                                                <span class="badge text-bg-success rounded-pill">MOST BOOKED</span>
+                                            }
+
+                                        </div>
+                                        <div style="display:flex;align-items:baseline;gap:20px;">
+                                            <h6 class="mb-1 fs-14" style="white-space:nowrap;">@service.Service.Price @Model.Company.Currency</h6>
+
+                                            <button class="btn btn-primary btn-sm"
+                                                    data-id="@service.Service.ID"
+                                                    type="button"
+                                                    data-bs-toggle="offcanvas"
+                                                    data-bs-target="#offcanvasBottom"
+                                                    onclick='showModalContent("@service.Service.ID","@service.Service.Name","@service.Service.Duration","@service.Service.Price")'>
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
         <div id="loadingSpinner" class="loading-spinner-overlay">
             <div class="spinner"></div>
         </div>
 
-        <!-- Specialist -->
-        <input type="hidden" id="Company" value="@Model.Company.ID" />
-        <input style="margin-top:10px;" id="search" class="form-control mb-2 pb-1 px-3 fw-bold" type="text" placeholder="Search for services">
-        <hr />
-        <div style="background-color:white;" id="ServicesList">
-
-            <!-- 1st -->
-            @foreach (var item in Model.Services)
-            {
-                if (item.Services.Count() > 0)
-                {
-                <h4 id="Category_@(item.ServiceCategory.ID)" class="p-2 mb-1 mx-2 fs-16">@item.ServiceCategory.Name</h4>
-                }
-                foreach (var servic in item.Services)
-                {
-
-                    if (servic.Service.CanBookOnline)
-                    {
-                    <div class="link-dark service-item" id="Service_@(item.ServiceCategory.ID)">
-                        <div style=" justify-content: space-between; " class="d-flex align-items-center gap-3 bg-white border-bottom shadow-sm p-3">
-                            <div style="width:75%;" class="small">
-                                <h6 class="mb-1 fs-14">@servic.Service.Name</h6>
-                                <small class="text-muted"><b>@servic.Service.Duration</b> | @servic.Service.Notes</small><br />
-                                @if (servic.BestSeller)
-                                {
-                                    <span class="badge text-bg-success rounded-pill">MOST BOOKED</span>
-                                }
-                            </div>
-                            <div class="small">
-                                <h6 style="white-space:nowrap;" class="mb-1 fs-14">@servic.Service.Price @Model.Company.Currency</h6>
-                            </div>
-                            <button class="btn btn-primary" data-id="@servic.Service.ID" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
-                                    onclick='showModalContent("@servic.Service.ID","@servic.Service.Name","@servic.Service.Duration","@servic.Service.Price")' aria-controls="offcanvasBottom">
-                                +
-                            </button>
-                        </div>
-                    </div>
-                    }
-                }
-
-            }
-            <hr />
-            @*<button class="btn btn-primary col-12" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
-                    onclick="showModalOnly()" aria-controls="offcanvasBottom">
-                SHOW CART
-            </button>*@
-        </div>
-
+        <!-- Offcanvas Cart -->
         <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel" style="height: 80vh;">
             <div class="offcanvas-body text-center align-items-center justify-content-center">
                 <div>
-                    <h5 class="py-2" id="modalTitle">Thanks You!<br>Your Appointment Created</h5>
-                    <p class="text-muted fs-6" id="modalContent">You Booked an appointment with dr. Mahabuba Isalam on nov 21, at 10:00 am</p>
-                    <div id="modalDataTable">
-                        <!-- Data from the button will be added here -->
-                    </div>
+                    <h5 class="py-2" id="modalTitle">Selected Services</h5>
+                    <p class="text-muted fs-6" id="modalContent">Your chosen services:</p>
+                    <div id="modalDataTable"></div>
                 </div>
             </div>
             <div class="offcanvas-footer">
-                <button type="button" id="NextToDetailsButton" class="btn btn-info btn-lg w-100 rounded-4">Next</button>
+                <button type="button" id="NextToDetailsButton" class="btn btn-primary btn-lg w-100 rounded-4">Choose Employees</button>
             </div>
         </div>
     </div>
-    <!-- Available doctors -->
-
 </div>
 
 
@@ -375,8 +481,8 @@
 
 
     $("#NextToDetailsButton").click(function () {
-        showLoadingSpinner();
-        var CustomerID = $("#CustomerID").val();
+        @*showLoadingSpinner();
+        var CustomerID = localStorage.getItem("C_ID") ?? "0";
         var ids = [];
 
         $(".ServiceID").each(function () {
@@ -387,12 +493,95 @@
         var url = '@Url.Action("Form", "Booking")';
         var By = '@Model.By';
         var businessName = '@Model.Company.Business';
-        url = url + '?businessName=' + businessName + '&IDs=' + ids + '&CustomerID=' + CustomerID+'&By=' + By;
+        url = url + '?businessName=' + businessName + '&IDs=' + ids + '&CustomerID=' + CustomerID+'&By=' + By;*@
 
+        var selectedService = localStorage.getItem('selectedServices');
+        var serviceArray = JSON.parse(selectedService);
+
+        // Get an array of all IDs
+        var serviceIds = serviceArray.map(service => service.id);
+
+        var ids = serviceIds.join(',');
+        debugger
+        var url = '@Url.Action("AvailEmps", "Booking", new {IDs="__IDS__"})';
+        url = url.replace("__IDS__", ids);
+        
         // Redirect to the new page with data in the query string
         window.location.href = url;
     });
+    $(document).ready(function () {
+        $('.doctor-profile-tabs .nav-link').on('click', function () {
+            // Remove active class from all nav links
+            $('.doctor-profile-tabs .nav-link').removeClass('active');
 
+            // Add active class to the clicked link
+            $(this).addClass('active');
+            debugger
+            // Toggle tab content manually using hardcoded IDs
+            var targetId = $(this).data('bs-target');
+
+            // Hide all tab panes
+            $('#pills-Package_Service, #pills-Single_Service').removeClass('show active');
+            $('#TAB_pills-Package_Service, #TAB_pills-Single_Service').removeClass('show active');
+
+            // Show the one that matches the clicked tab
+            $(targetId).addClass('show active');
+            var ta = "#TAB_" + targetId.replace("#", "");
+            $(ta).addClass("show active");
+        });
+    });
+    $(document).ready(function () {
+        // Function to check and hide empty categories
+        function updateCategoryVisibility() {
+            $(".category-heading").each(function () {
+                let categoryID = $(this).attr("id").replace("Category_", ""); // Extract Category ID
+                let hasVisibleServices = $(`#ServicesList .service-item[data-type="${$(this).data("type")}"]:visible`).length > 0;
+
+                if (hasVisibleServices) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        // Filter by Type
+        $(".filter-type").click(function () {
+            let selectedType = $(this).data("type");
+
+            $(".service-item").each(function () {
+                let serviceType = $(this).data("type");
+
+                if (selectedType === "all" || serviceType === selectedType) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            updateCategoryVisibility();
+        });
+
+        // Search Functionality
+        $("#search").on("input", function () {
+            let query = $(this).val().toLowerCase();
+
+            $(".service-item").each(function () {
+                let serviceText = $(this).find("h6").text().toLowerCase();
+
+                if (serviceText.includes(query)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            updateCategoryVisibility();
+        });
+
+        // Initial category visibility update
+        updateCategoryVisibility();
+    });
 
     $(document).ready(function () {
         var isLoggedIn = $("#CustomerID").val();
@@ -444,28 +633,7 @@
         //        }, 500);
         //    }
         //}
-        var $searchInput = $('#search');
-        var $servicesList = $('#ServicesList');
 
-        // Listen for keyup events in the search input
-        $searchInput.on('keyup', function () {
-            showLoadingSpinner();
-            var searchText = $searchInput.val().toLowerCase();
-
-            // Filter and show only service items that match the search input
-            $servicesList.find('.service-item').each(function () {
-                var serviceItem = $(this);
-                var serviceName = serviceItem.find('.fs-14').text().toLowerCase();
-                var category = serviceItem.find('.text-muted').text().toLowerCase();
-
-                if (serviceName.includes(searchText) || category.includes(searchText)) {
-                    serviceItem.show();
-                } else {
-                    serviceItem.hide();
-                }
-            });
-            hideLoadingSpinner();
-        });
 
         //$('.CategoryBtn').click(function () {
         //    var categoryID = $(this).data('category');
@@ -501,23 +669,38 @@
             button.classList.add("btn-secondary");
 
             button.addEventListener("click", () => {
-                // Reset the class of all buttons to btn-secondary
+                // Reset button styles
                 buttons.forEach((btn) => {
                     btn.classList.remove("btn-primary");
                     btn.classList.add("btn-secondary");
                 });
-
                 button.classList.remove("btn-secondary");
                 button.classList.add("btn-primary");
-                content.forEach((c) => c.classList.remove("active"));
 
-                const categoryId = button.getAttribute("data-category");
-                const categoryContent = document.getElementById("Category_" + categoryId);
-                if (categoryContent != null) {
-                    const elementBounds = categoryContent.getBoundingClientRect();
-                    const offset = elementBounds.top - 100; /* Add your required offset here */
-                    window.scrollBy({ top: offset, behavior: 'smooth' });
-                //    categoryContent.scrollIntoView({ behavior: "smooth" });
+                // Get category details
+                const categoryId = button.dataset.category;
+                const categoryType = button.closest('.category-row').dataset.type;
+                const tabSelector = `#TAB_pills-${categoryType.replace(/ /g, '_')}`;
+                var tabse = tabSelector.replace("TAB_", "");
+                // Activate corresponding tab
+                const tabTrigger = document.querySelector(`[data-bs-target="${tabse}"]`);
+                if (tabTrigger) {
+                    bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
+
+                    // Wait for tab to be fully shown
+                    const targetHeader = document.getElementById(`Category_${categoryId}`);
+                    const servicesList = document.getElementById('ServicesList');
+
+                    if (targetHeader && servicesList) {
+                        // Calculate scroll position within ServicesList
+                        const targetPosition = targetHeader.offsetTop - servicesList.offsetTop;
+
+                        // Smooth scroll within ServicesList container
+                        servicesList.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             });
         });

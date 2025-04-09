@@ -36,7 +36,85 @@
             top: -15px;
             transform-origin: right top;
         }
+    #bookingSteps, #personalInfoForm {
+        transition: all 0.5s ease-in-out;
+    }
+    .slide-enter-active, .slide-leave-active {
+        transition: all 0.3s ease;
+    }
 
+    .slide-enter-from, .slide-leave-to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    .selection-header {
+        display: none;
+        background: #f8f9fa;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+/*        font-family: system-ui, sans-serif;
+*/        font-size: 13px;
+        color: #333;
+    }
+
+    .selection-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .employee-name {
+        font-weight: 500;
+        color: #212529;
+        margin-bottom: 2px;
+    }
+
+    .timeslot-info {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .change-btn {
+        background: transparent;
+        border: 1px solid #ccc;
+        color: #444;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .change-btn:hover {
+            background: #e9ecef;
+            border-color: #bbb;
+        }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity 0.3s ease;
+    }
+
+    .fade-enter-from, .fade-leave-to {
+        opacity: 0;
+    }
+    .hidden {
+        display: none !important;
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    .visible {
+        display: block !important;
+        opacity: 1;
+        transform: translateY(0);
+    }   
 
     .discount-ribbon2 {
         position: absolute;
@@ -247,6 +325,9 @@
         border-color: var(--bs-btn-active-border-color);
         border: solid 2px cornflowerblue;
     }
+    #row_0 .col-md-12 {
+        margin: 15px !important;
+    }
 
     #demo-htmlselect {
         width: 42% !important;
@@ -287,10 +368,13 @@
     }
 
     .dropdown-btn {
-        padding: 5px;
+        padding: 10px 20px !important;
+        display:flex;
+        justify-content: space-between;
         border: 1px solid #ccc;
         cursor: pointer;
         border-radius: 20px;
+        align-items:center;
     }
 
     .dropdown-content {
@@ -370,54 +454,74 @@
                     <input type="hidden" id="DepositText_" name="DepositText_" />
                     <input type="hidden" id="CouponAssignmentID" name="CouponAssignmentID" />
                     <input type="hidden" id="Time" class="common-input" name="Time" />
-                    <div class="custom-dropdown col-md-12" style="width:100%;" id="customDropdown">
-                        <div class="dropdown-btn" onclick="toggleDropdown()"></div>
-                        <div class="dropdown-content col-md-12" id="dropdownContent">
-                            <div id="row_0" style="display:flex;justify-content:flex-start;align-items:center;" onclick="selectEmployee('Any Available Specialist','0')" class="row">
-                                <div style=" display: flex; justify-content: flex-start; align-items: center; margin: 5px;width:100%;" class="col-md-12">
-                                    <img style="margin-right:20px;width:65px;" src="~/Content/TBPContent/people.png" class="img-fluid emp_Image" />
-                                    <h5 style="width:100%;" class="emp_Name">Any Available Specialist</h5>
-                                    <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-down downArrow"></i>
-                                    <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-up upArrow"></i>
 
-                                </div>
+                    <div id="selectionHeader" class="selection-header">
+                        <div class="selection-content">
+                            <div>
+                                <div id="selectedEmployeeDisplay" class="employee-name"></div>
+                                <div id="selectedTimeSlotDisplay" class="timeslot-info"></div>
                             </div>
+                            <button id="backToSelection" type="button" class="change-btn">
+                                <i class="mdi mdi-arrow-left"></i> Change
+                            </button>
+                        </div>
+                    </div>
 
-                            @foreach (var item in Model.Employees)
-                            {
-                                <div id="row_@(item.Employee.ID)" style="display:flex;justify-content:flex-start;align-items:center;" onclick="selectEmployee('@item.Employee.Name','@item.Employee.ID')" class="row">
-                                    <div style=" display: flex; justify-content: flex-start; align-items: center; margin: 5px; width: 100%;" class="col-md-12">
-                                        <img style="margin-right:20px;width:65px;" src="@item.Employee.Photo" class="img-fluid emp_Image" />
-                                        <div class="dataText" style="margin-top:20px;width:85%;">
+                    <div id="bookingSteps">
 
-                                            <h5 style="margin-bottom:0px;" class="emp_Name">@item.Employee.Name </h5>
-
-                                            <p style="margin-bottom:0px;" class="emp_Specs">@item.Employee.Specialization</p>
-                                            @if (item.HaveEmpPriceChange)
-                                            {
-                                                <p style="margin-bottom: 0px; color: red; font-weight: bold;" class="">This staff has price @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</p>
-
-                                            }
-                                            @if (item.Rating > 0)
-                                            {
-
-                                                <h6 class="emp_Rating" style="font-size:large;">
-                                                    @for (int i = 1; i <= item.Rating; i++)
-                                                    {
-                                                        <i style="color:goldenrod;font-size:large" class="mdi mdi-star"></i>
-                                                    }
-                                                    (@(item.Count))
-                                                </h6>
-                                            }
-                                        </div>
-                                        <button type="button" class="info-button btn" data-bs-toggle="modal" data-bs-target="#infoModal_@(item.Employee.ID)">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
-                                                <circle cx="50" cy="50" r="40" fill="#3498db" />
-                                                <text x="50" y="50" text-anchor="middle" alignment-baseline="middle" font-size="40" fill="#fff">i</text>
-                                            </svg>
-                                        </button>
+                        <div class="custom-dropdown col-md-12" style="width:100%;" id="customDropdown">
+                            <div class="dropdown-btn" onclick="toggleDropdown()"></div>
+                            <div class="dropdown-content col-md-12" id="dropdownContent">
+                                <div id="row_0" style="display:flex;justify-content:flex-start;align-items:center;" onclick="selectEmployee('Any Available Specialist','0')" class="row">
+                                    <div style=" display: flex; justify-content: flex-start; align-items: center; margin:0px;width:100%;" class="col-md-12">
+                                        <img src="~/Content/TBPContent/people.png" class="img-fluid emp_Image rounded-4 favorite-img" />
+                                        <h6 style=" width: 100%; margin-left: 20px;" class="mb-1 fs-14 emp_Name">Any Available Specialist</h6>
                                         <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-down downArrow"></i>
                                         <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-up upArrow"></i>
+
+                                    </div>
+
+                                </div>
+                                @if (Model.Employees != null)
+                                {
+                                    foreach (var item in Model.Employees)
+                                    {
+                                    <div id="row_@(item.Employee.ID)" onclick="selectEmployee('@item.Employee.Name','@item.Employee.ID')" class="d-flex align-items-center gap-3 bg-white border-bottom shadow-sm px-3 py-1">
+                                        <div class="ddeets" style=" display: flex; align-items:center; gap: 20px; width: auto; ">
+                                            <div>
+                                                <img src="@item.Employee.Photo" alt="" class="img-fluid emp_Image rounded-4 favorite-img">
+                                            </div>
+                                            <div>
+                                                <div class="small">
+                                                    <h6 class="mb-1 fs-14 emp_Name">@item.Employee.Name</h6>
+                                                    <div class="d-flex align-items-center emp_Rating gap-1 small">
+                                                        @for (int i = 1; i <= item.Rating; i++)
+                                                        {
+                                                            <span class="mdi mdi-star text-warning"></span>
+                                                        }
+                                                        <span class="text-warning">@item.Rating.ToString("F2")</span>
+                                                        <span>(@(item.Count))</span>
+                                                    </div>
+                                                    @if (item.HaveEmpPriceChange)
+                                                    {
+                                                        <small style="margin-bottom: 0px; color: red; font-weight: bold;" class="text-muted">This staff has price @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</small>
+
+                                                    }
+                                                    <small class="text-muted emp_Specs">@item.Employee.Specialization</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="in" style="display:flex;align-items:center;">
+                                            <a class="info-button btn" href="@Url.Action("ShowEmpProfile", "Booking", new {EmployeeID=item.Employee.ID,Ids=Model.ServiceIDs})">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 100 100">
+                                                    <circle cx="50" cy="50" r="40" fill="#24244B" />
+                                                    <text x="50" y="50" text-anchor="middle" alignment-baseline="middle" font-size="40" fill="#fff">i</text>
+                                                </svg>
+                                            </a>
+                                            <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-down downArrow"></i>
+                                            <i style="font-size:50px;margin:auto;" class="mdi mdi-chevron-up upArrow"></i>
+
+                                        </div>
                                         <div class="modal fade" id="infoModal_@(item.Employee.ID)" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content">
@@ -469,190 +573,197 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                   
 
-                            }
-                        </div>
-                    </div>
-
-
-
-                    @if (Model.ErrorNote == "Yes")
-                    {
-                        <h6 style="padding:20px;" class="text-danger px-3" id="NEWError">
-                            You can't book further due to one of the reasons:<br /><br />
-                            * You've selected service(s) that require the involvement of multiple employees.<br />
-                            * You haven't chosen a "services" yet!<br /><br />
-                            Please go back to the booking page
-                            or call @Model.Company.Business for an appointment!
-                        </h6>
-
-                    }
-                    <div class="mb-3">
-
-                        <input translate="no" readonly type="text" style="display:none;" id="dateInput" name="Date" onchange="renderCalendar()" placeholder="Select a date">
-                        <div class="calendar" id="calendar">
-                            <div class="header">
-                                <button type="button" id="prevBtn">&lt;</button>
-                                <h2 translate="no" id="monthYear">Month Year</h2>
-                                <button type="button" id="nextBtn">&gt;</button>
+                                    }
+                                }
                             </div>
-                            <div class="days" id="daysContainer"></div>
                         </div>
 
-                    </div>
 
-                    <div id="MainSlotsView" class="mb-3">
-                        <label for="floatingTextarea" class="mb-1">Time Slots</label>
+
                         @if (Model.ErrorNote == "Yes")
                         {
+                            <h6 style="padding:20px;" class="text-danger px-3" id="NEWError">
+                                You can't book further due to one of the reasons:<br /><br />
+                                * You've selected service(s) that require the involvement of multiple employees.<br />
+                                * You haven't chosen a "services" yet!<br /><br />
+                                Please go back to the booking page
+                                or call @Model.Company.Business for an appointment!
+                            </h6>
+
+                        }
+                        <div class="mb-3">
+
+                            <input translate="no" readonly type="text" style="display:none;" id="dateInput" name="Date" onchange="renderCalendar()" placeholder="Select a date">
+                            <div class="calendar" id="calendar">
+                                <div class="header">
+                                    <button type="button" id="prevBtn">&lt;</button>
+                                    <h2 translate="no" id="monthYear">Month Year</h2>
+                                    <button type="button" id="nextBtn">&gt;</button>
+                                </div>
+                                <div class="days" id="daysContainer"></div>
+                            </div>
+
+                        </div>
+
+                        <div id="MainSlotsView" class="mb-3">
+                            <label for="floatingTextarea" class="mb-1">Time Slots</label>
+                            @if (Model.ErrorNote == "Yes")
+                            {
+
+                            }
+                            else
+                            {
+                                <div class="row" style="width:100%; display: flex; justify-content: center; " id="TimeSlots">
+
+                                </div>
+                            }
+                            <div id="EmpPriceChangeRow" class="row" style="display:none; border: solid 0.5px; border-radius: 20px; padding: 5px;">
+                                <img style="width:100px;height:100%;" src="" id="EmployeePriceChangeImg" />
+                                <div class="col-md-12" style="width:60%;">
+                                    <h3 id="EmployeePriceChangeName"> <span id="empDiscountTextH"></span></h3>
+                                    <p style="color:red;font-weight:bold;" id="DetailsofPriceChange">
+                                        The selected staff has a <span id="empPercentagetext"></span> <span id="empDiscountText"></span> on the selected date, if you
+                                        are not comfortable with that kindly change staff.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="personalInfoForm" style="display: none;">
+                        <h6 style="font-size:18px;" class="px-2 card-title">Personal Information</h6>
+                        <!-- ... existing personal info form fields ... -->
+
+                        @if (Model.SentBy == "Cancellation")
+                        {
+                            <div class="row">
+                                <div style="margin-bottom:15px;" class="col-12">
+                                    <label style="color:black;font-weight:600;" for="exampleFormControlName" class="form-label mb-1">First Name</label>
+                                    <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                                        <input name="FirstName" id="FirstName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                               readonly value="@Model.FirstName" placeholder="Please Enter Your First Name" aria-label="First name" aria-describedby="name">
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom:15px;" class="col-12">
+                                    <label style="color:black;font-weight:600;" for="exampleFormControlAge" class="form-label mb-1">Last Name</label>
+                                    <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                                        <input name="LastName" id="LastName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                               readonly value="@Model.LastName" placeholder="Please Enter Your Last Name" aria-label="Last name" aria-describedby="name">
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div style="margin-bottom:15px;" class="mb-3">
+                                <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Email <span class="text-success">*Please ensure your email is correct for confirmation</span></label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                    <input name="Email" id="Email" type="email" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                           readonly value="@Model.Email" placeholder="Please Enter Your Email" aria-label="Email" aria-describedby="Email">
+                                </div>
+                                <span id="ErrorText" class="text-danger"></span>
+                            </div>
+
+                            <div style="margin-bottom:15px;" class="mb-3">
+                                <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Mobile Number</label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                    <input maxlength="13" type="text" value="" placeholder="+31XXXXXXXXX" id="MobileNumber" class="form-control common-input" name="MobileNumber" />
+                                    <span id="phoneNumberError" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom:15px;" class="mb-3">
+                                <input type="hidden" translate="no" id="SentBy" value="@Model.SentBy" />
+                                <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Comment</label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                    @if (Model.SentBy == "Cancellation")
+                                    {
+                                        <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
+                                               value="@Model.Appointment.Notes" placeholder="Please Enter Your Comment" aria-label="Comment" aria-describedby="Comment">
+                                        <input type="hidden" value="@Model.Appointment.ID" id="AppointmentID" name="AppointmentID" />
+                                    }
+                                    else
+                                    { <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
+                                             value="" placeholder="Please Enter Your Comment" aria-label="Comment" aria-describedby="Comment">
+
+                                    }
+
+                                </div>
+                            </div>
+
 
                         }
                         else
                         {
-                            <div class="row" style="width:100%; display: flex; justify-content: center; " id="TimeSlots">
+                            <div class="row">
+                                <div style="margin-bottom:15px;" class="col-12">
+                                    <label style="color:black;font-weight:600;" for="exampleFormControlName" class="form-label mb-1">First Name</label>
+                                    <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                                        <input name="FirstName" id="FirstName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                               value="" placeholder="John" aria-label="First name" aria-describedby="name">
+                                    </div>
+                                </div>
 
+                                <div style="margin-bottom:15px;" class="col-12">
+                                    <label style="color:black;font-weight:600;" for="exampleFormControlAge" class="form-label mb-1">Last Name</label>
+                                    <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
+                                        <input name="LastName" id="LastName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                               value="" placeholder="Doe" aria-label="Last name" aria-describedby="name">
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div style="margin-bottom:15px;" class="mb-3">
+                                <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Email <span class="text-success">*Please ensure your email is correct for confirmation</span></label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                    <input name="Email" id="Email" type="email" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
+                                           value="" placeholder="john@doe.com" aria-label="Email" aria-describedby="Email">
+                                </div>
+                                <span id="ErrorText" class="text-danger"></span>
+
+                            </div>
+
+                            <div class="mb-3">
+                                <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Mobile Number</label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                    <input style="margin-bottom:15px;" maxlength="13" type="text" value="" placeholder="+31XXXXXXXXX" id="MobileNumber" class="form-control common-input" name="MobileNumber" />
+                                    <span id="phoneNumberError" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom:15px;" class="mb-3">
+                                <input type="hidden" translate="no" id="SentBy" value="@Model.SentBy" />
+                                <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Comment</label>
+                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
+                                    @if (Model.SentBy == "Cancellation")
+                                    {
+                                        <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
+                                               value="@Model.Appointment.Notes" placeholder="" aria-label="Comment" aria-describedby="Comment">
+                                        <input type="hidden" value="@Model.Appointment.ID" id="AppointmentID" name="AppointmentID" />
+                                    }
+                                    else
+                                    { <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
+                                             value="" placeholder="" aria-label="Comment" aria-describedby="Comment">
+
+                                    }
+
+                                </div>
                             </div>
                         }
-                        <div id="EmpPriceChangeRow" class="row" style="display:none; border: solid 0.5px; border-radius: 20px; padding: 5px;">
-                            <img style="width:100px;height:100%;" src="" id="EmployeePriceChangeImg" />
-                            <div class="col-md-12" style="width:60%;">
-                                <h3 id="EmployeePriceChangeName"> <span id="empDiscountTextH"></span></h3>
-                                <p style="color:red;font-weight:bold;" id="DetailsofPriceChange">
-                                    The selected staff has a <span id="empPercentagetext"></span> <span id="empDiscountText"></span> on the selected date, if you
-                                    are not comfortable with that kindly change staff.
-                                </p>
-                            </div>
-                        </div>
                     </div>
-                    <h6 style="font-size:18px;" class="px-2 card-title">Personal Information</h6>
 
-                    @if (Model.SentBy == "Cancellation")
-                    {
-                        <div class="row">
-                            <div style="margin-bottom:15px;" class="col-12">
-                                <label style="color:black;font-weight:600;" for="exampleFormControlName" class="form-label mb-1">First Name</label>
-                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
-                                    <input name="FirstName" id="FirstName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
-                                           readonly value="@Model.FirstName" placeholder="Please Enter Your First Name" aria-label="First name" aria-describedby="name">
-                                </div>
-                            </div>
-
-                            <div style="margin-bottom:15px;" class="col-12">
-                                <label style="color:black;font-weight:600;" for="exampleFormControlAge" class="form-label mb-1">Last Name</label>
-                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
-                                    <input name="LastName" id="LastName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
-                                           readonly value="@Model.LastName" placeholder="Please Enter Your Last Name" aria-label="Last name" aria-describedby="name">
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div style="margin-bottom:15px;" class="mb-3">
-                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Email <span class="text-success">*Please ensure your email is correct for confirmation</span></label>
-                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
-                                <input name="Email" id="Email" type="email" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
-                                       readonly value="@Model.Email" placeholder="Please Enter Your Email" aria-label="Email" aria-describedby="Email">
-                            </div>
-                            <span id="ErrorText" class="text-danger"></span>
-                        </div>
-
-                        <div style="margin-bottom:15px;" class="mb-3">
-                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Mobile Number</label>
-                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
-                                <input maxlength="13" type="text" value="" placeholder="+31XXXXXXXXX" id="MobileNumber" class="form-control common-input" name="MobileNumber" />
-                                <span id="phoneNumberError" class="text-danger"></span>
-
-                            </div>
-                        </div>
-
-                        <div style="margin-bottom:15px;" class="mb-3">
-                            <input type="hidden" translate="no" id="SentBy" value="@Model.SentBy" />
-                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Comment</label>
-                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
-                                @if (Model.SentBy == "Cancellation")
-                                {
-                                    <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
-                                           value="@Model.Appointment.Notes" placeholder="Please Enter Your Comment" aria-label="Comment" aria-describedby="Comment">
-                                    <input type="hidden" value="@Model.Appointment.ID" id="AppointmentID" name="AppointmentID" />
-                                }
-                                else
-                                { <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
-                                         value="" placeholder="Please Enter Your Comment" aria-label="Comment" aria-describedby="Comment">
-
-                                }
-
-                            </div>
-                        </div>
-
-
-                    }
-                    else
-                    {
-                        <div class="row">
-                            <div style="margin-bottom:15px;" class="col-12">
-                                <label style="color:black;font-weight:600;" for="exampleFormControlName" class="form-label mb-1">First Name</label>
-                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
-                                    <input name="FirstName" id="FirstName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
-                                           value="" placeholder="John" aria-label="First name" aria-describedby="name">
-                                </div>
-                            </div>
-
-                            <div style="margin-bottom:15px;" class="col-12">
-                                <label style="color:black;font-weight:600;" for="exampleFormControlAge" class="form-label mb-1">Last Name</label>
-                                <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlName">
-                                    <input name="LastName" id="LastName" type="text" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
-                                           value="" placeholder="Doe" aria-label="Last name" aria-describedby="name">
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div style="margin-bottom:15px;" class="mb-3">
-                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Email <span class="text-success">*Please ensure your email is correct for confirmation</span></label>
-                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
-                                <input name="Email" id="Email" type="email" class="form-control common-input bg-transparent rounded-0 border-0 px-0"
-                                       value="" placeholder="john@doe.com" aria-label="Email" aria-describedby="Email">
-                            </div>
-                            <span id="ErrorText" class="text-danger"></span>
-
-                        </div>
-
-                        <div class="mb-3">
-                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Mobile Number</label>
-                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
-                                <input style="margin-bottom:15px;" maxlength="13" type="text" value="" placeholder="+31XXXXXXXXX" id="MobileNumber" class="form-control common-input" name="MobileNumber" />
-                                <span id="phoneNumberError" class="text-danger"></span>
-
-                            </div>
-                        </div>
-
-                        <div style="margin-bottom:15px;" class="mb-3">
-                            <input type="hidden" translate="no" id="SentBy" value="@Model.SentBy" />
-                            <label style="color:black;font-weight:600;" for="exampleFormControlWight" class="form-label mb-1">Comment</label>
-                            <div class="input-group border bg-white rounded-3 py-1" id="exampleFormControlWight">
-                                @if (Model.SentBy == "Cancellation")
-                                {
-                                    <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
-                                           value="@Model.Appointment.Notes" placeholder="" aria-label="Comment" aria-describedby="Comment">
-                                    <input type="hidden" value="@Model.Appointment.ID" id="AppointmentID" name="AppointmentID" />
-                                }
-                                else
-                                { <input name="Comment" id="Comment" type="text" class="form-control  bg-transparent rounded-0 border-0 px-0"
-                                         value="" placeholder="" aria-label="Comment" aria-describedby="Comment">
-
-                                }
-
-                            </div>
-                        </div>
-                    }
 
                     <div id="loadingSpinner" class="loading-spinner-overlay">
                         <div class="spinner"></div>
                     </div>
                     <hr />
+
 
 
 
@@ -1379,6 +1490,11 @@
                             // Add a click event handler to the button (if needed)
                             button.click(function () {
 
+                                // Show selection header and hide booking steps
+                                $('#bookingSteps').hide();
+                                $('#selectionHeader').show();
+                                $('#personalInfoForm').show();
+                                $("#NextToPayment").show();
                                 $("#MyEmployeeID").val($(this).data("employee"));
                                 // Handle button click here
                                 $('button.btn-secondary').toggleClass('btn-secondary btn-primary');
@@ -1536,6 +1652,15 @@
 
                                 CheckDiscountAgainstCoupon();
 
+                                // Update selection header content
+                                const employeeName = $('.dropdown-btn .emp_Name').text();
+                                const timeSlot = $(this).data('timeslot');
+                                $('#selectedEmployeeDisplay').text(`Specialist: ${employeeName}`);
+                                $('#selectedTimeSlotDisplay').html(`
+        Date: ${$('#dateInput').val()}<br>
+        Time: ${timeSlot}
+    `);
+
                             });
 
                             timeSlotsContainer.append(button);
@@ -1601,6 +1726,15 @@
             }
         });
     }
+
+    $('#backToSelection').click(function () {
+        $('#bookingSteps').show();
+        $('#selectionHeader').hide();
+        $('#personalInfoForm').hide();
+        $('.btnTimeSlot').removeClass('btn-secondary').addClass('btn-primary');
+        $('#Time').val('');
+    });
+
 
     function CheckDiscountAgainstCoupon() {
         if ($("#Percentage").text() === "") {
@@ -1684,50 +1818,33 @@
         var FirstName = $("#FirstName").val();
         var LastName = $("#LastName").val();
         var Email = $("#Email").val();
-        var MobileNumber = $("#MobileNumber").val()
+        var MobileNumber = $("#MobileNumber").val();
         var Time = $("#Time").val();
 
-
-        if (FirstName.trim() == "" || LastName.trim() == "") {
-            $("#Error").text("Please Enter First or Last Name");
+        // Existing validation logic
+        if (FirstName.trim() === "" || LastName.trim() === "") {
+            $("#Error").text("Please Enter First and Last Name");
             $("#NextToPayment").attr("disabled", "disabled");
-
-        }
-        else if (Email.trim() == "") {
+        } else if (Email.trim() === "") {
             $("#Error").text("Please Enter Email");
             $("#NextToPayment").attr("disabled", "disabled");
-
-        }
-        else if (MobileNumber.length < 12) {
-
+        } else if (MobileNumber.length < 12) {
             $("#Error").text("Please Enter Correct Mobile Number");
             $("#NextToPayment").attr("disabled", "disabled");
-
-
-        }
-        //else if (Password.trim() == "") {
-        //    $("#Error").text("Please Enter Password");
-        //}
-
-        else if (Time.trim() == "" && $('#addToWaitListCheckbox').is(':checked') == false) {
+        } else if (Time.trim() === "" && !$('#addToWaitListCheckbox').is(':checked')) {
             $("#Error").text("Please Select Time Slots");
             $("#NextToPayment").attr("disabled", "disabled");
-        }
-        else if ($('#addToWaitListCheckbox').is(':checked') == true) {
-            $("#NextToPayment").show();
-            $("#NextToPayment").removeAttr("disabled");
-
+        } else {
             $("#Error").text("");
-        }
-        else if (FirstName.trim() != "" && LastName.trim() != ""
-            && MobileNumber.trim() != "" && Email.trim() != "" ) {
-            $("#NextToPayment").show();
             $("#NextToPayment").removeAttr("disabled");
-            $("#Error").text("");
-
         }
+
+        // Show selection header and hide booking steps
+        $('#bookingSteps').hide();
+        $('#selectionHeader').show();
+        $('#personalInfoForm').show();
+
     }
-
     function showLoadingSpinner() {
         document.getElementById('loadingSpinner').style.display = 'block';
     }
@@ -1738,7 +1855,9 @@
         showLoadingSpinner();
         $("#pills-payment-tab").removeAttr("disabled");
         $("#pills-payment-tab").click();
-        $("#pills-payment-tab").attr("disabled","disabled");
+        $("#pills-payment-tab").attr("disabled", "disabled");
+        $('#selectionHeader').hide();
+        $('#personalInfoForm').show();
         const inputDate = new Date($("#dateInput").val());
         const options = { weekday: 'long', month: 'long', day: 'numeric' };
         const formattedDate = inputDate.toLocaleDateString('en-US', options);
@@ -1958,7 +2077,11 @@
 
         }
     }
+
+
+
     function selectEmployee(employee, ID) {
+        debugger
         var dropdownBtn = document.getElementById("customDropdown").querySelector(".dropdown-btn");
         //dropdownBtn.textContent = employee;
         $("#ForWaitingListEmployeeID").val(ID);
@@ -2014,7 +2137,7 @@
 
         // Make an AJAX request to a server-side script
         $.ajax({
-            url: "@Url.Action("IsValidEmailAjx","Booking")", // Replace with the URL of your server-side script
+        url: "@Url.Action("IsValidEmailAjx","Booking")", // Replace with the URL of your server-side script
             method: "POST", // Or "GET" depending on your server-side implementation
             data: { email: email },
             success: function (response) {
@@ -2040,6 +2163,11 @@
         if ('@Model.CustomerID' != 0) {
             var href = "@Url.Action("CustomerProfile", "Booking", new { CustomerID = Model.CustomerID, businessName = Model.Company.Business })";
             $("#ProfileNAVTab").attr("href", href);
+        }
+        
+        if ('@Model.SelectedEmployeeID' != "0") {
+            selectEmployee('', '@Model.SelectedEmployeeID');
+            toggleDropdown();
         }
 
         if ('@Model.CustomerID' != 0) {

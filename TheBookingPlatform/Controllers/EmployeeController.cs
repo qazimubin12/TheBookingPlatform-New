@@ -361,8 +361,10 @@ namespace TheBookingPlatform.Controllers
                 model.Name = Employee.Name;
                 model.Photo = Employee.Photo;
                 model.Gender = Employee.Gender;
+                model.Experience = Employee.Experience;
                 model.AllowOnlineBooking = Employee.AllowOnlineBooking;
                 model.Description = Employee.Description;
+                model.ExpYears = Employee.ExpYears;
                 model.Specialization = Employee.Specialization;
                 model.LinkedEmployee = Employee.LinkedEmployee;
                 if (LoggedInUser.Role == "Super Admin")
@@ -435,10 +437,12 @@ namespace TheBookingPlatform.Controllers
                 Employee.Name = model.Name;
                 Employee.Gender = model.Gender;
                 Employee.Photo = model.Photo;
+                Employee.ExpYears = model.ExpYears;
                 Employee.Description = model.Description;
                 //Employee.Type = model.Type;
                 //Employee.Percentage = model.Percentage;
                 Employee.Specialization = model.Specialization;
+                Employee.Experience = model.Experience;
                 Employee.LinkedEmployee = model.LinkedEmployee;
                 EmployeeServices.Instance.UpdateEmployee(Employee);
             }
@@ -452,6 +456,8 @@ namespace TheBookingPlatform.Controllers
                 }
                 Employee.Name = model.Name;
                 Employee.Photo = model.Photo;
+                Employee.ExpYears = model.ExpYears;
+                Employee.Experience = model.Experience;
                 Employee.Gender = model.Gender;
                 Employee.Description = model.Description;
                 Employee.Specialization = model.Specialization;

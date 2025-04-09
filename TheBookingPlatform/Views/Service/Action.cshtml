@@ -46,7 +46,7 @@
                                 Create Service
                             </h2>
                         }
-                        <div style="display:flex;align-items:center;" class="row">
+                        <div style="display:flex;align-items:center;gap:100px;" class="row">
                             <div class="input-group input-group-dynamic w-auto">
 
                                 <div class="form-group">
@@ -63,7 +63,7 @@
                                     <label>
                                         Category
                                     </label>
-                                    <select onchange="ClearBorder()" id="Category" class="form-select" name="Category">
+                                    <select onchange="ClearBorder()" id="Category" class="form-control" name="Category">
                                         @foreach (var item in Model.ServiceCategories)
                                         {
                                             if (item.Name.Trim() == Model.Category?.Trim())
@@ -852,7 +852,7 @@
     function CheckSessions() {
         var selectedType = $('#Category option:selected').attr('data-type');
         debugger
-        if (selectedType == "Package") {
+        if (selectedType == "Package Service") {
             $("#NOSBOX").show();
         } else {
             $("#NOSBOX").hide();

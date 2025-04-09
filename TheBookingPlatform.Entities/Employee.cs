@@ -25,5 +25,7 @@ namespace TheBookingPlatform.Entities
         public string GoogleCalendarName { get; set; }
         public string GoogleCalendarID { get; set; }
         public string WatchChannelID { get; set; }
+        public float ExpYears { get; set; }
+        public string Experience { get; set; }
     }
 }

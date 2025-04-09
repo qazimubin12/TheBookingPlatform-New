@@ -364,42 +364,49 @@ namespace TheBookingPlatform.Controllers
             var company = CompanyServices.Instance.GetCompanyByName(user.Company);
             if (company != null)
             {
+               
                 if (!company.OwnerCompany )
                 {
                     var package = PackageServices.Instance.GetPackage(company.Package);
-                    if (package != null)
+                    if (package != null || payments != null)
                     {
-                        StripeConfiguration.ApiKey = package.APIKEY;
-                        var invoiceService = new InvoiceService();
-                        var invoices = invoiceService.List(new InvoiceListOptions
-                        {
-                            Subscription = payments.SubcriptionID,
-                            Limit = 1 // Get only the latest invoice
-                        });
-                        var latestInvoice = invoices.FirstOrDefault();
-                        if (latestInvoice != null)
-                        {
-                            // Retrieve the PaymentIntent to check its status
-                            if (!string.IsNullOrEmpty(latestInvoice.PaymentIntentId))
+                       
+                            StripeConfiguration.ApiKey = package.APIKEY;
+                            var invoiceService = new InvoiceService();
+                            var invoices = invoiceService.List(new InvoiceListOptions
                             {
-                                var paymentIntentService = new PaymentIntentService();
-                                var paymentIntent = paymentIntentService.Get(latestInvoice.PaymentIntentId);
+                                Subscription = payments.SubcriptionID,
+                                Limit = 1 // Get only the latest invoice
+                            });
+                            var latestInvoice = invoices.FirstOrDefault();
+                            if (latestInvoice != null)
+                            {
+                                // Retrieve the PaymentIntent to check its status
+                                if (!string.IsNullOrEmpty(latestInvoice.PaymentIntentId))
+                                {
+                                    var paymentIntentService = new PaymentIntentService();
+                                    var paymentIntent = paymentIntentService.Get(latestInvoice.PaymentIntentId);
 
-                                if (paymentIntent.Status == "processing" || paymentIntent.Status == "requires_confirmation")
-                                {
-                                    allowAccess = true; // SEPA payments take time, allow access
-                                }
-                                else if (paymentIntent.Status == "succeeded")
-                                {
-                                    allowAccess = true; // Payment fully processed, allow access
-                                }
-                                else
-                                {
-                                    allowAccess = false; // Payment failed or needs action
+                                    if (paymentIntent.Status == "processing" || paymentIntent.Status == "requires_confirmation")
+                                    {
+                                        allowAccess = true; // SEPA payments take time, allow access
+                                    }
+                                    else if (paymentIntent.Status == "succeeded")
+                                    {
+                                        allowAccess = true; // Payment fully processed, allow access
+                                    }
+                                    else
+                                    {
+                                        allowAccess = false; // Payment failed or needs action
+                                    }
                                 }
                             }
-                        }
 
+
+                    }
+                    else
+                    {
+                        allowAccess = true;
                     }
                 }
                 else

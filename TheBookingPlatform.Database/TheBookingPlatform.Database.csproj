@@ -211,6 +211,14 @@
     <Compile Include="Migrations\202503290855033_eventdeletionswitch.Designer.cs">
       <DependentUpon>202503290855033_eventdeletionswitch.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202504070858272_experiencyear.cs" />
+    <Compile Include="Migrations\202504070858272_experiencyear.Designer.cs">
+      <DependentUpon>202504070858272_experiencyear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504081814399_expeirence.cs" />
+    <Compile Include="Migrations\202504081814399_expeirence.Designer.cs">
+      <DependentUpon>202504081814399_expeirence.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -330,6 +338,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503290855033_eventdeletionswitch.resx">
       <DependentUpon>202503290855033_eventdeletionswitch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504070858272_experiencyear.resx">
+      <DependentUpon>202504070858272_experiencyear.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504081814399_expeirence.resx">
+      <DependentUpon>202504081814399_expeirence.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
