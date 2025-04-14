@@ -50,14 +50,14 @@ namespace TheBookingPlatform.Services
             {
                 if (SearchTerm != "")
                 {
-                    return context.Reviews.Where(p => p.Business == Business  && p.Feedback != null && p.Feedback.ToLower()
+                    return context.Reviews.AsNoTracking().Where(p => p.Business == Business  && p.Feedback != null && p.Feedback.ToLower()
                                             .Contains(SearchTerm.ToLower()))
-                                            .OrderBy(x => x.Date)
+                                            .OrderByDescending(x => x.Date)
                                             .ToList();
                 }
                 else
                 {
-                    return context.Reviews.Where(x => x.Business == Business ).OrderBy(x => x.Date).ToList();
+                    return context.Reviews.AsNoTracking().Where(x => x.Business == Business ).OrderByDescending(x => x.Date).ToList();
                 }
             }
         }

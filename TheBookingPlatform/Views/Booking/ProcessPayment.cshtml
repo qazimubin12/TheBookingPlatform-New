@@ -350,6 +350,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Show error to your customer (e.g., insufficient funds)
             document.getElementById('card-errors').textContent = error.message;
             hideLoadingSpinner();
+            setLoading(false)
         } else if (paymentIntent.status === 'succeeded') {
             // The payment has been processed!
             window.location.href = '@Html.Raw(Model.SuccessURL)';

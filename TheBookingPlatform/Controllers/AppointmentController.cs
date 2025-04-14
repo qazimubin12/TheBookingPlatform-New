@@ -315,6 +315,7 @@ namespace TheBookingPlatform.Controllers
             // Checking if the date falls within the range
         }
 
+        
         [HttpPost]
         public async Task<JsonResult> UpdateIntervalOnUser(int interval)
         {

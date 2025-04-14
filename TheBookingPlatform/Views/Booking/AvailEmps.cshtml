@@ -95,56 +95,52 @@
     }
 </div>
 <!-- Available doctors -->
-<div class="mb-3 d-none">
-    <h6 class="mb-2 pb-1 fw-bold px-3 text-black">Available Doctor</h6>
+<div class="mb-3">
+    @*<h6 class="mb-2 pb-1 fw-bold px-3 text-black"></h6>*@
     <div class="available-doctor ps-2 ms-1">
-        <div class="available-doctor-item">
-            <div class="bg-primary text-white rounded-4 p-3 doctor-book-back">
-                <h1 class="mb-1 doctor-book-back-title">
-                    Book Your Next
-                    <span class="h4 text-warning overflow-hidden rounded-4 m-0 bg-white">
-                        <b class="bg-light-subtle text-primary px-1 rounded">Appointment</b>
-                        <b class="bg-info fw-normal text-white px-1 rounded">Online!</b>
-                    </span>
-                </h1>
-                <p class="mb-2 text-white-50 small">Book Now and Get 30% OFF</p>
-                <a href="request-appointment.html" class="btn btn-sm btn-book btn-secondary">BOOK NOW <i class="bi bi-arrow-right"></i></a>
-                <div class="doctor-book-img">
-                    <img src="img/home/available-doctor-1.png" alt="" class="img-fluid">
+        @if (Model.ActivePriceChange != null)
+        {
+            <div class="available-doctor-item">
+                <div class="bg-primary text-white rounded-4 p-3 doctor-book-back">
+                    <h1 class="mb-1 doctor-book-back-title">
+                        Book Your Next
+                        <span class="h4 text-warning overflow-hidden rounded-4 m-0 bg-white" style="white-space:nowrap;">
+                            <b class="bg-light-subtle text-primary px-1 rounded">Appointment</b>
+                            <b class="bg-info fw-normal text-white px-1 rounded">and Get @Model.ActivePriceChange.Percentage% @(Model.ActivePriceChange.TypeOfChange == "Discount"?"OFF" : "Price Increase" )!</b>
+                        </span>
+                    </h1>
+                    <p class="mb-2 text-white-50 small">On All Employees Till @Model.ActivePriceChange.EndDate.ToString("MMMM dd, yyyy")</p>
+                    @*<div class="doctor-book-img">
+                        <img src="~/Content/bookingtemplate/img/home/available-doctor-1.png" alt="" class="img-fluid">
+                    </div>*@
                 </div>
             </div>
-        </div>
-        <div class="available-doctor-item">
-            <div class="btn-info text-white rounded-4 p-3 doctor-book-back">
-                <h1 class="mb-1 doctor-book-back-title">
-                    <span class="h4 overflow-hidden m-0">
-                        <b class="text-primary">Find Your Dental</b>
-                    </span>
-                    Specialist Doctor
-                </h1>
-                <p class="mb-2 small">Dr. Samaro <span class="bg-white rounded-pill px-1 small text-orange"><i class="mdi mdi-star"></i> 4.9</span></p>
-                <a href="#" class="btn btn-sm btn-primary btn-book">BOOK NOW <i class="bi bi-arrow-right"></i></a>
-                <div class="doctor-book-img">
-                    <img src="img/home/available-doctor-3.png" alt="" class="img-fluid">
+        }
+
+        @if (Model.EmployeePriceChanges != null)
+        {
+            foreach (var item in Model.EmployeePriceChanges)
+            {
+            <div class="available-doctor-item">
+                <div class="bg-info  rounded-4 p-3 doctor-book-back">
+                    <h1 class="mb-1 doctor-book-back-title">
+                        Book Appointment with
+                        <span class="h4 text-warning overflow-hidden rounded-4 m-0 bg-white" style="white-space:nowrap;">
+                            <b class="bg-light-subtle text-primary px-1 rounded"> @item.Employee.Name and</b>
+                            <b class="bg-info fw-normal text-white px-1 rounded">Get @item.EmployeePriceChange.Percentage% @item.EmployeePriceChange.TypeOfChange!</b>
+                        </span>
+                    </h1>
+                  
+                    <p class="mb-2  small">On @item.Employee.Name till @item.EmployeePriceChange.EndDate.ToString("MMMM dd, yyyy")</p>
+                    <div class="doctor-book-img">
+                        <img src="@item.Employee.Photo" alt="" class="img-fluid">
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="available-doctor-item">
-            <div class="btn-secondary text-white rounded-4 p-3 doctor-book-back">
-                <h1 class="mb-1 doctor-book-back-title">
-                    Find the Right <br>
-                    <span class="h4 text-warning overflow-hidden rounded-4 m-0">
-                        <b class="bg-warning text-black px-1 rounded">Doctor for Your</b>
-                        <b class="text-black">Needs!</b>
-                    </span>
-                </h1>
-                <p class="mb-2 text-white small">Book Now and Get 30% OFF</p>
-                <a href="#" class="btn btn-sm btn-dark btn-book">BOOK NOW <i class="bi bi-arrow-right"></i></a>
-                <div class="doctor-book-img">
-                    <img src="img/home/available-doctor-2.png" alt="" class="img-fluid">
-                </div>
-            </div>
-        </div>
+
+            }
+        }
+
     </div>
 </div>
 

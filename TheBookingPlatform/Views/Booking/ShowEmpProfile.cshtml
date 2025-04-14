@@ -7,12 +7,11 @@
     <div class="d-flex align-items-center gap-4">
         <img src="@Model.Employee.Photo" alt="" class="img-fluid appointment-doctor-img">
         <div>
-            <h6 class="text-white">@Model.Employee.Name</h6>
+            <h6 class="text-white">@Model.Employee.Name @(Model.EmployeePriceChangeFull != null ? "Has "+Model.EmployeePriceChangeFull.TypeOfChange : "")</h6>
             @if (Model.EmployeePriceChangeFull != null)
             {
-                <h6 class="text-white">@Model.EmployeePriceChangeFull.TypeOfChange</h6>
                 <h1 class="text-warning mb-0 fw-bold">
-                    @Model.EmployeePriceChangeFull.Percentage %
+                    @Model.EmployeePriceChangeFull.Percentage%
                     <span class="text-white-50 fw-normal fs-6">Ends on: @Model.EmployeePriceChangeFull.EndDate.ToString("MMMM dd, yyyy")</span>
                 </h1>
             }
@@ -106,7 +105,7 @@
                     <img src="~/Content/TBPContent/customer.png" alt="" class="img-fluid rounded-pill review-profile">
                     <div>
                         <p class="mb-0 fw-bold">@item.CustomerName</p>
-                        <p class="text-muted small m-0">@item.Review.Date.ToString("MMMM dd, yyyy")</p>
+                        <p class="mb-0 text-muted">@item.Review.Feedback</p>
                     </div>
                     <div class="ms-auto text-center">
                         <div class="d-flex align-items-center gap-1 small text-warning">

@@ -95,6 +95,13 @@ namespace TheBookingPlatform.ViewModels
         public string SuccessURL { get;  set; }
         public string PaymentSecret { get;  set; }
         public string CancelURL { get;  set; }
+        public PriceChange ActivePriceChange { get;  set; }
+        public List<EmployeePriceChangeModel> EmployeePriceChanges { get;  set; }
+    }
+    public class EmployeePriceChangeModel
+    {
+        public EmployeePriceChange EmployeePriceChange { get; set; }
+        public Employee Employee { get; set; }
     }
 
     public class EmployeeNewModel
@@ -145,6 +152,7 @@ namespace TheBookingPlatform.ViewModels
 
     public class TimeSlotModel
     {
+        public string Type { get; set; }
         public string TimeSlot { get; set; }
         public bool HaveDiscount { get; set; }
         public float Percentage { get; set; }

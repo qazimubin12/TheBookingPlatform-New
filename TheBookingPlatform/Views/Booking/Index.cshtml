@@ -481,6 +481,7 @@
 
 
     $("#NextToDetailsButton").click(function () {
+        showLoadingSpinner();
         @*showLoadingSpinner();
         var CustomerID = localStorage.getItem("C_ID") ?? "0";
         var ids = [];
