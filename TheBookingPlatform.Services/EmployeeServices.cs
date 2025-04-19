@@ -89,15 +89,37 @@ namespace TheBookingPlatform.Services
 
 
 
-        public List<Employee> GetEmployeeWRTBusiness(string Business,bool IsActive,bool AllowOnlineBooking,List<int> ListOfIDs)
+        //public List<Employee> GetEmployeeWRTBusiness(string Business,bool IsActive,bool AllowOnlineBooking,List<int> ListOfIDs)
+        //{
+        //    using (var context = new DSContext())
+        //    {
+
+        //        return context.Employees.Where(x => x.Business == Business && x.IsActive == IsActive && x.AllowOnlineBooking ==AllowOnlineBooking && ListOfIDs.Contains(x.ID) && x.IsDeleted == false).OrderBy(x => x.DisplayOrder).ToList();
+
+        //    }
+        //}
+
+        public List<Employee> GetEmployeeWRTBusiness(bool IsActive, bool AllowOnlineBooking, List<int> ListOfIDs,string Business)
         {
             using (var context = new DSContext())
             {
 
-                return context.Employees.Where(x => x.Business == Business && x.IsActive == IsActive && x.AllowOnlineBooking ==AllowOnlineBooking && ListOfIDs.Contains(x.ID) && x.IsDeleted == false).OrderBy(x => x.DisplayOrder).ToList();
+                return context.Employees.Where(x => x.Business == Business && x.IsActive == IsActive && x.AllowOnlineBooking == AllowOnlineBooking && ListOfIDs.Contains(x.ID) && x.IsDeleted == false).OrderBy(x => x.DisplayOrder).ToList();
 
             }
         }
+
+        public List<Employee> GetEmployeeWRTBusiness(bool IsActive, List<int> ListOfIDs, string Business)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Employees.Where(x => x.Business == Business && x.IsActive == IsActive && ListOfIDs.Contains(x.ID) && x.IsDeleted == false).OrderBy(x => x.DisplayOrder).ToList();
+
+            }
+        }
+
+
 
         public List<Employee> GetEmployeeWRTBusiness(bool IsActive, bool AllowOnlineBooking, List<int> ListOfIDs)
         {
@@ -108,7 +130,6 @@ namespace TheBookingPlatform.Services
 
             }
         }
-
         public List<Employee> GetEmployeeWRTBusiness(string Business, bool IsActive, List<int> ListOfIDs)
         {
             using (var context = new DSContext())
@@ -120,12 +141,12 @@ namespace TheBookingPlatform.Services
         }
 
 
-        public List<Employee> GetEmployeeWRTBusiness( bool IsActive, List<int> ListOfIDs)
+        public List<Employee> GetEmployeeWRTBusinesss( bool IsActive, List<int> ListOfIDs)
         {
             using (var context = new DSContext())
             {
 
-                return context.Employees.Where(x =>  x.IsActive == IsActive && ListOfIDs.Contains(x.ID) && x.IsDeleted == false).OrderBy(x => x.DisplayOrder).ToList();
+                return context.Employees.Where(x => x.IsActive == IsActive && ListOfIDs.Contains(x.ID) && x.IsDeleted == false).OrderBy(x => x.DisplayOrder).ToList();
 
             }
         }

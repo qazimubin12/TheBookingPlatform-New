@@ -2910,9 +2910,13 @@ namespace TheBookingPlatform.Controllers
             BookingViewModel model = new BookingViewModel();
             model.Company = CompanyServices.Instance.GetCompany().Where(x => x.Business.Trim() == businessName.Trim()).FirstOrDefault();
             var currentDate = DateTime.Now;
-            var pricechanges = PriceChangeServices.Instance.GetPriceChangeWRTBusiness(businessName).Where(p => currentDate >= p.StartDate && currentDate <= p.EndDate).FirstOrDefault();
+
+            var pricechanges = PriceChangeServices.Instance
+                .GetPriceChangeWRTBusiness(businessName)
+                .Where(p => currentDate <= p.EndDate) // Include any not yet ended
+                .FirstOrDefault();
             model.ActivePriceChange = pricechanges;
-            var employeepricechanges = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(businessName).Where(p => currentDate >= p.StartDate && currentDate <= p.EndDate).ToList();
+            var employeepricechanges = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(businessName).Where(p => currentDate <= p.EndDate).ToList();
             var emppricechangemodel = new List<EmployeePriceChangeModel>();
             foreach (var item in employeepricechanges)
             {
@@ -2931,7 +2935,7 @@ namespace TheBookingPlatform.Controllers
                 {
                     var serviceItem = ServiceServices.Instance.GetService(int.Parse(item));
 
-                    servicelist.Add(new ServiceFormModel { OnlyDuration = float.Parse(serviceItem.Duration.Replace("mins", "").Replace("Mins", "")), Name = serviceItem.Name, Duration = serviceItem.Duration, Price = serviceItem.Price });
+                    servicelist.Add(new ServiceFormModel { OnlyDuration = float.Parse(serviceItem.Duration.Replace("mins", "").Replace("Mins", "")), Name = serviceItem.Name, Duration = serviceItem.Duration, Price = serviceItem.Price,ID = int.Parse(item) });
 
                 }
                 var finalIDsInt = FinalIDs.Select(int.Parse).ToList();
@@ -2984,17 +2988,20 @@ namespace TheBookingPlatform.Controllers
                     }
                     bool HavePricChange = false;
                     var priceChange = new EmployeePriceChange();
-                    var employeePriceChange = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(item.ID, businessName);
-                    foreach (var empchange in employeePriceChange)
+                    var employeePriceChange = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(businessName).Where(p => currentDate <= p.EndDate).Where(x=>x.EmployeeID == item.ID).LastOrDefault();
+
+
+                    if (employeePriceChange != null)
                     {
-                        if (IsCurrentDateInRange(empchange.StartDate, empchange.EndDate))
-                        {
-                            HavePricChange = true;
-                            priceChange = empchange;
-                            break;
-                        }
+                        HavePricChange = true;
+                        priceChange = employeePriceChange;
+                        listofemployee.Add(new EmployeeNewModel { Reviews = listofReivew, Employee = item, EmployeePriceChange = priceChange, HaveEmpPriceChange = HavePricChange, Rating = RatingService, Count = CountOfTheRatigs });
                     }
-                    listofemployee.Add(new EmployeeNewModel { Reviews = listofReivew, Employee = item, EmployeePriceChange = priceChange, HaveEmpPriceChange = HavePricChange, Rating = RatingService, Count = CountOfTheRatigs });
+                    else
+                    {
+                        listofemployee.Add(new EmployeeNewModel { Reviews = listofReivew, Employee = item, HaveEmpPriceChange = false, Rating = RatingService, Count = CountOfTheRatigs });
+
+                    }
                 }
                 model.Employees = listofemployee;
                 if (model.Employees.Count() == 0)
@@ -5738,13 +5745,13 @@ namespace TheBookingPlatform.Controllers
         }
 
 
-        public EmployeePriceChange GetPriceChange(int EmployeeID, DateTime SelectedDate, TimeSpan slotStart, TimeSpan slotEnd)
+        public EmployeePriceChange GetPriceChange(int EmployeeID, DateTime SelectedDate, TimeSpan slotStart, TimeSpan slotEnd,string Business)
         {
             bool ChangeFound = false;
             int ChangeID = 0;
             string TypeOfChange = "";
             var discountpercentage = 0.0;
-            var priceChanges = EmployeePriceChangeServices.Instance.GetEmployeePriceChange(EmployeeID, "");
+            var priceChanges = EmployeePriceChangeServices.Instance.GetEmployeePriceChangeWRTBusiness(EmployeeID, Business,"");
             if (priceChanges.Count() > 0)
             {
                 foreach (var item in priceChanges)
@@ -6483,7 +6490,7 @@ namespace TheBookingPlatform.Controllers
                                             int ChangeID = 0;
                                             string TypeOfChange = "";
 
-                                            var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd);
+                                            var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, company.Business);
                                             string slotType;
                                             if (slotStart < new TimeSpan(12, 0, 0))
                                             {
@@ -6697,7 +6704,7 @@ namespace TheBookingPlatform.Controllers
                                     bool ChangeFound = false;
                                     int ChangeID = 0;
                                     string TypeOfChange = "";
-                                    var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd);
+                                    var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd,company.Business);
                                     if (priceChanges.Count() > 0)
                                     {
                                         foreach (var item in priceChanges)
@@ -6913,7 +6920,7 @@ namespace TheBookingPlatform.Controllers
                                                 bool ChangeFound = false;
                                                 int ChangeID = 0;
                                                 string TypeOfChange = "";
-                                                var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd);
+                                                var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, company.Business);
 
                                                 if (priceChanges.Count() > 0)
                                                 {
@@ -7074,7 +7081,7 @@ namespace TheBookingPlatform.Controllers
                             .Select(grp => grp.Key)
                             .ToList();
 
-                    var Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(Company.Business, true, true, employeeIDs);
+                    var Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs,company.Business);
 
                     foreach (var emp in Employees)
                     {
@@ -7213,6 +7220,20 @@ namespace TheBookingPlatform.Controllers
                                     bool CheckPriceChange = false;
                                     var slotStart = TimeSpan.Parse(timeslot.Split('-')[0]);
                                     var slotEnd = TimeSpan.Parse(timeslot.Split('-')[1]);
+                                    string slotType;
+                                    if (slotStart < new TimeSpan(12, 0, 0))
+                                    {
+                                        slotType = "Morning Slots";
+                                    }
+                                    else if (slotStart < new TimeSpan(17, 0, 0))
+                                    {
+                                        slotType = "Afternoon Slots";
+                                    }
+                                    else
+                                    {
+                                        slotType = "Evening Slots";
+                                    }
+
                                     float discountpercentage = 0;
                                     bool ChangeFound = false;
                                     int ChangeID = 0;
@@ -7253,12 +7274,12 @@ namespace TheBookingPlatform.Controllers
 
                                         if (ChangeFound)
                                         {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
 
                                         }
                                         else
                                         {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
 
                                         }
                                     }
@@ -7491,7 +7512,20 @@ namespace TheBookingPlatform.Controllers
                                                                 bool ChangeFound = false;
                                                                 int ChangeID = 0;
                                                                 string TypeOfChange = "";
-                                                                var employeePriceChange = GetPriceChange(emp.ID, SelectedDate, slotStart, slotEnd);
+                                                                var employeePriceChange = GetPriceChange(emp.ID, SelectedDate, slotStart, slotEnd, company.Business);
+                                                                string slotType;
+                                                                if (slotStart < new TimeSpan(12, 0, 0))
+                                                                {
+                                                                    slotType = "Morning Slots";
+                                                                }
+                                                                else if (slotStart < new TimeSpan(17, 0, 0))
+                                                                {
+                                                                    slotType = "Afternoon Slots";
+                                                                }
+                                                                else
+                                                                {
+                                                                    slotType = "Evening Slots";
+                                                                }
 
                                                                 if (priceChanges.Count() > 0)
                                                                 {
@@ -7533,6 +7567,7 @@ namespace TheBookingPlatform.Controllers
                                                                         {
                                                                             NewiteratedEmployeeList.Add(new TimeSlotModel
                                                                             {
+                                                                                Type = slotType,
                                                                                 TimeSlot = timeSlot,
                                                                                 TypeOfChange = TypeOfChange,
                                                                                 HaveDiscount = true,
@@ -7548,7 +7583,7 @@ namespace TheBookingPlatform.Controllers
                                                                         }
                                                                         else
                                                                         {
-                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { Type = slotType, TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                                         }
                                                                     }
                                                                     else
@@ -7557,6 +7592,7 @@ namespace TheBookingPlatform.Controllers
                                                                         {
                                                                             NewiteratedEmployeeList.Add(new TimeSlotModel
                                                                             {
+                                                                                Type = slotType,
                                                                                 TimeSlot = timeSlot,
                                                                                 TypeOfChange = TypeOfChange,
                                                                                 HaveDiscount = false,
@@ -7572,7 +7608,7 @@ namespace TheBookingPlatform.Controllers
                                                                         }
                                                                         else
                                                                         {
-                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                            NewiteratedEmployeeList.Add(new TimeSlotModel { Type = slotType, TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                         }
 
                                                                     }
@@ -7583,6 +7619,7 @@ namespace TheBookingPlatform.Controllers
                                                                     {
                                                                         NewiteratedEmployeeList.Add(new TimeSlotModel
                                                                         {
+                                                                            Type = slotType,
                                                                             TimeSlot = timeSlot,
                                                                             TypeOfChange = TypeOfChange,
                                                                             HaveDiscount = false,
@@ -7598,7 +7635,7 @@ namespace TheBookingPlatform.Controllers
                                                                     }
                                                                     else
                                                                     {
-                                                                        NewiteratedEmployeeList.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                        NewiteratedEmployeeList.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                     }
                                                                 }
                                                             }
@@ -7688,7 +7725,20 @@ namespace TheBookingPlatform.Controllers
                                                         bool ChangeFound = false;
                                                         int ChangeID = 0;
                                                         string TypeOfChange = "";
-                                                        var employeePriceChange = GetPriceChange(emp.ID, SelectedDate, slotStart, slotEnd);
+                                                        var employeePriceChange = GetPriceChange(emp.ID, SelectedDate, slotStart, slotEnd, company.Business);
+                                                        string slotType;
+                                                        if (slotStart < new TimeSpan(12, 0, 0))
+                                                        {
+                                                            slotType = "Morning Slots";
+                                                        }
+                                                        else if (slotStart < new TimeSpan(17, 0, 0))
+                                                        {
+                                                            slotType = "Afternoon Slots";
+                                                        }
+                                                        else
+                                                        {
+                                                            slotType = "Evening Slots";
+                                                        }
 
                                                         if (priceChanges.Count() > 0)
                                                         {
@@ -7730,6 +7780,7 @@ namespace TheBookingPlatform.Controllers
                                                                 {
                                                                     NewiteratedEmployeeList.Add(new TimeSlotModel
                                                                     {
+                                                                        Type = slotType,
                                                                         TimeSlot = timeSlot,
                                                                         TypeOfChange = TypeOfChange,
                                                                         HaveDiscount = true,
@@ -7745,7 +7796,7 @@ namespace TheBookingPlatform.Controllers
                                                                 }
                                                                 else
                                                                 {
-                                                                    NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                                    NewiteratedEmployeeList.Add(new TimeSlotModel { Type = slotType, TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                                 }
                                                             }
                                                             else
@@ -7754,6 +7805,7 @@ namespace TheBookingPlatform.Controllers
                                                                 {
                                                                     NewiteratedEmployeeList.Add(new TimeSlotModel
                                                                     {
+                                                                        Type = slotType,
                                                                         TimeSlot = timeSlot,
                                                                         TypeOfChange = TypeOfChange,
                                                                         HaveDiscount = false,
@@ -7769,7 +7821,7 @@ namespace TheBookingPlatform.Controllers
                                                                 }
                                                                 else
                                                                 {
-                                                                    NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                    NewiteratedEmployeeList.Add(new TimeSlotModel { Type = slotType, TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                 }
 
                                                             }
@@ -7780,6 +7832,7 @@ namespace TheBookingPlatform.Controllers
                                                             {
                                                                 NewiteratedEmployeeList.Add(new TimeSlotModel
                                                                 {
+                                                                    Type = slotType,
                                                                     TimeSlot = timeSlot,
                                                                     TypeOfChange = TypeOfChange,
                                                                     HaveDiscount = false,
@@ -7795,7 +7848,7 @@ namespace TheBookingPlatform.Controllers
                                                             }
                                                             else
                                                             {
-                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { Type = slotType, TimeSlot = timeSlot, EmployeeID = emp.ID, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                             }
                                                         }
                                                     }
@@ -7873,7 +7926,20 @@ namespace TheBookingPlatform.Controllers
                                                                     bool ChangeFound = false;
                                                                     int ChangeID = 0;
                                                                     string TypeOfChange = "";
-                                                                    var employeePriceChange = GetPriceChange(emp.ID, SelectedDate, slotStart, slotEnd);
+                                                                    var employeePriceChange = GetPriceChange(emp.ID, SelectedDate, slotStart, slotEnd, company.Business);
+                                                                    string slotType;
+                                                                    if (slotStart < new TimeSpan(12, 0, 0))
+                                                                    {
+                                                                        slotType = "Morning Slots";
+                                                                    }
+                                                                    else if (slotStart < new TimeSpan(17, 0, 0))
+                                                                    {
+                                                                        slotType = "Afternoon Slots";
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        slotType = "Evening Slots";
+                                                                    }
 
                                                                     if (priceChanges.Count() > 0)
                                                                     {
@@ -7914,7 +7980,7 @@ namespace TheBookingPlatform.Controllers
                                                                             if (employeePriceChange.EmployeeID != 0)
                                                                             {
                                                                                 NewiteratedEmployeeList.Add(new TimeSlotModel
-                                                                                {
+                                                                                {Type = slotType,
                                                                                     TimeSlot = timeSlot,
                                                                                     TypeOfChange = TypeOfChange,
                                                                                     HaveDiscount = true,
@@ -7930,7 +7996,7 @@ namespace TheBookingPlatform.Controllers
                                                                             }
                                                                             else
                                                                             {
-                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel {Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                                             }
                                                                         }
                                                                         else
@@ -7938,7 +8004,7 @@ namespace TheBookingPlatform.Controllers
                                                                             if (employeePriceChange.EmployeeID != 0)
                                                                             {
                                                                                 NewiteratedEmployeeList.Add(new TimeSlotModel
-                                                                                {
+                                                                                {Type = slotType,
                                                                                     TimeSlot = timeSlot,
                                                                                     TypeOfChange = TypeOfChange,
                                                                                     HaveDiscount = false,
@@ -7954,7 +8020,7 @@ namespace TheBookingPlatform.Controllers
                                                                             }
                                                                             else
                                                                             {
-                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel {Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                             }
 
                                                                         }
@@ -7964,7 +8030,7 @@ namespace TheBookingPlatform.Controllers
                                                                         if (employeePriceChange.EmployeeID != 0)
                                                                         {
                                                                             NewiteratedEmployeeList.Add(new TimeSlotModel
-                                                                            {
+                                                                            {Type = slotType,
                                                                                 TimeSlot = timeSlot,
                                                                                 TypeOfChange = TypeOfChange,
                                                                                 HaveDiscount = false,
@@ -7981,7 +8047,7 @@ namespace TheBookingPlatform.Controllers
                                                                         else
                                                                         {
                                                                             NewiteratedEmployeeList.Add(new TimeSlotModel
-                                                                            {
+                                                                            {Type = slotType,
                                                                                 TimeSlot = timeSlot,
                                                                                 TypeOfChange = TypeOfChange,
                                                                                 HaveDiscount = false,

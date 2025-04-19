@@ -89,16 +89,36 @@
 
                         <div class="row">
                             <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input type="checkbox" class="form-check-input" id="togglePromoPrice" />
+                                    <label class="form-check-label" for="togglePromoPrice">Enable Promo Price</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4" id="PriceDDBox" style="display: none;">
                                 <div class="input-group input-group-dynamic">
 
                                     <div class="form-group">
                                         <label>
                                             Price
                                         </label>
-                                        <input type="text" value="@Model.Price" class="form-control" name="Price" />
+                                        <input type="number" value="@Model.PromoPrice" class="form-control" name="PromoPrice" />
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-md-4">
+                                <div class="input-group input-group-dynamic">
+
+                                    <div class="form-group">
+                                        <label id="ddLabel">
+                                            Price
+                                        </label>
+                                        <input type="number" value="@Model.Price" class="form-control" name="Price" />
+                                    </div>
+                                </div>
+                            </div>
+
+
 
                             <div class="col-md-4">
                                 <div class="input-group input-group-dynamic">
@@ -482,8 +502,22 @@
         </form>
     </div>
 
-        <script>
+    <script>
 
+        function CheckToggle() {
+            if ($("#togglePromoPrice").is(':checked')) {
+                $('#PriceDDBox').show();
+                $("#ddLabel").text("Discount Price");
+            } else {
+                $('#PriceDDBox').hide();
+                $("#ddLabel").text("Price");
+
+            }
+        }
+        $('#togglePromoPrice').change(function () {
+            CheckToggle();
+        });
+        CheckToggle();
     $(".data-btnEmp").click(function () {
         $.ajax({
             url: $(this).attr("data-href"),

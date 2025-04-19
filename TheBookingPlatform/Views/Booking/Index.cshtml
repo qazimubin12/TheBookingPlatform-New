@@ -249,7 +249,13 @@
 
                                         </div>
                                         <div style="display:flex;align-items:baseline;gap:20px;">
-                                            <h6 class="mb-1 fs-14" style="white-space:nowrap;">@service.Service.Price @Model.Company.Currency</h6>
+                                            <h6 class="mb-1 fs-14" style="white-space:nowrap;">
+                                                @if (service.Service.PromoPrice != 0)
+                                                {
+                                                    <s>@service.Service.PromoPrice @Model.Company.Currency</s>
+                                                }
+                                                <span class="ms-2">@service.Service.Price @Model.Company.Currency</span>
+                                            </h6>
 
                                             <button class="btn btn-primary btn-sm"
                                                     data-id="@service.Service.ID"

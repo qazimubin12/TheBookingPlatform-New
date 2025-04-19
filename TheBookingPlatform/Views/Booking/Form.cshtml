@@ -462,6 +462,8 @@
                             <div>
                                 <div id="selectedEmployeeDisplay" class="employee-name"></div>
                                 <div id="selectedTimeSlotDisplay" class="timeslot-info"></div>
+                                <div id="selectedChange" class="text-success"></div>
+
                             </div>
                             <button id="backToSelection" type="button" class="change-btn">
                                 <i class="mdi mdi-arrow-left"></i> Change
@@ -506,7 +508,7 @@
                                                     </div>
                                                     @if (item.HaveEmpPriceChange)
                                                     {
-                                                        <small style="margin-bottom: 0px; color: red; font-weight: bold;" class="text-muted">This staff has price @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</small>
+                                                        <small style="margin-bottom: 0px; color: red; font-weight: bold;" class="text-danger">This staff has  @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</small>
 
                                                     }
                                                     <small class="text-muted emp_Specs">@item.Employee.Specialization</small>
@@ -819,7 +821,7 @@
             <div class="card" id="addOnCard">
                 <div class="card-body">
                     <div class="col-12">
-                        <h6 style="font-size:18px;" class="medium card-title">🤖 Zoe AI. (Your Smart Booking Assistant)</h6>
+                        <h6 style="font-size:18px;" class="medium card-title">🤖 Zoe.AI (Your Smart Booking Assistant)</h6>
                         <div>
                             <div class="bg-white d-flex flex-column p-3">
                                 <h6><i>Hey, I've found some add-ons that could make your appointment even better! Would you like to include any of these?</i></h6>
@@ -1443,6 +1445,7 @@
                 // Update your UI with the retrieved time slots
                 var timeSlotsContainer = $('#TimeSlots'); // Get the timeSlots div by its ID
                 timeSlotsContainer.empty();
+                debugger
                 if (ListOfTimeSlotsWithDiscount != null) {
 
                     if (ListOfTimeSlotsWithDiscount.length > 0)
@@ -1499,7 +1502,7 @@
                                 }
 
                                 button.click(function () {
-
+                                    debugger
                                     // Show selection header and hide booking steps
                                     $('#bookingSteps').hide();
                                     $('#selectionHeader').show();
@@ -1677,7 +1680,27 @@
                                     // Update selection header content
                                     const employeeName = $('.dropdown-btn .emp_Name').text();
                                     const timeSlot = $(this).data('timeslot');
-                                    $('#selectedEmployeeDisplay').text(`Specialist: ${employeeName}`);
+                                    debugger
+                                    var change = $("#empDiscountTextH").text();
+                                    $("#selectedEmployeeDisplay").text(`Specialist: ${employeeName}`);
+
+
+                                    if (typeofchange == "Discount" || empTypeOfChange == "Discount") {
+                                        $('#selectedChange').html(
+                                            `🤖 Zoe.AI (Your Smart Booking Assistant) <br/> I have added a ` +
+                                            (typeofchange != null ? percentageValue : empPercentage) +
+                                            "% discount for your chosen service(s). Enjoy! 😉."
+                                        );
+                                    } else if (change == "Price Increase" || empTypeOfChange == "Price Increase") {
+                                        $('#selectedChange').html(
+                                            `🤖 Zoe.AI (Your Smart Booking Assistant) <br/> Please note that ` + employeeName +` has a ` +
+                                            (typeofchange != null ? percentageValue : empPercentage) +
+                                            "% price increase for your chosen service(s)."
+                                        );
+                                    } else {
+                                        $('#selectedChange').html("");
+                                    }
+
                                     $('#selectedTimeSlotDisplay').html(`Date: ${$('#dateInput').val()}<br>Time: ${timeSlot}`);
                                 });
 
@@ -2480,11 +2503,9 @@
                         services.forEach(service => {
                             const html = `
          <div class="d-flex justify-content-between align-items-center border-bottom py-2 addOnService">
-             <div>
-                 <h6 style="font-size:18px;" class="mb-1 addOnServiceName">${service.Name} (${service.Duration}) </h6>
-                 <span class="text-muted addOnServiceDesc">
-                     ${service.Notes == null ? "" : service.Notes} <b class="addOnServicePrice">(+@Model.Company.Currency ${service.Price})</b>
-                 </span>
+             <div style="display:flex;align-items:center;gap:10px;">
+                 <p class="mb-1 addOnServiceName">${service.Name} (${service.Duration}) (+@Model.Company.Currency ${service.Price})</hp>
+                
              </div>
              <button data-id="${service.ID}" data-price="${service.Price}" data-duration="${service.Duration}" data-name="${service.Name}" type="button" class="btn btn-sm btn-outline-primary add-btn">Add</button>
          </div>`;

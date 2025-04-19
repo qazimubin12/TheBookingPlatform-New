@@ -59,70 +59,72 @@
                                         </p>
                                         <div id="collapse-@item.ServiceCategory.ID" class="accordion-collapse collapse" aria-labelledby="heading-@item.ServiceCategory.ID" data-bs-parent="#serviceAccordion">
                                             <div class="accordion-body">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Assign Service</th>
-                                                            <th>
-                                                                Buffer Time <a href="https://yourbookingplatform.com/how-to-add-buffer-time/" target="_blank"><i class="fa fa-info-circle"></i></a>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach (var servic in item.Services)
-                                                        {
-                                                            // Parse ServiceData to find the current service entry
-                                                            var serviceEntry = Model.ServiceData
-                                                                .Split('_')
-                                                                .FirstOrDefault(data => data.StartsWith(servic.ID.ToString() + ","));
-
-                                                            // Extract service-specific data
-                                                            bool isServiceChecked = false;
-                                                            bool isBufferEnabled = false;
-                                                            string bufferTime = "";
-
-                                                            if (!string.IsNullOrEmpty(serviceEntry))
-                                                            {
-                                                                var parts = serviceEntry.Split(',');
-                                                                isServiceChecked = true; // If an entry exists, the service is checked
-                                                                isBufferEnabled = parts.Length > 1 && parts[1] == "True"; // Check if buffer is enabled
-                                                                bufferTime = parts.Length > 2 ? parts[2] : ""; // Extract buffer time
-                                                            }
-
-                                                            <tr data-service-id="@servic.ID">
-                                                                <td>
-                                                                    <div class="form-check">
-                                                                        <input onchange="FillData()"
-                                                                               class="form-check-input service-checkbox"
-                                                                               type="checkbox"
-                                                                               id="service-checkbox-@servic.ID"
-                                                                               data-service-id="@servic.ID"
-                                                                               @(isServiceChecked ? "checked" : "") />
-                                                                        @servic.Name
-                                                                    </div>
-                                                                </td>
-
-                                                                <td style="display: flex; align-items: center; gap: 20px;">
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input service-buffer-checkbox"
-                                                                               type="checkbox"
-                                                                               id="buffer-checkbox-@servic.ID"
-                                                                               data-service-id="@servic.ID"
-                                                                               @(isBufferEnabled ? "checked" : "") />
-                                                                    </div>
-                                                                    <input class="form-control buffer-time-input"
-                                                                           type="text"
-                                                                           id="buffer-time-@servic.ID"
-                                                                           data-service-id="@servic.ID"
-                                                                           placeholder="Enter Buffer Time"
-                                                                           value="@bufferTime"
-                                                                           @(isBufferEnabled ? "" : "disabled") />
-                                                                </td>
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Assign Service</th>
+                                                                <th>
+                                                                    Buffer Time <a href="https://yourbookingplatform.com/how-to-add-buffer-time/" target="_blank"><i class="fa fa-info-circle"></i></a>
+                                                                </th>
                                                             </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var servic in item.Services)
+                                                            {
+                                                                // Parse ServiceData to find the current service entry
+                                                                var serviceEntry = Model.ServiceData
+                                                                    .Split('_')
+                                                                    .FirstOrDefault(data => data.StartsWith(servic.ID.ToString() + ","));
+
+                                                                // Extract service-specific data
+                                                                bool isServiceChecked = false;
+                                                                bool isBufferEnabled = false;
+                                                                string bufferTime = "";
+
+                                                                if (!string.IsNullOrEmpty(serviceEntry))
+                                                                {
+                                                                    var parts = serviceEntry.Split(',');
+                                                                    isServiceChecked = true; // If an entry exists, the service is checked
+                                                                    isBufferEnabled = parts.Length > 1 && parts[1] == "True"; // Check if buffer is enabled
+                                                                    bufferTime = parts.Length > 2 ? parts[2] : ""; // Extract buffer time
+                                                                }
+
+                                                                <tr data-service-id="@servic.ID">
+                                                                    <td>
+                                                                        <div class="form-check">
+                                                                            <input onchange="FillData()"
+                                                                                   class="form-check-input service-checkbox"
+                                                                                   type="checkbox"
+                                                                                   id="service-checkbox-@servic.ID"
+                                                                                   data-service-id="@servic.ID"
+                                                                                   @(isServiceChecked ? "checked" : "") />
+                                                                            @servic.Name
+                                                                        </div>
+                                                                    </td>
+
+                                                                    <td style="display: flex; align-items: center; gap: 20px;">
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input service-buffer-checkbox"
+                                                                                   type="checkbox"
+                                                                                   id="buffer-checkbox-@servic.ID"
+                                                                                   data-service-id="@servic.ID"
+                                                                                   @(isBufferEnabled ? "checked" : "") />
+                                                                        </div>
+                                                                        <input class="form-control buffer-time-input"
+                                                                               type="text"
+                                                                               id="buffer-time-@servic.ID"
+                                                                               data-service-id="@servic.ID"
+                                                                               placeholder="Enter Buffer Time"
+                                                                               value="@bufferTime"
+                                                                               @(isBufferEnabled ? "" : "disabled") />
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                </div>
                                         </div>
                                     </div>
                                 }

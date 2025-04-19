@@ -57,7 +57,7 @@
                             </div>
                             @if (item.HaveEmpPriceChange)
                             {
-                                <small style="margin-bottom: 0px; color: red; font-weight: bold;" class="text-muted">This staff has price @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</small>
+                                <small style="margin-bottom: 0px; color: red; font-weight: bold;" class=" text-danger">This staff has @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</small>
 
                             }
                             <small class="text-muted emp_Specs">@item.Employee.Specialization</small>
@@ -109,10 +109,14 @@
                             <b class="bg-info fw-normal text-white px-1 rounded">and Get @Model.ActivePriceChange.Percentage% @(Model.ActivePriceChange.TypeOfChange == "Discount"?"OFF" : "Price Increase" )!</b>
                         </span>
                     </h1>
-                    <p class="mb-2 text-white-50 small">On All Employees Till @Model.ActivePriceChange.EndDate.ToString("MMMM dd, yyyy")</p>
+                    <p class="mb-2 text-white-50 small">
+                        On All Employees Till @Model.ActivePriceChange.EndDate.ToString("MMMM dd, yyyy HH:mm")
+                        <i>(Discounts vary by day—check other days for special offer!)</i>
+                    
+                    </p>
                     @*<div class="doctor-book-img">
-                        <img src="~/Content/bookingtemplate/img/home/available-doctor-1.png" alt="" class="img-fluid">
-                    </div>*@
+            <img src="~/Content/bookingtemplate/img/home/available-doctor-1.png" alt="" class="img-fluid">
+        </div>*@
                 </div>
             </div>
         }
@@ -124,14 +128,14 @@
             <div class="available-doctor-item">
                 <div class="bg-info  rounded-4 p-3 doctor-book-back">
                     <h1 class="mb-1 doctor-book-back-title">
-                        Book Appointment with
-                        <span class="h4 text-warning overflow-hidden rounded-4 m-0 bg-white" style="white-space:nowrap;">
+                        Book with
+                        <span style=" display: inline-flex !important; width: max-content;" class="h4 text-warning overflow-hidden rounded-4 m-0 bg-white">
                             <b class="bg-light-subtle text-primary px-1 rounded"> @item.Employee.Name and</b>
                             <b class="bg-info fw-normal text-white px-1 rounded">Get @item.EmployeePriceChange.Percentage% @item.EmployeePriceChange.TypeOfChange!</b>
                         </span>
                     </h1>
                   
-                    <p class="mb-2  small">On @item.Employee.Name till @item.EmployeePriceChange.EndDate.ToString("MMMM dd, yyyy")</p>
+                    <p class="mb-2 small">till @item.EmployeePriceChange.EndDate.ToString("MMMM dd, yyyy HH:mm")</p>
                     <div class="doctor-book-img">
                         <img src="@item.Employee.Photo" alt="" class="img-fluid">
                     </div>

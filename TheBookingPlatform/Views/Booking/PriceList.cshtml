@@ -101,7 +101,13 @@
                             <h6 style="white-space:nowrap;" class="mb-1 fs-14">@servic.Duration</h6>
                         </div>
                         <div class="small">
-                            <h6 style="white-space:nowrap;" class="mb-1 fs-14">@servic.Price @item.Currency</h6>
+                            <h6 style="white-space:nowrap;" class="mb-1 fs-14">
+                                @if (servic.PromoPrice != 0)
+                                {
+                                <s>@servic.PromoPrice @item.Currency</s>
+                                }
+                                <span class="ms-2">@servic.Price @item.Currency</span>
+                            </h6>
                         </div>
                     </div>
                 </div>

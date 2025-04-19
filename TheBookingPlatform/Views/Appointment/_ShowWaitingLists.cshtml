@@ -12,37 +12,32 @@
     .dropbtn {
         background-color: #3498db;
         color: white;
-        padding: 10px;
-        font-size: 16px;
         border: none;
+        margin: 0px !important;
+        padding: 5px !important;
         cursor: pointer;
     }
 
     /* Style for the dropdown content */
     .dropdown-content {
         display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-        z-index: 1;
+/*        position: absolute;
+*/        min-width: 160px;
+/*        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+*/        z-index: 1;
         transition: display 0.3s ease-in-out;
     }
 
         /* Style for the dropdown items (buttons) */
         .dropdown-content button {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
+/*            padding: 12px 16px;
+*/            display: block;
             text-align: left;
+            color:white !important;
             cursor: pointer;
         }
 
-            /* Change color on hover for dropdown items (buttons) */
-            .dropdown-content button:hover {
-                background-color: #ddd;
-            }
+          
 
 </style>
 
@@ -52,7 +47,7 @@
             Waiting List for @Model.SelectedEmployee.Name
         </h4>
         <hr />
-        <div style="width: 100%;">
+        <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -102,7 +97,7 @@
                                     </td>
                                 }
                                 <td>
-                                    <select class="form-control choices__input" name="Services" id="Services">
+                                    <select class="form-select" name="Services" id="Services">
                                         @foreach (var service in item.Services)
                                         {
                                             <option value="@service.Service">
@@ -121,14 +116,15 @@
                                     --
                                 </td>
                                 <td>
-                                    <div class="dropdown">
-                                        <button type="button" class="dropbtn btn btn-sm btn-primary"><span class="material-icons">more_horiz</span></button>
-                                        <div class="dropdown-content">
-                                            <button onclick="window.location.href='@Url.Action("WaitingListAppointment", "Appointment", new {WaitingListID=item.WaitingList.ID})'" type="button" class="btn btn-sm btn-success">CREATE APPOINTMENT</button>
-                                            <button id="EmailWaitingList" data-id="@item.WaitingList.ID" type="button" class="EmailBtn btn btn-sm btn-info">Email</button>
-                                            <button id="DeleteButton" data-id="@item.WaitingList.ID" type="button" class="DeleteButton btn btn-sm btn-danger">DELETE</button>
-                                        </div>
+                                    <div style="display: flex; gap: 10px;" class="dropdown-content">
+                                        <button style="margin-bottom:5px !important;" onclick="window.location.href='@Url.Action("WaitingListAppointment", "Appointment", new {WaitingListID=item.WaitingList.ID})'" type="button" class="btn btn-sm btn-success">CREATE APPOINTMENT</button>
+                                        <button style="margin-bottom:5px !important;" id="EmailWaitingList" data-id="@item.WaitingList.ID" type="button" class="EmailBtn btn btn-sm btn-info">Email</button>
+                                        <button style="margin-bottom:5px !important;" id="DeleteButton" data-id="@item.WaitingList.ID" type="button" class="DeleteButton btn btn-sm btn-danger">DELETE</button>
                                     </div>
+                                    @*<div class="dropdown">
+                <button type="button" class="dropbtn btn btn-sm btn-primary"><span class="material-icons">...</span></button>
+
+            </div>*@
                                 </td>
 
                             </tr>
@@ -152,7 +148,7 @@
                         </td>
                     }
                     <td>
-                        <select class="form-control choices__input" name="Services" id="Services">
+                        <select class="form-select" name="Services" id="Services">
                             @foreach (var service in item.Services)
                             {
                                 <option value="@service.Service">
@@ -169,14 +165,15 @@
                     </td>
                     <td>@item.Employee.Name</td>
                     <td>
-                        <div class="dropdown">
-                            <button type="button" class="dropbtn btn btn-sm btn-primary"><span class="material-icons">more_horiz</span></button>
-                            <div class="dropdown-content">
-                                <button onclick="window.location.href='@Url.Action("WaitingListAppointment", "Appointment", new {WaitingListID=item.WaitingList.ID})'" type="button" class="btn btn-sm btn-success">CREATE APPOINTMENT</button>
-                                <button id="EmailWaitingList" data-id="@item.WaitingList.ID" type="button" class="EmailBtn btn btn-sm btn-info">Email</button>
-                                <button id="DeleteButton"  data-id="@item.WaitingList.ID" type="button" class="DeleteButton btn btn-sm btn-danger">DELETE</button>
-                            </div>
+                        <div style="display: flex; gap: 10px;" class="dropdown-content">
+                            <button style="margin-bottom:5px !important;" onclick="window.location.href='@Url.Action("WaitingListAppointment", "Appointment", new {WaitingListID=item.WaitingList.ID})'" type="button" class="btn btn-sm btn-success">CREATE APPOINTMENT</button>
+                            <button style="margin-bottom:5px !important;" id="EmailWaitingList" data-id="@item.WaitingList.ID" type="button" class="EmailBtn btn btn-sm btn-info">Email</button>
+                            <button style="margin-bottom:5px !important;" id="DeleteButton" data-id="@item.WaitingList.ID" type="button" class="DeleteButton btn btn-sm btn-danger">DELETE</button>
                         </div>
+                        @*<div class="dropdown">
+                            <button type="button" class="dropbtn btn btn-sm btn-primary"><span class="material-icons">...</span></button>
+
+                        </div>*@
                     </td>
 
                 </tr>
@@ -196,6 +193,7 @@
     $(document).ready(function () {
         $(".dropbtn").click(function () {
             $(this).closest(".dropdown").find(".dropdown-content").slideToggle("fast");
+            
         });
 
         $(".EmailBtn").click(function () {

@@ -149,7 +149,7 @@
 
                                         }
                                         <button title="Assign Services" data-href="@Url.Action("AssignService", "Employee", new { ID = item.Employee.ID })" type="button" class="data-btn2 btn btn-sm btn-rounded btn-success btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal2"><i class="material-icons">badge</i></button>
-                                        <a title="Edit" href="@Url.Action("Index", "EmployeePriceChange", new { EmployeeID = item.Employee.ID })" type="button" class="btn btn-sm btn-rounded btn-secondary btn-icon-text"><i class="material-icons">payments</i></a>
+                                        @*<a title="Edit" href="@Url.Action("Index", "EmployeePriceChange", new { EmployeeID = item.Employee.ID })" type="button" class="btn btn-sm btn-rounded btn-secondary btn-icon-text"><i class="material-icons">payments</i></a>*@
 
                                     </td>
                                 </tr>
@@ -177,7 +177,7 @@
 </div>
 
 <div class="modal  fade center" id="actionModal2" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
     </div>
 </div>
 

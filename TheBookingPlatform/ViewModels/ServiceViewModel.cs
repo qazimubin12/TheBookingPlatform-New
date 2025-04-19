@@ -99,5 +99,6 @@ namespace TheBookingPlatform.ViewModels
         public bool DoesRequiredProcessing { get;  set; }
         public int NumberofSessions { get;  set; }
         public bool AddOn { get;  set; }
+        public float PromoPrice { get;  set; }
     }
 }

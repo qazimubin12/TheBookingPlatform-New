@@ -22,7 +22,7 @@ namespace TheBookingPlatform.Entities
         public string Setup { get; set; }
         public string Processing { get; set; }
         public string Finish { get; set; }
-
+        public float PromoPrice { get; set; }
         public int DisplayOrder { get; set; }
         /// <summary>
         /// ////////////////

@@ -303,7 +303,7 @@ namespace TheBookingPlatform.Controllers
             service.Business = Service.Business;
             service.Name = Service.Name+" Duplicate";
             service.Category = Service.Category;
-            service.Price = Service.Price;
+            service.PromoPrice = service.Price = Service.Price;
             service.VAT = Service.VAT;
             service.Duration = Service.Duration;
             service.AddOn = Service.AddOn;
@@ -313,10 +313,11 @@ namespace TheBookingPlatform.Controllers
             service.Finish = Service.Finish;
             service.Tool = Service.Tool;
             service.IsActive = true;
+            service.PromoPrice = service.PromoPrice = Service.PromoPrice;
             service.Room = Service.Room;
             service.Notes = Service.Notes;
             service.CanBookOnline = Service.CanBookOnline;
-            service.NumberofSessions = Service.NumberofSessions;
+            service.PromoPrice = service.NumberofSessions = Service.NumberofSessions;
             ServiceServices.Instance.SaveService(service);
 
             return RedirectToAction("Index", "Service");
@@ -377,6 +378,7 @@ namespace TheBookingPlatform.Controllers
                 model.VAT = Service.VAT;
                 model.AddOn = Service.AddOn;
                 model.Duration = Service.Duration;
+                model.PromoPrice = Service.PromoPrice;
                 model.Setup = Service.Setup;
                 model.Processing = Service.Processing;
                 model.DoesRequiredProcessing = Service.DoesRequiredProcessing;
@@ -423,6 +425,7 @@ namespace TheBookingPlatform.Controllers
                 Service.Duration = model.Duration;
                 Service.AddOn = model.AddOn;
                 Service.Setup = model.Setup;
+                Service.PromoPrice = model.PromoPrice;
                 Service.Processing = model.Processing;
                 Service.NumberofSessions = model.NumberofSessions;
                 Service.Finish = model.Finish;
@@ -491,7 +494,7 @@ namespace TheBookingPlatform.Controllers
                 Service.NumberofSessions = model.NumberofSessions;
                 Service.Finish = model.Finish;
                 Service.IsActive = true;
-
+                Service.PromoPrice = model.PromoPrice;
                 Service.Tool = model.Tool;
                 Service.Room = model.Room;
                 Service.Notes = model.Notes;

@@ -782,7 +782,7 @@ namespace TheBookingPlatform.Controllers
                 if (userAssignedemployees != null)
                 {
                     var listofTimeTable = new List<TimeTableModel>();
-                    employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                    employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList(),LoggedInUser.Company).OrderBy(x => x.DisplayOrder).ToList();
                     foreach (var emp in employees)
                     {
                         var shifts = new List<ShiftModel>();
@@ -1068,7 +1068,7 @@ namespace TheBookingPlatform.Controllers
                 if (userAssignedemployees != null)
                 {
                     var listofTimeTable = new List<TimeTableModel>();
-                    employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                    employees = EmployeeServices.Instance.GetEmployeeWRTBusinesss(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
                     foreach (var emp in employees)
                     {
                         var shifts = new List<ShiftModel>();
@@ -1871,7 +1871,7 @@ namespace TheBookingPlatform.Controllers
                 if (userAssignedemployees != null)
                 {
                     var listofTimeTable = new List<TimeTableModel>();
-                    employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                    employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList(), LoggedInUser.Company).OrderBy(x => x.DisplayOrder).ToList();
                     foreach (var emp in employees)
                     {
                         var shifts = new List<ShiftModel>();
@@ -7762,14 +7762,14 @@ namespace TheBookingPlatform.Controllers
                     //    ServicesList.Add(new ServiceModel { ServiceCategory = item, Services = ServicesWRTCategory, Company = model.Company });
                     //}
                     model.AbsenseServices = ServiceServices.Instance.GetServiceWRTCategory(LoggedInUser.Company, "ABSENSE").Where(x => x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
-                    if (User.IsInRole("Calendar"))
+                    if (!User.IsInRole("Calendar"))
                     {
                         var employees = new List<Employee>();
                         var userAssignedemployees = CalendarManageServices.Instance.GetCalendarManage(LoggedInUser.Company, LoggedInUser.Id);
                         if (userAssignedemployees != null)
                         {
                             var listofTimeTable = new List<TimeTableModel>();
-                            employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                            employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true,true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
                             model.EmployeesForAction = employees;
                         }
                         else
@@ -7804,7 +7804,7 @@ namespace TheBookingPlatform.Controllers
                         //    ServicesList.Add(new ServiceModel { ServiceCategory = item, Services = ServicesWRTCategory, Company = model.Company });
                         //}
                         //model.AbsenseServices = ServiceServices.Instance.GetService().Where(x => x.Category == "ABSENSE" && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
-                        model.EmployeesForAction = EmployeeServices.Instance.GetEmployee().Where(x => x.IsActive == true).OrderBy(x => x.DisplayOrder).ToList();
+                        model.EmployeesForAction = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company,true).OrderBy(x => x.DisplayOrder).ToList();
                     }
                 }
                 model.EmployeeID = employeeID;
@@ -8856,7 +8856,7 @@ namespace TheBookingPlatform.Controllers
                     if (userAssignedemployees != null)
                     {
                         var listofTimeTable = new List<TimeTableModel>();
-                        var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                        var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList(),LoggedInUser.Company).OrderBy(x => x.DisplayOrder).ToList();
                         model.Employees = employees;
                     }
                 }
