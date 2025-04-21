@@ -55,15 +55,33 @@
                                 <span class="text-warning">@item.Rating.ToString("F2")</span>
                                 <span>(@(item.Count))</span>
                             </div>
+                           
                             @if (item.HaveEmpPriceChange)
                             {
                                 <small style="margin-bottom: 0px; color: red; font-weight: bold;" class=" text-danger">This staff has @item.EmployeePriceChange.TypeOfChange in the month of @item.EmployeePriceChange.StartDate.ToString("MMMM").</small>
 
                             }
                             <small class="text-muted emp_Specs">@item.Employee.Specialization</small>
+
+                        </div>
+                        <div>
+                            <div>
+                                @if (item.TimeSlots.Count() > 0)
+                                {
+                                    <small class="text-muted">Zoe.AI 🤖: The nearest spot <b>today.</b></small>
+                                }
+                            </div>
+                            <div>
+                                @foreach (var timeslot in item.TimeSlots)
+                                {
+                                    <span style="border-radius: 50px !important; padding: 5px 10px !important; background: #EAEDF4 !important; margin-bottom: 5px !important; " onclick="selectEmployee('@item.Employee.Name','@item.Employee.ID','@timeslot.TimeSlot')" class="btn btn-light bt-sm btn-round">@timeslot.TimeSlot.Split('-')[0]</span>
+                                }
+                            </div>
                         </div>
                     </div>
+
                 </div>
+                
                 <div class="in" style="display:flex;">
                     <a class="info-button btn" href="@Url.Action("ShowEmpProfile", "Booking", new {EmployeeID=item.Employee.ID,Ids=Model.ServiceIDs})">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 100 100">
@@ -149,14 +167,16 @@
 </div>
 
 <script>
-    function selectEmployee(Name, ID) {
+    function selectEmployee(Name, ID,timeslot) {
         showLoadingSpinner();
         var CustomerID = localStorage.getItem("C_ID") ?? "0";
         var ids = [];
 
         const selectedService = localStorage.getItem('selectedServices');
         const serviceArray = JSON.parse(selectedService);
-
+        if (timeslot != null) {
+            localStorage.setItem("selectedSlot", timeslot);
+        }
         // Get an array of all IDs
         const serviceIds = serviceArray.map(service => service.id);
         const idString = serviceIds.join(',');
@@ -173,7 +193,7 @@
         $("#FooterNAV").hide();
         $('#searchFil').on('keyup', function () {
             var searchValue = $(this).val().toLowerCase();
-            
+
             // Loop through each employee row
             $('.empRows').each(function () {
                 var name = $(this).find('.emp_Name').text().toLowerCase();

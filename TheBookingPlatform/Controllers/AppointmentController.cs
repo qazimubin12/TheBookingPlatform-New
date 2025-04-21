@@ -1141,14 +1141,181 @@ namespace TheBookingPlatform.Controllers
 
                             }
                         }
-                        Allshifts.Add(new ShiftOfEmployeeModel { Employee = emp, Shifts = shifts, PriceChange = pricechange, DisplayOrder = emp.DisplayOrder });
+                        if (shifts.Count() > 0)
+                        {
+                            Allshifts.Add(new ShiftOfEmployeeModel { Employee = emp, Shifts = shifts, PriceChange = pricechange, DisplayOrder = emp.DisplayOrder });
+                        }
                     }
 
 
                 }
 
+                    var filteredEmployee = new List<Employee>();
+
                 if (Allshifts.Count() != 0)
                 {
+                    var shiftsWithinRange = Allshifts;
+
+                    Allshifts = Allshifts.Where(x => x.Shifts.Any(y => y.Shift.Day == model.SelectedDate.DayOfWeek.ToString())).ToList();
+
+                    foreach (var item in Allshifts)
+                    {
+                         if(item.Employee.Name == "Nina")
+                        {
+
+                        }
+                        var listofShifts = item.Shifts;
+                        bool isValidShift = false;
+
+                        foreach (var shift in listofShifts)
+                        {
+
+                            // Check exceptions
+                            foreach (var exShift in shift.ExceptionShift.Where(x=>x.ExceptionDate.DayOfWeek.ToString() == model.SelectedDate.DayOfWeek.ToString()))
+                            {
+                                if (exShift.ExceptionDate == model.SelectedDate)
+                                {
+                                    isValidShift = true;
+                                    break;
+                                }
+                            }
+
+                            if (isValidShift) continue;
+
+                            // Check recurring shifts
+                            var recurShift = shift.RecurShift;
+                            if (recurShift != null)
+                            {
+                                if (recurShift.RecurEnd == "Custom Date" )
+                                {
+                                    if (model.SelectedDate <= DateTime.Parse(recurShift.RecurEndDate))
+                                    {
+                                        if (shift.Shift.Day == model.SelectedDate.DayOfWeek.ToString())
+                                        {
+                                            isValidShift = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else if (recurShift.RecurEnd == "Never")
+                                {
+                                    if (model.SelectedDate.DayOfWeek.ToString() == shift.Shift.Day)
+                                    {
+                                        isValidShift = true;
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                        }
+                        if (isValidShift)
+                        {
+                            filteredEmployee.Add(item.Employee);
+                            // Mark shift as valid
+                        }
+
+                    }
+                    //foreach (var empShift in Allshifts)
+                    //{
+                    //    bool hasValidShift = true;
+
+                    //    foreach (var shift in empShift.Shifts)
+                    //    {
+                    //        if (shift == null || shift.Shift == null)
+                    //        {
+                    //            hasValidShift = false;
+                    //        }
+
+                    //        // Check if the shift has a "Not Working" exception for the selected date
+                    //        bool hasNotWorkingException = shift.ExceptionShift != null &&
+                    //            shift.ExceptionShift.Any(ex =>
+                    //                ex.ExceptionDate.Date == model.SelectedDate.Date &&
+                    //                ex.IsNotWorking == true);
+
+                    //        if (hasNotWorkingException)
+                    //        {
+                    //            hasValidShift = false;
+                    //        }
+
+                    //        if (shift.RecurShift != null)
+                    //        {
+                    //            bool isCustomDateExpired = shift.RecurShift.RecurEnd == "Custom Date" &&
+                    //                DateTime.TryParse(shift.RecurShift.RecurEndDate, out var endDate) &&
+                    //                endDate < model.SelectedDate.Date;
+
+                    //            if (isCustomDateExpired)
+                    //            {
+                    //                hasValidShift = false;
+                    //            }
+
+                    //            // If set to "Never", it should be recurring and match the day of the week
+                    //            if (shift.RecurShift.RecurEnd == "Never")
+                    //            {
+                    //                if (!shift.Shift.IsRecurring)
+                    //                {
+                    //                    hasValidShift = false;
+
+                    //                }
+
+
+                    //            }
+                    //        }
+
+                    //        bool foundSelectedWeekDay = false;
+                    //        foreach (var item in empShift.Shifts)
+                    //        {
+                    //            var selectedDay = model.SelectedDate.DayOfWeek.ToString();
+
+                    //            // Check if any exception shift matches the selected date and day
+                    //            var hasMatchingException = item.ExceptionShift != null && item.ExceptionShift.Any(es =>
+                    //                es.ExceptionDate.Date == model.SelectedDate.Date &&
+                    //                es.ExceptionDate.DayOfWeek.ToString() == selectedDay);
+
+                    //            //bool hasValidShift = false;
+
+                    //            if (item.Shift.IsRecurring)
+                    //            {
+                    //                if (item.RecurShift != null && DateTime.Parse(item.RecurShift.RecurEndDate) >= model.SelectedDate)
+                    //                {
+                    //                    hasValidShift = true;
+                    //                }
+                    //                else if (hasMatchingException)
+                    //                {
+                    //                    hasValidShift = true;
+                    //                }
+                    //            }
+                    //            else
+                    //            {
+                    //                hasValidShift = hasMatchingException;
+                    //            }
+
+                    //            if (hasValidShift && item.Shift.Day == selectedDay)
+                    //            {
+                    //                foundSelectedWeekDay = true;
+                    //                break;
+                    //            }
+                    //        }
+
+                    //        if (!foundSelectedWeekDay && !hasValidShift)
+                    //        {
+                    //            NoShowEmployees.Add(empShift.Employee);
+                    //        }
+
+
+                    //        break; // One valid shift is enough
+                    //    }
+
+
+                    //}
+
+
+
+
+                    var ShowIds = filteredEmployee.Select(e => e.ID).ToHashSet();
+                    var showid = "";
+                    Allshifts = Allshifts.Where(shift => ShowIds.Contains(shift.Employee.ID)).ToList();
+
                     model.Employees = Allshifts.OrderBy(x => x.Employee.DisplayOrder).ToList();
                 }
             }

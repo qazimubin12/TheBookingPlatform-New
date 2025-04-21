@@ -113,6 +113,7 @@ namespace TheBookingPlatform.ViewModels
         public float Rating { get; set; }
         public int Count { get; set; }
         public bool HaveEmpPriceChange { get; set; }
+        public List<TimeSlotModel> TimeSlots { get;  set; }
     }
 
     public class ResourceBookedAppointments

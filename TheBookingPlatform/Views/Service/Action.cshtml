@@ -88,45 +88,39 @@
 
 
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-check mt-4">
+                            <!-- Enable Promo Price Checkbox -->
+                            <div class="col-md-4" style="display:flex;align-items:end;">
+                                <div class="form-check" style="padding-left:0px !important;">
                                     <input type="checkbox" class="form-check-input" id="togglePromoPrice" />
                                     <label class="form-check-label" for="togglePromoPrice">Enable Promo Price</label>
                                 </div>
                             </div>
+
+                            <!-- Promo Price Input (Initially Hidden) -->
                             <div class="col-md-4" id="PriceDDBox" style="display: none;">
                                 <div class="input-group input-group-dynamic">
-
                                     <div class="form-group">
-                                        <label>
-                                            Price
-                                        </label>
-                                        <input type="number" value="@Model.PromoPrice" class="form-control" name="PromoPrice" />
+                                        <label>Price</label>
+                                        <input type="number" value="@Model.PromoPrice" class="form-control" id="PromoPrice" name="PromoPrice" />
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Regular Price Input -->
                             <div class="col-md-4">
                                 <div class="input-group input-group-dynamic">
-
                                     <div class="form-group">
-                                        <label id="ddLabel">
-                                            Price
-                                        </label>
-                                        <input type="number" value="@Model.Price" class="form-control" name="Price" />
+                                        <label id="ddLabel">Price</label>
+                                        <input type="number" value="@Model.Price" class="form-control" name="Price" id="Price" />
                                     </div>
                                 </div>
                             </div>
 
-
-
+                            <!-- VAT Dropdown -->
                             <div class="col-md-4">
                                 <div class="input-group input-group-dynamic">
-
-                                    <div style="margin-top:2px;" class="form-group">
-                                        <label>
-                                            VAT
-                                        </label>
+                                    <div class="form-group" style="margin-top: 2px;">
+                                        <label>VAT</label>
                                         <select id="Vat" class="choices__input" name="Vat" data-style="select-with-transition" title="Choose Vat" data-size="100">
                                             @foreach (var item in Model.Vats)
                                             {
@@ -139,23 +133,19 @@
                                                     if (item.Name == Model.VAT)
                                                     {
                                                         <option selected value="@item.Name">@item.Name (@item.Percentage %)</option>
-
                                                     }
                                                     else
                                                     {
                                                         <option value="@item.Name">@item.Name (@item.Percentage %)</option>
-
                                                     }
                                                 }
                                             }
                                         </select>
-
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
+
                         <div class="row d-none">
                             <div class="col-md-12">
                                 <div class="form-check" style=" padding-left: 0em;">
@@ -503,6 +493,41 @@
     </div>
 
     <script>
+
+        $("#Price").on("change", function () {
+            PromoConditioning();
+        });
+
+        $("#PromoPrice").on("change", function () {
+            PromoConditioning(); 
+        });
+
+        function PromoConditioning() {
+            $("#ActionBtn").attr("disabled", "disabled");
+            if ($("#togglePromoPrice").is(':checked')) {
+                var PromoPrice = $("#PromoPrice").val();
+                var Price = $("#Price").val();
+
+                if (PromoPrice > Price) {
+                    alert("Discount price can not be higher than original price. ");
+                    return;
+                }
+                if (PromoPrice != "" && Price == "0") {
+                    alert("if Discount price has a value, original price can not be 0 or lesser than 0 ");
+                    return;
+                }
+                if (PromoPrice < 0 && Price < 0) {
+                    alert("Price or Discounted Price can not have negative number  ");
+                    return;
+                }
+                if (PromoPrice  == Price) {
+                    alert("Discount price and original price should not be the same number.  ");
+                    return;
+                }
+            }
+            $("#ActionBtn").removeAttr("disabled");
+
+        }
 
         function CheckToggle() {
             if ($("#togglePromoPrice").is(':checked')) {

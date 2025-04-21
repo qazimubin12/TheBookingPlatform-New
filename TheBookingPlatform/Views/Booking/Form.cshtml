@@ -1434,7 +1434,6 @@
         if (selectedEmployee == "") {
             selectedEmployee = 0;
         }
-        showLoadingSpinner();
         $.ajax({
             url: '@Url.Action("GetTimeSlots", "Booking")', // Replace with your controller action URL
             type: 'GET',
@@ -1445,7 +1444,7 @@
                 // Update your UI with the retrieved time slots
                 var timeSlotsContainer = $('#TimeSlots'); // Get the timeSlots div by its ID
                 timeSlotsContainer.empty();
-                debugger
+                
                 if (ListOfTimeSlotsWithDiscount != null) {
 
                     if (ListOfTimeSlotsWithDiscount.length > 0)
@@ -1502,7 +1501,7 @@
                                 }
 
                                 button.click(function () {
-                                    debugger
+                                    
                                     // Show selection header and hide booking steps
                                     $('#bookingSteps').hide();
                                     $('#selectionHeader').show();
@@ -1653,16 +1652,7 @@
                                                     $("#empDiscountTextH").addClass("text-danger").removeClass("text-success");
 
                                                 }
-                                                //<div id="EmpPriceChangeRow" class="row" style="display:none; border: solid 0.5px; border-radius: 20px; padding: 5px;">
-                                                //    <img style="width:100px;" src="" id="EmployeePriceChangeImg" />
-                                                //    <div class="col-md-12" style="width:auto;">
-                                                //        <h3 id="EmployeePriceChangeName"> <span id="empDiscountTextH"></span></h3>
-                                                //        <p id="DetailsofPriceChange">
-                                                //            The selected staff has a <span id="empPercentagetext"></span> <span id="empDiscountText"></span> on the selected date, if you
-                                                //            are not comfortable with that kindly change staff.
-                                                //        </p>
-                                                //    </div>
-                                                //</div>
+                                               
                                             },
                                             error: function () {
                                                 alert("An error occurred while saving.");
@@ -1706,265 +1696,16 @@
 
 
                                 buttonRow.append(button);
+                                var selectedtimeSlot = localStorage.getItem("selectedSlot");
+                                if (timeSlot.TimeSlot == selectedtimeSlot) {
+                                    button.click();
+                                }
                             });
 
                             timeSlotsContainer.append(buttonRow);
                         }
-                        @*for (var i = 0; i < ListOfTimeSlotsWithDiscount.length; i++)
-                        {
-                            var timeSlot = ListOfTimeSlotsWithDiscount[i];
-                            // Create a button element
+                      
 
-                            if (timeSlot.HaveDiscount) {
-                                var button = $('<button type="button" translate="no" data-typeofchange="' + timeSlot.TypeOfChange + '" class="btnTimeSlot btn btn-primary btn-rounded btn-sm"></button>');
-                                button.text(timeSlot.TimeSlot); // Set the text of the button to the time slot
-                                button.attr('data-employee', timeSlot.EmployeeID);
-                                button.attr('data-timeslot', timeSlot.TimeSlot);
-                                if (timeSlot.TypeOfChange === "Discount") {
-                                    var discountBadge = $('<span class="discount-ribbon">-' + timeSlot.Percentage + '%</span>');
-                                } else {
-                                    var discountBadge = $('<span class="discount-ribbon2">+' + timeSlot.Percentage + '%</span>');
-                                }
-
-                                button.attr('data-percentage', timeSlot.Percentage);
-                                button.attr('data-pricechangeid', timeSlot.PriceChangeID);
-                                button.append(discountBadge);
-
-                                if (timeSlot.EmpHaveDiscount) {
-                                    button.attr('data-emptypeofchange', timeSlot.EmpTypeOfChange);
-
-                                    //if (timeSlot.EmpTypeOfChange === "Discount") {
-                                    //    var empDiscountBadge = $('<span class="discount-ribbon">-' + timeSlot.EmpPercentage + '%</span>');
-                                    //} else {
-                                    //    var empDiscountBadge = $('<span class="discount-ribbon2">+' + timeSlot.EmpPercentage + '%</span>');
-                                    //}
-
-
-                                    button.attr('data-emppercentage', timeSlot.EmpPercentage);
-                                    button.attr('data-emppricechangeid', timeSlot.EmpPriceChangeID);
-                                //    button.append(empDiscountBadge);
-                                }
-                            }
-                            else {
-                                var button = $('<button type="button" translate="no" class="btnTimeSlot btn btn-primary btn-rounded btn-sm"></button>');
-                                button.attr('data-employee', timeSlot.EmployeeID);
-                                button.text(timeSlot.TimeSlot); // Set the text of the button to the time slot
-                                button.attr('data-timeslot', timeSlot.TimeSlot);
-                                if (timeSlot.EmpHaveDiscount) {
-                                    button.attr('data-emptypeofchange', timeSlot.EmpTypeOfChange);
-
-                                    //if (timeSlot.EmpTypeOfChange === "Discount") {
-                                    //    var empDiscountBadge = $('<span class="discount-ribbon">-' + timeSlot.EmpPercentage + '%</span>');
-                                    //} else {
-                                    //    var empDiscountBadge = $('<span class="discount-ribbon2">+' + timeSlot.EmpPercentage + '%</span>');
-                                    //}
-
-                                    button.attr('data-emppercentage', timeSlot.EmpPercentage);
-                                    button.attr('data-emppricechangeid', timeSlot.EmpPriceChangeID);
-                                //    button.append(empDiscountBadge);
-                                }
-                            }
-
-                            // Add a click event handler to the button (if needed)
-                            button.click(function () {
-
-                                // Show selection header and hide booking steps
-                                $('#bookingSteps').hide();
-                                $('#selectionHeader').show();
-                                $('#personalInfoForm').show();
-                                $("#NextToPayment").show();
-                                $("#Error").show();
-                                $("#MyEmployeeID").val($(this).data("employee"));
-                                // Handle button click here
-                                $('button.btn-secondary').toggleClass('btn-secondary btn-primary');
-                                $(this).toggleClass('btn-primary btn-secondary');
-                                var typeofchange = $(this).data('typeofchange');
-                                var emptypeofchange = $(this).data('emptypeofchange');
-                                $("#FomrSubmittedID").val($(this).data('employee'));
-                                var TimeData = $(this).data("timeslot");
-                                var timePart = TimeData.replace(/[+-]\d+%/, ''); // Remove the +3% or -4% part
-                                $("#Time").val(timePart);
-
-                                CheckDetails();
-                                var percentageValue = $(this).data('percentage');
-                                var EmppercentageValue = $(this).data('emppercentage');
-                                var remainderValue = parseFloat($("#RemainderValue").val());
-                                if (percentageValue != null) {
-                                    if (typeofchange == "Discount") {
-                                        var finalpercentage = parseFloat(percentageValue) / 100;
-                                        remainderValue = remainderValue - (finalpercentage * remainderValue);
-                                        $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
-                                        $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-                                        $("#Percentage").text("Discount: -" + percentageValue + " %");
-                                        $("#OnlinePriceChange").val($(this).attr("data-pricechangeid"));
-
-                                        if (emptypeofchange != null) {
-
-                                            if (emptypeofchange == "Discount") {
-                                                var finalpercentage = parseFloat(EmppercentageValue) / 100;
-                                                remainderValue = remainderValue - (finalpercentage * remainderValue);
-                                                $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
-                                                $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-
-                                                $("#EmpPercentage").text("Employee Discount: -" + EmppercentageValue + " %");
-                                                $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
-                                            }
-                                            else {
-                                                var finalpercentage = parseFloat(EmppercentageValue) / 100;
-                                                remainderValue = remainderValue + (finalpercentage * remainderValue);
-                                                $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-                                                $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
-                                                $("#EmpPercentage").text("Employee Price Change: +" + EmppercentageValue + " %");
-                                                $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        var finalpercentage = parseFloat(percentageValue) / 100;
-                                        remainderValue = remainderValue + (finalpercentage * remainderValue);
-                                        $("#Remainder").text(remainderValue.toFixed(2) + " @Model.Company.Currency");
-                                        $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-
-                                        $("#Percentage").text("Price Change: +" + percentageValue + " %");
-                                        $("#OnlinePriceChange").val($(this).attr("data-pricechangeid"));
-
-
-                                        if (emptypeofchange != null) {
-                                            if (emptypeofchange == "Discount") {
-                                                var finalpercentage = parseFloat(EmppercentageValue) / 100;
-                                                remainderValue = remainderValue - (finalpercentage * remainderValue);
-                                                $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
-                                                $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-                                                $("#EmpPercentage").text("Employee Discount: -" + EmppercentageValue + " %");
-                                                $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
-                                            }
-                                            else {
-                                                var finalpercentage = parseFloat(EmppercentageValue) / 100;
-                                                remainderValue = remainderValue + (finalpercentage * remainderValue);
-                                                $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
-                                                $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-
-                                                $("#EmpPercentage").text("Employee Price Change: +" + EmppercentageValue + " %");
-                                                $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if (EmppercentageValue != null) {
-                                        if (emptypeofchange == "Discount") {
-                                            var finalpercentage = parseFloat(EmppercentageValue) / 100;
-                                            remainderValue = remainderValue - (finalpercentage * remainderValue);
-                                            $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
-                                            $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-
-                                            $("#EmpPercentage").text("Employee Discount: -" + EmppercentageValue + " %");
-                                            $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
-                                        }
-                                        else {
-                                            var finalpercentage = parseFloat(EmppercentageValue) / 100;
-                                            remainderValue = remainderValue + (finalpercentage * remainderValue);
-                                            $("#Remainder").text(remainderValue.toFixed(2) + " @(Model.Company.Currency)");
-                                            $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-                                            $("#EmpPercentage").text("Employee Price Change: +" + EmppercentageValue + " %");
-                                            $("#EmployeePriceChange").val($(this).attr("data-emppricechangeid"));
-                                        }
-                                    }
-                                    else {
-                                        $("#Remainder").text(remainderValue.toFixed(2) + " @Model.Company.Currency");
-                                        $("#FinalBeforeDiscount").val(remainderValue.toFixed(2));
-                                    }
-                                }
-
-
-
-
-                                if ($(this).attr('data-emppercentage') !== undefined) {
-
-                                    var empPercentage = $(this).attr('data-emppercentage');
-                                    var empID = $(this).attr('data-employee');
-                                    // Get the value of the data-emptypeofchange attribute
-                                    var empTypeOfChange = $(this).attr('data-emptypeofchange');
-
-
-                                    $.ajax({
-                                        url: '@Url.Action("GetEmployeeData", "Booking")',
-                                        type: 'GET',
-                                        data: { ID: empID },
-                                        success: function (data) {
-                                            var employee = data.Employee;
-                                            $("#EmpPriceChangeRow").show();
-
-                                            $("#EmployeePriceChangeImg").attr("src", employee.Photo);
-                                            $("#Emp_Image").attr("src", employee.Photo);
-                                            $("#EmployeePriceChangeName").html(employee.Name + " " + '<span id="empDiscountTextH"></span>');
-                                            if (empTypeOfChange == "Discount") {
-                                                $("#empDiscountTextH").text(empTypeOfChange + " -" + empPercentage + "%");
-                                                $("#Emp_Name").text(employee.Name + " (" + empTypeOfChange + " -" + empPercentage + "%)  ");
-                                            } else {
-                                                $("#empDiscountTextH").text(empTypeOfChange + " +" + empPercentage + "%");
-                                                $("#Emp_Name").text(employee.Name + " (" + empTypeOfChange + " +" + empPercentage + "%)  ");
-                                            }
-
-
-
-                                            $("#DetailsofPriceChange").html("The selected staff has a <span id='empPercentagetext'></span> <span id='empDiscountText'></span> on the selected date.")
-                                            $("#empPercentagetext").text(empPercentage + "%");
-                                            $("#empDiscountText").text(empTypeOfChange);
-                                            if (empTypeOfChange == "Discount")
-                                            {
-                                                $("#empDiscountTextH").addClass("text-success").removeClass("text-danger");
-                                            }
-                                            else {
-                                                $("#empDiscountTextH").addClass("text-danger").removeClass("text-success");
-
-                                            }
-                                            //<div id="EmpPriceChangeRow" class="row" style="display:none; border: solid 0.5px; border-radius: 20px; padding: 5px;">
-                                            //    <img style="width:100px;" src="" id="EmployeePriceChangeImg" />
-                                            //    <div class="col-md-12" style="width:auto;">
-                                            //        <h3 id="EmployeePriceChangeName"> <span id="empDiscountTextH"></span></h3>
-                                            //        <p id="DetailsofPriceChange">
-                                            //            The selected staff has a <span id="empPercentagetext"></span> <span id="empDiscountText"></span> on the selected date, if you
-                                            //            are not comfortable with that kindly change staff.
-                                            //        </p>
-                                            //    </div>
-                                            //</div>
-                                        },
-                                        error: function () {
-                                            alert("An error occurred while saving.");
-                                        }
-                                    });
-
-                                }
-                                else {
-                                    $("#EmpPriceChangeRow").hide();
-
-                                }
-
-                                CheckDiscountAgainstCoupon();
-
-                                // Update selection header content
-                                const employeeName = $('.dropdown-btn .emp_Name').text();
-                                const timeSlot = $(this).data('timeslot');
-                                $('#selectedEmployeeDisplay').text(`Specialist: ${employeeName}`);
-                                $('#selectedTimeSlotDisplay').html(`
-        Date: ${$('#dateInput').val()}<br>
-        Time: ${timeSlot}
-    `);
-
-                            });
-
-                            timeSlotsContainer.append(button);
-
-                        }*@
-
-                        // Append the table row to the table
-
-                        /*$("#SelectedEmployeeID").val(data.FinalEmployeeID);*/
-                        //$("#FinalSelectedEmployeeID").val(data.FinalEmployeeID);
-                        // Append the table to the timeSlots div
-                        hideLoadingSpinner();
                     }
                     else {
                         // Append an h4 message in case there are no slots available
@@ -2025,6 +1766,7 @@
         $('.btnTimeSlot').removeClass('btn-secondary').addClass('btn-primary');
         $('#Time').val('');
         $("#NextToPayment").hide();
+        localStorage.removeItem("selectedSlot");
         $("#Error").hide();
     });
 
