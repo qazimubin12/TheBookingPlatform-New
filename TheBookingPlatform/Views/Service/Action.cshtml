@@ -91,7 +91,9 @@
                             <!-- Enable Promo Price Checkbox -->
                             <div class="col-md-4" style="display:flex;align-items:end;">
                                 <div class="form-check" style="padding-left:0px !important;">
-                                    <input type="checkbox" class="form-check-input" id="togglePromoPrice" />
+                                    <input @(Model.HavePromo ? "checked":"") type="checkbox" class="form-check-input" id="togglePromoPrice" />
+                                    <input type="hidden" value="@Model.HavePromo" class="d-none" name="HavePromo" id="HavePromo" />
+
                                     <label class="form-check-label" for="togglePromoPrice">Enable Promo Price</label>
                                 </div>
                             </div>
@@ -508,7 +510,7 @@
                 var PromoPrice = $("#PromoPrice").val();
                 var Price = $("#Price").val();
 
-                if (PromoPrice > Price) {
+                if (PromoPrice < Price) {
                     alert("Discount price can not be higher than original price. ");
                     return;
                 }
@@ -532,9 +534,11 @@
         function CheckToggle() {
             if ($("#togglePromoPrice").is(':checked')) {
                 $('#PriceDDBox').show();
+                $("#HavePromo").val("true");
                 $("#ddLabel").text("Discount Price");
             } else {
                 $('#PriceDDBox').hide();
+                $("#HavePromo").val("false");
                 $("#ddLabel").text("Price");
 
             }

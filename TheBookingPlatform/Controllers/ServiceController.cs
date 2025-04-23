@@ -373,6 +373,7 @@ namespace TheBookingPlatform.Controllers
                 model.ID = Service.ID;
                 model.Business = Service.Business;
                 model.Name = Service.Name;
+                model.HavePromo = Service.HavePromo;
                 model.Category = Service.Category;
                 model.Price = Service.Price;
                 model.VAT = Service.VAT;
@@ -427,6 +428,7 @@ namespace TheBookingPlatform.Controllers
                 Service.Setup = model.Setup;
                 Service.PromoPrice = model.PromoPrice;
                 Service.Processing = model.Processing;
+                Service.HavePromo = model.HavePromo;
                 Service.NumberofSessions = model.NumberofSessions;
                 Service.Finish = model.Finish;
                 Service.DoesRequiredProcessing = model.DoesRequiredProcessing;
@@ -495,6 +497,7 @@ namespace TheBookingPlatform.Controllers
                 Service.Finish = model.Finish;
                 Service.IsActive = true;
                 Service.PromoPrice = model.PromoPrice;
+                Service.HavePromo = model.HavePromo;
                 Service.Tool = model.Tool;
                 Service.Room = model.Room;
                 Service.Notes = model.Notes;

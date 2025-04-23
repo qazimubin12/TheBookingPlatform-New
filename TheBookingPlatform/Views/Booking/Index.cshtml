@@ -250,7 +250,7 @@
                                         </div>
                                         <div style="display:flex;align-items:baseline;gap:20px;">
                                             <h6 class="mb-1 fs-14" style="white-space:nowrap;">
-                                                @if (service.Service.PromoPrice != 0)
+                                                @if (service.Service.HavePromo)
                                                 {
                                                     <s>@service.Service.PromoPrice @Model.Company.Currency</s>
                                                 }

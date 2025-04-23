@@ -58,6 +58,8 @@ namespace TheBookingPlatform.ViewModels
         public int ID { get; set; }
         public string Business { get; set; }
         public string Name { get; set; }
+        public bool HavePromo { get; set; }
+
         public bool IsActive { get; set; }
         public string Category { get; set; }
         public List<ServiceCategory> ServiceCategories { get; set; }

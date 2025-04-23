@@ -89,7 +89,7 @@
             <div class="bg-white rounded-4 p-3 mb-3 shadow-sm">
                 <h6 class="mb-3">Working at: @Model.Company.Business</h6>
                 <p class="text-muted mb-0">
-                    @Html.Raw(Model.Employee.Experience?.Replace("\n\n", "<br><br>"))
+                    @Html.Raw(Model.Employee.Experience?.Replace("\n", "<br/>"))
                 </p>
 
             </div>

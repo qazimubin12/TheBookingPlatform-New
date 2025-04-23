@@ -1150,8 +1150,8 @@ namespace TheBookingPlatform.Controllers
 
                 }
 
-                    var filteredEmployee = new List<Employee>();
-
+                var filteredEmployee = new List<Employee>();
+                var appointmentsEmployee = new List<Employee>();
                 if (Allshifts.Count() != 0)
                 {
                     var shiftsWithinRange = Allshifts;
@@ -1160,9 +1160,11 @@ namespace TheBookingPlatform.Controllers
 
                     foreach (var item in Allshifts)
                     {
-                         if(item.Employee.Name == "Nina")
+                     
+                        var haveAppointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(LoggedInUser.Company,false, false, item.Employee.ID,model.SelectedDate).Where(x=>x.Color != "darkgray").Any();
+                        if (haveAppointments)
                         {
-
+                            appointmentsEmployee.Add(item.Employee);
                         }
                         var listofShifts = item.Shifts;
                         bool isValidShift = false;
@@ -1216,105 +1218,17 @@ namespace TheBookingPlatform.Controllers
                         }
 
                     }
-                    //foreach (var empShift in Allshifts)
-                    //{
-                    //    bool hasValidShift = true;
-
-                    //    foreach (var shift in empShift.Shifts)
-                    //    {
-                    //        if (shift == null || shift.Shift == null)
-                    //        {
-                    //            hasValidShift = false;
-                    //        }
-
-                    //        // Check if the shift has a "Not Working" exception for the selected date
-                    //        bool hasNotWorkingException = shift.ExceptionShift != null &&
-                    //            shift.ExceptionShift.Any(ex =>
-                    //                ex.ExceptionDate.Date == model.SelectedDate.Date &&
-                    //                ex.IsNotWorking == true);
-
-                    //        if (hasNotWorkingException)
-                    //        {
-                    //            hasValidShift = false;
-                    //        }
-
-                    //        if (shift.RecurShift != null)
-                    //        {
-                    //            bool isCustomDateExpired = shift.RecurShift.RecurEnd == "Custom Date" &&
-                    //                DateTime.TryParse(shift.RecurShift.RecurEndDate, out var endDate) &&
-                    //                endDate < model.SelectedDate.Date;
-
-                    //            if (isCustomDateExpired)
-                    //            {
-                    //                hasValidShift = false;
-                    //            }
-
-                    //            // If set to "Never", it should be recurring and match the day of the week
-                    //            if (shift.RecurShift.RecurEnd == "Never")
-                    //            {
-                    //                if (!shift.Shift.IsRecurring)
-                    //                {
-                    //                    hasValidShift = false;
-
-                    //                }
-
-
-                    //            }
-                    //        }
-
-                    //        bool foundSelectedWeekDay = false;
-                    //        foreach (var item in empShift.Shifts)
-                    //        {
-                    //            var selectedDay = model.SelectedDate.DayOfWeek.ToString();
-
-                    //            // Check if any exception shift matches the selected date and day
-                    //            var hasMatchingException = item.ExceptionShift != null && item.ExceptionShift.Any(es =>
-                    //                es.ExceptionDate.Date == model.SelectedDate.Date &&
-                    //                es.ExceptionDate.DayOfWeek.ToString() == selectedDay);
-
-                    //            //bool hasValidShift = false;
-
-                    //            if (item.Shift.IsRecurring)
-                    //            {
-                    //                if (item.RecurShift != null && DateTime.Parse(item.RecurShift.RecurEndDate) >= model.SelectedDate)
-                    //                {
-                    //                    hasValidShift = true;
-                    //                }
-                    //                else if (hasMatchingException)
-                    //                {
-                    //                    hasValidShift = true;
-                    //                }
-                    //            }
-                    //            else
-                    //            {
-                    //                hasValidShift = hasMatchingException;
-                    //            }
-
-                    //            if (hasValidShift && item.Shift.Day == selectedDay)
-                    //            {
-                    //                foundSelectedWeekDay = true;
-                    //                break;
-                    //            }
-                    //        }
-
-                    //        if (!foundSelectedWeekDay && !hasValidShift)
-                    //        {
-                    //            NoShowEmployees.Add(empShift.Employee);
-                    //        }
-
-
-                    //        break; // One valid shift is enough
-                    //    }
-
-
-                    //}
-
-
 
 
                     var ShowIds = filteredEmployee.Select(e => e.ID).ToHashSet();
-                    var showid = "";
-                    Allshifts = Allshifts.Where(shift => ShowIds.Contains(shift.Employee.ID)).ToList();
+                    var AppShowIds = appointmentsEmployee.Select(x => x.ID).ToHashSet();
+
+                    // Combine both ID sets
+                    var CombinedIds = ShowIds.Union(AppShowIds).ToHashSet();
+
+                    // Filter Allshifts using the combined IDs
+                    Allshifts = Allshifts.Where(shift => CombinedIds.Contains(shift.Employee.ID)).ToList();
+
 
                     model.Employees = Allshifts.OrderBy(x => x.Employee.DisplayOrder).ToList();
                 }
@@ -3136,7 +3050,16 @@ namespace TheBookingPlatform.Controllers
             var SelectedDate = DateTime.Parse(Date);
             var EmployeeSelectedWaitingList = WaitingListServices.Instance.GetWaitingList(LoggedInUser.Company, SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, "Created", EmployeeID);
             var NonSelectedWaitingList = WaitingListServices.Instance.GetWaitingList(LoggedInUser.Company, SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, "Created", true);
-
+            var company = CompanyServices.Instance.GetCompanyByName(LoggedInUser.Company);
+            var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
+            foreach (var item in employeerequests)
+            {
+                if (item.Accepted)
+                {
+                    var employeeCompany = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                    EmployeeSelectedWaitingList.AddRange(WaitingListServices.Instance.GetWaitingLists(employeeCompany.Business, SelectedDate.Day, SelectedDate.Month, SelectedDate.Year,"Created",item.EmployeeID));
+                }
+            }
             var CombinedList = EmployeeSelectedWaitingList.Concat(NonSelectedWaitingList).ToList();
             foreach (var item in CombinedList)
             {

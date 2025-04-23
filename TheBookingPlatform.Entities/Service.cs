@@ -45,5 +45,6 @@ namespace TheBookingPlatform.Entities
         public bool IsActive { get; set; }
 
         public int NumberofSessions { get; set; }
+        public bool HavePromo { get; set; }
     }
 }

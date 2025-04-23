@@ -124,6 +124,27 @@ namespace TheBookingPlatform.Services
         }
 
 
+        public List<WaitingList> GetWaitingLists(string Business, int Day, int Month, int Year, string NotCreatedStatus, int EmployeeID)
+        {
+            using (var context = new DSContext())
+            {
+                // Create a DateTime object to simplify date comparison
+                var targetDate = new DateTime(Year, Month, Day);
+
+                // Query optimization
+                return  context.WaitingLists
+                    .AsNoTracking() // Disable change tracking for better performance
+                    .Where(x => x.Date.Year == Year
+                                && x.Date.Month == Month
+                                && x.Date.Day == Day
+                                && x.EmployeeID == EmployeeID
+                                && x.Business == Business
+                                && x.WaitingListStatus != NotCreatedStatus)
+                    .OrderBy(x => x.BookingDate)
+                    .ToList();
+            }
+        }
+
         public async Task<List<WaitingList>> GetWaitingListAsync(int Day, int Month, int Year, string NotCreatedStatus)
         {
             using (var context = new DSContext())
