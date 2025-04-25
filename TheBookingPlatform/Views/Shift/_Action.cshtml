@@ -155,7 +155,7 @@
                                 <span class="radio-icon">
                                     <i class="fa fa-repeat"></i>
                                 </span>
-                                <span class="radio-label">Is Recurring</span>
+                                <span class="radio-label" title="Set a repeating shift pattern for future dates">Recurring Shift</span>
                             </span>
                         </label>
 
@@ -167,7 +167,7 @@
                                     <span class="radio-icon">
                                         <i class="fa fa-calendar"></i>
                                     </span>
-                                    <span class="radio-label">Edit for this day?</span>
+                                    <span class="radio-label" title="Make changes only for this specific day">Edit this day only</span>
                                 </span>
                             </label>
                         }
@@ -179,7 +179,7 @@
                                     <span class="radio-icon">
                                         <i class="fa fa-ban"></i>
                                     </span>
-                                    <span class="radio-label">Close this day?</span>
+                                    <span class="radio-label" title="Mark this day as closed">Close this day</span>
                                 </span>
                             </label>
                         }
@@ -194,12 +194,12 @@
                             <label>Start Time</label>
                             @if (Model.ID == 0)
                             {
-                                <input type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                                <input  onkeydown="return false;" type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
 
                             }
                             else
                             {
-                                <input type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Parse(Model.StartTime).ToString("HH:mm")" />
+                                <input  onkeydown="return false;" type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Parse(Model.StartTime).ToString("HH:mm")" />
                             }
                         </div>
                     </div>
@@ -211,11 +211,11 @@
                             <label>End Time</label>
                             @if (Model.ID == 0)
                             {
-                                <input type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                                <input  onkeydown="return false;" type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
                             }
                             else
                             {
-                                <input type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Parse(Model.EndTime).ToString("HH:mm")" />
+                                <input  onkeydown="return false;" type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Parse(Model.EndTime).ToString("HH:mm")" />
                             }
                         </div>
                     </div>
@@ -252,7 +252,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>
-                                Recur End
+                                Recurrance End
                             </label>
                             <select class="form-control choices__input" name="RecurEnd" id="RecurEnd">
                                 @if (Model.RecurEnd == "Never")
@@ -280,7 +280,7 @@
                             <div class="input-group input-group-dynamic">
 
                                 <label id="LBLRecurEndDate">
-                                    Recur End Date
+                                    Recurrance End Date
                                 </label>
                                 @if (Model.RecurEndDate != null && Model.RecurEndDate != "")
                                 {

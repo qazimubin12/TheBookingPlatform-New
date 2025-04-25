@@ -7,17 +7,20 @@
 }
 <style>
     .table > .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-        padding: 5px 8px;
+        padding: 5px 5px;
         vertical-align: middle;
     }
 
     .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
-        padding: 8px;
+        padding: 5px !important;
         line-height: 1.42857143;
         vertical-align: top;
         border-top: none;
     }
-
+    .fa-add:before, .fa-plus:before {
+        content: "\2b";
+        color: #a8a7a7 !important;
+    }
     .bg-success {
         background-color: lightgreen;
         height: 25px;
@@ -47,14 +50,31 @@
 
     .addShift {
         cursor: pointer;
-    }
-
-
-    .bg-primary_shift {
         height: 25px;
         display: flex !important;
         justify-content: center;
         align-items: center;
+        border-radius: 5px;
+        font-size: small;
+        background: white !important;
+        color: black !important;
+        border: solid 1px #d0d0d0;
+    }
+
+    .btn-light:hover {
+        color: #3498DB;
+        background: #F0F0F0;
+    }
+
+    .bg-primary_shift {
+        height: 25px;
+        background: #FBE489 !important;
+        color: black !important;
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        font-size: small;
     }
 
 
@@ -65,47 +85,55 @@
         display: flex !important;
         justify-content: center;
         align-items: center;
+        border-radius: 5px;
+        font-size: small;
+        background: #F26E6E !important;
+        color: black !important;
+    }
+
+    .bg-light {
+        border-radius: 5px;
     }
 </style>
 
 <div id="MainTimeTableView" class="row">
     <div class="card">
         <div class="card-body">
-            <h2 class="card-title">
-                TimeTable <a href="https://yourbookingplatform.com/how-to-manage-shifts-in-the-timetable/" target="_blank"><i class="fa fa-info-circle"></i></a>
+            <h2 class="card-title" style="display:flex;justify-content:center;gap:10px; font-weight:500 !important;">
+                TimeTable <a href="https://yourbookingplatform.com/how-to-manage-shifts-in-the-timetable/" target="_blank"><i class="fa fa-info-circle" style="font-size: 25px;"></i></a>
             </h2>
             <div class="row">
-                <div class="col-md-12" style="display:flex;justify-content:center;">
-                    <button id="PrevBtn" type="button" class="btn btn-primary btn-sm">
-                        <i class="fa fa-arrow-left"></i>
+                <div class="col-md-12" style="display:flex;justify-content:center;align-items:center;">
+                    <button id="PrevBtn" type="button" style=" margin-bottom: 0px !important; padding: 0 4px; height: 30px; background: none; font-size: 25px;" class="btn btn-light btn-sm">
+                        ←
                     </button>
                     @if (Model.weekDates.FirstOrDefault().ToString("MMMM") == Model.weekDates.LastOrDefault().ToString("MMMM"))
                     {
-                        <h4 style="font-weight:bold;margin:10px;">
-                            @(Model.weekDates.FirstOrDefault().Day.ToString("d")) - @(Model.weekDates.LastOrDefault().Day.ToString("d")) @Model.weekDates.FirstOrDefault().ToString("MMMM")
-                            <input type="hidden" value="@Model.weekDates.FirstOrDefault().ToString("yyyy-MM-dd")" id="StartDate" />
-                            <input type="hidden" value="@Model.weekDates.LastOrDefault().ToString("yyyy-MM-dd")" id="EndDate" />
-                        </h4>
+<h4 style="font-weight: 500 !important; margin: 10px; color: #7f8c8d !important; ">
+    @Model.weekDates.FirstOrDefault().ToString("MMMM") @(Model.weekDates.FirstOrDefault().Day.ToString("d")) - @(Model.weekDates.LastOrDefault().Day.ToString("d")) @Model.weekDates.FirstOrDefault().ToString("MMMM")
+    <input type="hidden" value="@Model.weekDates.FirstOrDefault().ToString("yyyy-MM-dd")" id="StartDate" />
+    <input type="hidden" value="@Model.weekDates.LastOrDefault().ToString("yyyy-MM-dd")" id="EndDate" />
+</h4>
 
                     }
                     else
                     {
-                        <h4 style="font-weight:bold;margin:10px;">
-                            @(Model.weekDates.FirstOrDefault().Day.ToString("d")) @Model.weekDates.FirstOrDefault().ToString("MMMM") - @(Model.weekDates.LastOrDefault().Day.ToString("d")) @Model.weekDates.LastOrDefault().ToString("MMMM")
-                            <input type="hidden" value="@Model.weekDates.FirstOrDefault().ToString("yyyy-MM-dd")" id="StartDate" />
-                            <input type="hidden" value="@Model.weekDates.LastOrDefault().ToString("yyyy-MM-dd")" id="EndDate" />
-                        </h4>
+                <h4 style="font-weight: 500 !important; margin: 10px; color: #7f8c8d !important; ">
+                    @Model.weekDates.FirstOrDefault().ToString("MMMM") @(Model.weekDates.FirstOrDefault().Day.ToString("d")) - @(Model.weekDates.LastOrDefault().Day.ToString("d")) @Model.weekDates.FirstOrDefault().ToString("MMMM")
+                    <input type="hidden" value="@Model.weekDates.FirstOrDefault().ToString("yyyy-MM-dd")" id="StartDate" />
+                    <input type="hidden" value="@Model.weekDates.LastOrDefault().ToString("yyyy-MM-dd")" id="EndDate" />
+                </h4>
 
                     }
 
 
-                    <button id="nextBtn" type="button" class="btn btn-primary btn-sm">
-                        <i class="fa fa-arrow-right"></i>
-                    </button>
+                <button id="nextBtn" type="button" style=" margin-bottom: 0px !important; padding: 0 4px; height: 30px; background: none; font-size: 25px;" class="btn btn-light btn-sm">
+                    →
+                </button>
                 </div>
 
                 <div style="display:flex;justify-content:center;">
-                    <button onclick="window.location.href='@Url.Action("Index","Shift")'" class="btn btn-primary btn-info btn-sm btn-round">Today</button>
+                    <button onclick="window.location.href='@Url.Action("Index","Shift")'" class="btn btn-light btn-info btn-sm btn-round">Today</button>
                 </div>
 
             </div>
@@ -114,32 +142,40 @@
             <br />
             <div class="table-responsive">
                 <table class="table table-borderless">
-                    <tr class="bg-primary">
+                    <tr class="" style="background: #F3F4F6 !important;font-size:smaller; color: black !important; ">
                         <th>Employees</th>
                         @foreach (var date in Model.weekDates)
                         {
-                            <th class="text-center">
-                                @date.ToString("dddd")<br />@date.ToString("dd")
-                                @if (date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
-                                {
-                                    <br /><span>(Today)</span>
-                                }
-                            </th>
+                            if (date.ToString("yyyy-MM-dd") == DateTime.Now.ToString("yyyy-MM-dd"))
+                            {
+                                <th class="text-center text-success">
+                                    (@date.ToString("dd")) @date.ToString("ddd")
 
+                                </th>
+                            }
+                            else
+                            {
+                                <th class="text-center">
+                                    (@date.ToString("dd")) @date.ToString("ddd")
+
+                                </th>
+                            }
                         }
+
+                        
                     </tr>
                     @foreach (var empSchedule in Model.Shifts)
                     {
                         <tr data-employee-id="@empSchedule.Employee.ID">
-                            <td>@empSchedule.Employee.Name <span style="background-color:blanchedalmond;" class="total-hours_@empSchedule.Employee.ID"></span></td>
+                            <td style="display:flex;justify-content:space-between;">
+                                @empSchedule.Employee.Name
+                                <span class="badge bg-light text-dark total-hours_@empSchedule.Employee.ID"></span>
+                            </td>
 
                             @foreach (var date in Model.weekDates)
                             {
                                 bool AddedShift = false;
-                                if (date.Day == 8 && empSchedule.Employee.ID == 37)
-                                {
 
-                                }
                                 if (listofData.Where(x => x.Date.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && x.EmployeeID == empSchedule.Employee.ID).Count() == 0)
                                 {
                                     var shiftsWithinRange = empSchedule.Shifts.Where(s => s.Shift.Date.DayOfWeek.ToString() == date.DayOfWeek.ToString()).ToList();
@@ -162,7 +198,7 @@
                                                                 if (shiftExceptionShift.ShiftID == shift.Shift.ID && shiftExceptionShift.ExceptionDate.ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd") && shiftExceptionShift.IsNotWorking == true)
                                                                 {
                                                                     <td class="text-center ">
-                                                                        <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">BLOCKED</span>
+                                                                        <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-light    data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal"><s>Closed<i class="fa fa-close"></i> </s></span>
                                                                     </td>
                                                                     exceptionFound = true;
                                                                     AddedShift = true;
@@ -261,7 +297,7 @@
                                                                         if (shiftExceptionShift.IsNotWorking)
                                                                         {
                                                                             <td class="text-center">
-                                                                                <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-danger data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal">BLOCKED</span>
+                                                                                <span data-href="@Url.Action("Action", "Shift")" data-id="@shiftExceptionShift.ID" data-isexception="true" style="display:block;" class="bg-light data-btn" data-employee="@empSchedule.Employee.ID" data-date="@date.ToString("yyyy-MM-dd")" data-bs-toggle="modal" data-bs-target="#actionModal"><s>Closed <i class="fa fa-close"></i></s></span>
                                                                             </td>
                                                                         }
                                                                         else
@@ -470,7 +506,11 @@
             });
 
             // Display the total hours
-            $(this).find('.total-hours_'+employeeID).text("["+totalHours.toFixed(2) + ' Hrs]');
+            let hours = totalHours.toFixed(2);
+            let [whole, decimal] = hours.split('.');
+            whole = whole.padStart(2, '0');
+            let hoursFormatted = `${whole}.${decimal}`;
+            $(this).find('.total-hours_' + employeeID).text(hoursFormatted + ' hrs');
         });
     });
 </script>

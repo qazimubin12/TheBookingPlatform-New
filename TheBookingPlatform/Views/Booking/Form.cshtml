@@ -1444,7 +1444,7 @@
                 // Update your UI with the retrieved time slots
                 var timeSlotsContainer = $('#TimeSlots'); // Get the timeSlots div by its ID
                 timeSlotsContainer.empty();
-                
+
                 if (ListOfTimeSlotsWithDiscount != null) {
 
                     if (ListOfTimeSlotsWithDiscount.length > 0)
@@ -1501,7 +1501,7 @@
                                 }
 
                                 button.click(function () {
-                                    
+
                                     // Show selection header and hide booking steps
                                     $('#bookingSteps').hide();
                                     $('#selectionHeader').show();
@@ -1518,7 +1518,7 @@
                                     var TimeData = $(this).data("timeslot");
                                     var timePart = TimeData.replace(/[+-]\d+%/, ''); // Remove the +3% or -4% part
                                     $("#Time").val(timePart);
-
+                                  
                                     CheckDetails();
                                     var percentageValue = $(this).data('percentage');
                                     var EmppercentageValue = $(this).data('emppercentage');
@@ -1652,12 +1652,15 @@
                                                     $("#empDiscountTextH").addClass("text-danger").removeClass("text-success");
 
                                                 }
-                                               
+
                                             },
                                             error: function () {
                                                 alert("An error occurred while saving.");
                                             }
                                         });
+
+
+
 
                                     }
                                     else {
@@ -1704,7 +1707,7 @@
 
                             timeSlotsContainer.append(buttonRow);
                         }
-                      
+
 
                     }
                     else {
@@ -1768,6 +1771,8 @@
         $("#NextToPayment").hide();
         localStorage.removeItem("selectedSlot");
         $("#Error").hide();
+        
+
     });
 
 
@@ -1965,15 +1970,13 @@
                         type: 'POST',
                         data: $("#ActionForm").serialize(),
                         success: function (data) {
-
-
                             if (data.session == null) {
                                 hideLoadingSpinner();
-                                console.log(data.Message);
+                                alert(data.message);
                                 $("#pills-info-tab").removeAttr("disabled");
                                 $("#pills-info-tab").trigger("click");
                                 //updateTimeSlots();
-                                return;
+                                location.reload();
                             }
                             else {
                                 hideLoadingSpinner();
@@ -2247,7 +2250,7 @@
          <div class="d-flex justify-content-between align-items-center border-bottom py-2 addOnService">
              <div style="display:flex;align-items:center;gap:10px;">
                  <p class="mb-1 addOnServiceName">${service.Name} (${service.Duration}) (+@Model.Company.Currency ${service.Price})</hp>
-                
+
              </div>
              <button data-id="${service.ID}" data-price="${service.Price}" data-duration="${service.Duration}" data-name="${service.Name}" type="button" class="btn btn-sm btn-outline-primary add-btn">Add</button>
          </div>`;

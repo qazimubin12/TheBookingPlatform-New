@@ -40,11 +40,14 @@ using System.Management.Instrumentation;
 using System.Windows.Media.Animation;
 using System.Windows;
 using System.ComponentModel.Design;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace TheBookingPlatform.Controllers
 {
     public class BookingController : Controller
     {
+        
+
 
         [HttpGet]
         public JsonResult CheckCouponCode(string Business, string CustomerEmail, string CouponCode, string FirstName, string LastName, string MobileNumber)
@@ -3066,6 +3069,9 @@ namespace TheBookingPlatform.Controllers
             return View("CustomerSettings", "_BookingLayout", model);
         }
 
+
+       
+
         [HttpGet]
         [NoCache]
         public ActionResult Form(string businessName, string ids, int CustomerID = 0, string SentBy = "", int AppointmentID = 0, string By = "",int SelectedEmployeeID = 0)
@@ -4295,14 +4301,27 @@ namespace TheBookingPlatform.Controllers
         }
 
 
+
         [HttpPost]
         public JsonResult Form(BookingViewModel model)
         {
 
             try
             {
-                var serviceslist = new List<ServiceFormModel>();
                 var company = CompanyServices.Instance.GetCompany(model.CompanyID);
+
+
+                var CheckingTime = DateTime.Parse(model.Time.Split('-')[0].Trim());
+                var CheckingDate = model.Date;
+                //var conflictingAppointment = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(company.Business,model.EmployeeID, CheckingDate.Day, CheckingDate.Month, CheckingDate.Year, CheckingTime.Hour, CheckingTime.Minute).Where(x=>x.IsCancelled == false).ToList();
+                //if (conflictingAppointment.Count() > 0)
+                //{
+                //    return Json(new { success = false, message = "Slot has been booked already" }, JsonRequestBehavior.AllowGet);
+                //}
+
+                // Slot is available for this user – continue
+
+                var serviceslist = new List<ServiceFormModel>();
                 var secretKey = company.APIKEY;
                 StripeConfiguration.ApiKey = secretKey;
                 float Deposit = 0;
@@ -4815,6 +4834,12 @@ namespace TheBookingPlatform.Controllers
 
 
                     var StartTime = DateTime.Parse(model.Time.Split('-')[0].Trim());
+
+                    
+
+
+
+
                     var EndTime = DateTime.Parse(model.Time.Split('-')[1].Trim());
                     model.ServicesOnly = serviceslist;
                     var appointment = new Appointment();
@@ -5199,8 +5224,7 @@ namespace TheBookingPlatform.Controllers
             }
             catch (Exception ex)
             {
-
-                throw;
+                return Json(new { success = false, message = ex.Message });
             }
         }
 
