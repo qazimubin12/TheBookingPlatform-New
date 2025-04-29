@@ -194,12 +194,12 @@
                             <label>Start Time</label>
                             @if (Model.ID == 0)
                             {
-                                <input  onkeydown="return false;" type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                                <input   type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
 
                             }
                             else
                             {
-                                <input  onkeydown="return false;" type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Parse(Model.StartTime).ToString("HH:mm")" />
+                                <input   type="time" name="StartTime" id="StartTime" class="form-control" value="@DateTime.Parse(Model.StartTime).ToString("HH:mm")" />
                             }
                         </div>
                     </div>
@@ -211,11 +211,11 @@
                             <label>End Time</label>
                             @if (Model.ID == 0)
                             {
-                                <input  onkeydown="return false;" type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                                <input  type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
                             }
                             else
                             {
-                                <input  onkeydown="return false;" type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Parse(Model.EndTime).ToString("HH:mm")" />
+                                <input  type="time" name="EndTime" id="EndTime" class="form-control" value="@DateTime.Parse(Model.EndTime).ToString("HH:mm")" />
                             }
                         </div>
                     </div>

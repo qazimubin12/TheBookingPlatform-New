@@ -4,7 +4,7 @@
 </style>
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">Gift Cards </h2>
+        <h2 class="card-title">Gift Cards <a href="https://yourbookingplatform.com/how-to-set-gift-card" target="_blank"><i class="fa fa-info-circle"></i></a> </h2>
 
         <form>
 
@@ -78,23 +78,24 @@
                         </tbody>
                     </table>
                 </div>
-        }
-        else
-        {
+            }
+            else
+            {
 
-            <div class="alert alert-warning col-md-12" role="alert">
-                Sorry! No records exist.
-            </div>
-        }
+                <div class="alert alert-warning col-md-12" role="alert">
+                    Sorry! No records exist.
+                </div>
+            }
         </div>
     </div>
+</div>
 
-    <div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-        </div>
+<div class="modal fade center" id="actionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
     </div>
+</div>
 
-    <script>
+<script>
 
     $("#SearchBtn").click(function () {
         var SearchTerm = $("#Search").val();
@@ -164,4 +165,4 @@
                 $("#actionModal .modal-dialog").html(response);
             });
     });
-    </script>
+</script>

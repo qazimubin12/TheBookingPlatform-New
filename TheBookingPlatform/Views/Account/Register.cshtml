@@ -42,6 +42,80 @@
 
     <!-- Custom CSS for the registration page -->
     <style>
+          .constellation {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 1200px;
+      padding: 40px;
+      justify-content: center;
+    }
+
+    .row {
+      display: flex;
+      justify-content: center;
+/*      margin-bottom: 30px;
+*/    }
+
+    .row:nth-child(odd) {
+      margin-left: 100px; /* OFFSET for hexagonal look */
+    }
+
+        .industry {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 80px;
+            height: 80px;
+            margin: 10px 50px 0px 20px;
+            text-align: center;
+            transition: all 0.3s ease, transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+    .industry:hover {
+      transform: scale(1.1);
+      background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+      color: white;
+      box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4);
+    }
+
+    .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      transition: transform 0.3s;
+    }
+
+    .industry:hover .icon {
+      transform: rotate(15deg);
+    }
+
+    .industry-name {
+      font-weight: bold;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .industry:hover .industry-name {
+      color: white;
+    }
+
+    /* Responsive */
+   @@media (max-width: 768px) {
+      .row {
+        margin-left: 0 !important;
+      }
+      .industry {
+        width: 100px;
+        height: 100px;
+        margin: 8px;
+      }
+    }
       html, body {
     height: 100%;
     margin: 0;
@@ -57,9 +131,9 @@
 
 .illustration-section {
     flex: 1;
-    background: url('https://demos.creative-tim.com/material-dashboard-pro/assets/img/illustrations/illustration-signup.jpg')
+  /*  background: url('https://demos.creative-tim.com/material-dashboard-pro/assets/img/illustrations/illustration-signup.jpg')
                 no-repeat center center;
-    background-size: cover;
+    background-size: cover;*/
     display: flex;
     align-items: center;
     justify-content: center;
@@ -173,7 +247,51 @@
     <div class="full-page register-page">
         <!-- Illustration Section -->
         <div class="illustration-section">
+            <div class="constellation">
 
+                <!-- Row 1 -->
+                <div class="row">
+                    <div class="industry"><div class="icon">💇</div><div class="industry-name">Hair Salons</div></div>
+                    <div class="industry"><div class="icon">✂️</div><div class="industry-name">Barber Shops</div></div>
+                    <div class="industry"><div class="icon">💅</div><div class="industry-name">Nail Salons</div></div>
+                </div>
+
+                <!-- Row 2 (offset) -->
+                <div class="row">
+                    <div class="industry"><div class="icon">💋</div><div class="industry-name">Makeup Artists</div></div>
+                    <div class="industry"><div class="icon">👁️</div><div class="industry-name">Eyebrow & Lash</div></div>
+                    <div class="industry"><div class="icon">🧖</div><div class="industry-name">Spas</div></div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="row">
+                    <div class="industry"><div class="icon">💆</div><div class="industry-name">Massage Therapists</div></div>
+                    <div class="industry"><div class="icon">☯️</div><div class="industry-name">Holistic Healers</div></div>
+                    <div class="industry"><div class="icon">🛁</div><div class="industry-name">Tanning Salons</div></div>
+                </div>
+
+                <!-- Row 4 (offset) -->
+                <div class="row">
+                    <div class="industry"><div class="icon">🧴</div><div class="industry-name">Skincare Clinics</div></div>
+                    <div class="industry"><div class="icon">💉</div><div class="industry-name">Aesthetic Clinics</div></div>
+                    <div class="industry"><div class="icon">🦷</div><div class="industry-name">Dental Clinics</div></div>
+                </div>
+
+                <!-- Row 5 -->
+                <div class="row">
+                    <div class="industry"><div class="icon">👨‍⚕️</div><div class="industry-name">Dermatology</div></div>
+                    <div class="industry"><div class="icon">🏋️</div><div class="industry-name">Personal Trainers</div></div>
+                    <div class="industry"><div class="icon">🧘</div><div class="industry-name">Yoga Studios</div></div>
+                </div>
+
+                <!-- Row 6 (offset) -->
+                <div class="row">
+                    <div class="industry"><div class="icon">⚕️</div><div class="industry-name">Physiotherapists</div></div>
+                    <div class="industry"><div class="icon">🦴</div><div class="industry-name">Chiropractors</div></div>
+                    <div class="industry"><div class="icon">✈️</div><div class="industry-name">Mobile Services</div></div>
+                </div>
+
+            </div>
         </div>
 
         <!-- Form Section -->

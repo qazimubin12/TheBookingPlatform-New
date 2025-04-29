@@ -74,7 +74,7 @@ namespace TheBookingPlatform.Controllers
             }
             else
             {
-                model.EmailTemplates = EmailTemplateServices.Instance.GetEmailTemplate(SearchTerm).Where(x => x.Business == LoggedInUser.Company).ToList();
+                model.EmailTemplates = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(LoggedInUser.Company);
 
             }
             return PartialView(model);
@@ -117,6 +117,18 @@ namespace TheBookingPlatform.Controllers
                 new VariableModel { VariableCode = "{{company_logo}}", VariableDescription = "Company Logo" },
                 new VariableModel { VariableCode = "{{company_phone}}", VariableDescription = "Company Phone" },
                 new VariableModel { VariableCode = "{{password}}", VariableDescription = "Password" },
+                new VariableModel { VariableCode = "{{booking_button}}", VariableDescription = "Booking Button" },
+                new VariableModel { VariableCode = "{{employee_picture}}", VariableDescription = "Employee Picture" },
+                new VariableModel { VariableCode = "{{previous_date}}", VariableDescription = "Previous Date" },
+                new VariableModel { VariableCode = "{{previous_time}}", VariableDescription = "Previous Time" },
+                new VariableModel { VariableCode = "{{cancellink}}", VariableDescription = "Cancel Link" },
+                new VariableModel { VariableCode = "{{loyalty_card}}", VariableDescription = "Loyalty Card Name" },
+                new VariableModel { VariableCode = "{{loyalty_card_Number}}", VariableDescription = "Loyalty Card Number" },
+                new VariableModel { VariableCode = "{{loyalty_card_bonus}}", VariableDescription = "Loyalty Card Cashback" },
+                new VariableModel { VariableCode = "{{loyalty_card_balance}}", VariableDescription = "Loyalty Card Balance" },
+                new VariableModel { VariableCode = "{{giftcard_code}}", VariableDescription = "Gift Card Code" },
+                new VariableModel { VariableCode = "{{giftcard_name}}", VariableDescription = "Gift Card Name" },
+                new VariableModel { VariableCode = "{{giftcard_expiry_days}}", VariableDescription = "Gift Card Expiry Days" },
             };
             model.Variables = variableList;
             if (ID != 0)

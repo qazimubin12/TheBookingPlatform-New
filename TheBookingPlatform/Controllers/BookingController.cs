@@ -5985,83 +5985,115 @@ namespace TheBookingPlatform.Controllers
         public List<TimeSlotModel> FindTodaysSlots(string Business, DateTime SelectedDate, string ServiceIDs, int EmployeeID)
         {
             var Allshifts = new List<ShiftOfEmployeeModel>();
-
-
-
-            var services = ServiceIDs.Split(',').ToList();
-            int TimeInMinutes = 0;
-            var maxSlotsItem = new SlotsListWithEmployeeIDModel();
-            var Company = CompanyServices.Instance.GetCompanyByName(Business);
-            var CompanyID = Company.ID;
-            foreach (var item in services)
+            bool isTodayHoliday = false;
+            var holidays = HolidayServices.Instance.GetHolidayWRTBusiness(Business, "");
+            foreach (var holiday in holidays)
             {
-                var service = ServiceServices.Instance.GetService(int.Parse(item));
-                TimeInMinutes += int.Parse(service.Duration.Replace("mins", "").Replace("Mins", ""));
+                if (holiday.Date.Day == SelectedDate.Day && holiday.Date.Month == SelectedDate.Month && holiday.Date.Year == SelectedDate.Year)
+                {
+                    isTodayHoliday = true;
+                    break;
+                }
+
             }
 
             var deduplicatedList = new List<TimeSlotModel>();
-            var ProposedDate = SelectedDate;
-            var DayOfWeek = SelectedDate.DayOfWeek.ToString();
-            var openingHour = OpeningHourServices.Instance.GetOpeningHourWRTBusiness(Company.Business, DayOfWeek);
-            var openingtime = openingHour.Time;
-            var starTimeOpening = DateTime.Parse(openingtime.Split('-')[0].Trim());
-            var endTimeOpening = DateTime.Parse(openingtime.Split('-')[1].Trim());
-            var disabledEmployees = EmployeeServices.Instance.GetEmployeeWRTBusinessOnlyID(Company.Business, false);
-            var Employee = EmployeeServices.Instance.GetEmployee(EmployeeID);
-
-
-            var empShifts = new List<ShiftModel>();
-
-
-            var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, EmployeeID, false, false).ToList();
-
-
-            var ListOfTimeSlotsWithDiscount = new List<TimeSlotModel>();
-            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(CompanyID).Where(x => x.EmployeeID == Employee.ID).ToList();
-            foreach (var item in employeeRequest)
+            if (!isTodayHoliday)
             {
-                if (item.Accepted)
+                var services = ServiceIDs.Split(',').ToList();
+                int TimeInMinutes = 0;
+                var maxSlotsItem = new SlotsListWithEmployeeIDModel();
+                var Company = CompanyServices.Instance.GetCompanyByName(Business);
+                var CompanyID = Company.ID;
+                foreach (var item in services)
                 {
-                    if (CompanyID == item.CompanyIDFrom)
-                    {
-                        var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(item.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).ToList();
-                        appointments.AddRange(appointment);
-                    }
-                    else
-                    {
-                        var companyFrom = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(companyFrom.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).ToList();
-                        appointments.AddRange(appointment);
-                    }
-
+                    var service = ServiceServices.Instance.GetService(int.Parse(item));
+                    TimeInMinutes += int.Parse(service.Duration.Replace("mins", "").Replace("Mins", ""));
                 }
-            }
 
-            var roster = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(EmployeeID);
-            var ListOfEmployeeSlotsCount = new List<SlotsListWithEmployeeIDModel>();
+                var ProposedDate = SelectedDate;
+                var DayOfWeek = SelectedDate.DayOfWeek.ToString();
+                var openingHour = OpeningHourServices.Instance.GetOpeningHourWRTBusiness(Company.Business, DayOfWeek);
+                var openingtime = openingHour.Time;
+                var starTimeOpening = DateTime.Parse(openingtime.Split('-')[0].Trim());
+                var endTimeOpening = DateTime.Parse(openingtime.Split('-')[1].Trim());
+                var disabledEmployees = EmployeeServices.Instance.GetEmployeeWRTBusinessOnlyID(Company.Business, false);
+                var Employee = EmployeeServices.Instance.GetEmployee(EmployeeID);
 
-            if (roster != null)
-            {
-                var shifts = ShiftServices.Instance.GetShiftWRTBusiness(Company.Business, EmployeeID);
-                foreach (var shift in shifts)
+
+                var empShifts = new List<ShiftModel>();
+
+
+                var appointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, EmployeeID, false, false).ToList();
+
+
+                var ListOfTimeSlotsWithDiscount = new List<TimeSlotModel>();
+                var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(CompanyID).Where(x => x.EmployeeID == Employee.ID).ToList();
+                foreach (var item in employeeRequest)
                 {
-                    var recurringShifts = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(Company.Business, shift.ID);
-                    if (recurringShifts != null)
+                    if (item.Accepted)
                     {
-                        if (recurringShifts.RecurEnd == "Custom Date" && recurringShifts.RecurEndDate != "")
+                        if (CompanyID == item.CompanyIDFrom)
                         {
-                            if (IsDateInRangeNew(DateTime.Parse(recurringShifts.RecurEndDate), SelectedDate))
-                            {
+                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(item.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).ToList();
+                            appointments.AddRange(appointment);
+                        }
+                        else
+                        {
+                            var companyFrom = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                            var appointment = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(companyFrom.Business, false, false, item.EmployeeID).Where(x => x.Date.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd")).ToList();
+                            appointments.AddRange(appointment);
+                        }
 
-                                if (recurringShifts.Frequency == "Bi-Weekly")
+                    }
+                }
+
+                var roster = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(EmployeeID);
+                var ListOfEmployeeSlotsCount = new List<SlotsListWithEmployeeIDModel>();
+
+                if (roster != null)
+                {
+                    var shifts = ShiftServices.Instance.GetShiftWRTBusiness(Company.Business, EmployeeID);
+                    foreach (var shift in shifts)
+                    {
+                        var recurringShifts = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(Company.Business, shift.ID);
+                        if (recurringShifts != null)
+                        {
+                            if (recurringShifts.RecurEnd == "Custom Date" && recurringShifts.RecurEndDate != "")
+                            {
+                                if (IsDateInRangeNew(DateTime.Parse(recurringShifts.RecurEndDate), SelectedDate))
                                 {
 
-                                    if (GetNextDayStatus(SelectedDate, shift.Date, shift.Day.ToString()) == "YES")
+                                    if (recurringShifts.Frequency == "Bi-Weekly")
+                                    {
+
+                                        if (GetNextDayStatus(SelectedDate, shift.Date, shift.Day.ToString()) == "YES")
+                                        {
+                                            var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
+                                            empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                        }
+
+
+                                    }
+                                    else
                                     {
                                         var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
                                         empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
                                     }
-
+                                }
+                            }
+                            else
+                            {
+                                if (recurringShifts.Frequency == "Bi-Weekly")
+                                {
+                                    if (roster != null)
+                                    {
+                                        if (GetNextDayStatus(SelectedDate, shift.Date, shift.Day.ToString()) == "YES")
+                                        {
+                                            var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
+                                            empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                        }
+                                    }
 
                                 }
                                 else
@@ -6073,504 +6105,32 @@ namespace TheBookingPlatform.Controllers
                         }
                         else
                         {
-                            if (recurringShifts.Frequency == "Bi-Weekly")
+                            var exceptionShiftByShiftID = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusinessAndShift(Company.Business, shift.ID);
+                            if (exceptionShiftByShiftID != null)
                             {
-                                if (roster != null)
-                                {
-                                    if (GetNextDayStatus(SelectedDate, shift.Date, shift.Day.ToString()) == "YES")
-                                    {
-                                        var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
-                                        empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
-                                    }
-                                }
-
+                                empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShiftByShiftID });
                             }
                             else
                             {
-                                var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
-                                empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts });
+
                             }
+
                         }
+                    }
+
+                    var usethisShift = empShifts.Where(x => x.RecurShift != null && x.Shift.IsRecurring && x.Shift.Day == SelectedDate.DayOfWeek.ToString() && x.Shift.Date.Date <= SelectedDate.Date).Select(X => X.Shift).FirstOrDefault();
+                    var useExceptionShifts = empShifts
+                        .Where(x => x.ExceptionShift != null && x.ExceptionShift.Count() > 0 && !x.Shift.IsRecurring)
+                        .SelectMany(x => x.ExceptionShift);
+
+                    if (usethisShift == null && useExceptionShifts == null)
+                    {
+                        //okay bye
                     }
                     else
                     {
-                        var exceptionShiftByShiftID = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusinessAndShift(Company.Business, shift.ID);
-                        if (exceptionShiftByShiftID != null)
-                        {
-                            empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShiftByShiftID });
-                        }
-                        else
-                        {
-                            empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts });
-
-                        }
-
-                    }
-                }
-
-                var usethisShift = empShifts.Where(x => x.RecurShift != null && x.Shift.IsRecurring && x.Shift.Day == SelectedDate.DayOfWeek.ToString() && x.Shift.Date.Date <= SelectedDate.Date).Select(X => X.Shift).FirstOrDefault();
-                var useExceptionShifts = empShifts
-                    .Where(x => x.ExceptionShift != null && x.ExceptionShift.Count() > 0 && !x.Shift.IsRecurring)
-                    .SelectMany(x => x.ExceptionShift);
-
-                if (usethisShift == null && useExceptionShifts == null)
-                {
-                    //okay bye
-                }
-                else
-                {
-                    if (usethisShift != null)
-                    {
-                        bool FoundExceptionToo = false;
-                        var FoundedExceptionShift = new ExceptionShift();
-                        var empShiftsCount = empShifts.Count();
-                        if (empShiftsCount > 0) // Ensure there's at least one element in empShifts
-                        {
-                            for (int i = 0; i < empShiftsCount; i++)
-                            {
-                                var firstEmpShift = empShifts[i]; // Accessing empShifts at index i
-                                foreach (var item in firstEmpShift.ExceptionShift.ToList())
-                                {
-                                    if (item.ShiftID == firstEmpShift.Shift.ID && item.ExceptionDate.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd") && item.IsNotWorking == false)
-                                    {
-                                        FoundExceptionToo = true;
-                                        FoundedExceptionShift = item;
-                                        break;
-                                    }
-                                    if (item.ShiftID == firstEmpShift.Shift.ID && item.ExceptionDate.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd") && item.IsNotWorking == true)
-                                    {
-                                        FoundExceptionToo = true;
-                                        FoundedExceptionShift = item;
-                                        break;
-                                    }
-                                }
-
-
-                            }
-
-                        }
-                        if (FoundExceptionToo)
-                        {
-
-                            if (FoundedExceptionShift.ID != 0 && !FoundedExceptionShift.IsNotWorking)
-                            {
-                                DateTime startTime = SelectedDate.Date
-                               .AddHours(DateTime.ParseExact(FoundedExceptionShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
-                               .AddMinutes(DateTime.ParseExact(FoundedExceptionShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
-
-                                DateTime endTime = SelectedDate.Date
-                                    .AddHours(DateTime.ParseExact(FoundedExceptionShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
-                                    .AddMinutes(DateTime.ParseExact(FoundedExceptionShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
-
-
-                                var CheckSlots = new List<string>();
-
-
-
-                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, Employee.ID);
-
-
-
-                                if (CheckSlots.Count() != 0)
-                                {
-
-                                    var priceChanges = PriceChangeServices.Instance.GetPriceChangeWRTBusiness(Company.Business, "");
-                                    foreach (var timeslot in CheckSlots)
-                                    {
-                                        string timeSlot = timeslot;
-                                        bool CheckPriceChange = false;
-                                        var slotStart = TimeSpan.Parse(timeslot.Split('-')[0]);
-                                        var slotEnd = TimeSpan.Parse(timeslot.Split('-')[1]);
-                                        float discountpercentage = 0;
-                                        bool ChangeFound = false;
-                                        int ChangeID = 0;
-                                        string TypeOfChange = "";
-
-                                        var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, Company.Business);
-                                        string slotType;
-                                        if (slotStart < new TimeSpan(12, 0, 0))
-                                        {
-                                            slotType = "Morning Slots";
-                                        }
-                                        else if (slotStart < new TimeSpan(17, 0, 0))
-                                        {
-                                            slotType = "Afternoon Slots";
-                                        }
-                                        else
-                                        {
-                                            slotType = "Evening Slots";
-                                        }
-
-
-                                        if (priceChanges.Count() > 0)
-                                        {
-                                            foreach (var item in priceChanges)
-                                            {
-
-                                                if (item.StartDate.Date <= SelectedDate.Date && item.EndDate.Date >= SelectedDate.Date)
-                                                {
-                                                    if (slotStart >= item.StartDate.TimeOfDay && slotEnd <= item.EndDate.TimeOfDay)
-                                                    {
-                                                        discountpercentage = item.Percentage;
-                                                        ChangeFound = true;
-                                                        ChangeID = item.ID;
-                                                        TypeOfChange = item.TypeOfChange;
-                                                        //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = true, Percentage = discountpercentage,PriceChangeID = item.ID });
-                                                        break;
-
-                                                    }
-                                                    else
-                                                    {
-
-                                                        //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
-                                                        ChangeFound = false;
-                                                    }
-
-                                                }
-                                                else
-                                                {
-                                                    //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage,PriceChangeID = 0 });
-                                                    ChangeFound = false;
-
-                                                }
-
-                                            }
-
-                                            if (ChangeFound)
-                                            {
-                                                if (employeePriceChange.EmployeeID != 0)
-                                                {
-
-                                                    ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                                    {
-                                                        TimeSlot = timeSlot,
-                                                        Type = slotType,
-                                                        TypeOfChange = TypeOfChange,
-                                                        HaveDiscount = true,
-                                                        Percentage = discountpercentage,
-                                                        EmployeeID = EmployeeID,
-                                                        PriceChangeID = ChangeID,
-                                                        EmpHaveDiscount = true,
-                                                        EmpPercentage = employeePriceChange.Percentage,
-                                                        EmpPriceChangeID = employeePriceChange.ID,
-                                                        EmpTypeOfChange = employeePriceChange.TypeOfChange
-                                                    });
-
-                                                }
-                                                else
-                                                {
-                                                    ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                                    {
-                                                        Type = slotType,
-                                                        EmployeeID = EmployeeID,
-                                                        TimeSlot = timeSlot,
-                                                        TypeOfChange = TypeOfChange,
-                                                        HaveDiscount = true,
-                                                        Percentage = discountpercentage,
-                                                        PriceChangeID = ChangeID
-                                                    });
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                if (employeePriceChange.EmployeeID != 0)
-                                                {
-                                                    ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                                    {
-                                                        Type = slotType,
-                                                        TimeSlot = timeSlot,
-                                                        TypeOfChange = TypeOfChange,
-                                                        HaveDiscount = false,
-                                                        Percentage = discountpercentage,
-                                                        PriceChangeID = 0,
-                                                        EmployeeID = EmployeeID,
-                                                        EmpHaveDiscount = true,
-                                                        EmpPercentage = employeePriceChange.Percentage,
-                                                        EmpPriceChangeID = employeePriceChange.ID,
-                                                        EmpTypeOfChange = employeePriceChange.TypeOfChange
-                                                    });
-
-                                                }
-                                                else
-                                                {
-                                                    ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                                    {
-                                                        Type = slotType,
-                                                        EmployeeID = EmployeeID,
-                                                        TimeSlot = timeSlot,
-                                                        TypeOfChange = TypeOfChange,
-                                                        HaveDiscount = false,
-                                                        Percentage = discountpercentage,
-                                                        PriceChangeID = 0
-                                                    });
-                                                }
-
-                                            }
-                                        }
-                                        else
-                                        {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                            {
-                                                Type = slotType,
-                                                EmployeeID = EmployeeID,
-                                                TimeSlot = timeSlot,
-                                                TypeOfChange = TypeOfChange,
-                                                HaveDiscount = false,
-                                                Percentage = discountpercentage,
-                                                PriceChangeID = 0
-                                            });
-
-                                        }
-                                    }
-                                    //ListOfEmployeeSlotsCount.Add(new SlotsListWithEmployeeIDModel { NoOfSlots = ListOfTimeSlotsWithDiscount, EmployeeID = EmployeeID });
-
-                                }
-                            }
-
-
-
-                        }
-                        else
-                        {
-                            DateTime startTime = SelectedDate.Date
-                                       .AddHours(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
-                                       .AddMinutes(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
-
-                            DateTime endTime = SelectedDate.Date
-                                .AddHours(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
-                                .AddMinutes(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
-
-                            var CheckSlots = new List<string>();
-
-                            if (usethisShift.IsRecurring)
-                            {
-                                var recurringShift = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(Company.Business, usethisShift.ID);
-                                if (recurringShift != null)
-                                {
-                                    if (recurringShift.RecurEnd == "Never")
-                                    {
-                                        if (recurringShift.Frequency == "Bi-Weekly")
-                                        {
-                                            if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
-                                            {
-                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (DateTime.Parse(recurringShift.RecurEndDate) >= SelectedDate)
-                                        {
-                                            if (recurringShift.Frequency == "Bi-Weekly")
-                                            {
-                                                if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
-                                                {
-                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
-                                            }
-
-                                        }
-                                    }
-
-
-
-
-                                }
-                            }
-
-                            else
-                            {
-                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
-
-                            }
-
-                            var priceChanges = PriceChangeServices.Instance.GetPriceChangeWRTBusiness(Company.Business, "");
-                            foreach (var timeslot in CheckSlots)
-                            {
-                                string timeSlot = timeslot;
-                                bool CheckPriceChange = false;
-                                var slotStart = TimeSpan.Parse(timeslot.Split('-')[0]);
-                                var slotEnd = TimeSpan.Parse(timeslot.Split('-')[1]);
-                                string slotType;
-                                if (slotStart < new TimeSpan(12, 0, 0))
-                                {
-                                    slotType = "Morning Slots";
-                                }
-                                else if (slotStart < new TimeSpan(17, 0, 0))
-                                {
-                                    slotType = "Afternoon Slots";
-                                }
-                                else
-                                {
-                                    slotType = "Evening Slots";
-                                }
-
-                                float discountpercentage = 0;
-                                bool ChangeFound = false;
-                                int ChangeID = 0;
-                                string TypeOfChange = "";
-                                var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, Company.Business);
-                                if (priceChanges.Count() > 0)
-                                {
-                                    foreach (var item in priceChanges)
-                                    {
-
-                                        if (item.StartDate.Date <= SelectedDate.Date && item.EndDate.Date >= SelectedDate.Date)
-                                        {
-                                            if (slotStart >= item.StartDate.TimeOfDay && slotEnd <= item.EndDate.TimeOfDay)
-                                            {
-                                                discountpercentage = item.Percentage;
-                                                ChangeFound = true;
-                                                ChangeID = item.ID;
-                                                TypeOfChange = item.TypeOfChange;
-                                                //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = true, Percentage = discountpercentage,PriceChangeID = item.ID });
-                                                break;
-
-                                            }
-                                            else
-                                            {
-
-                                                //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
-                                                ChangeFound = false;
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                            //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage,PriceChangeID = 0 });
-                                            ChangeFound = false;
-
-                                        }
-
-                                    }
-
-                                    if (ChangeFound)
-                                    {
-                                        if (employeePriceChange.EmployeeID != 0)
-                                        {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                            {
-                                                Type = slotType,
-
-                                                TimeSlot = timeSlot,
-                                                TypeOfChange = TypeOfChange,
-                                                HaveDiscount = true,
-                                                Percentage = discountpercentage,
-                                                PriceChangeID = ChangeID,
-                                                EmpHaveDiscount = true,
-                                                EmployeeID = EmployeeID,
-                                                EmpPercentage = employeePriceChange.Percentage,
-                                                EmpPriceChangeID = employeePriceChange.ID,
-                                                EmpTypeOfChange = employeePriceChange.TypeOfChange
-                                            });
-
-                                        }
-                                        else
-                                        {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                            {
-                                                Type = slotType,
-                                                EmployeeID = EmployeeID,
-                                                TimeSlot = timeSlot,
-                                                TypeOfChange = TypeOfChange,
-                                                HaveDiscount = true,
-                                                Percentage = discountpercentage,
-                                                PriceChangeID = ChangeID
-                                            });
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (employeePriceChange.EmployeeID != 0)
-                                        {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                            {
-                                                Type = slotType,
-
-                                                TimeSlot = timeSlot,
-                                                TypeOfChange = TypeOfChange,
-                                                HaveDiscount = false,
-                                                Percentage = discountpercentage,
-                                                PriceChangeID = 0,
-                                                EmpHaveDiscount = true,
-                                                EmployeeID = EmployeeID,
-                                                EmpPercentage = employeePriceChange.Percentage,
-                                                EmpPriceChangeID = employeePriceChange.ID,
-                                                EmpTypeOfChange = employeePriceChange.TypeOfChange
-                                            });
-
-                                        }
-                                        else
-                                        {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                            {
-                                                Type = slotType,
-                                                EmployeeID = EmployeeID,
-                                                TimeSlot = timeSlot,
-                                                TypeOfChange = TypeOfChange,
-                                                HaveDiscount = false,
-                                                Percentage = discountpercentage,
-                                                PriceChangeID = 0
-                                            });
-                                        }
-
-                                    }
-                                }
-                                else
-                                {
-
-                                    if (employeePriceChange.EmployeeID != 0)
-                                    {
-                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                        {
-                                            Type = slotType,
-
-                                            TimeSlot = timeSlot,
-                                            TypeOfChange = TypeOfChange,
-                                            HaveDiscount = false,
-                                            Percentage = discountpercentage,
-                                            PriceChangeID = 0,
-                                            EmployeeID = EmployeeID,
-                                            EmpHaveDiscount = true,
-                                            EmpPercentage = employeePriceChange.Percentage,
-                                            EmpPriceChangeID = employeePriceChange.ID,
-                                            EmpTypeOfChange = employeePriceChange.TypeOfChange
-                                        });
-
-                                    }
-                                    else
-                                    {
-                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                        {
-                                            Type = slotType,
-                                            EmployeeID = EmployeeID,
-                                            TimeSlot = timeSlot,
-                                            TypeOfChange = TypeOfChange,
-                                            HaveDiscount = false,
-                                            Percentage = discountpercentage,
-                                            PriceChangeID = 0
-                                        });
-                                    }
-
-                                }
-                            }
-
-                        }
-
-                    }
-                    else
-                    {
-
-                        if (useExceptionShifts != null)
+                        if (usethisShift != null)
                         {
                             bool FoundExceptionToo = false;
                             var FoundedExceptionShift = new ExceptionShift();
@@ -6582,13 +6142,13 @@ namespace TheBookingPlatform.Controllers
                                     var firstEmpShift = empShifts[i]; // Accessing empShifts at index i
                                     foreach (var item in firstEmpShift.ExceptionShift.ToList())
                                     {
-                                        if (item.ExceptionDate.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd") && item.IsNotWorking == false)
+                                        if (item.ShiftID == firstEmpShift.Shift.ID && item.ExceptionDate.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd") && item.IsNotWorking == false)
                                         {
                                             FoundExceptionToo = true;
                                             FoundedExceptionShift = item;
                                             break;
                                         }
-                                        if (item.ExceptionDate.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd") && item.IsNotWorking == true)
+                                        if (item.ShiftID == firstEmpShift.Shift.ID && item.ExceptionDate.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd") && item.IsNotWorking == true)
                                         {
                                             FoundExceptionToo = true;
                                             FoundedExceptionShift = item;
@@ -6600,8 +6160,6 @@ namespace TheBookingPlatform.Controllers
                                 }
 
                             }
-
-
                             if (FoundExceptionToo)
                             {
 
@@ -6620,20 +6178,26 @@ namespace TheBookingPlatform.Controllers
 
 
 
-                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
+                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, Employee.ID);
 
 
 
                                     if (CheckSlots.Count() != 0)
                                     {
+
                                         var priceChanges = PriceChangeServices.Instance.GetPriceChangeWRTBusiness(Company.Business, "");
                                         foreach (var timeslot in CheckSlots)
                                         {
-
                                             string timeSlot = timeslot;
                                             bool CheckPriceChange = false;
                                             var slotStart = TimeSpan.Parse(timeslot.Split('-')[0]);
                                             var slotEnd = TimeSpan.Parse(timeslot.Split('-')[1]);
+                                            float discountpercentage = 0;
+                                            bool ChangeFound = false;
+                                            int ChangeID = 0;
+                                            string TypeOfChange = "";
+
+                                            var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, Company.Business);
                                             string slotType;
                                             if (slotStart < new TimeSpan(12, 0, 0))
                                             {
@@ -6648,11 +6212,6 @@ namespace TheBookingPlatform.Controllers
                                                 slotType = "Evening Slots";
                                             }
 
-                                            float discountpercentage = 0;
-                                            bool ChangeFound = false;
-                                            int ChangeID = 0;
-                                            string TypeOfChange = "";
-                                            var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, Company.Business);
 
                                             if (priceChanges.Count() > 0)
                                             {
@@ -6692,16 +6251,16 @@ namespace TheBookingPlatform.Controllers
                                                 {
                                                     if (employeePriceChange.EmployeeID != 0)
                                                     {
+
                                                         ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                         {
-                                                            Type = slotType,
-
                                                             TimeSlot = timeSlot,
+                                                            Type = slotType,
                                                             TypeOfChange = TypeOfChange,
                                                             HaveDiscount = true,
                                                             Percentage = discountpercentage,
-                                                            PriceChangeID = ChangeID,
                                                             EmployeeID = EmployeeID,
+                                                            PriceChangeID = ChangeID,
                                                             EmpHaveDiscount = true,
                                                             EmpPercentage = employeePriceChange.Percentage,
                                                             EmpPriceChangeID = employeePriceChange.ID,
@@ -6722,9 +6281,499 @@ namespace TheBookingPlatform.Controllers
                                                             PriceChangeID = ChangeID
                                                         });
                                                     }
+
                                                 }
                                                 else
                                                 {
+                                                    if (employeePriceChange.EmployeeID != 0)
+                                                    {
+                                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                        {
+                                                            Type = slotType,
+                                                            TimeSlot = timeSlot,
+                                                            TypeOfChange = TypeOfChange,
+                                                            HaveDiscount = false,
+                                                            Percentage = discountpercentage,
+                                                            PriceChangeID = 0,
+                                                            EmployeeID = EmployeeID,
+                                                            EmpHaveDiscount = true,
+                                                            EmpPercentage = employeePriceChange.Percentage,
+                                                            EmpPriceChangeID = employeePriceChange.ID,
+                                                            EmpTypeOfChange = employeePriceChange.TypeOfChange
+                                                        });
+
+                                                    }
+                                                    else
+                                                    {
+                                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                        {
+                                                            Type = slotType,
+                                                            EmployeeID = EmployeeID,
+                                                            TimeSlot = timeSlot,
+                                                            TypeOfChange = TypeOfChange,
+                                                            HaveDiscount = false,
+                                                            Percentage = discountpercentage,
+                                                            PriceChangeID = 0
+                                                        });
+                                                    }
+
+                                                }
+                                            }
+                                            else
+                                            {
+                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                {
+                                                    Type = slotType,
+                                                    EmployeeID = EmployeeID,
+                                                    TimeSlot = timeSlot,
+                                                    TypeOfChange = TypeOfChange,
+                                                    HaveDiscount = false,
+                                                    Percentage = discountpercentage,
+                                                    PriceChangeID = 0
+                                                });
+
+                                            }
+                                        }
+                                        //ListOfEmployeeSlotsCount.Add(new SlotsListWithEmployeeIDModel { NoOfSlots = ListOfTimeSlotsWithDiscount, EmployeeID = EmployeeID });
+
+                                    }
+                                }
+
+
+
+                            }
+                            else
+                            {
+                                DateTime startTime = SelectedDate.Date
+                                           .AddHours(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                           .AddMinutes(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                DateTime endTime = SelectedDate.Date
+                                    .AddHours(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                    .AddMinutes(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                var CheckSlots = new List<string>();
+
+                                if (usethisShift.IsRecurring)
+                                {
+                                    var recurringShift = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(Company.Business, usethisShift.ID);
+                                    if (recurringShift != null)
+                                    {
+                                        if (recurringShift.RecurEnd == "Never")
+                                        {
+                                            if (recurringShift.Frequency == "Bi-Weekly")
+                                            {
+                                                if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
+                                                {
+                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (DateTime.Parse(recurringShift.RecurEndDate) >= SelectedDate)
+                                            {
+                                                if (recurringShift.Frequency == "Bi-Weekly")
+                                                {
+                                                    if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
+                                                    {
+                                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
+                                                }
+
+                                            }
+                                        }
+
+
+
+
+                                    }
+                                }
+
+                                else
+                                {
+                                    CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
+
+                                }
+
+                                var priceChanges = PriceChangeServices.Instance.GetPriceChangeWRTBusiness(Company.Business, "");
+                                foreach (var timeslot in CheckSlots)
+                                {
+                                    string timeSlot = timeslot;
+                                    bool CheckPriceChange = false;
+                                    var slotStart = TimeSpan.Parse(timeslot.Split('-')[0]);
+                                    var slotEnd = TimeSpan.Parse(timeslot.Split('-')[1]);
+                                    string slotType;
+                                    if (slotStart < new TimeSpan(12, 0, 0))
+                                    {
+                                        slotType = "Morning Slots";
+                                    }
+                                    else if (slotStart < new TimeSpan(17, 0, 0))
+                                    {
+                                        slotType = "Afternoon Slots";
+                                    }
+                                    else
+                                    {
+                                        slotType = "Evening Slots";
+                                    }
+
+                                    float discountpercentage = 0;
+                                    bool ChangeFound = false;
+                                    int ChangeID = 0;
+                                    string TypeOfChange = "";
+                                    var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, Company.Business);
+                                    if (priceChanges.Count() > 0)
+                                    {
+                                        foreach (var item in priceChanges)
+                                        {
+
+                                            if (item.StartDate.Date <= SelectedDate.Date && item.EndDate.Date >= SelectedDate.Date)
+                                            {
+                                                if (slotStart >= item.StartDate.TimeOfDay && slotEnd <= item.EndDate.TimeOfDay)
+                                                {
+                                                    discountpercentage = item.Percentage;
+                                                    ChangeFound = true;
+                                                    ChangeID = item.ID;
+                                                    TypeOfChange = item.TypeOfChange;
+                                                    //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = true, Percentage = discountpercentage,PriceChangeID = item.ID });
+                                                    break;
+
+                                                }
+                                                else
+                                                {
+
+                                                    //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                    ChangeFound = false;
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage,PriceChangeID = 0 });
+                                                ChangeFound = false;
+
+                                            }
+
+                                        }
+
+                                        if (ChangeFound)
+                                        {
+                                            if (employeePriceChange.EmployeeID != 0)
+                                            {
+                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                {
+                                                    Type = slotType,
+
+                                                    TimeSlot = timeSlot,
+                                                    TypeOfChange = TypeOfChange,
+                                                    HaveDiscount = true,
+                                                    Percentage = discountpercentage,
+                                                    PriceChangeID = ChangeID,
+                                                    EmpHaveDiscount = true,
+                                                    EmployeeID = EmployeeID,
+                                                    EmpPercentage = employeePriceChange.Percentage,
+                                                    EmpPriceChangeID = employeePriceChange.ID,
+                                                    EmpTypeOfChange = employeePriceChange.TypeOfChange
+                                                });
+
+                                            }
+                                            else
+                                            {
+                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                {
+                                                    Type = slotType,
+                                                    EmployeeID = EmployeeID,
+                                                    TimeSlot = timeSlot,
+                                                    TypeOfChange = TypeOfChange,
+                                                    HaveDiscount = true,
+                                                    Percentage = discountpercentage,
+                                                    PriceChangeID = ChangeID
+                                                });
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (employeePriceChange.EmployeeID != 0)
+                                            {
+                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                {
+                                                    Type = slotType,
+
+                                                    TimeSlot = timeSlot,
+                                                    TypeOfChange = TypeOfChange,
+                                                    HaveDiscount = false,
+                                                    Percentage = discountpercentage,
+                                                    PriceChangeID = 0,
+                                                    EmpHaveDiscount = true,
+                                                    EmployeeID = EmployeeID,
+                                                    EmpPercentage = employeePriceChange.Percentage,
+                                                    EmpPriceChangeID = employeePriceChange.ID,
+                                                    EmpTypeOfChange = employeePriceChange.TypeOfChange
+                                                });
+
+                                            }
+                                            else
+                                            {
+                                                ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                {
+                                                    Type = slotType,
+                                                    EmployeeID = EmployeeID,
+                                                    TimeSlot = timeSlot,
+                                                    TypeOfChange = TypeOfChange,
+                                                    HaveDiscount = false,
+                                                    Percentage = discountpercentage,
+                                                    PriceChangeID = 0
+                                                });
+                                            }
+
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                        if (employeePriceChange.EmployeeID != 0)
+                                        {
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                            {
+                                                Type = slotType,
+
+                                                TimeSlot = timeSlot,
+                                                TypeOfChange = TypeOfChange,
+                                                HaveDiscount = false,
+                                                Percentage = discountpercentage,
+                                                PriceChangeID = 0,
+                                                EmployeeID = EmployeeID,
+                                                EmpHaveDiscount = true,
+                                                EmpPercentage = employeePriceChange.Percentage,
+                                                EmpPriceChangeID = employeePriceChange.ID,
+                                                EmpTypeOfChange = employeePriceChange.TypeOfChange
+                                            });
+
+                                        }
+                                        else
+                                        {
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                            {
+                                                Type = slotType,
+                                                EmployeeID = EmployeeID,
+                                                TimeSlot = timeSlot,
+                                                TypeOfChange = TypeOfChange,
+                                                HaveDiscount = false,
+                                                Percentage = discountpercentage,
+                                                PriceChangeID = 0
+                                            });
+                                        }
+
+                                    }
+                                }
+
+                            }
+
+                        }
+                        else
+                        {
+
+                            if (useExceptionShifts != null)
+                            {
+                                bool FoundExceptionToo = false;
+                                var FoundedExceptionShift = new ExceptionShift();
+                                var empShiftsCount = empShifts.Count();
+                                if (empShiftsCount > 0) // Ensure there's at least one element in empShifts
+                                {
+                                    for (int i = 0; i < empShiftsCount; i++)
+                                    {
+                                        var firstEmpShift = empShifts[i]; // Accessing empShifts at index i
+                                        foreach (var item in firstEmpShift.ExceptionShift.ToList())
+                                        {
+                                            if (item.ExceptionDate.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd") && item.IsNotWorking == false)
+                                            {
+                                                FoundExceptionToo = true;
+                                                FoundedExceptionShift = item;
+                                                break;
+                                            }
+                                            if (item.ExceptionDate.ToString("yyyy-MM-dd") == SelectedDate.ToString("yyyy-MM-dd") && item.IsNotWorking == true)
+                                            {
+                                                FoundExceptionToo = true;
+                                                FoundedExceptionShift = item;
+                                                break;
+                                            }
+                                        }
+
+
+                                    }
+
+                                }
+
+
+                                if (FoundExceptionToo)
+                                {
+
+                                    if (FoundedExceptionShift.ID != 0 && !FoundedExceptionShift.IsNotWorking)
+                                    {
+                                        DateTime startTime = SelectedDate.Date
+                                       .AddHours(DateTime.ParseExact(FoundedExceptionShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                       .AddMinutes(DateTime.ParseExact(FoundedExceptionShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                        DateTime endTime = SelectedDate.Date
+                                            .AddHours(DateTime.ParseExact(FoundedExceptionShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                            .AddMinutes(DateTime.ParseExact(FoundedExceptionShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+
+                                        var CheckSlots = new List<string>();
+
+
+
+                                        CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, Company, services, EmployeeID);
+
+
+
+                                        if (CheckSlots.Count() != 0)
+                                        {
+                                            var priceChanges = PriceChangeServices.Instance.GetPriceChangeWRTBusiness(Company.Business, "");
+                                            foreach (var timeslot in CheckSlots)
+                                            {
+
+                                                string timeSlot = timeslot;
+                                                bool CheckPriceChange = false;
+                                                var slotStart = TimeSpan.Parse(timeslot.Split('-')[0]);
+                                                var slotEnd = TimeSpan.Parse(timeslot.Split('-')[1]);
+                                                string slotType;
+                                                if (slotStart < new TimeSpan(12, 0, 0))
+                                                {
+                                                    slotType = "Morning Slots";
+                                                }
+                                                else if (slotStart < new TimeSpan(17, 0, 0))
+                                                {
+                                                    slotType = "Afternoon Slots";
+                                                }
+                                                else
+                                                {
+                                                    slotType = "Evening Slots";
+                                                }
+
+                                                float discountpercentage = 0;
+                                                bool ChangeFound = false;
+                                                int ChangeID = 0;
+                                                string TypeOfChange = "";
+                                                var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, Company.Business);
+
+                                                if (priceChanges.Count() > 0)
+                                                {
+                                                    foreach (var item in priceChanges)
+                                                    {
+
+                                                        if (item.StartDate.Date <= SelectedDate.Date && item.EndDate.Date >= SelectedDate.Date)
+                                                        {
+                                                            if (slotStart >= item.StartDate.TimeOfDay && slotEnd <= item.EndDate.TimeOfDay)
+                                                            {
+                                                                discountpercentage = item.Percentage;
+                                                                ChangeFound = true;
+                                                                ChangeID = item.ID;
+                                                                TypeOfChange = item.TypeOfChange;
+                                                                //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = true, Percentage = discountpercentage,PriceChangeID = item.ID });
+                                                                break;
+
+                                                            }
+                                                            else
+                                                            {
+
+                                                                //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                ChangeFound = false;
+                                                            }
+
+                                                        }
+                                                        else
+                                                        {
+                                                            //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage,PriceChangeID = 0 });
+                                                            ChangeFound = false;
+
+                                                        }
+
+                                                    }
+
+                                                    if (ChangeFound)
+                                                    {
+                                                        if (employeePriceChange.EmployeeID != 0)
+                                                        {
+                                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                            {
+                                                                Type = slotType,
+
+                                                                TimeSlot = timeSlot,
+                                                                TypeOfChange = TypeOfChange,
+                                                                HaveDiscount = true,
+                                                                Percentage = discountpercentage,
+                                                                PriceChangeID = ChangeID,
+                                                                EmployeeID = EmployeeID,
+                                                                EmpHaveDiscount = true,
+                                                                EmpPercentage = employeePriceChange.Percentage,
+                                                                EmpPriceChangeID = employeePriceChange.ID,
+                                                                EmpTypeOfChange = employeePriceChange.TypeOfChange
+                                                            });
+
+                                                        }
+                                                        else
+                                                        {
+                                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                            {
+                                                                Type = slotType,
+                                                                EmployeeID = EmployeeID,
+                                                                TimeSlot = timeSlot,
+                                                                TypeOfChange = TypeOfChange,
+                                                                HaveDiscount = true,
+                                                                Percentage = discountpercentage,
+                                                                PriceChangeID = ChangeID
+                                                            });
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (employeePriceChange.EmployeeID != 0)
+                                                        {
+                                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                            {
+                                                                Type = slotType,
+
+                                                                TimeSlot = timeSlot,
+                                                                TypeOfChange = TypeOfChange,
+                                                                HaveDiscount = false,
+                                                                Percentage = discountpercentage,
+                                                                PriceChangeID = 0,
+                                                                EmpHaveDiscount = true,
+                                                                EmployeeID = EmployeeID,
+                                                                EmpPercentage = employeePriceChange.Percentage,
+                                                                EmpPriceChangeID = employeePriceChange.ID,
+                                                                EmpTypeOfChange = employeePriceChange.TypeOfChange
+                                                            });
+
+                                                        }
+                                                        else
+                                                        {
+                                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
+                                                            {
+                                                                Type = slotType,
+                                                                EmployeeID = EmployeeID,
+                                                                TimeSlot = timeSlot,
+                                                                TypeOfChange = TypeOfChange,
+                                                                HaveDiscount = false,
+                                                                Percentage = discountpercentage,
+                                                                PriceChangeID = 0
+                                                            });
+                                                        }
+
+                                                    }
+                                                }
+                                                else
+                                                {
+
                                                     if (employeePriceChange.EmployeeID != 0)
                                                     {
                                                         ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
@@ -6760,105 +6809,88 @@ namespace TheBookingPlatform.Controllers
 
                                                 }
                                             }
-                                            else
-                                            {
 
-                                                if (employeePriceChange.EmployeeID != 0)
-                                                {
-                                                    ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                                    {
-                                                        Type = slotType,
 
-                                                        TimeSlot = timeSlot,
-                                                        TypeOfChange = TypeOfChange,
-                                                        HaveDiscount = false,
-                                                        Percentage = discountpercentage,
-                                                        PriceChangeID = 0,
-                                                        EmpHaveDiscount = true,
-                                                        EmployeeID = EmployeeID,
-                                                        EmpPercentage = employeePriceChange.Percentage,
-                                                        EmpPriceChangeID = employeePriceChange.ID,
-                                                        EmpTypeOfChange = employeePriceChange.TypeOfChange
-                                                    });
-
-                                                }
-                                                else
-                                                {
-                                                    ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
-                                                    {
-                                                        Type = slotType,
-                                                        EmployeeID = EmployeeID,
-                                                        TimeSlot = timeSlot,
-                                                        TypeOfChange = TypeOfChange,
-                                                        HaveDiscount = false,
-                                                        Percentage = discountpercentage,
-                                                        PriceChangeID = 0
-                                                    });
-                                                }
-
-                                            }
                                         }
-
-
                                     }
+
+
+
                                 }
-
-
+                                //ddddddddddd
 
                             }
-                            //ddddddddddd
 
                         }
-
                     }
+
+
+
+
                 }
 
-
-
-
-            }
-
-            if (ListOfTimeSlotsWithDiscount.Count() == 0 && EmployeeID == 0)
-            {
-                var employeeservices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(Company.Business);
-                var AvailableEmployeeList = new List<int>();
-                var FinalServiceList = services.Select(int.Parse).ToList();
-
-                var employeeIDs = employeeservices
-                        .Where(es => FinalServiceList.Contains(es.ServiceID))
-                        .GroupBy(es => es.EmployeeID)
-                        .Where(grp => grp.Select(g => g.ServiceID).Distinct().Count() == FinalServiceList.Count)
-                        .Select(grp => grp.Key)
-                        .ToList();
-
-                var Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs, Company.Business);
-
-                foreach (var emp in Employees)
+                if (ListOfTimeSlotsWithDiscount.Count() == 0 && EmployeeID == 0)
                 {
-                    var appointmentsnew = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(Company.Business, SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, emp.ID, false, false);
-                    var rosterEmp = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(emp.ID);
-                    if (rosterEmp != null)
-                    {
-                        var shifts = ShiftServices.Instance.GetShiftWRTBusiness(Company.Business, emp.ID);
-                        foreach (var shift in shifts)
-                        {
-                            var recurringShifts = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(Company.Business, shift.ID);
-                            if (recurringShifts != null)
-                            {
-                                if (recurringShifts.RecurEnd == "Custom Date" && recurringShifts.RecurEndDate != "")
-                                {
-                                    if (IsDateInRangeNew(DateTime.Parse(recurringShifts.RecurEndDate), SelectedDate))
-                                    {
+                    var employeeservices = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(Company.Business);
+                    var AvailableEmployeeList = new List<int>();
+                    var FinalServiceList = services.Select(int.Parse).ToList();
 
-                                        if (recurringShifts.Frequency == "Bi-Weekly")
+                    var employeeIDs = employeeservices
+                            .Where(es => FinalServiceList.Contains(es.ServiceID))
+                            .GroupBy(es => es.EmployeeID)
+                            .Where(grp => grp.Select(g => g.ServiceID).Distinct().Count() == FinalServiceList.Count)
+                            .Select(grp => grp.Key)
+                            .ToList();
+
+                    var Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs, Company.Business);
+
+                    foreach (var emp in Employees)
+                    {
+                        var appointmentsnew = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(Company.Business, SelectedDate.Day, SelectedDate.Month, SelectedDate.Year, emp.ID, false, false);
+                        var rosterEmp = TimeTableRosterServices.Instance.GetTimeTableRosterByEmpID(emp.ID);
+                        if (rosterEmp != null)
+                        {
+                            var shifts = ShiftServices.Instance.GetShiftWRTBusiness(Company.Business, emp.ID);
+                            foreach (var shift in shifts)
+                            {
+                                var recurringShifts = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(Company.Business, shift.ID);
+                                if (recurringShifts != null)
+                                {
+                                    if (recurringShifts.RecurEnd == "Custom Date" && recurringShifts.RecurEndDate != "")
+                                    {
+                                        if (IsDateInRangeNew(DateTime.Parse(recurringShifts.RecurEndDate), SelectedDate))
                                         {
 
-                                            if (GetNextDayStatus(SelectedDate, shift.Date, shift.Day.ToString()) == "YES")
+                                            if (recurringShifts.Frequency == "Bi-Weekly")
+                                            {
+
+                                                if (GetNextDayStatus(SelectedDate, shift.Date, shift.Day.ToString()) == "YES")
+                                                {
+                                                    var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
+                                                    empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                                }
+
+
+                                            }
+                                            else
                                             {
                                                 var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
                                                 empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
                                             }
-
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (recurringShifts.Frequency == "Bi-Weekly")
+                                        {
+                                            if (rosterEmp != null)
+                                            {
+                                                if (GetNextDayStatus(SelectedDate, shift.Date, shift.Day.ToString()) == "YES")
+                                                {
+                                                    var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
+                                                    empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                                }
+                                            }
 
                                         }
                                         else
@@ -6870,201 +6902,180 @@ namespace TheBookingPlatform.Controllers
                                 }
                                 else
                                 {
-                                    if (recurringShifts.Frequency == "Bi-Weekly")
+                                    var exceptionShiftByShiftID = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusinessAndShift(Company.Business, shift.ID);
+                                    if (exceptionShiftByShiftID != null)
                                     {
-                                        if (rosterEmp != null)
+                                        empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShiftByShiftID });
+                                    }
+                                    else
+                                    {
+                                        empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts });
+
+                                    }
+
+                                }
+                            }
+                            Allshifts.Add(new ShiftOfEmployeeModel { Employee = emp, Shifts = empShifts });
+
+
+
+                            var usethisShift = Allshifts
+                            .SelectMany(shifto => shifto.Shifts)
+                            .FirstOrDefault(shift => shift.Shift.Day == SelectedDate.DayOfWeek.ToString())?.Shift;
+
+                            if (usethisShift != null)
+                            {
+
+                                DateTime startTimeemp = SelectedDate.Date
+                                           .AddHours(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                           .AddMinutes(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                DateTime endTimeemp = SelectedDate.Date
+                                    .AddHours(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
+                                    .AddMinutes(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
+
+                                var CheckSlots = new List<string>();
+
+                                if (usethisShift.IsRecurring)
+                                {
+                                    var recurringShift = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(Company.Business, usethisShift.ID);
+                                    if (recurringShift != null)
+                                    {
+                                        if (DateTime.Parse(recurringShift.RecurEndDate) >= SelectedDate)
                                         {
-                                            if (GetNextDayStatus(SelectedDate, shift.Date, shift.Day.ToString()) == "YES")
+                                            if (recurringShift.Frequency == "Bi-Weekly")
                                             {
-                                                var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
-                                                empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
+                                                if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
+                                                {
+                                                    CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes, Company, services, Employee.ID);
+                                                }
                                             }
+                                            else
+                                            {
+                                                CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes, Company, services, Employee.ID);
+                                            }
+
                                         }
+
+
+
 
                                     }
                                     else
                                     {
-                                        var exceptionShift = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusiness(Company.Business, shift.ID);
-                                        empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShift });
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var exceptionShiftByShiftID = ExceptionShiftServices.Instance.GetExceptionShiftWRTBusinessAndShift(Company.Business, shift.ID);
-                                if (exceptionShiftByShiftID != null)
-                                {
-                                    empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts, ExceptionShift = exceptionShiftByShiftID });
-                                }
-                                else
-                                {
-                                    empShifts.Add(new ShiftModel { Shift = shift, RecurShift = recurringShifts });
-
-                                }
-
-                            }
-                        }
-                        Allshifts.Add(new ShiftOfEmployeeModel { Employee = emp, Shifts = empShifts });
-
-
-
-                        var usethisShift = Allshifts
-                        .SelectMany(shifto => shifto.Shifts)
-                        .FirstOrDefault(shift => shift.Shift.Day == SelectedDate.DayOfWeek.ToString())?.Shift;
-
-                        if (usethisShift != null)
-                        {
-
-                            DateTime startTimeemp = SelectedDate.Date
-                                       .AddHours(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Hour)
-                                       .AddMinutes(DateTime.ParseExact(usethisShift.StartTime, "H:mm", CultureInfo.InvariantCulture).Minute);
-
-                            DateTime endTimeemp = SelectedDate.Date
-                                .AddHours(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Hour)
-                                .AddMinutes(DateTime.ParseExact(usethisShift.EndTime, "H:mm", CultureInfo.InvariantCulture).Minute);
-
-                            var CheckSlots = new List<string>();
-
-                            if (usethisShift.IsRecurring)
-                            {
-                                var recurringShift = RecurringShiftServices.Instance.GetRecurringShiftWRTBusiness(Company.Business, usethisShift.ID);
-                                if (recurringShift != null)
-                                {
-                                    if (DateTime.Parse(recurringShift.RecurEndDate) >= SelectedDate)
-                                    {
-                                        if (recurringShift.Frequency == "Bi-Weekly")
-                                        {
-                                            if (GetNextDayStatus(SelectedDate, usethisShift.Date, SelectedDate.DayOfWeek.ToString()) == "YES")
-                                            {
-                                                CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes, Company, services, Employee.ID);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes, Company, services, Employee.ID);
-                                        }
 
                                     }
-
-
-
-
                                 }
                                 else
                                 {
+                                    CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes, Company, services, Employee.ID);
+
 
                                 }
-                            }
-                            else
-                            {
-                                CheckSlots = FindAvailableSlots(startTimeemp, endTimeemp, appointments, TimeInMinutes, Company, services, Employee.ID);
 
+                                var priceChanges = PriceChangeServices.Instance.GetPriceChangeWRTBusiness(Company.Business);
 
-                            }
-
-                            var priceChanges = PriceChangeServices.Instance.GetPriceChangeWRTBusiness(Company.Business);
-
-                            foreach (var timeslot in CheckSlots)
-                            {
-                                string timeSlot = timeslot;
-                                bool CheckPriceChange = false;
-                                var slotStart = TimeSpan.Parse(timeslot.Split('-')[0]);
-                                var slotEnd = TimeSpan.Parse(timeslot.Split('-')[1]);
-                                string slotType;
-                                if (slotStart < new TimeSpan(12, 0, 0))
+                                foreach (var timeslot in CheckSlots)
                                 {
-                                    slotType = "Morning Slots";
-                                }
-                                else if (slotStart < new TimeSpan(17, 0, 0))
-                                {
-                                    slotType = "Afternoon Slots";
-                                }
-                                else
-                                {
-                                    slotType = "Evening Slots";
-                                }
-
-                                float discountpercentage = 0;
-                                bool ChangeFound = false;
-                                int ChangeID = 0;
-                                string TypeOfChange = "";
-                                if (priceChanges.Count > 0)
-                                {
-                                    foreach (var item in priceChanges)
+                                    string timeSlot = timeslot;
+                                    bool CheckPriceChange = false;
+                                    var slotStart = TimeSpan.Parse(timeslot.Split('-')[0]);
+                                    var slotEnd = TimeSpan.Parse(timeslot.Split('-')[1]);
+                                    string slotType;
+                                    if (slotStart < new TimeSpan(12, 0, 0))
                                     {
+                                        slotType = "Morning Slots";
+                                    }
+                                    else if (slotStart < new TimeSpan(17, 0, 0))
+                                    {
+                                        slotType = "Afternoon Slots";
+                                    }
+                                    else
+                                    {
+                                        slotType = "Evening Slots";
+                                    }
 
-                                        if (item.StartDate.Date <= SelectedDate.Date && item.EndDate.Date >= SelectedDate.Date)
+                                    float discountpercentage = 0;
+                                    bool ChangeFound = false;
+                                    int ChangeID = 0;
+                                    string TypeOfChange = "";
+                                    if (priceChanges.Count > 0)
+                                    {
+                                        foreach (var item in priceChanges)
                                         {
-                                            if (slotStart >= item.StartDate.TimeOfDay && slotEnd <= item.EndDate.TimeOfDay)
+
+                                            if (item.StartDate.Date <= SelectedDate.Date && item.EndDate.Date >= SelectedDate.Date)
                                             {
-                                                discountpercentage = item.Percentage;
-                                                ChangeFound = true;
-                                                ChangeID = item.ID;
-                                                TypeOfChange = item.TypeOfChange;
-                                                //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = true, Percentage = discountpercentage,PriceChangeID = item.ID });
-                                                break;
+                                                if (slotStart >= item.StartDate.TimeOfDay && slotEnd <= item.EndDate.TimeOfDay)
+                                                {
+                                                    discountpercentage = item.Percentage;
+                                                    ChangeFound = true;
+                                                    ChangeID = item.ID;
+                                                    TypeOfChange = item.TypeOfChange;
+                                                    //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = true, Percentage = discountpercentage,PriceChangeID = item.ID });
+                                                    break;
+
+                                                }
+                                                else
+                                                {
+
+                                                    //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                    ChangeFound = false;
+                                                }
 
                                             }
                                             else
                                             {
-
-                                                //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage,PriceChangeID = 0 });
                                                 ChangeFound = false;
+
                                             }
+
+                                        }
+
+                                        if (ChangeFound)
+                                        {
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
 
                                         }
                                         else
                                         {
-                                            //ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { TimeSlot = timeSlot, TypeOfChange = item.TypeOfChange, HaveDiscount = false, Percentage = discountpercentage,PriceChangeID = 0 });
-                                            ChangeFound = false;
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
 
                                         }
-
                                     }
 
-                                    if (ChangeFound)
-                                    {
-                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
 
-                                    }
-                                    else
-                                    {
-                                        ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
-
-                                    }
                                 }
-
 
                             }
 
+
+
+
+
+
+
                         }
-
-
-
-
-
-
-
                     }
                 }
+
+                deduplicatedList = ListOfTimeSlotsWithDiscount
+     .GroupBy(x => x.TimeSlot.Split('-')[0].Trim()) // Group by start time
+     .Select(g =>
+     {
+         // Try to find an item where HaveDiscount or EmpHaveDiscount is true
+         var prioritizedItem = g
+             .FirstOrDefault(x => x.HaveDiscount || x.EmpHaveDiscount);
+
+         // If none of the items in the group have discounts, just take the first item
+         return prioritizedItem ?? g.First();
+     })
+     .OrderBy(x => DateTime.Parse(x.TimeSlot.Split('-')[0].Trim())) // Order by start time
+     .ToList();
+
+                // Now combinedEmployeeSlots contains all employees' unique time slots without any duplicates
             }
-
-            deduplicatedList = ListOfTimeSlotsWithDiscount
- .GroupBy(x => x.TimeSlot.Split('-')[0].Trim()) // Group by start time
- .Select(g =>
- {
-     // Try to find an item where HaveDiscount or EmpHaveDiscount is true
-     var prioritizedItem = g
-         .FirstOrDefault(x => x.HaveDiscount || x.EmpHaveDiscount);
-
-     // If none of the items in the group have discounts, just take the first item
-     return prioritizedItem ?? g.First();
- })
- .OrderBy(x => DateTime.Parse(x.TimeSlot.Split('-')[0].Trim())) // Order by start time
- .ToList();
-
-            // Now combinedEmployeeSlots contains all employees' unique time slots without any duplicates
-
             //maxSlotsItem = combinedObject;
             return deduplicatedList;
 
