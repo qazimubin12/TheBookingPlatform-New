@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using TheBookingPlatform.Controllers;
 using TheBookingPlatform.Entities;
 
 namespace TheBookingPlatform.ViewModels
@@ -20,6 +21,7 @@ namespace TheBookingPlatform.ViewModels
     public class EmployeeServiceActionViewModel
     {
         public List<EmployeeServiceModel> EmployeeServices { get; set; }
+        public List<EmployeeService> EmployeeServicesE { get; set; }
         public int EmployeeID { get; set; }
         public Employee EmployeeFull { get; set; }
         public string ServiceData { get; set; }

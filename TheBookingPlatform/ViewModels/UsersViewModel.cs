@@ -21,6 +21,7 @@ namespace TheBookingPlatform.ViewModels
         public string Type { get; set; }
         public Review Review { get; set; }
         public string CustomerName { get; set; }
+        public string Date { get; set; }
         public string EmployeeName { get; set; }
     }
     public class Currency

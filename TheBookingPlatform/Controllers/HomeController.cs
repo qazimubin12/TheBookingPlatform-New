@@ -289,6 +289,48 @@ namespace TheBookingPlatform.Controllers
             return PartialView("_EmployeeListing", model);
         }
 
+        public class HistoryModel
+        {
+            public History History { get; set; }
+            public string Date { get; set; }
+        }
+        public ActionResult ShowHistories(int skip = 0, int take = 1000)
+        {
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
+            var hisotrymodel = new List<HistoryModel>();
+
+            if (LoggedInUser.Role == "Super Admin")
+            {
+                var histories = HistoryServices.Instance
+                    .GetHistories()
+                    .OrderByDescending(h => h.Date)
+                    .Skip(skip)
+                    .Take(take)
+                    .ToList();
+
+                foreach (var item in histories)
+                {
+                    hisotrymodel.Add(new HistoryModel { History = item,Date = item.Date.ToString("yyyy-MM-dd") });
+                }
+            }
+            else
+            {
+                var histories = HistoryServices.Instance
+                    .GetHistoriesWRTBusiness(LoggedInUser.Company)
+                    .OrderByDescending(h => h.Date)
+                    .Skip(skip)
+                    .Take(take)
+                    .ToList();
+
+
+                foreach (var item in histories)
+                {
+                    hisotrymodel.Add(new HistoryModel { History = item, Date = item.Date.ToString("yyyy-MM-dd") });
+                }
+            }
+
+            return Json(hisotrymodel, JsonRequestBehavior.AllowGet); // for Load More AJAX
+        }
 
 
         public ActionResult ShowHistory()
@@ -296,16 +338,7 @@ namespace TheBookingPlatform.Controllers
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
 
             HomeViewModel model = new HomeViewModel();
-            if (LoggedInUser.Role == "Super Admin")
-            {
-                model.Histories = HistoryServices.Instance.GetHistories();
-            }
-            else
-            {
-                model.Histories = HistoryServices.Instance.GetHistoriesWRTBusiness(LoggedInUser.Company);
-
-
-            }
+            
             return PartialView("_HistoryListing", model);
         }
 

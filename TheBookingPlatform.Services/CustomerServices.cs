@@ -163,6 +163,18 @@ namespace TheBookingPlatform.Services
 
             }
         }
+
+
+        public List<Customer> GetCustomerWRTBusiness(List<int> IDS)
+        {
+            using (var context = new DSContext())
+            {
+
+                return context.Customers.AsNoTracking().Where(x => IDS.Contains(x.ID)).ToList();
+
+            }
+        }
+
         public Customer GetCustomerWRTBusinessAndReferral(string Business,string ReferralCode)
         {
             using (var context = new DSContext())

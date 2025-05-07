@@ -227,6 +227,10 @@
     <Compile Include="Migrations\202504230801098_havepromoinservice.Designer.cs">
       <DependentUpon>202504230801098_havepromoinservice.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505061729560_newchanges.cs" />
+    <Compile Include="Migrations\202505061729560_newchanges.Designer.cs">
+      <DependentUpon>202505061729560_newchanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -358,6 +362,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504230801098_havepromoinservice.resx">
       <DependentUpon>202504230801098_havepromoinservice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505061729560_newchanges.resx">
+      <DependentUpon>202505061729560_newchanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

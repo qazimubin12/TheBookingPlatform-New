@@ -72,23 +72,45 @@
                                                         <tbody>
                                                             @foreach (var servic in item.Services)
                                                             {
-                                                                // Parse ServiceData to find the current service entry
-                                                                var serviceEntry = Model.ServiceData
-                                                                    .Split('_')
-                                                                    .FirstOrDefault(data => data.StartsWith(servic.ID.ToString() + ","));
 
                                                                 // Extract service-specific data
                                                                 bool isServiceChecked = false;
                                                                 bool isBufferEnabled = false;
                                                                 string bufferTime = "";
 
-                                                                if (!string.IsNullOrEmpty(serviceEntry))
+                                                                foreach (var employeeService in Model.EmployeeServicesE)
                                                                 {
-                                                                    var parts = serviceEntry.Split(',');
-                                                                    isServiceChecked = true; // If an entry exists, the service is checked
-                                                                    isBufferEnabled = parts.Length > 1 && parts[1] == "True"; // Check if buffer is enabled
-                                                                    bufferTime = parts.Length > 2 ? parts[2] : ""; // Extract buffer time
+                                                                    if (employeeService.ServiceID == servic.ID)
+                                                                    {
+                                                                        if (employeeService.BufferEnabled)
+                                                                        {
+                                                                            isBufferEnabled = true;
+
+                                                                            bufferTime = employeeService.BufferTime;
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            isBufferEnabled = false;
+                                                                        }
+                                                                        isServiceChecked = true;
+                                                                        break;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        isServiceChecked = false;
+                                                                        isBufferEnabled = false;
+                                                                    }
                                                                 }
+
+
+                                                                //if (!string.IsNullOrEmpty(serviceEntry))
+                                                                //{
+                                                                //    var parts = serviceEntry.Split(',');
+                                                                //    isServiceChecked = true; // If an entry exists, the service is checked
+                                                                //    isBufferEnabled = parts.Length > 1 && parts[1] == "True"; // Check if buffer is enabled
+                                                                //    bufferTime = parts.Length > 2 ? parts[2] : ""; // Extract buffer time
+                                                                //}
 
                                                                 <tr data-service-id="@servic.ID">
                                                                     <td>

@@ -67,8 +67,16 @@ namespace TheBookingPlatform.Services
 
             }
         }
+        public List<Employee> GetBulkEmployees(List<int> IDs)
+        {
+            using (var context = new DSContext())
+            {
+                return context.Employees.Where(x => IDs.Contains(x.ID)).ToList();
 
-     
+            }
+        }
+
+
         public List<Employee> GetEmployeeWRTBusiness(string Business,string SearchTerm = "")
         {
             using (var context = new DSContext())

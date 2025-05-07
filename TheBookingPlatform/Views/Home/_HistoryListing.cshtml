@@ -4,8 +4,7 @@
 }
 
 <div style="padding-left:0px;padding-right:0px;" >
-    @if (Model.Histories != null)
-    {
+   
         <div class="card">
 
             <div class="table-responsive">
@@ -30,52 +29,72 @@
 
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var item in Model.Histories)
-                        {
-                            <tr>
-
-                                <td class="text-center">@item.Note</td>
-
-
-                                <td class="text-center">@item.CustomerName</td>
-                                <td class="text-center">@item.EmployeeName</td>
-
-                                <td class="text-center">
-                                    @item.Date.ToString("yyyy-MM-dd H:mm")
-                                </td>
-
-                            </tr>
-                        }
+                    <tbody id="historyTableBody">
                     </tbody>
                 </table>
+                <div class="text-center" style="margin-top: 20px;">
+                    <button id="loadMoreBtn" class="btn btn-primary btn-sm">Load More</button>
+                </div>
             </div>
         </div>
-    }
-    else
-    {
-
-        <div class="alert alert-warning col-md-12" role="alert">
-            Sorry! No records exist.
-        </div>
-    }
+   
 </div>
 
 
-<script> 
-    $('#datatables').DataTable({
-        "pagingType": "full_numbers",
-        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        responsive: true,
-        language: {
-            search: "_INPUT_",
-            searchPlaceholder: "Search records",
-        }
+<script>
 
-    });
+    //$('#datatables').DataTable({
+    //    "pagingType": "full_numbers",
+    //    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    //    responsive: true,
+    //    language: {
+    //        search: "_INPUT_",
+    //        searchPlaceholder: "Search records",
+    //    }
+
+    //});
+
+
+   var skip = 0;
+   var take = 1000;
+
+    function loadHistories() {
+        $.ajax({
+            url: '@Url.Action("ShowHistories", "Home")',
+            data: { skip: skip, take: take },
+            type: 'GET',
+            success: function (data) {
+                if (data.length === 0) {
+                    $('#loadMoreBtn').hide();
+                    return;
+                }
+                debugger
+                data.forEach(item => {
+                    $('#historyTableBody').append(`
+                        <tr>
+                            <td class="text-center">${item.History.Note}</td>
+                            <td class="text-center">${item.History.CustomerName}</td>
+                            <td class="text-center">${item.History.EmployeeName}</td>
+                            <td class="text-center">${item.Date}</td>
+                        </tr>
+                    `);
+                });
+
+                skip += take;
+                $('#datatables').DataTable().rows().invalidate().draw(); // Refresh DataTables
+            },
+            error: function () {
+                alert("Error loading data.");
+            }
+        });
+    }
     $(document).ready(function () {
-       
 
+        loadHistories(); // initial load
+
+        $('#loadMoreBtn').click(function () {
+            loadHistories();
+        });
         $(document).on('click', '.data-btn', function () {
             $.ajax({
                 url: $(this).attr("data-href"),
@@ -86,6 +105,8 @@
                 });
         });
     });
+
+
     $(".data-btn").click(function () {
         $.ajax({
             url: $(this).attr("data-href"),

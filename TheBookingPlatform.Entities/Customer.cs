@@ -22,9 +22,10 @@ namespace TheBookingPlatform.Entities
         public string AdditionalInformation { get; set; }
         public string AdditionalInvoiceInformation { get; set; }
         public string WarningInformation { get; set; }
-        public string ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; }  
         public string Password { get; set; }
 
+        public int PriceChangeIDNotification { get; set; }
         public bool IsBlocked { get; set; }
         public string ReferralCode { get; set; }
         public float ReferralBalance { get; set; }

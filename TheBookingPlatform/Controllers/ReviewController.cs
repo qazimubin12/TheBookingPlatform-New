@@ -63,6 +63,70 @@ namespace TheBookingPlatform.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetMoreReviews(int skip = 0, int take = 50,string Selectedoption = "")
+        {
+            var reviewModel = new List<ReviewModel>();
+            var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
+            if (Selectedoption == "Reviewed")
+            {
+                var reviews = ReviewServices.Instance.GetReviewWRTBusiness(loggedInUser.Company, "").Where(x => x.Rating > 0).OrderByDescending(r => r.Date).Skip(skip).Take(take).ToList();
+                var customers = CustomerServices.Instance.GetCustomerWRTBusiness(reviews.Select(x => x.CustomerID).ToList());
+                var employees = EmployeeServices.Instance.GetBulkEmployees(reviews.Select(x => x.EmployeeID).ToList());
+                foreach (var item in reviews)
+                {
+
+                    var customer = customers.Where(x => x.ID == item.CustomerID).FirstOrDefault();
+                    var employee = employees.Where(x => x.ID == item.EmployeeID).FirstOrDefault();
+                    reviewModel.Add(new ReviewModel { Review = item, CustomerName = customer.FirstName + " " + customer.LastName, EmployeeName = employee?.Name, Type = "Reviewed", Date = item.Date.ToString("yyyy-MM-dd") });
+
+                }
+
+            }
+            else if (Selectedoption == "Not Reviewed")
+            {
+                var reviews = ReviewServices.Instance.GetReviewWRTBusiness(loggedInUser.Company, "").Where(x => x.Rating == 0).OrderByDescending(r => r.Date).Skip(skip).Take(take).ToList();
+                var customers = CustomerServices.Instance.GetCustomerWRTBusiness(reviews.Select(x => x.CustomerID).ToList());
+                var employees = EmployeeServices.Instance.GetBulkEmployees(reviews.Select(x => x.CustomerID).ToList());
+                foreach (var item in reviews)
+                {
+
+                    var customer = customers.Where(x => x.ID == item.CustomerID).FirstOrDefault();
+                    var employee = employees.Where(x => x.ID == item.EmployeeID).FirstOrDefault();
+                    reviewModel.Add(new ReviewModel { Review = item, CustomerName = customer.FirstName + " " + customer.LastName, EmployeeName = employee?.Name, Type = "NotReviewed", Date = item.Date.ToString("yyyy-MM-dd") });
+
+                }
+
+            }
+            else
+            {
+                var reviews = ReviewServices.Instance.GetReviewWRTBusiness(loggedInUser.Company, "").OrderByDescending(r => r.Date).Skip(skip).Take(take).ToList();
+                var customers = CustomerServices.Instance.GetCustomerWRTBusiness(reviews.Select(x => x.CustomerID).ToList());
+                var employees = EmployeeServices.Instance.GetBulkEmployees(reviews.Select(x => x.EmployeeID).ToList());
+                foreach (var item in reviews)
+                {
+                    if (item.Rating > 0)
+                    {
+
+                        var customer = customers.Where(x => x.ID == item.CustomerID).FirstOrDefault();
+                        var employee = employees.Where(x => x.ID == item.EmployeeID).FirstOrDefault();
+                        reviewModel.Add(new ReviewModel { Review = item, CustomerName = customer.FirstName + " " + customer.LastName, EmployeeName = employee?.Name, Type = "Reviewed", Date = item.Date.ToString("yyyy-MM-dd") });
+                    }
+                    else
+                    {
+                        var customer = customers.Where(x => x.ID == item.CustomerID).FirstOrDefault();
+                        var employee = employees.Where(x => x.ID == item.EmployeeID).FirstOrDefault();
+                        reviewModel.Add(new ReviewModel { Review = item, CustomerName = customer.FirstName + " " + customer.LastName, EmployeeName =   employee.Name, Type = "NotReviewed",Date = item.Date.ToString("yyyy-MM-dd") });
+                    }
+                }
+
+            }
+
+            //model.Reviews = reviewModel;
+            return Json(reviewModel, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpGet]
         public void Track(int AppointmentID)
         {
             var rebook = RebookReminderServices.Instance.GetRebookReminderWRTBusiness(AppointmentID);
@@ -73,26 +137,8 @@ namespace TheBookingPlatform.Controllers
         public ActionResult Index(string SearchTerm ="")
         {
             SettingsViewModel model = new SettingsViewModel();
-            var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
-            var reviewModel = new List<ReviewModel>();
-            var reviews = ReviewServices.Instance.GetReviewWRTBusiness(loggedInUser.Company, SearchTerm).Where(X=>X.CustomerID != 0).ToList();
-            foreach (var item in reviews)
-            {
-                if (item.Rating != 0 && item.Feedback != null)
-                {
-                    var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
-                    var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                    reviewModel.Add(new ReviewModel { Review = item, CustomerName = customer.FirstName + " " + customer.LastName, EmployeeName = employee.Name,Type="Reviewed" });
-                }
-                else
-                {
-                    var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
-                    var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
-                    reviewModel.Add(new ReviewModel { Review = item, CustomerName = customer.FirstName + " " + customer.LastName, EmployeeName = employee.Name, Type = "NotReviewed" });
-                }
-            }
-            model.Reviews = reviewModel;
-            return PartialView(model);
+            var loggedInUser = UserManager.FindById(User.Identity.GetUserId());       
+            return View(model);
         }
 
         [HttpGet]

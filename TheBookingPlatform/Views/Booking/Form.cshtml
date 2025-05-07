@@ -1518,7 +1518,7 @@
                                     var TimeData = $(this).data("timeslot");
                                     var timePart = TimeData.replace(/[+-]\d+%/, ''); // Remove the +3% or -4% part
                                     $("#Time").val(timePart);
-                                  
+
                                     CheckDetails();
                                     var percentageValue = $(this).data('percentage');
                                     var EmppercentageValue = $(this).data('emppercentage');
@@ -1771,7 +1771,7 @@
         $("#NextToPayment").hide();
         localStorage.removeItem("selectedSlot");
         $("#Error").hide();
-        
+
 
     });
 
@@ -2225,12 +2225,20 @@
     function loadAddOnServices() {
 
         const selectedService = localStorage.getItem('selectedServices');
-        const serviceArray = JSON.parse(selectedService);
+        let ids;
+        if ('@Model.SentBy' !== "Cancellation") {
+            // If there's a value in localStorage
+            const serviceArray = JSON.parse(selectedService);
+            const serviceIds = serviceArray.map(service => service.id);
+            ids = serviceIds.join(',');
+        } else {
+            // If localStorage is null, use the fallback value
+            ids = '@Model.ServiceIDs';
+        }
+
+
         let secondPart = $("#Time").val().split(' - ')[1];
-        // Get an array of all IDs
-        const serviceIds = serviceArray.map(service => service.id);
-        const idString = serviceIds.join(',');
-        var ids = idString;
+
         var business = '@Model.Company.Business';
         var EmployeeID = $("#MyEmployeeID").val();
         var date = $('#dateInput').val();

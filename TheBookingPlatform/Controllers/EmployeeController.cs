@@ -243,7 +243,11 @@ namespace TheBookingPlatform.Controllers
             return Json(new { success = true });
         }
 
-
+        public class AsingServiceViewModel
+        {
+            public ServiceModel Service { get; set; }
+            public EmployeeService EmployeeService { get; set; }
+        }
 
         [HttpGet]
         public ActionResult AssignService(int ID)
@@ -275,7 +279,7 @@ namespace TheBookingPlatform.Controllers
             var employee = EmployeeServices.Instance.GetEmployee(ID);
             model.EmployeeFull = employee;
             model.EmployeeID = employee.ID;
-            var ServiceEmployeeData = "";
+            //var ServiceEmployeeData = "";
 
             var ServiceEmployees = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(employee.Business, employee.ID);
 
@@ -287,22 +291,51 @@ namespace TheBookingPlatform.Controllers
                     ServiceEmployees.AddRange(EmployeeServiceServices.Instance.GetEmployeeServiceWRTEmployeeID(item.EmployeeID));
                 }
             }
+            //var AssignedServiceList = new List<AsingServiceViewModel>();
+            //foreach (var item in ServicesList)
+            //{
+            //    EmployeeService assignedServiceEmp = null;
+            //    foreach (var service in item.Services)
+            //    {
+            //        assignedServiceEmp = ServiceEmployees.Where(x=>x.ServiceID == service.ID).FirstOrDefault();
+            //        if(assignedServiceEmp != null)
+            //        {
+            //            break;
+            //        }
+            //        else
+            //        {
 
-            foreach (var item in ServiceEmployees)
-            {
-                if (ServiceEmployeeData == "")
-                {
-                    var datatoJoin = String.Join(",", item.ServiceID, item.BufferEnabled, item.BufferTime);
-                    ServiceEmployeeData = String.Join("_", datatoJoin);
+            //        }
 
-                }
-                else
-                {
-                    var datatoJoin = String.Join(",", item.ServiceID, item.BufferEnabled, item.BufferTime);
-                    ServiceEmployeeData = String.Join("_", ServiceEmployeeData, datatoJoin);
-                }
-            }
-            model.ServiceData = ServiceEmployeeData;
+            //    }
+            //    if (assignedServiceEmp != null)
+            //    {
+            //        AssignedServiceList.Add(new AsingServiceViewModel { Service = item, EmployeeService = assignedServiceEmp });
+
+            //    }
+            //    else
+            //    {
+            //        AssignedServiceList.Add(new AsingServiceViewModel { Service = item });
+
+            //    }
+            //    break;
+            //}
+            model.EmployeeServicesE = ServiceEmployees;
+            //foreach (var item in ServiceEmployees)
+            //{
+            //    if (ServiceEmployeeData == "")
+            //    {
+            //        var datatoJoin = String.Join(",", item.ServiceID, item.BufferEnabled, item.BufferTime);
+            //        ServiceEmployeeData = String.Join("_", datatoJoin);
+
+            //    }
+            //    else
+            //    {
+            //        var datatoJoin = String.Join(",", item.ServiceID, item.BufferEnabled, item.BufferTime);
+            //        ServiceEmployeeData = String.Join("_", ServiceEmployeeData, datatoJoin);
+            //    }
+            //}
+            //model.ServiceData = ServiceEmployeeData;
             model.Services = ServicesList;
             return PartialView("_AssignService", model);
         }

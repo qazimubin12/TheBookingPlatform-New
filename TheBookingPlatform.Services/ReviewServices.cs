@@ -44,28 +44,29 @@ namespace TheBookingPlatform.Services
                 }
             }
         }
-        public List<Review> GetReviewWRTBusiness(string Business,string SearchTerm = "")
+       
+        public List<Review> GetReviewWRTBusiness(string Business, string SearchTerm = "")
         {
             using (var context = new DSContext())
             {
                 if (SearchTerm != "")
                 {
-                    return context.Reviews.AsNoTracking().Where(p => p.Business == Business  && p.Feedback != null && p.Feedback.ToLower()
+                    return context.Reviews.AsNoTracking().Where(p => p.Business == Business && p.CustomerID != 0 && p.Feedback != null && p.Feedback.ToLower()
                                             .Contains(SearchTerm.ToLower()))
                                             .OrderByDescending(x => x.Date)
                                             .ToList();
                 }
                 else
                 {
-                    return context.Reviews.AsNoTracking().Where(x => x.Business == Business ).OrderByDescending(x => x.Date).ToList();
+                    return context.Reviews.AsNoTracking().Where(x => x.Business == Business && x.CustomerID != 0).OrderByDescending(x => x.Date).ToList();
                 }
             }
         }
 
 
 
-        
-      
+
+
 
         public Review GetReview(int ID)
         {
