@@ -763,17 +763,17 @@ namespace TheBookingPlatform.Controllers
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                 }
                 var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-                foreach (var item in employeeRequest)
-                {
+                //foreach (var item in employeeRequest)
+                //{
 
-                    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                    if (googleKey != null)
-                    {
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                    }
+                //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                //    if (googleKey != null)
+                //    {
+                //        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                //    }
 
-                }
+                //}
 
                 foreach (var item in ToBeInputtedIDs)
                 {
@@ -2334,15 +2334,15 @@ namespace TheBookingPlatform.Controllers
             RefreshToken(appointment.Business);
             var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
             ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-            foreach (var item in employeeRequest)
-            {
+            //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
+            //foreach (var item in employeeRequest)
+            //{
 
-                var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+            //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+            //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+            //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-            }
+            //}
             var historyNew = new History();
             historyNew.Business = appointment.Business;
             historyNew.CustomerName = customer.FirstName + " " + customer.LastName;
@@ -3135,6 +3135,9 @@ namespace TheBookingPlatform.Controllers
                 var employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs);
                 foreach (var item in employees)
                 {
+                    var listofReivew = new List<ReviewModel>();
+                    var CountOfTheRatigs = 0;
+                    float RatingService = 0;
                     var AllSpecificRating = ReviewServices.Instance
                         .GetReviewWRTBusiness(model.Company.Business)
                         .Where(x => x.EmployeeID == item.ID
@@ -3142,10 +3145,9 @@ namespace TheBookingPlatform.Controllers
                         .Select(x => x.Rating)
                         .DefaultIfEmpty(0);
 
-                    var CountOfTheRatigs = AllSpecificRating.Count();
-                    var RatingService = AllSpecificRating.Average();
+                    CountOfTheRatigs = AllSpecificRating.Count();
+                    RatingService = AllSpecificRating.Average();
 
-                    var listofReivew = new List<ReviewModel>();
                     var reviews = ReviewServices.Instance
                         .GetReviewWRTBusiness(model.Company.Business)
                         .Where(x => x.EmployeeID == item.ID
@@ -3406,15 +3408,15 @@ namespace TheBookingPlatform.Controllers
             //delete previous one
             var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
             ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-            foreach (var item in employeeRequest)
-            {
+            //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
+            //foreach (var item in employeeRequest)
+            //{
 
-                var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+            //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+            //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+            //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-            }
+            //}
             StripeConfiguration.ApiKey = company.APIKEY;
             string ConcatenatedServices = "";
             foreach (var item in appointment.Service.Split(',').ToList())
@@ -3609,70 +3611,73 @@ namespace TheBookingPlatform.Controllers
             var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
             //delete previous one
             var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
-            ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-            foreach (var item in employeeRequest)
+            if (googleKey != null)
             {
-
-                var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
                 ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
+                //foreach (var item in employeeRequest)
+                //{
 
-            }
-            foreach (var item in ToBeInputtedIDs)
-            {
-                if (item.Key != null && !item.Key.Disabled && item.Value != null)
+                //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
+                //}
+                foreach (var item in ToBeInputtedIDs)
                 {
-                    try
+                    if (item.Key != null && !item.Key.Disabled && item.Value != null)
                     {
-                        var url = new System.Uri($"https://www.googleapis.com/calendar/v3/calendars/{item.Value}/events/{appointment.GoogleCalendarEventID}");
-                        var restClient = new RestClient(url);
-                        var request = new RestRequest();
-
-                        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
-                        request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
-                        request.AddHeader("Accept", "application/json");
                         try
                         {
-                            var response = restClient.Delete(request);
-                            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                            var url = new System.Uri($"https://www.googleapis.com/calendar/v3/calendars/{item.Value}/events/{appointment.GoogleCalendarEventID}");
+                            var restClient = new RestClient(url);
+                            var request = new RestRequest();
+
+                            request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                            request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
+                            request.AddHeader("Accept", "application/json");
+                            try
                             {
-                                var history = new History();
-                                history.Date = DateTime.Now;
-                                history.Note = "Appointment got deleted from GCalendar";
-                                history.Business = appointment.Business;
-                                history.Name = "Appointment Deleted";
-                                history.AppointmentID = appointment.ID;
-                                HistoryServices.Instance.SaveHistory(history);
+                                var response = restClient.Delete(request);
+                                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                                {
+                                    var history = new History();
+                                    history.Date = DateTime.Now;
+                                    history.Note = "Appointment got deleted from GCalendar";
+                                    history.Business = appointment.Business;
+                                    history.Name = "Appointment Deleted";
+                                    history.AppointmentID = appointment.ID;
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
+                                else
+                                {
+                                    var history = new History();
+                                    history.Date = DateTime.Now;
+                                    history.Note = response.Content;
+                                    history.Business = "Error";
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                var history = new History();
-                                history.Date = DateTime.Now;
-                                history.Note = response.Content;
-                                history.Business = "Error";
-                                HistoryServices.Instance.SaveHistory(history);
+
+                                continue;
                             }
+
                         }
                         catch (Exception ex)
                         {
 
-                            continue;
+                            var history = new History();
+                            history.Date = DateTime.Now;
+                            history.Note = ex.Message;
+                            history.Business = "Error";
+                            HistoryServices.Instance.SaveHistory(history);
                         }
-                        
+
+
+
                     }
-                    catch (Exception ex)
-                    {
-
-                        var history = new History();
-                        history.Date = DateTime.Now;
-                        history.Note = ex.Message;
-                        history.Business = "Error";
-                        HistoryServices.Instance.SaveHistory(history);
-                    }
-
-
-
                 }
             }
           
@@ -4690,7 +4695,7 @@ namespace TheBookingPlatform.Controllers
 
 
                             AppointmentServices.Instance.UpdateAppointment(appointment);
-                            var profilelink = "http://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
+                            var profilelink = "https://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
                             var request = HttpContext.Request;
                             var baseUrl = $"{request.Url.Scheme}://{request.Url.Authority}{Request.ApplicationPath.TrimEnd('/')}";
                             var paymenturl = baseUrl + Url.Action("ProcessPayment", "Booking", new { businessName = company.Business, SuccessURL = successUrl, CancelURL = cancelUrl, PaymentSecret = paymentIntent.ClientSecret, AppointmentID = appointment.ID });
@@ -5103,7 +5108,7 @@ namespace TheBookingPlatform.Controllers
 
 
                             AppointmentServices.Instance.UpdateAppointment(appointment);
-                            var profilelink = "http://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
+                            var profilelink = "https://app.yourbookingplatform.com" + Url.Action("CustomerProfile", "Booking", new { CustomerID = customer.ID, AppointmentID = appointment.ID, businessName = company.Business });
 
                             Session["CustomerLoggedIn"] = customer.ID;
                             var request = HttpContext.Request;
@@ -5112,7 +5117,8 @@ namespace TheBookingPlatform.Controllers
                             appointment.PaymentSession = paymentIntent.Id;
                             AppointmentServices.Instance.UpdateAppointment(appointment);
                             //return Json(new { session = session.Url, ProfileLink = profilelink });
-                            return Json(new { session = paymentIntent.NextAction.RedirectToUrl.Url, ProfileLink = profilelink });
+                            var paymenturl = baseUrl + Url.Action("ProcessPayment", "Booking", new { businessName = company.Business, SuccessURL = successUrl, CancelURL = cancelUrl, PaymentSecret = paymentIntent.ClientSecret, AppointmentID = appointment.ID });
+                            return Json(new { session = paymenturl, ProfileLink = profilelink });
                         }
                         else
                         {
@@ -5912,15 +5918,15 @@ namespace TheBookingPlatform.Controllers
                     RefreshToken(appointment.Business);
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                    }
+                    //}
 
                 }
                 else
@@ -5928,15 +5934,15 @@ namespace TheBookingPlatform.Controllers
                     RefreshToken(employee.Business);
                     var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                    }
+                    //}
 
                 }
                 string LastSavedGoogleCalendarID = "";

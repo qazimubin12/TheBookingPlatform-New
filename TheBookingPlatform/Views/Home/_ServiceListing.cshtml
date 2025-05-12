@@ -21,10 +21,10 @@
 
                             <a role="button" data-bs-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_@item.ServiceCategory.ID" aria-expanded="true" aria-controls="Service_@item.ServiceCategory.ID">
 
-                                <h6 class="panel-title text-center">
+                                <h6 class="panel-title">
                                     @item.ServiceCategory.Name
 
-                                    <i class="material-icons">keyboard_arrow_down</i>
+                                    <i class="fa fa-chevron-circle-down"></i>
                                 </h6>
                             </a>
 
@@ -37,21 +37,21 @@
                                         <table class="table table-striped">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Order
                                                     </th>
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Name
                                                     </th>
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Duration
                                                     </th>
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Price
                                                     </th>
 
 
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Action
                                                     </th>
                                                 </tr>
@@ -70,26 +70,26 @@
                                                     }
 
                                                     <tr class="@ClassName">
-                                                        <td style="width:40px;" class="text-center">
+                                                        <td style="width:40px;" class="">
                                                             <input type="number" class="form-control" value="@service.DisplayOrder" onchange="ChangeOrderService('@service.ID', this.value)" />
                                                         </td>
-                                                        <td class="text-center">@service.Name</td>
-                                                        <td class="text-center">@service.Duration</td>
-                                                        <td class="text-center">@service.Price @item.Company.Currency</td>
+                                                        <td class="">@service.Name</td>
+                                                        <td class="">@service.Duration</td>
+                                                        <td class="">@service.Price @item.Company.Currency</td>
 
-                                                        <td class="text-center">
+                                                        <td class="">
 
-                                                            <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
+                                                            <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text" style="margin-bottom: 0px; padding: 5px 10px;"><i class="fa fa-edit"></i> </a>
                                                             @if (service.IsActive)
                                                             {
-                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
+                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" style="margin-bottom: 0px; padding: 5px 10px;" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fa fa-trash"></i></button>
                                                             }
                                                             else
                                                             {
-                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-success btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal">RESTORE</button>
+                                                                <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" style="margin-bottom: 0px; padding: 5px 10px;" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fa fa-trash"></i></button>
 
                                                             }
-                                                            <a href="@Url.Action("Duplicate", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> DUPLICATE</a>
+                                                            <a href="@Url.Action("Duplicate", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text" style="margin-bottom: 0px; padding: 5px 10px;"><i class="fa fa-copy"></i> </a>
                                                         </td>
                                                     </tr>
                                                 }
@@ -110,21 +110,21 @@
                                         <table class="table table-striped">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Order
                                                     </th>
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Name
                                                     </th>
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Duration
                                                     </th>
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Price
                                                     </th>
 
 
-                                                    <th class="text-center">
+                                                    <th class="">
                                                         Action
                                                     </th>
                                                 </tr>
@@ -133,14 +133,14 @@
                                                 @foreach (var service in item.Services)
                                                 {
                                                     <tr>
-                                                        <td style="width:40px;" class="text-center">
+                                                        <td style="width:40px;" class="">
                                                             <input type="number" class="form-control" value="@service.DisplayOrder" onchange="ChangeOrderService('@service.ID', this.value)" />
                                                         </td>
-                                                        <td class="text-center">@service.Name</td>
-                                                        <td class="text-center">@service.Duration</td>
-                                                        <td class="text-center">@service.Price @item.Company.Currency</td>
+                                                        <td class="">@service.Name</td>
+                                                        <td class="">@service.Duration</td>
+                                                        <td class="">@service.Price @item.Company.Currency</td>
 
-                                                        <td class="text-center">
+                                                        <td class="">
 
                                                             <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
                                                             <button data-href="@Url.Action("Delete", "Service", new { ID = service.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
@@ -184,7 +184,7 @@
 
                         <input type="number" class="form-control" style="width:40px;margin-left:10px;float:left;" value="@(Model.DeletedServices.Services.Select(x=>x.DisplayOrder).Max()+1)" onchange="ChangeOrder('0', this.value)" />
                         <a role="button" data-bs-toggle="collapse" data-parent="#accordion" class="collapsed" href="#Service_0" aria-expanded="true" aria-controls="Service_0">
-                            <h4 class="panel-title text-center">
+                            <h4 class="panel-title ">
                                 DELETED
 
                                 <i class="material-icons">keyboard_arrow_down</i>
@@ -202,21 +202,21 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-center">
+                                    <th class="">
                                         Order
                                     </th>
-                                    <th class="text-center">
+                                    <th class="">
                                         Name
                                     </th>
-                                    <th class="text-center">
+                                    <th class="">
                                         Duration
                                     </th>
-                                    <th class="text-center">
+                                    <th class="">
                                         Price
                                     </th>
 
 
-                                    <th class="text-center">
+                                    <th class="">
                                         Action
                                     </th>
                                 </tr>
@@ -236,14 +236,14 @@
                                     //}
 
                                     <tr>
-                                        <td style="width:40px;" class="text-center">
+                                        <td style="width:40px;" class="">
                                             <input type="number" class="form-control" value="@service.DisplayOrder" onchange="ChangeOrderService('@service.ID', this.value)" />
                                         </td>
-                                        <td class="text-center">@service.Name</td>
-                                        <td class="text-center">@service.Duration</td>
-                                        <td class="text-center">@service.Price @Model.DeletedServices.Company.Currency</td>
+                                        <td class="">@service.Name</td>
+                                        <td class="">@service.Duration</td>
+                                        <td class="">@service.Price @Model.DeletedServices.Company.Currency</td>
 
-                                        <td class="text-center">
+                                        <td class="">
 
                                             <a href="@Url.Action("Action", "Service", new { ID = service.ID })" type="button" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-pencil"></i> EDIT</a>
                                             @if (service.IsActive)

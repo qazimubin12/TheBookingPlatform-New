@@ -53,7 +53,7 @@
                 </select>
             </div>
 
-            <div class="col-md-6">
+            @*<div class="col-md-6">
                 <div class="d-flex" style="align-items:center;gap:20px;">
                     <label for="startDate" class="w-auto">Start Date:</label>
                     <input value="@StartDate" class="form-control w-auto" type="date" id="startDate">
@@ -63,7 +63,7 @@
                     <input value="@EndDate" class="form-control w-auto" type="date" id="endDate">
                 </div>
                 <button style="font-size:xx-small;" class="btn btn-primary btn-sm" type="button" id="filterDate">Filter Date</button>
-            </div>
+            </div>*@
 
             <div class="d-flex justify-content-center gap-3">
                 <button class="filterStar btn btn-sm btn-primary" type="button" data-rating="5">5 Star</button>
@@ -119,7 +119,7 @@
     const take = 50;
 
     function loadMoreReviews() {
-        
+
         var selectedoption = $("#SelectedOption").val();
         $.ajax({
             url: '@Url.Action("GetMoreReviews","Review")',
@@ -169,18 +169,31 @@
         </div>
         <p class="review-text">${item.Review.Feedback}</p>
         <p><strong>Employee:</strong> ${item.EmployeeName}</p>
+        <button class="btn btn-primary data-btn btn-sm"  data-id="${item.Review.ID}" style="float:right;"  type="button" >DELETE</button>
     `;
         return div;
     }
 
-    $(".data-btn").click(function () {
+    $(document).on("click", ".data-btn", function (e) {
+        e.preventDefault();
+
+        if (!confirm("Are you sure you want to delete?")) {
+            return;
+        }
+        var ID = $(this).data("id");
         $.ajax({
-            url: $(this).attr("data-href"),
-        })
-            .done(function (response) {
-                $("#actionModal .modal-dialog").html(response);
-            });
+            url: '@Url.Action("Delete","Review")',
+            data: {ID:ID},
+            type: "POST",
+            success: function (response) {
+                location.reload();
+            },
+            error: function () {
+                alert("Failed to delete. Please try again.");
+            }
+        });
     });
+
 
 
     $(document).ready(function () {
@@ -195,7 +208,7 @@
                 const example = new Choices(elements[i], {
                     searchEnabled: false,
                     itemSelectText: ''
-                });
+                }); 
             }
         }
         // Add event listener for date range filter

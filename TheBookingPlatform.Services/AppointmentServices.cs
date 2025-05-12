@@ -196,8 +196,17 @@ namespace TheBookingPlatform.Services
         {
             using (var context = new DSContext())
             {
+                if(EmployeeID != 0)
+                {
+                    return context.Appointments.AsNoTracking().Where(x => x.Business == businesName && x.DELETED == Deleted &&x.EmployeeID == EmployeeID  && x.IsCancelled == isCancelled && x.Date.Day == date.Date.Day && x.Date.Month == date.Month && x.Date.Year == date.Year).OrderBy(x => x.Date).ToList();
 
-                return context.Appointments.AsNoTracking().Where(x => x.Business == businesName && x.DELETED == Deleted && x.IsCancelled == isCancelled && x.EmployeeID == EmployeeID && DbFunctions.TruncateTime(x.Date) == date.Date).OrderBy(x => x.Date).ToList();
+                }
+                else
+                {
+                    return context.Appointments.AsNoTracking().Where(x => x.Business == businesName && x.DELETED == Deleted && x.IsCancelled == isCancelled && x.Date.Day == date.Date.Day && x.Date.Month == date.Month && x.Date.Year == date.Year).OrderBy(x => x.Date).ToList();
+
+                }
+
 
             }
         }

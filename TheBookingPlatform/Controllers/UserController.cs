@@ -706,7 +706,7 @@ namespace TheBookingPlatform.Controllers
             var Email = Convert.ToString(Session["RegisteredEmail"]);
             var Password = Convert.ToString(Session["RegisteredPAKKITA"]);
             var LoggedInUser = UserManager.FindById(User.Identity.GetUserId());
-            if (LoggedInUser.Company == null)
+            if (LoggedInUser.Company == null || LoggedInUser.Company == "")
             {
 
 

@@ -1069,6 +1069,7 @@ namespace TheBookingPlatform.Controllers
                 {
                     var listofTimeTable = new List<TimeTableModel>();
                     employees = EmployeeServices.Instance.GetEmployeeWRTBusinesss(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                    
                     foreach (var emp in employees)
                     {
                         var shifts = new List<ShiftModel>();
@@ -1141,6 +1142,7 @@ namespace TheBookingPlatform.Controllers
 
                             }
                         }
+                    
                         if (shifts.Count() > 0)
                         {
                             Allshifts.Add(new ShiftOfEmployeeModel { Employee = emp, Shifts = shifts, PriceChange = pricechange, DisplayOrder = emp.DisplayOrder });
@@ -1156,12 +1158,16 @@ namespace TheBookingPlatform.Controllers
                 {
                     var shiftsWithinRange = Allshifts;
 
-                    Allshifts = Allshifts.Where(x => x.Shifts.Any(y => y.Shift.Day == model.SelectedDate.DayOfWeek.ToString())).ToList();
+                    //Allshifts = Allshifts.Where(x => x.Shifts.Any(y => y.Shift.Day == model.SelectedDate.DayOfWeek.ToString())).ToList();
 
                     foreach (var item in Allshifts)
                     {
-                     
-                        var haveAppointments = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(LoggedInUser.Company,false, false, item.Employee.ID,model.SelectedDate).Where(x=>x.Color != "darkgray").Any();
+                        if (item.Employee.Name == "Anhelina")
+                        {
+
+                        }
+                        var app = AppointmentServices.Instance.GetAppointmentBookingWRTBusiness(LoggedInUser.Company, false, false, item.Employee.ID, model.SelectedDate).Where(x => x.Color != "darkgray").ToList();
+                        var haveAppointments = app.Any();
                         if (haveAppointments)
                         {
                             appointmentsEmployee.Add(item.Employee);
@@ -4865,9 +4871,10 @@ namespace TheBookingPlatform.Controllers
                 var customer = CustomerServices.Instance.GetCustomer(appointment.CustomerID);
                 var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
                 var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
+
                 var historyNew = new History();
                 historyNew.Business = appointment.Business;
-                historyNew.CustomerName = customer.FirstName + " " + customer.LastName;
+                historyNew.CustomerName = customer?.FirstName + " " + customer?.LastName;
                 historyNew.Date = DateTime.Now;
                 historyNew.AppointmentID = appointment.ID;
                 historyNew.Note = "Appointment was cancelled by Email for the client:" + historyNew.CustomerName;
@@ -4897,7 +4904,7 @@ namespace TheBookingPlatform.Controllers
 
                 }
                 var emailDetails = EmailTemplateServices.Instance.GetEmailTemplateWRTBusiness(company.Business, "Appointment Cancelled");
-                if (emailDetails != null && emailDetails.IsActive == true)
+                if (emailDetails != null && emailDetails.IsActive == true && customer != null)
                 {
                     string emailBody = "<html><body>";
                     emailBody += "<h2 style='font-family: Arial, sans-serif;'>Appointment Cancellation</h2>";
@@ -4951,14 +4958,14 @@ namespace TheBookingPlatform.Controllers
                 {
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                     var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-                    foreach (var item in employeeRequest)
-                    {
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                    }
+                    //}
 
                     foreach (var item in ToBeInputtedIDs)
                     {
@@ -7248,15 +7255,15 @@ namespace TheBookingPlatform.Controllers
                         {
                             ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                             var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-                            foreach (var item in employeeRequest)
-                            {
+                            //foreach (var item in employeeRequest)
+                            //{
 
-                                var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                                googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                            //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                            //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                            //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
 
-                            }
+                            //}
                             if (customer != null)
                             {
                                 var historyNew = new History();
@@ -7329,16 +7336,16 @@ namespace TheBookingPlatform.Controllers
                     if (googleKey != null && !googleKey.Disabled)
                     {
                         ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                        var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
-                        foreach (var item in employeeRequest)
-                        {
+                        //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
+                        //foreach (var item in employeeRequest)
+                        //{
 
-                            var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                            ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                        //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                        //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
 
-                        }
+                        //}
                         if (customer != null)
                         {
                             var historyNew = new History();

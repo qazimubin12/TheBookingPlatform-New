@@ -425,9 +425,13 @@ namespace TheBookingPlatform.Controllers
             AdminViewModel model = new AdminViewModel();
             var user = UserManager.FindById(User.Identity.GetUserId());
             model.SignedInUser = user;
+            
             if (model.SignedInUser != null)
             {
-
+                if(model.SignedInUser.Company == null && user.Role != "Super Admin")
+                {
+                    return RedirectToAction("RegisterCompany", "User");
+                }
 
 
                 var employees2 = EmployeeServices.Instance.GetEmployeeWRTBusiness(user.Company, true);

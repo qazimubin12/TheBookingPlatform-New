@@ -141,29 +141,36 @@ namespace TheBookingPlatform.Controllers
 
                 //Trial End///
                 var company = CompanyServices.Instance.GetCompanyByName(user.Company);
-                if (user.Role != "Super Admin")
+                if (company != null)
                 {
-                    if (company.OwnerCompany == false)
+                    if (user.Role != "Super Admin")
                     {
-                        if (user.IsInTrialPeriod && user.IsPaid == false)
+                        if (company.OwnerCompany == false)
                         {
-                            if ((DateTime.Now - user.RegisteredDate).Days >= 30)
+                            if (user.IsInTrialPeriod && user.IsPaid == false)
                             {
-                                return RedirectToAction("Pay", "User", new { UserID = user.Id });
-                            }
-                        }
-                        else if (user.IsPaid)
-                        {
-
-                            var payments = PaymentServices.Instance.GetPaymentWRTBusiness(user.Company).LastOrDefault();
-                            if (payments != null)
-                            {
-                                if (payments.LastPaidDate != null)
+                                if ((DateTime.Now - user.RegisteredDate).Days >= 30)
                                 {
-                                    var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
-                                    if (remainderDays < 1)
+                                    return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                }
+                            }
+                            else if (user.IsPaid)
+                            {
+
+                                var payments = PaymentServices.Instance.GetPaymentWRTBusiness(user.Company).LastOrDefault();
+                                if (payments != null)
+                                {
+                                    if (payments.LastPaidDate != null)
                                     {
-                                        //return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                        var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
+                                        if (remainderDays < 1)
+                                        {
+                                            //return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return RedirectToAction("Pay", "User", new { UserID = user.Id });
                                     }
                                 }
                                 else
@@ -171,19 +178,15 @@ namespace TheBookingPlatform.Controllers
                                     return RedirectToAction("Pay", "User", new { UserID = user.Id });
                                 }
                             }
-                            else
+
+                            if (company.SubscriptionStatus != "Active")
                             {
                                 return RedirectToAction("Pay", "User", new { UserID = user.Id });
+
                             }
                         }
 
-                        if (company.SubscriptionStatus != "Active")
-                        {
-                            return RedirectToAction("Pay", "User", new { UserID = user.Id });
-
-                        }
                     }
-
                 }
                 if (user != null)
                 {
@@ -295,29 +298,36 @@ namespace TheBookingPlatform.Controllers
             if (user != null)
             {
                 var company = CompanyServices.Instance.GetCompanyByName(user.Company);
-                if (user.Role != "Super Admin")
+                if (company != null)
                 {
-                    if (company.OwnerCompany == false)
+                    if (user.Role != "Super Admin")
                     {
-                        if (user.IsInTrialPeriod && user.IsPaid == false)
+                        if (company.OwnerCompany == false)
                         {
-                            if ((DateTime.Now - user.RegisteredDate).Days >= 30)
+                            if (user.IsInTrialPeriod && user.IsPaid == false)
                             {
-                                return RedirectToAction("Pay", "User", new { UserID = user.Id });
-                            }
-                        }
-                        else if (user.IsPaid)
-                        {
-
-                            var payments = PaymentServices.Instance.GetPaymentWRTBusiness(user.Company).LastOrDefault();
-                            if (payments != null)
-                            {
-                                if (payments.LastPaidDate != null)
+                                if ((DateTime.Now - user.RegisteredDate).Days >= 30)
                                 {
-                                    var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
-                                    if (remainderDays < 1)
+                                    return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                }
+                            }
+                            else if (user.IsPaid)
+                            {
+
+                                var payments = PaymentServices.Instance.GetPaymentWRTBusiness(user.Company).LastOrDefault();
+                                if (payments != null)
+                                {
+                                    if (payments.LastPaidDate != null)
                                     {
-                                        //return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                        var remainderDays = (payments.LastPaidDate.AddMonths(1).Date - DateTime.Now.Date).Days;
+                                        if (remainderDays < 1)
+                                        {
+                                            //return RedirectToAction("Pay", "User", new { UserID = user.Id });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return RedirectToAction("Pay", "User", new { UserID = user.Id });
                                     }
                                 }
                                 else
@@ -325,19 +335,15 @@ namespace TheBookingPlatform.Controllers
                                     return RedirectToAction("Pay", "User", new { UserID = user.Id });
                                 }
                             }
-                            else
+
+                            if (company.SubscriptionStatus != "Active")
                             {
                                 return RedirectToAction("Pay", "User", new { UserID = user.Id });
+
                             }
                         }
 
-                        if (company.SubscriptionStatus != "Active")
-                        {
-                            return RedirectToAction("Pay", "User", new { UserID = user.Id });
-
-                        }
                     }
-
                 }
                 if (user != null)
                 {
@@ -347,7 +353,7 @@ namespace TheBookingPlatform.Controllers
                         case SignInStatus.Success:
                             Session["RegisteredEmail"] = user.Email;
                             Session["RegisteredPAKKITA"] = user.Password;
-                            if (user.Company != null)
+                            if (user.Company != null && user.Company != "")
                             {
                                 company = CompanyServices.Instance.GetCompanyByName(user.Company);
                                 if (company != null)
@@ -429,6 +435,7 @@ namespace TheBookingPlatform.Controllers
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
                 }
+
             }
             else
             {

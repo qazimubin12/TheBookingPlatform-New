@@ -42,32 +42,30 @@
 
     <!-- Custom CSS for the registration page -->
     <style>
-          .constellation {
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
-      max-width: 1200px;
-      padding: 40px;
-      justify-content: center;
-    }
+        .constellation {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+            padding: 40px;
+            justify-content: center;
+        }
 
-    .row {
-      display: flex;
-      justify-content: center;
-/*      margin-bottom: 30px;
-*/    }
+        .row {
+            display: flex;
+            justify-content: center;
+            /*      margin-bottom: 30px;
+*/
+        }
 
-    .row:nth-child(odd) {
-      margin-left: 100px; /* OFFSET for hexagonal look */
-    }
+            .row:nth-child(odd) {
+                margin-left: 100px; /* OFFSET for hexagonal look */
+            }
 
         .industry {
             background: white;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            width: 80px;
-            height: 80px;
-            margin: 10px 50px 0px 20px;
             text-align: center;
             transition: all 0.3s ease, transform 0.3s ease;
             display: flex;
@@ -76,109 +74,117 @@
             align-items: center;
             position: relative;
             z-index: 2;
+            margin: 12px 24px;
+            width: 90px;
+            height: 90px;
         }
 
-    .industry:hover {
-      transform: scale(1.1);
-      background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-      color: white;
-      box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4);
-    }
+            .industry:hover {
+                transform: scale(1.15);
+                background: linear-gradient(135deg, #4158D0, #C850C0, #FFCC70);
+                box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+                color: #fff;
+            }
 
-    .icon {
-      font-size: 32px;
-      margin-bottom: 8px;
-      transition: transform 0.3s;
-    }
 
-    .industry:hover .icon {
-      transform: rotate(15deg);
-    }
 
-    .industry-name {
-      font-weight: bold;
-      font-size: 14px;
-      color: #555;
-    }
+        .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            transition: transform 0.3s;
+        }
 
-    .industry:hover .industry-name {
-      color: white;
-    }
+        .industry:hover .icon {
+            transform: rotate(15deg);
+        }
 
-    /* Responsive */
-   @@media (max-width: 768px) {
-      .row {
-        margin-left: 0 !important;
-      }
-      .industry {
-        width: 100px;
-        height: 100px;
-        margin: 8px;
-      }
-    }
-      html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
+        .industry-name {
+            font-weight: bold;
+            font-size: 14px;
+            color: #555;
+        }
 
-.full-page.register-page {
-    display: flex;
-    height: 100%;
-    padding: 10px; /* Reduced padding */
-    background-color: white !important;
-}
+        .industry:hover .industry-name {
+            color: white;
+        }
 
-.illustration-section {
-    flex: 1;
-  /*  background: url('https://demos.creative-tim.com/material-dashboard-pro/assets/img/illustrations/illustration-signup.jpg')
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .row {
+                margin-left: 0 !important;
+            }
+
+            .industry {
+                width: 100px;
+                height: 100px;
+                margin: 8px;
+            }
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .full-page.register-page {
+            display: flex;
+            height: 100%;
+            padding: 10px; /* Reduced padding */
+            background: linear-gradient(135deg, #f6f9ff, #ffffff);
+        }
+
+        .illustration-section {
+            flex: 1;
+            /*  background: url('https://demos.creative-tim.com/material-dashboard-pro/assets/img/illustrations/illustration-signup.jpg')
                 no-repeat center center;
     background-size: cover;*/
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border-radius: 10px;
-}
+            display: flex;
+            background: linear-gradient(135deg, #f6f9ff, #ffffff);
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 10px;
+            transform: scale(0.9);
+        }
 
-.form-section {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    padding: 20px; /* Less padding */
-    border-radius: 10px;
-}
+        .form-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+            padding: 40px 20px;
+            border-radius: 10px;
+        }
 
-.card-signup {
-    max-width: 450px; /* Smaller form width */
-    width: 100%;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid darkgray;
-    box-shadow: none !important;
-}
+        .card-signup {
+            width: 100%;
+            padding: 20px !important;
+            border-radius: 10px;
+            box-shadow: none !important;
+        }
 
 
-.input-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
 
-.btn-primary {
-    background: #3f51b5;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    width: 100%;
-}
+        .btn-primary {
+            background: #3f51b5;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+        }
 
-.btn-primary:hover {
-    background: #303f9f;
-}
+            .btn-primary:hover {
+                background: #303f9f;
+            }
 
         .input-group .input-group-addon {
             border: 0;
@@ -190,12 +196,12 @@
             padding: 0px 20px !important;
             margin: auto !important;
         }
+
         .input-group {
             margin-bottom: 0px; /* Less spacing between fields */
         }
 
             .input-group .form-control:first-child, .input-group-addon:first-child, .input-group-btn:first-child > .btn, .input-group-btn:first-child > .btn-group > .btn, .input-group-btn:first-child > .dropdown-toggle, .input-group-btn:last-child > .btn-group:not(:last-child) > .btn, .input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle) {
-                height: 25px !important;
                 border-top-right-radius: 0;
                 border-bottom-right-radius: 0;
             }
@@ -206,7 +212,7 @@
             margin-bottom: 40px !important;
             padding: 15px 0px !important;
         }
-/* Mobile View Adjustments */
+        /* Mobile View Adjustments */
         @@media (max-width: 768px) {
             .full-page.register-page {
                 flex-direction: column;
@@ -296,7 +302,7 @@
 
         <!-- Form Section -->
         <div class="form-section">
-            <div class="card card-signup">
+            <div class="">
                 <img class="img-fluid" style=" margin-bottom: 15px; width: 60%; display: flex; justify-self: center;" src="~/Content/TBPContent/v2 ybp logo design-02.png" />
                 <h6 style="margin-left:20px;margin-bottom:0px !important; " class="card-title "><b>Register</b></h6>
                 <p style="margin-left:20px; margin-bottom:0px !important; " class="mb-0">Enter your email and password to register</p>
