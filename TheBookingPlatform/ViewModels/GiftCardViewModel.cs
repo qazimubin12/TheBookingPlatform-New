@@ -9,6 +9,7 @@ namespace TheBookingPlatform.ViewModels
     public class GiftCardListingViewModel
     {
         public List<GiftCard> GiftCards { get; set; }
+        public Company Company { get; set; }
         public string SearchTerm { get; set; }
     }
 

@@ -7772,12 +7772,12 @@ namespace TheBookingPlatform.Controllers
                         if (userAssignedemployees != null)
                         {
                             var listofTimeTable = new List<TimeTableModel>();
-                            employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true,true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
+                            employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, userAssignedemployees.ManageOf.Split(',').Select(x => int.Parse(x)).ToList()).OrderBy(x => x.DisplayOrder).ToList();
                             model.EmployeesForAction = employees;
                         }
                         else
                         {
-                            employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company, true).OrderBy(x => x.DisplayOrder).ToList();
+                            employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(LoggedInUser.Company,true).OrderBy(x => x.DisplayOrder).ToList();
 
                             var employeerequests = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(model.Company.ID);
                             foreach (var item in employeerequests)

@@ -1,68 +1,69 @@
-﻿    @model TheBookingPlatform.ViewModels.CategoriesListingViewModel
+﻿@model TheBookingPlatform.ViewModels.CategoriesListingViewModel
 
 <style>
-    
+    #Search {
+        width: 100%;
+        max-width: 400px;
+        padding: 12px 15px 12px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #001f3f;
+    }
 </style>
 <div class="card">
     <div class="card-body">
-        <div class="card-header">
-            <h4 class="card-title">Categories </h4>
-        </div>
+        <h4 class="card-title">Categories </h4>
 
-        <div class="card-content">
-            <form>
+        <form>
 
-                <div class="form-group">
+            <div class="form-group">
 
-                    <input type="text" name="searchterm" id="Search" class="form-control" placeholder="Search." value="@Model.SearchTerm">
-                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                <input type="text" name="searchterm" id="Search" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                @Html.ValidationSummary("", new { @class = "text-danger" })
 
-                    <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
-                    <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded" ><i class="fas fa-redo-alt mr-1"></i> Reset</button>
-                    <button data-href="@Url.Action("Action", "Category")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
+                <button id="SearchBtn" class="btn btn-outline-primary btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+                <button type="button" id="ResetBtn" class="btn btn-outline-secondary btn-sm btn-rounded"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                <button data-href="@Url.Action("Action", "Category")" class="data-btn btn btn-outline-success btn-sm btn-rounded" type="button" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="fas fa-plus mr-1"></i> Create</button>
 
-                </div>
-            </form>
-        </div>
-    </div>
+            </div>
+        </form>
 
-    <div class="row">
-        <div class="col-lg-12 grid-margin stretch-card">
+
+        <div class="row">
             @if (Model.Categories != null)
             {
-                <div class="card">
 
-                    <div class="table-responsive">
-                        <table id="CategoriesTable" class="table table-striped">
-                            <thead>
+                <div class="table-responsive">
+                    <table id="CategoriesTable" class="table table-striped">
+                        <thead>
+                            <tr>
+
+                                <th class="text-center">
+                                    Name
+                                </th>
+
+
+                                <th class="text-center">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Categories)
+                            {
                                 <tr>
+                                    <td class="text-center">@item.Name</td>
+                                    <td class="text-center">
 
-                                    <th class="text-center">
-                                        Name
-                                    </th>
+                                        <button data-href="@Url.Action("Action", "Category", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
+                                        <button data-href="@Url.Action("Delete", "Category", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
 
-
-                                    <th class="text-center">
-                                        Action
-                                    </th>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.Categories)
-                                {
-                                    <tr>
-                                        <td class="text-center">@item.Name</td>
-                                        <td class="text-center">
-
-                                            <button data-href="@Url.Action("Action", "Category", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-info btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-pencil"></i> EDIT</button>
-                                            <button data-href="@Url.Action("Delete", "Category", new { ID = item.ID })" type="button" class="data-btn btn btn-sm btn-rounded btn-danger btn-icon-text" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="mdi mdi-delete"></i>DELETE</button>
-
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             }
             else

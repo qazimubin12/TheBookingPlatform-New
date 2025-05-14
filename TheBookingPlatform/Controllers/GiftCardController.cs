@@ -90,6 +90,7 @@ namespace TheBookingPlatform.Controllers
                 {
                     model.GiftCards = GiftCardServices.Instance.GetGiftCard(SearchTerm).Where(x=>x.Business == loggedInUser.Company).ToList();
                 }
+                model.Company = CompanyServices.Instance.GetCompanyByName(loggedInUser.Company);
             }
             return View(model);
         }

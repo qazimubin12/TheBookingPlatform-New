@@ -740,13 +740,16 @@ namespace TheBookingPlatform.Controllers
                 {
                     var loyaltyCard = LoyaltyCardServices.Instance.GetLoyaltyCard(item.LoyaltyCardID);
                     var customer = CustomerServices.Instance.GetCustomer(item.CustomerID);
-                    float CashBack = 0;
-                    var loyaltyCardAssignment = LCAs.Where(x => x.CustomerID == item.CustomerID).FirstOrDefault();
-                    if (loyaltyCardAssignment != null)
+                    if (customer != null)
                     {
-                        CashBack = loyaltyCardAssignment.CashBack;
+                        float CashBack = 0;
+                        var loyaltyCardAssignment = LCAs.Where(x => x.CustomerID == item.CustomerID).FirstOrDefault();
+                        if (loyaltyCardAssignment != null)
+                        {
+                            CashBack = loyaltyCardAssignment.CashBack;
+                        }
+                        ListOfFinalCardAssignments.Add(new LoyaltyCardAssignmentModel { LoyaltyCardDays = loyaltyCard.Days, LoyaltyCardName = loyaltyCard.Name, Customer = customer, LoyaltyCardAssignment = item, LoyaltyCardUsage = CashBack });
                     }
-                    ListOfFinalCardAssignments.Add(new LoyaltyCardAssignmentModel {LoyaltyCardDays = loyaltyCard.Days, LoyaltyCardName = loyaltyCard.Name, Customer = customer, LoyaltyCardAssignment = item, LoyaltyCardUsage = CashBack });
                 }
 
             }
