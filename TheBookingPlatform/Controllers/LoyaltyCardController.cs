@@ -309,30 +309,32 @@ namespace TheBookingPlatform.Controllers
                 history.EmployeeName = "";
                 HistoryServices.Instance.SaveHistory(history);
 
-                var LoyaltyCardPromotion = model.ServiceListAlready.Split('|').ToList();
-                foreach (var item in LoyaltyCardPromotion)
+                if (model.ServiceListAlready != null)
                 {
+                    var LoyaltyCardPromotion = model.ServiceListAlready.Split('|').ToList();
+                    foreach (var item in LoyaltyCardPromotion)
+                    {
 
-                    var percentage = item.Split('_')[1].Replace("%","").Trim();
-                    var serviceInts = item.Split('_')[0];
-                    var LCPromotion = new LoyaltyCardPromotion();
-                    LCPromotion.Business = LoggedInUser.Company;
-                    LCPromotion.LoyaltyCardID = LoyaltyCard.ID;
-                    LCPromotion.Percentage = float.Parse(percentage);
-                    LCPromotion.Services = serviceInts;
-                    LCPromotion.Date = DateTime.Now;
-                    LoyaltyCardServices.Instance.SaveLoyaltyCardPromotion(LCPromotion);
+                        var percentage = item.Split('_')[1].Replace("%", "").Trim();
+                        var serviceInts = item.Split('_')[0];
+                        var LCPromotion = new LoyaltyCardPromotion();
+                        LCPromotion.Business = LoggedInUser.Company;
+                        LCPromotion.LoyaltyCardID = LoyaltyCard.ID;
+                        LCPromotion.Percentage = float.Parse(percentage);
+                        LCPromotion.Services = serviceInts;
+                        LCPromotion.Date = DateTime.Now;
+                        LoyaltyCardServices.Instance.SaveLoyaltyCardPromotion(LCPromotion);
 
-                    var newhistory = new History();
-                    newhistory.Date = DateTime.Now;
-                    newhistory.Note = "Loyalty Card Promotions was saved for: " + LoyaltyCard.Name + " by: " + LoggedInUser.Name;
-                    newhistory.Business = LoggedInUser.Company;
-                    newhistory.CustomerName = "";
-                    newhistory.EmployeeName = "";
-                    HistoryServices.Instance.SaveHistory(newhistory);
+                        var newhistory = new History();
+                        newhistory.Date = DateTime.Now;
+                        newhistory.Note = "Loyalty Card Promotions was saved for: " + LoyaltyCard.Name + " by: " + LoggedInUser.Name;
+                        newhistory.Business = LoggedInUser.Company;
+                        newhistory.CustomerName = "";
+                        newhistory.EmployeeName = "";
+                        HistoryServices.Instance.SaveHistory(newhistory);
+                    }
+
                 }
-
-
 
 
             }

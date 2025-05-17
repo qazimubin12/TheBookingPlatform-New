@@ -1,6 +1,15 @@
 ﻿@model TheBookingPlatform.ViewModels.LoyaltyCardListingViewModel
 
 <style>
+    #Search {
+        width: 100%;
+        max-width: 400px;
+        padding: 12px 15px 12px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #001f3f;
+    }
 </style>
 <div class="card">
     <div class="card-body">
@@ -8,7 +17,7 @@
             Loyalty Cards <a href="https://yourbookingplatform.com/how-to-set-up-loyalty-card/" target="_blank"><i class="fa fa-info-circle"></i></a>
         </h4>
 
-        <form>
+        @*<form>
 
             <div class="form-group">
                 <div class="input-group input-group-dynamic">
@@ -22,6 +31,56 @@
                 <a href="@Url.Action("Issue", "LoyaltyCard")" class="btn btn-sm btn-rounded btn-success btn-icon-text"><i class="mdi mdi-delete"></i>ISSUE</a>
                 <a href="@Url.Action("CardAssignmentIndex", "LoyaltyCard")" class="btn btn-sm btn-rounded btn-info btn-icon-text"><i class="mdi mdi-delete"></i>ISSUED CARDS</a>
 
+            </div>
+        </form>*@
+
+        <form>
+
+            <div class="form-group d-flex align-items-center gap-2" style="margin-bottom:1rem;">
+
+                <input type="text" name="searchterm" id="Search" class="form-control" placeholder="Search." value="@Model.SearchTerm">
+                <button style="margin-bottom:0px; " id="SearchBtn" class="btn btn-light btn-sm btn-rounded" type="button"><i class="fas fa-search mr-1"></i> Search</button>
+
+
+
+            </div>
+            <div style="display: flex; gap: 12px; margin-bottom: 30px;">
+                @if (Model.LoyaltyCards != null && Model.LoyaltyCards.Count() > 0)
+                {
+
+                    <a style="background-color: white;
+              color: #001f3f;
+              border: 1px solid #001f3f;
+              padding: 10px 20px;
+              border-radius: 6px;
+              font-weight: 500;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              transition: all 0.2s;
+              cursor: not-allowed;
+              pointer-events: none;
+              opacity: 0.6;">
+                        <i class="fa fa-plus"></i> Create Loyalty Card
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Action", "LoyaltyCard")" style="background-color: white;
+              color: #001f3f;
+              border: 1px solid #001f3f;
+              padding: 10px 20px;
+              border-radius: 6px;
+              font-weight: 500;
+              display: flex;
+              align-items: center;
+              gap: 8px;">
+                        <i class="fa fa-plus"></i> Create Loyalty Card
+                    </a>
+                }
+
+                <a href="@Url.Action("AssignmentAction", "LoyaltyCard")" style="background-color: white; color: #001f3f; border: 1px solid #001f3f; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s;"> <i class="fa fa-arrow-circle-right"></i> Issue </a>
+                <a href="@Url.Action("CardAssignmentIndex", "LoyaltyCard")" style="background-color: white; color: #001f3f; border: 1px solid #001f3f; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s;"> <i class="fa fa-eye"></i> View Issued Cards </a>
             </div>
         </form>
 
@@ -40,13 +99,12 @@
                                         Name
                                     </th>
                                     <th class="text-center">
-                                        Expiration Days
+                                        Expiry period
                                     </th>
 
                                     <th class="text-center">
-                                        isActive
+                                        Status
                                     </th>
-
 
                                     <th class="text-center">
                                         Action

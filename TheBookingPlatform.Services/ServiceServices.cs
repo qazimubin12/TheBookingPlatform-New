@@ -7,6 +7,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Remoting.Contexts;
 
 namespace TheBookingPlatform.Services
 {
@@ -55,10 +56,11 @@ namespace TheBookingPlatform.Services
 
             using (var context = new DSContext())
             {
-                var query = $"WITH SplitServices AS (SELECT value AS SplitData FROM Appointments CROSS APPLY STRING_SPLIT(Service, ',') WHERE Color != 'darkgray' and  business = '{Business}') SELECT TOP 3 SplitData FROM SplitServices GROUP BY SplitData";
-
+                var query = $"WITH SplitServices AS ( SELECT TRY_CAST(value AS INT) AS ServiceID FROM Appointments CROSS APPLY STRING_SPLIT(Service, ',') WHERE Color != 'darkgray' AND business = '{Business}' AND DATEPART(MONTH, [Date]) = MONTH(GETDATE()) AND DATEPART(YEAR, [Date]) = YEAR(GETDATE()) ) SELECT TOP 3 s.ServiceID FROM SplitServices s JOIN Services srv ON s.ServiceID = srv.ID WHERE srv.isActive = 1 GROUP BY s.ServiceID";
                 // Assuming DataForValidation is of type List<string>
-                bestSellerServices = context.Database.SqlQuery<string>(query).ToList();
+                var result = context.Database.SqlQuery<int>(query, Business).ToList();
+                bestSellerServices = result.Select(id => id.ToString()).ToList();
+
             }
 
             return bestSellerServices;

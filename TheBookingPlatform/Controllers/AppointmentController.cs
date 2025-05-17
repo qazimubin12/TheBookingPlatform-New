@@ -132,9 +132,10 @@ namespace TheBookingPlatform.Controllers
             }
         }
 
-        public string UpdateOnGCal(Appointment appointment, GoogleCalendarIntegration gcal, string GoogleCalendarID, string EventID)
+        public string UpdateOnGCal(Appointment appointment, GoogleCalendarIntegration gcal, string GoogleCalendarID, string EventID, string TimeZone)
         {
 
+            RefreshToken(appointment.Business);
             var company = CompanyServices.Instance.GetCompanyByName(gcal.Business);
             var url = $"https://www.googleapis.com/calendar/v3/calendars/{GoogleCalendarID}/events/{EventID}";
             var finalUrl = new Uri(url);
@@ -167,6 +168,11 @@ namespace TheBookingPlatform.Controllers
             DateTime endDateNew = new DateTime(year, month, day, endHour, endMinute, endSeconds);
 
             concatenatedServices = string.Join(",", servicesList.Select(x => x.Name).ToList());
+            startDateNew = DateTime.SpecifyKind(startDateNew, DateTimeKind.Unspecified);
+            endDateNew = DateTime.SpecifyKind(endDateNew, DateTimeKind.Unspecified);
+
+
+
 
             var calendarEvent = new Event
             {
@@ -1342,12 +1348,14 @@ namespace TheBookingPlatform.Controllers
         [HttpGet]
         public async Task<JsonResult> GetTheDateEvents(DateTime startDate)
         {
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Unspecified);
             var LoggedInUser = await UserManager.FindByIdAsync(User.Identity.GetUserId());
             var AppointmentModel = new List<AppointmentModel>();
             var WaitingListModel = new List<WaitingListModel>();
             var remindershouldbeSent = false;
 
-            if (startDate.Date >= DateTime.Now.Date)
+            var today = DateTime.SpecifyKind(DateTime.Now.Date, DateTimeKind.Unspecified);
+            if (startDate.Date >= today)
             {
                 remindershouldbeSent = true;
             }
@@ -1466,7 +1474,7 @@ namespace TheBookingPlatform.Controllers
 
                             }
                         }
-                       
+
 
 
                         continue;
@@ -1515,13 +1523,34 @@ namespace TheBookingPlatform.Controllers
                     }
                     if (customer == null)
                     {
+                        var buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID);
+                        var buffers_S = new List<BufferDTO>();
 
+                        if (buffers != null && buffers.Count() > 0)
+                        {
+                            foreach (var buffer in buffers)
+                            {
+
+                                var Date = DateTime.SpecifyKind(buffer.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Time = DateTime.SpecifyKind(buffer.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Endtime = DateTime.SpecifyKind(buffer.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                buffers_S.Add(new BufferDTO { Date = Date, Time = Time, EndTime = Endtime, Description = buffer.Description, ServiceID = buffer.ServiceID, AppointmentID = buffer.AppointmentID });
+
+                            }
+                        }
 
                         AppointmentModel.Add(new AppointmentModel
                         {
-                            Date = item.Date,
-                            AppointmentEndTime = item.EndTime,
-                            Time = item.Time,
+                            Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified),
+                            Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified),
+                            AppointmentEndTime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified),
+
+                            S_Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            S_Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            S_AppointmentEndTime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            //Date = item.Date,
+                            //AppointmentEndTime = item.EndTime,
+                            //Time = item.Time,
                             Color = item.Color,
                             ID = item.ID,
                             Notes = item.Notes,
@@ -1535,14 +1564,15 @@ namespace TheBookingPlatform.Controllers
                             FromGCAL = item.FromGCAL,
                             ReminderSent = remindershouldbeSent && item.Reminder,
                             TotalDuration = TotalDuration,
-                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            Buffers = buffers,
+                            Buffers_S = buffers_S,
                             BlockedEvent = BlockedEvent
                         });
                     }
                     else
                     {
                         bool NewCustomer = false;
-                        DateTime today = DateTime.Now.Date; // Assuming you want to check appointments before today
+                        //DateTime today = DateTime.Now.Date; // Assuming you want to check appointments before today
                         bool hasPreviousAppointments = AppointmentServices.Instance.HasPreviousAppointments(LoggedInUser.Company, customer.ID, item.ID, today);
 
 
@@ -1550,14 +1580,33 @@ namespace TheBookingPlatform.Controllers
                         {
                             NewCustomer = true;
                         }
+
+                        var buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID);
+                        var buffers_S = new List<BufferDTO>();
+
+                        if (buffers != null && buffers.Count() > 0)
+                        {
+                            foreach (var buffer in buffers)
+                            {
+
+                                var Date = DateTime.SpecifyKind(buffer.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Time = DateTime.SpecifyKind(buffer.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Endtime = DateTime.SpecifyKind(buffer.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                buffers_S.Add(new BufferDTO { Date = Date, Time = Time, EndTime = Endtime, Description = buffer.Description, ServiceID = buffer.ServiceID, AppointmentID = buffer.AppointmentID });
+
+                            }
+                        }
                         AppointmentModel.Add(new AppointmentModel
                         {
                             IsRepeat = item.IsRepeat,
                             AnyEmployeeSelected = item.AnyAvailableEmployeeSelected,
                             NewCustomer = NewCustomer,
-                            Date = item.Date,
-                            AppointmentEndTime = item.EndTime,
-                            Time = item.Time,
+                            Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified),
+                            Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified),
+                            AppointmentEndTime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified),
+                            S_Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            S_Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            S_AppointmentEndTime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
                             Color = item.Color,
                             ID = item.ID,
                             Notes = item.Notes,
@@ -1570,7 +1619,8 @@ namespace TheBookingPlatform.Controllers
                             Services = serviceList,
                             TotalDuration = TotalDuration,
                             ReminderSent = remindershouldbeSent && item.Reminder,
-                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            Buffers = buffers,
+                            Buffers_S = buffers_S,
                             BlockedEvent = BlockedEvent
                         });
 
@@ -1644,12 +1694,30 @@ namespace TheBookingPlatform.Controllers
                     }
                     if (customer == null)
                     {
+                        var buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID);
+                        var buffers_S = new List<BufferDTO>();
 
+                        if (buffers != null && buffers.Count() > 0)
+                        {
+                            foreach (var buffer in buffers)
+                            {
+
+                                var Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Endtime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                buffers_S.Add(new BufferDTO { Date = Date, Time = Time, EndTime = Endtime, Description = buffer.Description, ServiceID = buffer.ServiceID, AppointmentID = buffer.AppointmentID });
+
+                            }
+                        }
                         AppointmentModel.Add(new AppointmentModel
                         {
-                            Date = item.Date,
-                            AppointmentEndTime = item.EndTime,
-                            Time = item.Time,
+
+                            Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified),
+                            Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified),
+                            AppointmentEndTime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified),
+                            S_Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            S_Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            S_AppointmentEndTime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
                             Color = item.Color,
                             ID = item.ID,
                             Notes = item.Notes,
@@ -1661,20 +1729,39 @@ namespace TheBookingPlatform.Controllers
                             FromGCAL = item.FromGCAL,
                             TotalDuration = TotalDuration,
                             ReminderSent = remindershouldbeSent && item.Reminder,
-                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID)
+                            Buffers = buffers,
+                            Buffers_S = buffers_S
 
                         });
                     }
                     else
                     {
+                        var buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID);
+                        var buffers_S = new List<BufferDTO>();
 
+                        if (buffers != null && buffers.Count() > 0)
+                        {
+                            foreach (var buffer in buffers)
+                            {
+
+                                var Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Endtime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                buffers_S.Add(new BufferDTO { Date = Date, Time = Time, EndTime = Endtime, Description = buffer.Description, ServiceID = buffer.ServiceID, AppointmentID = buffer.AppointmentID });
+
+                            }
+                        }
                         AppointmentModel.Add(new AppointmentModel
                         {
                             IsRepeat = item.IsRepeat,
-                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
-                            Date = item.Date,
-                            AppointmentEndTime = item.EndTime,
-                            Time = item.Time,
+                            Buffers = buffers,
+                            Buffers_S = buffers_S,
+                            Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified),
+                            Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified),
+                            AppointmentEndTime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified),
+                            S_Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            S_Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
+                            S_AppointmentEndTime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss"),
                             Color = item.Color,
                             ID = item.ID,
                             Notes = item.Notes,
@@ -1696,9 +1783,8 @@ namespace TheBookingPlatform.Controllers
             }
         }
 
-
         [HttpGet]
-        public async Task<JsonResult> GetTheDateEventsOneView(DateTime startDate,int employeeId)
+        public async Task<JsonResult> GetTheDateEventsOneView(DateTime startDate, int employeeId)
         {
             var LoggedInUser = await UserManager.FindByIdAsync(User.Identity.GetUserId());
             var AppointmentModel = new List<AppointmentModel>();
@@ -1711,11 +1797,11 @@ namespace TheBookingPlatform.Controllers
             }
             if (LoggedInUser.Role != "Super Admin")
             {
-                var selectedWaitingLists = await WaitingListServices.Instance.GetWaitingListAsyncWRTEmployeeID(LoggedInUser.Company, startDate.Day, startDate.Month, startDate.Year, "Created",employeeId);
+                var selectedWaitingLists = await WaitingListServices.Instance.GetWaitingListAsyncWRTEmployeeID(LoggedInUser.Company, startDate.Day, startDate.Month, startDate.Year, "Created", employeeId);
 
 
                 var company = CompanyServices.Instance.GetCompanyByName(LoggedInUser.Company);
-            
+
 
                 var groupedData = selectedWaitingLists.SelectMany(waitingList =>
                 {
@@ -1741,7 +1827,7 @@ namespace TheBookingPlatform.Controllers
 
                 var StartDate = startDate;
                 var EndDate = startDate.AddDays(7);
-                var appointments = await AppointmentServices.Instance.GetAllAppointmentWRTBusinessNEO(LoggedInUser.Company,false,employeeId,StartDate,EndDate,false);
+                var appointments = await AppointmentServices.Instance.GetAllAppointmentWRTBusinessNEO(LoggedInUser.Company, false, employeeId, StartDate, EndDate, false);
                 appointments = appointments.Distinct(new AppointmentComparer()).ToList();
                 foreach (var item in appointments)
                 {
@@ -1756,14 +1842,14 @@ namespace TheBookingPlatform.Controllers
                         var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(item.Business);
                         ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
                         var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(item.Business);
-                        foreach (var ee in employeeRequest)
-                        {
+                        //foreach (var ee in employeeRequest)
+                        //{
 
-                            var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
-                            googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                            ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                        //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                        //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                        //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                        }
+                        //}
                         foreach (var gcalId in ToBeInputtedIDs)
                         {
                             if (gcalId.Key != null && !gcalId.Key.Disabled)
@@ -1798,7 +1884,7 @@ namespace TheBookingPlatform.Controllers
 
                             }
                         }
-                       
+
 
 
                         continue;
@@ -1847,7 +1933,21 @@ namespace TheBookingPlatform.Controllers
                     }
                     if (customer == null)
                     {
+                        var buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID);
+                        var buffers_S = new List<BufferDTO>();
 
+                        if (buffers != null && buffers.Count() > 0)
+                        {
+                            foreach (var buffer in buffers)
+                            {
+
+                                var Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Endtime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                buffers_S.Add(new BufferDTO { Date = Date, Time = Time, EndTime = Endtime, Description = buffer.Description, ServiceID = buffer.ServiceID, AppointmentID = buffer.AppointmentID });
+
+                            }
+                        }
 
                         AppointmentModel.Add(new AppointmentModel
                         {
@@ -1867,7 +1967,8 @@ namespace TheBookingPlatform.Controllers
                             FromGCAL = item.FromGCAL,
                             ReminderSent = remindershouldbeSent && item.Reminder,
                             TotalDuration = TotalDuration,
-                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            Buffers = buffers,
+                            Buffers_S = buffers_S,
                             BlockedEvent = BlockedEvent
                         });
                     }
@@ -1881,6 +1982,22 @@ namespace TheBookingPlatform.Controllers
                         if (!hasPreviousAppointments)
                         {
                             NewCustomer = true;
+                        }
+
+                        var buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID);
+                        var buffers_S = new List<BufferDTO>();
+
+                        if (buffers != null && buffers.Count() > 0)
+                        {
+                            foreach (var buffer in buffers)
+                            {
+
+                                var Date = DateTime.SpecifyKind(item.Date, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Time = DateTime.SpecifyKind(item.Time, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                var Endtime = DateTime.SpecifyKind(item.EndTime, DateTimeKind.Unspecified).ToString("yyyy-MM-ddTHH:mm:ss");
+                                buffers_S.Add(new BufferDTO { Date = Date, Time = Time, EndTime = Endtime, Description = buffer.Description, ServiceID = buffer.ServiceID, AppointmentID = buffer.AppointmentID });
+
+                            }
                         }
                         AppointmentModel.Add(new AppointmentModel
                         {
@@ -1902,7 +2019,8 @@ namespace TheBookingPlatform.Controllers
                             Services = serviceList,
                             TotalDuration = TotalDuration,
                             ReminderSent = remindershouldbeSent && item.Reminder,
-                            Buffers = BufferServices.Instance.GetBufferWRTBusinessList(item.Business, item.ID),
+                            Buffers = buffers,
+                            Buffers_S = buffers_S,
                             BlockedEvent = BlockedEvent
                         });
 
@@ -3656,14 +3774,14 @@ namespace TheBookingPlatform.Controllers
             {
                 if (oldEmployee.ID != appointmentAgain.EmployeeID)
                 {
-                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployee.ID, "SAVING");
+                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployee.ID, company.TimeZone);
 
 
                 }
                 else
                 {
-                    UpdateOnGCal(appointment, googleCalendar, employee.GoogleCalendarID, appointment.GoogleCalendarEventID);
-                    //GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
+                    UpdateOnGCal(appointment, googleCalendar, employee.GoogleCalendarID, appointment.GoogleCalendarEventID,company.TimeZone);
+                    //GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, company.TimeZone);
                 }
             }
             #region MailingRegion
@@ -5105,7 +5223,8 @@ namespace TheBookingPlatform.Controllers
             }
             var serviceids = appoimtment.Service.Split(',').ToList();
             var serviceList = new List<Entities.Service>();
-            var bufferLastEndTime = appoimtment.EndTime;
+            var endTime = DateTime.SpecifyKind(appoimtment.EndTime, DateTimeKind.Unspecified);
+            var bufferLastEndTime = endTime;
             foreach (var item in serviceids)
             {
                 var service = ServiceServices.Instance.GetService(int.Parse(item));
@@ -5130,7 +5249,6 @@ namespace TheBookingPlatform.Controllers
 
             }
         }
-
         [HttpPost]
         public ActionResult Action(AppointmentActionViewModel model)
         {
@@ -5514,7 +5632,7 @@ namespace TheBookingPlatform.Controllers
                                 var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(LoggedInUser.Company);
                                 if (googleCalendar != null && !googleCalendar.Disabled)
                                 {
-                                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
+                                    GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, company.TimeZone);
                                 }
                             }
                             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
@@ -5748,7 +5866,7 @@ namespace TheBookingPlatform.Controllers
                                 if (googleCalendar != null && !googleCalendar.Disabled)
                                 {
                                     
-                                    mesage = GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
+                                    mesage = GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, company.TimeZone);
                                 }
 
                                 return Json(new { success = true, Message = mesage }, JsonRequestBehavior.AllowGet);
@@ -5955,12 +6073,12 @@ namespace TheBookingPlatform.Controllers
                             {
                                 if (oldEmployeeID != appointment.EmployeeID)
                                 {
-                                    GenerateonGoogleCalendar(appointment.ID, service, oldEmployeeID, "SAVING");
+                                    GenerateonGoogleCalendar(appointment.ID, service, oldEmployeeID, company.TimeZone);
 
                                 }
                                 else
                                 {
-                                    GenerateonGoogleCalendar(appointment.ID, service, 0, "SAVING");
+                                    GenerateonGoogleCalendar(appointment.ID, service, 0, company.TimeZone);
                                 }
                             }
 
@@ -6226,12 +6344,12 @@ namespace TheBookingPlatform.Controllers
                         {
                             if (oldEmployeeID != appointment.EmployeeID)
                             {
-                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployeeID, "SAVING");
+                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, oldEmployeeID, company.TimeZone);
 
                             }
                             else
                             {
-                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, "SAVING");
+                                GenerateonGoogleCalendar(appointment.ID, ConcatenatedServices, 0, company.TimeZone);
 
                             }
                         }
@@ -6759,7 +6877,7 @@ namespace TheBookingPlatform.Controllers
         //}
 
 
-        public string GenerateonGoogleCalendar(int ID, string Services, int oldEmployeeID = 0, string NOTIMEZONE = "")
+        public string GenerateonGoogleCalendar(int ID, string Services, int oldEmployeeID = 0, string TheTimeZone = "")
         {
             // Retrieve appointment
             var appointment = AppointmentServices.Instance.GetAppointment(ID);
@@ -6768,7 +6886,7 @@ namespace TheBookingPlatform.Controllers
             var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
             if (loggedInUser == null) return "Error: Logged-in user not found.";
 
-          
+
 
             var company = CompanyServices.Instance.GetCompanyByName(appointment.Business);
             // Get Calendar ID (either old employee or new employee)
@@ -6832,10 +6950,10 @@ namespace TheBookingPlatform.Controllers
 
                                 continue;
                             }
-                            
-                           
+
+
                         }
-                      
+
                     }
                 }
                 var newemp = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
@@ -6844,31 +6962,31 @@ namespace TheBookingPlatform.Controllers
                 if (newemp.Business == appointment.Business)
                 {
                     //employee is in same business as appointment
-                    var googleKey =  RefreshToken(appointment.Business);
+                    var googleKey = RefreshToken(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
 
-                    }
+                    //}
                 }
                 else
                 {
-                    var googleKey= RefreshToken(newemp.Business);
+                    var googleKey = RefreshToken(newemp.Business);
                     ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(newemp.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, newemp.GoogleCalendarID);
 
-                    }
+                    //}
                 }
                 string LastUsedGoogleCalendarID = "";
                 foreach (var item in ToBeInputtedIDs)
@@ -6902,16 +7020,22 @@ namespace TheBookingPlatform.Controllers
                         DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
                         DateTime EndDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
 
-                        DateTime currentDateTime = DateTime.Now;
-                        TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
+
+
+                        startDateNew = DateTime.SpecifyKind(startDateNew, DateTimeKind.Unspecified);
+                        EndDateNew = DateTime.SpecifyKind(EndDateNew, DateTimeKind.Unspecified);
+
 
 
                         var calendarEvent = new Event();
                         calendarEvent.Summary = "Appointment at: " + appointment.Business;
                         calendarEvent.Description = Services + "ID: " + appointment.ID;
-                        var TimeZone = TimeZoneInfo.Local.Id;
                         calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
-                        calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+                        calendarEvent.End = new EventDateTime()
+                        {
+                            DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                            TimeZone = company.TimeZone
+                        };
 
                         var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
                         {
@@ -6956,35 +7080,35 @@ namespace TheBookingPlatform.Controllers
                 if (employee.Business == appointment.Business)
                 {
                     //employee is in same business as appointment
-                    var googleKey  = RefreshToken(appointment.Business); 
+                    var googleKey = RefreshToken(appointment.Business);
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                    }
+                    //}
                 }
                 else
                 {
-                    var googleKey =  RefreshToken(employee.Business);
+                    var googleKey = RefreshToken(employee.Business);
 
                     ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                    var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                    foreach (var item in employeeRequest)
-                    {
+                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                    //foreach (var item in employeeRequest)
+                    //{
 
-                        var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
-                        googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                    //    var com = CompanyServices.Instance.GetCompany(item.CompanyIDFrom);
+                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
 
-                    }
+                    //}
                 }
                 //delete previous one
-                
+
 
                 try
                 {
@@ -7003,16 +7127,34 @@ namespace TheBookingPlatform.Controllers
                     DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
                     DateTime EndDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
 
-                    DateTime currentDateTime = DateTime.Now;
-                    TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
+                    startDateNew = DateTime.SpecifyKind(startDateNew, DateTimeKind.Unspecified);
+                    EndDateNew = DateTime.SpecifyKind(EndDateNew, DateTimeKind.Unspecified);
+
+
+                    //DateTime localDate = new DateTime(year, month, day, starthour, startminute, startseconds);
+                    //DateTime localDateEnd = new DateTime(year, month, day, endhour, endminute, endseconds);
+                    //var offset = int.Parse(NOTIMEZONE);
+                    //TimeSpan userOffset = TimeSpan.FromHours(offset); 
+
+                    //DateTimeOffset userDateWithOffset = new DateTimeOffset(localDate, userOffset);
+                    //DateTimeOffset userDateWithOffsetEnd = new DateTimeOffset(localDateEnd, userOffset);
+                    //DateTime Start_utcTime = userDateWithOffset.UtcDateTime;
+                    //DateTime End_utcTime = userDateWithOffsetEnd.UtcDateTime;
+
+                    ////DateTime Start_utcTime = TimeZoneInfo.ConvertTimeToUtc(startDateNew);
+                    ////DateTime End_utcTime = TimeZoneInfo.ConvertTimeToUtc(EndDateNew);
+
+                    //appointment.OffSet = offset.ToString();
 
 
                     var calendarEvent = new Event();
                     calendarEvent.Summary = "Appointment at: " + appointment.Business;
                     calendarEvent.Description = Services + "ID: " + appointment.ID;
-                    var TimeZone = TimeZoneInfo.Local.Id;
+
+
                     calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
                     calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+
 
 
                     var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
@@ -8293,6 +8435,8 @@ namespace TheBookingPlatform.Controllers
                 Service = serviceId.ToString()
             };
 
+            var company = CompanyServices.Instance.GetCompanyByName(loggedInUser.Company);
+
             string startTimeStr = time.Split('_')[0];
             string endTimeStr = time.Split('_')[1];
 
@@ -8327,7 +8471,7 @@ namespace TheBookingPlatform.Controllers
             var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(loggedInUser.Company);
             if (googleCalendar != null && !googleCalendar.Disabled)
             {
-                string googleMessage = GenerateonGoogleCalendar(appointment.ID, service.Name);
+                string googleMessage = GenerateonGoogleCalendar(appointment.ID, service.Name,9,company.TimeZone);
                 // Handle the Google Calendar integration messages as needed
             }
             return appointment.ID;

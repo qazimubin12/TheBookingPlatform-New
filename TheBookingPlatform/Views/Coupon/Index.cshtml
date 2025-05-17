@@ -2,18 +2,22 @@
 @{
     ViewBag.Title = "Index";
 }
-<style>
-</style>
+
 
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title">Coupons <a href="https://yourbookingplatform.com/how-to-set-coupon/" target="_blank"><i class="fa fa-info-circle"></i></a> </h2>
+        <h4 class="card-title">Coupons <a href="https://yourbookingplatform.com/how-to-set-coupon/" target="_blank"><i class="fa fa-info-circle"></i></a> </h4>
 
-        <form>
-                <a style="padding:10px;" href="@Url.Action("Action", "Coupon")" class="btn btn-primary btn-sm btn-rounded"><i class="fas fa-plus mr-1"></i> Create</a>
-                <a style="padding:10px;" href="@Url.Action("Index", "CouponAssignment")" class="btn btn-success btn-sm btn-rounded"> View Assignments</a>
 
-        </form>
+        <div style="display: flex; gap: 12px; margin-bottom: 30px;">
+            @*@if (Model.LoyaltyCards == null || Model.LoyaltyCards.Count() == 0)
+            {*@
+                <a href="@Url.Action("Action", "Coupon")" style="background-color: white; color: #001f3f; border: 1px solid #001f3f; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                    <i class="fa fa-plus"></i> Create Coupon
+                </a>
+            @*}*@
+            <a href="@Url.Action("Index", "CouponAssignment")" style="background-color: white; color: #001f3f; border: 1px solid #001f3f; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s;"> <i class="fa fa-eye"></i> View Assignments </a>
+        </div>
 
 
         <div class="col-lg-12 grid-margin stretch-card">

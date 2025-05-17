@@ -40,6 +40,15 @@ namespace TheBookingPlatform.ViewModels
         public string Name { get;  set; }
     }
 
+    public class BufferDTO
+    {
+        public int AppointmentID { get; set; }
+        public string Description { get; set; }
+        public string Time { get; set; }
+        public string EndTime { get; set; }
+        public string Date { get; set; }
+        public int ServiceID { get; set; }
+    }
     public class CancelByEmailViewModel
     {
         public Appointment Appointment { get; set; }
@@ -233,6 +242,10 @@ namespace TheBookingPlatform.ViewModels
         public Company Company { get;  set; }
         public bool BlockedEvent { get;  set; }
         public string CustomerPhoneNumber { get;  set; }
+        public List<BufferDTO> Buffers_S { get; internal set; }
+        public string S_Date { get; internal set; }
+        public string S_Time { get; internal set; }
+        public string S_AppointmentEndTime { get; internal set; }
     }
 
     public class ServiceModelForCustomerProfile

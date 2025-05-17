@@ -711,6 +711,8 @@ namespace TheBookingPlatform.Controllers
 
 
                 CompanyActionViewModel model = new CompanyActionViewModel();
+                model.CountryName = LoggedInUser.Country;
+
                 model.Email = LoggedInUser.Email;
                 model.PAKKIDA = LoggedInUser.Password;
                 return View("RegisterCompany", "_InitialLayout", model);

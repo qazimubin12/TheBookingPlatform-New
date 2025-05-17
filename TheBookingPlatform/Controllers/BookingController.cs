@@ -143,37 +143,34 @@ namespace TheBookingPlatform.Controllers
                     BufferServices.Instance.DeleteBuffer(item.ID);
                 }
             }
-            if (appoimtment.Service != null)
+            var serviceids = appoimtment.Service.Split(',').ToList();
+            var serviceList = new List<Entities.Service>();
+            var endTime = DateTime.SpecifyKind(appoimtment.EndTime, DateTimeKind.Unspecified);
+            var bufferLastEndTime = endTime;
+            foreach (var item in serviceids)
             {
-                var serviceids = appoimtment.Service.Split(',').ToList();
-                var serviceList = new List<TheBookingPlatform.Entities.Service>();
-                var bufferLastEndTime = appoimtment.EndTime;
-                foreach (var item in serviceids)
+                var service = ServiceServices.Instance.GetService(int.Parse(item));
+                serviceList.Add(service);
+                var employeeService = EmployeeServiceServices.Instance.GetEmployeeService(appoimtment.EmployeeID, service.ID);
+                if (employeeService != null)
                 {
-                    var service = ServiceServices.Instance.GetService(int.Parse(item));
-                    serviceList.Add(service);
-                    var employeeService = EmployeeServiceServices.Instance.GetEmployeeService(appoimtment.EmployeeID, service.ID);
-                    if (employeeService != null)
+                    if (employeeService.BufferEnabled)
                     {
-                        if (employeeService.BufferEnabled)
-                        {
-                            var buffer = new TheBookingPlatform.Entities.Buffer();
-                            buffer.AppointmentID = appoimtment.ID;
-                            buffer.Date = appoimtment.Date;
-                            buffer.Time = bufferLastEndTime;
-                            buffer.EndTime = bufferLastEndTime.AddMinutes(int.Parse(employeeService.BufferTime.Replace("mins", "").Replace("min", "")));
-                            buffer.Business = appoimtment.Business;
-                            buffer.ServiceID = service.ID;
-                            buffer.Description = "Buffer for: " + service.Name;
-                            BufferServices.Instance.SaveBuffer(buffer);
-                            bufferLastEndTime = buffer.EndTime;
-                        }
+                        var buffer = new Entities.Buffer();
+                        buffer.AppointmentID = appoimtment.ID;
+                        buffer.Date = appoimtment.Date;
+                        buffer.Time = bufferLastEndTime;
+                        buffer.EndTime = bufferLastEndTime.AddMinutes(int.Parse(employeeService.BufferTime.Replace("mins", "").Replace("min", "")));
+                        buffer.Business = appoimtment.Business;
+                        buffer.ServiceID = service.ID;
+                        buffer.Description = "Buffer for: " + service.Name;
+                        BufferServices.Instance.SaveBuffer(buffer);
+                        bufferLastEndTime = buffer.EndTime;
                     }
-
                 }
+
             }
         }
-
         public class EventNew
         {
             public string Id { get; set; }
@@ -1049,7 +1046,7 @@ namespace TheBookingPlatform.Controllers
                                                     try
                                                     {
                                                         NEvent calendarEvent = JsonConvert.DeserializeObject<NEvent>(response.Content);
-                                                   
+
 
 
                                                         string startDateTime = calendarEvent.Start.DateTime.Substring(0, 19);
@@ -1075,7 +1072,7 @@ namespace TheBookingPlatform.Controllers
                                                             {
                                                                 foreach (var ii in appointmentstobechanged)
                                                                 {
-                                                                    UpdateOnGCal(appointment, tr.Key, tr.Value, ii);
+                                                                    UpdateOnGCal(appointment, tr.Key, tr.Value, ii, calendarEvent.Start.TimeZone);
                                                                 }
                                                             }
 
@@ -1110,11 +1107,15 @@ namespace TheBookingPlatform.Controllers
                                                         int Count = 0;
                                                         foreach (var tt in checkTthe)
                                                         {
-                                                            if (await CheckOnGCal(gg.Key.Business, gg.Value, appointment.GoogleCalendarEventID, gg.Key.AccessToken) == false)
+                                                            var ev = await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken);
+                                                            if (ev == null)
                                                             {
-                                                                GenerateOnGCal(appointment, gg.Key, gg.Value);
+                                                                GenerateOnGCal(appointment, gg.Key, gg.Value, fullEvent.Start.TimeZone);
                                                                 Count++;
+
+
                                                             }
+                                                           
                                                         }
 
 
@@ -1185,9 +1186,10 @@ namespace TheBookingPlatform.Controllers
                                                 }
                                                 if (gg.Value != uri)
                                                 {
-                                                    if (await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken) == false)
+                                                    var ev = await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken);
+                                                    if (ev == null)
                                                     {
-                                                        GenerateOnGCal(appointment, gg.Key, gg.Value);
+                                                        GenerateOnGCal(appointment, gg.Key, gg.Value,fullEvent.Start.TimeZone);
 
                                                     }
                                                 }
@@ -1272,7 +1274,7 @@ namespace TheBookingPlatform.Controllers
                             catch (Exception ex)
                             {
 
-                                 history = new History();
+                                history = new History();
                                 history.Date = DateTime.Now;
                                 history.Note = ex.Message + " " + JsonConvert.SerializeObject(item);
                                 history.Type = "NewStatus EX";
@@ -1308,14 +1310,12 @@ namespace TheBookingPlatform.Controllers
             return Json(new { success = true, Message = "Its Done" }, JsonRequestBehavior.AllowGet);
         }
 
-
-        public async Task<bool> CheckOnGCal(string business,string GoogleCalnedarID,string id,string accesstoken)
+        public async Task<CalendarEvent> CheckOnGCal(string business, string GoogleCalnedarID, string id, string accesstoken)
         {
             var Company = CompanyServices.Instance.GetCompanyByName(business);
-            var timezone = Company.TimeZone;
 
             // Build the request URL to get all events from the calendar
-            var requestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{GoogleCalnedarID}/events?timeZone={timezone}";
+            var requestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{GoogleCalnedarID}/events?";
             var client = new RestClient(requestUrl);
 
             // Create a new request to retrieve all events
@@ -1332,13 +1332,23 @@ namespace TheBookingPlatform.Controllers
                 var events = JsonConvert.DeserializeObject<CalendarEvents>(response.Content);
 
                 // Check if the specific event (item.Id) is present in the list of events
-                var eventExists = events.Items.Any(e => id.Split(',').ToList().Contains(e.Id));
+                var idList = id.Split(',').ToList();
+                var matchingEvent = events.Items.FirstOrDefault(e => idList.Contains(e.Id));
 
-                return eventExists;
+                if (matchingEvent != null)
+                {
+                    return matchingEvent;
+                }
+                else
+                {
+                    return null;
+                }
+
+
             }
             else
             {
-                return false;
+                return null;
                 // Handle error if the API request fails
             }
 
@@ -1503,7 +1513,7 @@ namespace TheBookingPlatform.Controllers
                                                             {
                                                                 foreach (var ii in appointmentstobechanged)
                                                                 {
-                                                                    UpdateOnGCal(appointment, tr.Key, tr.Value, ii);
+                                                                    UpdateOnGCal(appointment, tr.Key, tr.Value, ii, calendarEvent.Start.TimeZone);
                                                                 }
                                                             }
 
@@ -1538,9 +1548,11 @@ namespace TheBookingPlatform.Controllers
                                                         int Count = 0;
                                                         foreach (var tt in checkTthe)
                                                         {
-                                                            if (await CheckOnGCal(gg.Key.Business, gg.Value, appointment.GoogleCalendarEventID, gg.Key.AccessToken) == false)
+                                                            var ev = await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken);
+                                                            if (ev == null)
                                                             {
-                                                                GenerateOnGCal(appointment, gg.Key, gg.Value);
+                                                               
+                                                                GenerateOnGCal(appointment, gg.Key, gg.Value, Company.TimeZone);
                                                                 Count++;
                                                             }
                                                         }
@@ -1613,9 +1625,10 @@ namespace TheBookingPlatform.Controllers
                                                 }
                                                 if (gg.Value != uri)
                                                 {
-                                                    if (await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken) == false)
+                                                    var ev = await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken);
+                                                    if (ev == null)
                                                     {
-                                                        GenerateOnGCal(appointment, gg.Key, gg.Value);
+                                                        GenerateOnGCal(appointment, gg.Key, gg.Value,fullEvent.Start.TimeZone);
 
                                                     }
                                                 }
@@ -1734,10 +1747,10 @@ namespace TheBookingPlatform.Controllers
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
-        public string GenerateOnGCal(Appointment appointment, GoogleCalendarIntegration gcal,string GoogleCalendarID)
+        public string GenerateOnGCal(Appointment appointment, GoogleCalendarIntegration gcal, string GoogleCalendarID, string TimeZone)
         {
             var company = CompanyServices.Instance.GetCompanyByName(gcal.Business);
-            var url = "https://www.googleapis.com/calendar/v3/calendars/" +GoogleCalendarID + "/events";
+            var url = "https://www.googleapis.com/calendar/v3/calendars/" + GoogleCalendarID + "/events";
             var finalUrl = new Uri(url);
             RestClient restClient = new RestClient(finalUrl);
             RestRequest request = new RestRequest();
@@ -1766,11 +1779,21 @@ namespace TheBookingPlatform.Controllers
 
             DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
             DateTime endDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
+
+            startDateNew = DateTime.SpecifyKind(startDateNew, DateTimeKind.Unspecified);
+            endDateNew = DateTime.SpecifyKind(endDateNew, DateTimeKind.Unspecified);
+
+
+
+
+            //TimeSpan offset = startDateNew - Start_utcTime;
+            //string offsetString = offset.ToString(); // e.g., "03:00:00"
+            //appointment.OffSet = offsetString;
             ConcatenatedServices = String.Join(",", serviceslist.Select(x => x.Name).ToList());
             var calendarEvent = new Event
             {
                 Summary = "Appointment at: " + appointment.Business,
-                Description = ConcatenatedServices +" Notes: "+ appointment.Notes + " ID: " + appointment.ID,
+                Description = ConcatenatedServices + " Notes: " + appointment.Notes + " ID: " + appointment.ID,
                 Start = new EventDateTime
                 {
                     DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
@@ -1808,8 +1831,8 @@ namespace TheBookingPlatform.Controllers
                 //}
                 //else
                 //{
-                    appointment.GoogleCalendarEventID = newEventId;
-               // }
+                appointment.GoogleCalendarEventID = newEventId;
+                // }
 
                 AppointmentServices.Instance.UpdateAppointment(appointment);
             }
@@ -1828,7 +1851,7 @@ namespace TheBookingPlatform.Controllers
             return "";
         }
 
-        public string UpdateOnGCal(Appointment appointment, GoogleCalendarIntegration gcal, string GoogleCalendarID,string EventID)
+        public string UpdateOnGCal(Appointment appointment, GoogleCalendarIntegration gcal, string GoogleCalendarID, string EventID, string TimeZone)
         {
 
             var company = CompanyServices.Instance.GetCompanyByName(gcal.Business);
@@ -1863,10 +1886,14 @@ namespace TheBookingPlatform.Controllers
             DateTime endDateNew = new DateTime(year, month, day, endHour, endMinute, endSeconds);
 
             concatenatedServices = string.Join(",", servicesList.Select(x => x.Name).ToList());
+            startDateNew = DateTime.SpecifyKind(startDateNew, DateTimeKind.Unspecified);
+            endDateNew = DateTime.SpecifyKind(endDateNew, DateTimeKind.Unspecified);
+
+
 
             var calendarEvent = new Event
             {
-                Summary =  appointment.FromGCAL ?  appointment.Notes : "Appointment at: " +appointment.Business,
+                Summary = appointment.FromGCAL ? appointment.Notes : "Appointment at: " + appointment.Business,
                 Description = concatenatedServices + " Notes: " + appointment.Notes + " ID: " + appointment.ID,
                 Start = new EventDateTime
                 {
@@ -1877,6 +1904,8 @@ namespace TheBookingPlatform.Controllers
                 {
                     DateTime = endDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
                     TimeZone = company.TimeZone
+
+
                 }
             };
 
@@ -1891,7 +1920,7 @@ namespace TheBookingPlatform.Controllers
             request.AddHeader("Content-Type", "application/json");
             request.AddParameter("application/json", model, ParameterType.RequestBody);
 
-            var response = restClient.Execute(request,Method.Put);
+            var response = restClient.Execute(request, Method.Put);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -1912,7 +1941,6 @@ namespace TheBookingPlatform.Controllers
                 return "Error updating the event: " + response.Content;
             }
         }
-
 
         public class CalendarEvent
         {
@@ -4652,7 +4680,7 @@ namespace TheBookingPlatform.Controllers
                     var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     if (googleCalendar != null && !googleCalendar.Disabled)
                     {
-                        GenerateonGoogleCalendar(appointment, ConcatenatedServices, appointment.Business);
+                        GenerateonGoogleCalendar(appointment, ConcatenatedServices, appointment.Business,company.TimeZone);
                     }
 
                     if (company.PaymentMethodIntegration)
@@ -5060,7 +5088,7 @@ namespace TheBookingPlatform.Controllers
                     var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
                     if (googleCalendar != null && !googleCalendar.Disabled)
                     {
-                        GenerateonGoogleCalendar(appointment, ConcatenatedServices, appointment.Business);
+                        GenerateonGoogleCalendar(appointment, ConcatenatedServices, appointment.Business,company.TimeZone);
                     }
 
 
@@ -5886,7 +5914,7 @@ namespace TheBookingPlatform.Controllers
         }
 
 
-        public string GenerateonGoogleCalendar(Appointment appointment, string Services, string Business)
+        public string GenerateonGoogleCalendar(Appointment appointment, string Services, string Business, string TimeZone)
         {
             try
             {
@@ -5904,8 +5932,10 @@ namespace TheBookingPlatform.Controllers
                 DateTime startDateNew = new DateTime(year, month, day, starthour, startminute, startseconds);
                 DateTime EndDateNew = new DateTime(year, month, day, endhour, endminute, endseconds);
 
-                DateTime currentDateTime = DateTime.Now;
-                TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(currentDateTime);
+                startDateNew = DateTime.SpecifyKind(startDateNew, DateTimeKind.Unspecified);
+                EndDateNew = DateTime.SpecifyKind(EndDateNew, DateTimeKind.Unspecified);
+
+
 
                 var company = CompanyServices.Instance.GetCompany().Where(x => x.Business == Business).FirstOrDefault();
                 var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
@@ -5948,7 +5978,7 @@ namespace TheBookingPlatform.Controllers
                 string LastSavedGoogleCalendarID = "";
                 foreach (var item in ToBeInputtedIDs)
                 {
-                    if(LastSavedGoogleCalendarID != item.Value)
+                    if (LastSavedGoogleCalendarID != item.Value)
                     {
                         LastSavedGoogleCalendarID = item.Value;
 
@@ -5959,9 +5989,16 @@ namespace TheBookingPlatform.Controllers
                         var calendarEvent = new Event();
                         calendarEvent.Summary = "Appointment at: " + Business;
                         calendarEvent.Description = Services + "ID: " + appointment.ID;
-                        var TimeZone = TimeZoneInfo.Local.Id;
-                        calendarEvent.Start = new EventDateTime() { DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
-                        calendarEvent.End = new EventDateTime() { DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"), TimeZone = company.TimeZone };
+                        calendarEvent.Start = new EventDateTime()
+                        {
+                            DateTime = startDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                            TimeZone = company.TimeZone
+                        };
+                        calendarEvent.End = new EventDateTime()
+                        {
+                            DateTime = EndDateNew.ToString("yyyy-MM-dd'T'HH:mm:ss"),
+                            TimeZone = company.TimeZone
+                        };
 
                         var model = JsonConvert.SerializeObject(calendarEvent, new JsonSerializerSettings
                         {
@@ -6000,7 +6037,7 @@ namespace TheBookingPlatform.Controllers
 
                         }
                     }
-                   
+
                 }
                 return "Saved";
 
@@ -7121,6 +7158,12 @@ namespace TheBookingPlatform.Controllers
             List<string> availableSlots = new List<string>();
             List<string> NotavailableSlots = new List<string>();
             DateTime currentTime = DateTime.Now;
+            currentTime = DateTime.SpecifyKind(currentTime, DateTimeKind.Unspecified);
+
+            employeeStartTime = DateTime.SpecifyKind(employeeStartTime, DateTimeKind.Unspecified);
+            employeeEndTime = DateTime.SpecifyKind(employeeEndTime, DateTimeKind.Unspecified);
+
+
             var increaseMins = 0;
             foreach (var item in Services)
             {
@@ -7135,11 +7178,13 @@ namespace TheBookingPlatform.Controllers
             }
             durationInMinutes += increaseMins;
 
-            currentTime = TheBookingPlatform.Models.TimeZoneConverter.ConvertToTimeZone(currentTime, Company.TimeZone).AddMinutes(5);
             var FinalAppointments = new List<Appointment>();
             foreach (var item in appointments)
             {
-                if (item.IsPaid == false && item.DepositMethod == "Online" && item.IsCancelled == false && (DateTime.Now - item.BookingDate).TotalMinutes > 15)
+                var now = DateTime.Now;
+                now = DateTime.SpecifyKind(now, DateTimeKind.Unspecified);
+                var bookingdate = DateTime.SpecifyKind(item.BookingDate, DateTimeKind.Unspecified);
+                if (item.IsPaid == false && item.DepositMethod == "Online" && item.IsCancelled == false && (now - bookingdate).TotalMinutes > 15)
                 {
                     item.IsCancelled = true;
                 }
@@ -7151,15 +7196,19 @@ namespace TheBookingPlatform.Controllers
             FinalAppointments.Sort((x, y) => x.Time.TimeOfDay.CompareTo(y.Time.TimeOfDay));
 
             DateTime lastEndTime = employeeStartTime;
-
             if (FinalAppointments.Count > 0)
             {
                 var firstAppointment = FinalAppointments[0];
+
                 var FirstAppointmentEndTime = firstAppointment.EndTime;
+                FirstAppointmentEndTime = DateTime.SpecifyKind(FirstAppointmentEndTime, DateTimeKind.Unspecified);
+
+
                 var buffers = BufferServices.Instance.GetBufferWRTBusinessList(firstAppointment.Business, firstAppointment.ID);
                 if (buffers != null && buffers.Count() > 0)
                 {
-                    FirstAppointmentEndTime = buffers.OrderBy(x => x.Time).LastOrDefault().EndTime;
+                    var endtime = DateTime.SpecifyKind(buffers.OrderBy(x => x.Time).LastOrDefault().EndTime, DateTimeKind.Unspecified);
+                    FirstAppointmentEndTime = endtime;
                 }
                 // Consider slots before the first appointment
                 // Step 1: Check if currentTime is greater than or equal to employeeStartTime
@@ -7178,6 +7227,10 @@ namespace TheBookingPlatform.Controllers
                             {
                                 DateTime slotStart = currentTime.AddMinutes(i * durationInMinutes);
                                 DateTime slotEnd = slotStart.AddMinutes(durationInMinutes);
+
+                                slotStart = DateTime.SpecifyKind(slotStart, DateTimeKind.Unspecified);
+                                slotEnd = DateTime.SpecifyKind(slotEnd, DateTimeKind.Unspecified);
+
 
                                 if (IsSlotWithinEmployeeTimeRange(slotStart, slotEnd, employeeStartTime, employeeEndTime))
                                 {
@@ -7210,6 +7263,11 @@ namespace TheBookingPlatform.Controllers
                         {
                             DateTime slotStart = employeeStartTime.AddMinutes(i * durationInMinutes);
                             DateTime slotEnd = slotStart.AddMinutes(durationInMinutes);
+
+                            slotStart = DateTime.SpecifyKind(slotStart, DateTimeKind.Unspecified);
+                            slotEnd = DateTime.SpecifyKind(slotEnd, DateTimeKind.Unspecified);
+
+
                             if (IsSlotWithinEmployeeTimeRange(slotStart, slotEnd, employeeStartTime, employeeEndTime))
                             {
 
@@ -7239,10 +7297,14 @@ namespace TheBookingPlatform.Controllers
             foreach (var appointment in FinalAppointments)
             {
                 var CurrentAppointmentEndTime = appointment.EndTime;
+                CurrentAppointmentEndTime = DateTime.SpecifyKind(CurrentAppointmentEndTime, DateTimeKind.Unspecified);
+
+
                 var buffers = BufferServices.Instance.GetBufferWRTBusinessList(appointment.Business, appointment.ID);
                 if (buffers != null && buffers.Count() > 0)
                 {
-                    CurrentAppointmentEndTime = buffers.OrderBy(x => x.Time).LastOrDefault().EndTime;
+                    var endtime = DateTime.SpecifyKind(buffers.OrderBy(x => x.Time).LastOrDefault().EndTime, DateTimeKind.Unspecified);
+                    CurrentAppointmentEndTime = endtime;
                 }
 
 
@@ -7258,6 +7320,11 @@ namespace TheBookingPlatform.Controllers
                         {
                             DateTime slotStart = lastEndTime.AddMinutes(i * durationInMinutes);
                             DateTime slotEnd = slotStart.AddMinutes(durationInMinutes);
+
+                            slotStart = DateTime.SpecifyKind(slotStart, DateTimeKind.Unspecified);
+                            slotEnd = DateTime.SpecifyKind(slotEnd, DateTimeKind.Unspecified);
+
+
                             if (IsSlotWithinEmployeeTimeRange(slotStart, slotEnd, employeeStartTime, employeeEndTime))
                             {
                                 if (slotEnd.TimeOfDay <= appointment.Time.TimeOfDay)
@@ -7312,6 +7379,11 @@ namespace TheBookingPlatform.Controllers
                         {
                             DateTime slotStart = lastEndTime.AddMinutes(i * durationInMinutes);
                             DateTime slotEnd = slotStart.AddMinutes(durationInMinutes);
+
+                            slotStart = DateTime.SpecifyKind(slotStart, DateTimeKind.Unspecified);
+                            slotEnd = DateTime.SpecifyKind(slotEnd, DateTimeKind.Unspecified);
+
+
                             if (IsSlotWithinEmployeeTimeRange(slotStart, slotEnd, employeeStartTime, employeeEndTime))
                             {
                                 if (slotEnd.Hour < employeeEndTime.TimeOfDay.Hours)
@@ -7381,6 +7453,11 @@ namespace TheBookingPlatform.Controllers
                         {
                             DateTime slotStart = lastEndTime.AddMinutes(i * durationInMinutes);
                             DateTime slotEnd = slotStart.AddMinutes(durationInMinutes);
+
+                            slotStart = DateTime.SpecifyKind(slotStart, DateTimeKind.Unspecified);
+                            slotEnd = DateTime.SpecifyKind(slotEnd, DateTimeKind.Unspecified);
+
+
                             if (IsSlotWithinEmployeeTimeRange(slotStart, slotEnd, employeeStartTime, employeeEndTime))
                             {
                                 if (slotEnd.Hour < employeeEndTime.TimeOfDay.Hours)
@@ -7467,11 +7544,19 @@ namespace TheBookingPlatform.Controllers
             var deduplicatedList = new List<TimeSlotModel>();
             var company = CompanyServices.Instance.GetCompany(CompanyID);
             var ProposedDate = SelectedDate;
+
+            SelectedDate = DateTime.SpecifyKind(SelectedDate, DateTimeKind.Unspecified);
+
+
             var DayOfWeek = SelectedDate.DayOfWeek.ToString();
             var openingHour = OpeningHourServices.Instance.GetOpeningHourWRTBusiness(Company.Business, DayOfWeek);
             var openingtime = openingHour.Time;
             var starTimeOpening = DateTime.Parse(openingtime.Split('-')[0].Trim());
+            starTimeOpening = DateTime.SpecifyKind(starTimeOpening, DateTimeKind.Unspecified);
+
             var endTimeOpening = DateTime.Parse(openingtime.Split('-')[1].Trim());
+            endTimeOpening = DateTime.SpecifyKind(endTimeOpening, DateTimeKind.Unspecified);
+
             var disabledEmployees = EmployeeServices.Instance.GetEmployeeWRTBusinessOnlyID(Company.Business, false);
             var Employee = EmployeeServices.Instance.GetEmployee(EmployeeID);
 
@@ -7517,7 +7602,10 @@ namespace TheBookingPlatform.Controllers
                         {
                             if (recurringShifts.RecurEnd == "Custom Date" && recurringShifts.RecurEndDate != "")
                             {
-                                if (IsDateInRangeNew(DateTime.Parse(recurringShifts.RecurEndDate), SelectedDate))
+                                var recurrEnddate = DateTime.Parse(recurringShifts.RecurEndDate);
+                                recurrEnddate = DateTime.SpecifyKind(recurrEnddate, DateTimeKind.Unspecified);
+
+                                if (IsDateInRangeNew(recurrEnddate, SelectedDate))
                                 {
 
                                     if (recurringShifts.Frequency == "Bi-Weekly")
@@ -7707,7 +7795,7 @@ namespace TheBookingPlatform.Controllers
                                                 {
                                                     if (employeePriceChange.EmployeeID != 0)
                                                     {
-                                                        
+
                                                         ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                         {
                                                             TimeSlot = timeSlot,
@@ -7729,7 +7817,13 @@ namespace TheBookingPlatform.Controllers
                                                         ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                         {
                                                             Type = slotType,
-                                                            EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                            EmployeeID = EmployeeID,
+                                                            TimeSlot = timeSlot,
+                                                            TypeOfChange = TypeOfChange,
+                                                            HaveDiscount = true,
+                                                            Percentage = discountpercentage,
+                                                            PriceChangeID = ChangeID
+                                                        });
                                                     }
 
                                                 }
@@ -7758,7 +7852,13 @@ namespace TheBookingPlatform.Controllers
                                                         ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                         {
                                                             Type = slotType,
-                                                            EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                            EmployeeID = EmployeeID,
+                                                            TimeSlot = timeSlot,
+                                                            TypeOfChange = TypeOfChange,
+                                                            HaveDiscount = false,
+                                                            Percentage = discountpercentage,
+                                                            PriceChangeID = 0
+                                                        });
                                                     }
 
                                                 }
@@ -7768,7 +7868,13 @@ namespace TheBookingPlatform.Controllers
                                                 ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                 {
                                                     Type = slotType,
-                                                    EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                    EmployeeID = EmployeeID,
+                                                    TimeSlot = timeSlot,
+                                                    TypeOfChange = TypeOfChange,
+                                                    HaveDiscount = false,
+                                                    Percentage = discountpercentage,
+                                                    PriceChangeID = 0
+                                                });
 
                                             }
                                         }
@@ -7835,7 +7941,7 @@ namespace TheBookingPlatform.Controllers
 
                                     }
                                 }
-                                   
+
                                 else
                                 {
                                     CheckSlots = FindAvailableSlots(startTime, endTime, appointments, TimeInMinutes, company, services, EmployeeID);
@@ -7867,7 +7973,7 @@ namespace TheBookingPlatform.Controllers
                                     bool ChangeFound = false;
                                     int ChangeID = 0;
                                     string TypeOfChange = "";
-                                    var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd,company.Business);
+                                    var employeePriceChange = GetPriceChange(EmployeeID, SelectedDate, slotStart, slotEnd, company.Business);
                                     if (priceChanges.Count() > 0)
                                     {
                                         foreach (var item in priceChanges)
@@ -7928,7 +8034,13 @@ namespace TheBookingPlatform.Controllers
                                                 ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                 {
                                                     Type = slotType,
-                                                    EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                    EmployeeID = EmployeeID,
+                                                    TimeSlot = timeSlot,
+                                                    TypeOfChange = TypeOfChange,
+                                                    HaveDiscount = true,
+                                                    Percentage = discountpercentage,
+                                                    PriceChangeID = ChangeID
+                                                });
                                             }
                                         }
                                         else
@@ -7957,7 +8069,13 @@ namespace TheBookingPlatform.Controllers
                                                 ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                 {
                                                     Type = slotType,
-                                                    EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                    EmployeeID = EmployeeID,
+                                                    TimeSlot = timeSlot,
+                                                    TypeOfChange = TypeOfChange,
+                                                    HaveDiscount = false,
+                                                    Percentage = discountpercentage,
+                                                    PriceChangeID = 0
+                                                });
                                             }
 
                                         }
@@ -7989,7 +8107,13 @@ namespace TheBookingPlatform.Controllers
                                             ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                             {
                                                 Type = slotType,
-                                                EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                EmployeeID = EmployeeID,
+                                                TimeSlot = timeSlot,
+                                                TypeOfChange = TypeOfChange,
+                                                HaveDiscount = false,
+                                                Percentage = discountpercentage,
+                                                PriceChangeID = 0
+                                            });
                                         }
 
                                     }
@@ -8145,7 +8269,13 @@ namespace TheBookingPlatform.Controllers
                                                             ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                             {
                                                                 Type = slotType,
-                                                                EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                                EmployeeID = EmployeeID,
+                                                                TimeSlot = timeSlot,
+                                                                TypeOfChange = TypeOfChange,
+                                                                HaveDiscount = true,
+                                                                Percentage = discountpercentage,
+                                                                PriceChangeID = ChangeID
+                                                            });
                                                         }
                                                     }
                                                     else
@@ -8174,7 +8304,13 @@ namespace TheBookingPlatform.Controllers
                                                             ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                             {
                                                                 Type = slotType,
-                                                                EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                EmployeeID = EmployeeID,
+                                                                TimeSlot = timeSlot,
+                                                                TypeOfChange = TypeOfChange,
+                                                                HaveDiscount = false,
+                                                                Percentage = discountpercentage,
+                                                                PriceChangeID = 0
+                                                            });
                                                         }
 
                                                     }
@@ -8206,7 +8342,13 @@ namespace TheBookingPlatform.Controllers
                                                         ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel
                                                         {
                                                             Type = slotType,
-                                                            EmployeeID = EmployeeID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                            EmployeeID = EmployeeID,
+                                                            TimeSlot = timeSlot,
+                                                            TypeOfChange = TypeOfChange,
+                                                            HaveDiscount = false,
+                                                            Percentage = discountpercentage,
+                                                            PriceChangeID = 0
+                                                        });
                                                     }
 
                                                 }
@@ -8244,7 +8386,7 @@ namespace TheBookingPlatform.Controllers
                             .Select(grp => grp.Key)
                             .ToList();
 
-                    var Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs,company.Business);
+                    var Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(true, true, employeeIDs, company.Business);
 
                     foreach (var emp in Employees)
                     {
@@ -8437,7 +8579,7 @@ namespace TheBookingPlatform.Controllers
 
                                         if (ChangeFound)
                                         {
-                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel {Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                            ListOfTimeSlotsWithDiscount.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
 
                                         }
                                         else
@@ -9143,7 +9285,8 @@ namespace TheBookingPlatform.Controllers
                                                                             if (employeePriceChange.EmployeeID != 0)
                                                                             {
                                                                                 NewiteratedEmployeeList.Add(new TimeSlotModel
-                                                                                {Type = slotType,
+                                                                                {
+                                                                                    Type = slotType,
                                                                                     TimeSlot = timeSlot,
                                                                                     TypeOfChange = TypeOfChange,
                                                                                     HaveDiscount = true,
@@ -9159,7 +9302,7 @@ namespace TheBookingPlatform.Controllers
                                                                             }
                                                                             else
                                                                             {
-                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel {Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
+                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = true, Percentage = discountpercentage, PriceChangeID = ChangeID });
                                                                             }
                                                                         }
                                                                         else
@@ -9167,7 +9310,8 @@ namespace TheBookingPlatform.Controllers
                                                                             if (employeePriceChange.EmployeeID != 0)
                                                                             {
                                                                                 NewiteratedEmployeeList.Add(new TimeSlotModel
-                                                                                {Type = slotType,
+                                                                                {
+                                                                                    Type = slotType,
                                                                                     TimeSlot = timeSlot,
                                                                                     TypeOfChange = TypeOfChange,
                                                                                     HaveDiscount = false,
@@ -9183,7 +9327,7 @@ namespace TheBookingPlatform.Controllers
                                                                             }
                                                                             else
                                                                             {
-                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel {Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
+                                                                                NewiteratedEmployeeList.Add(new TimeSlotModel { Type = slotType, EmployeeID = emp.ID, TimeSlot = timeSlot, TypeOfChange = TypeOfChange, HaveDiscount = false, Percentage = discountpercentage, PriceChangeID = 0 });
                                                                             }
 
                                                                         }
@@ -9193,7 +9337,8 @@ namespace TheBookingPlatform.Controllers
                                                                         if (employeePriceChange.EmployeeID != 0)
                                                                         {
                                                                             NewiteratedEmployeeList.Add(new TimeSlotModel
-                                                                            {Type = slotType,
+                                                                            {
+                                                                                Type = slotType,
                                                                                 TimeSlot = timeSlot,
                                                                                 TypeOfChange = TypeOfChange,
                                                                                 HaveDiscount = false,
@@ -9210,7 +9355,8 @@ namespace TheBookingPlatform.Controllers
                                                                         else
                                                                         {
                                                                             NewiteratedEmployeeList.Add(new TimeSlotModel
-                                                                            {Type = slotType,
+                                                                            {
+                                                                                Type = slotType,
                                                                                 TimeSlot = timeSlot,
                                                                                 TypeOfChange = TypeOfChange,
                                                                                 HaveDiscount = false,
@@ -9307,7 +9453,6 @@ namespace TheBookingPlatform.Controllers
             //    return Json(new { ListOfTimeSlotsWithDiscount = emptyList, FinalEmployeeID = EmployeeID }, JsonRequestBehavior.AllowGet);
             //}
         }
-
 
 
 

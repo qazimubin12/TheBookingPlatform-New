@@ -169,7 +169,6 @@ namespace TheBookingPlatform.Controllers
                 return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
-
         [HttpGet]
         [NoCache]
         public ActionResult Action(int ID = 0)
@@ -178,15 +177,39 @@ namespace TheBookingPlatform.Controllers
             model.Users = UserManager.Users.ToList();
             List<string> countries = new List<string>
 {
-    "Russia", "Ukraine", "France", "Spain", "Sweden", "Norway", "Germany", "Finland",
-    "Poland", "Italy", "United Kingdom", "Romania", "Belarus", "Kazakhstan", "Greece",
-    "Bulgaria", "Iceland", "Hungary", "Portugal", "Serbia", "Austria", "Czechia", "Ireland",
-    "Lithuania", "Latvia", "Croatia", "Bosnia and Herzegovina", "Slovakia", "Estonia",
-    "Denmark", "Switzerland", "Netherlands", "Moldova", "Belgium", "Albania",
-    "North Macedonia", "Turkey", "Slovenia", "Montenegro", "Kosovo", "Azerbaijan", "Georgia",
-    "Luxembourg", "Andorra", "Malta", "Liechtenstein", "San Marino", "Monaco", "Vatican City",
-    "Armenia", "Cyprus"
+    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina",
+    "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh",
+    "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia",
+    "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso",
+    "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic",
+    "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Brazzaville)",
+    "Congo (Kinshasa)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic",
+    "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador",
+    "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini",
+    "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany",
+    "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+    "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq",
+    "Ireland", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan",
+    "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kosovo", "Kuwait",
+    "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya",
+    "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia",
+    "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico",
+    "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique",
+    "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua",
+    "Niger", "Nigeria", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau",
+    "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland",
+    "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis",
+    "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+    "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles",
+    "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia",
+    "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname",
+    "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand",
+    "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan",
+    "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom",
+    "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela",
+    "Vietnam", "Yemen", "Zambia", "Zimbabwe"
 };
+
             model.Countries = countries;
             var statusList = new List<string> { "Paid", "Pending", "No-Show" };
             model.StatusList = statusList;
@@ -207,6 +230,7 @@ namespace TheBookingPlatform.Controllers
                 model.EmployeesLinked = company.EmployeesLinked;
                 model.InvoiceLine = company.InvoiceLine;
                 model.Currency = company.Currency;
+                model.TimeZone = company.TimeZone;
                 model.Deposit = company.Deposit;
                 model.CountryName = company.CountryName;
                 model.CancellationTime = company.CancellationTime;
@@ -244,13 +268,13 @@ namespace TheBookingPlatform.Controllers
                 company.Currency = model.Currency;
                 company.BookingLink = model.BookingLink;
                 company.CountryName = model.CountryName;
+                company.TimeZone = model.TimeZone;
                 company.NewsLetterWeekInterval = model.NewsLetterWeekInterval;
                 company.APIKEY = model.APIKEY;
                 company.ReferralPercentage = model.ReferralPercentage;
                 company.PUBLISHEDKEY = model.PUBLISHEDKEY;
                 company.BookingLinkInfo = model.BookingLinkInfo;
                 company.PaymentMethodIntegration = model.PaymentMethodIntegration;
-                company.TimeZone = model.TimeZone;
                 company.StatusForPayroll = model.StatusForPayroll;
                 if (CompanyServices.Instance.GetCompany().Where(x => x.Business.Trim().ToLower() == model.Business.Trim().ToLower()).Any()
                     && OldName != model.Business)
@@ -301,6 +325,7 @@ namespace TheBookingPlatform.Controllers
                 company.Deposit = model.Deposit;
                 company.BillingEmail = model.BillingEmail;
                 company.EmployeesLinked = user.Name;
+                company.TimeZone = model.TimeZone;
                 company.CancellationTime = model.CancellationTime;
                 company.InvoiceLine = model.InvoiceLine;
                 company.Currency = model.Currency;
@@ -324,6 +349,7 @@ namespace TheBookingPlatform.Controllers
 
             }
         }
+
 
 
 

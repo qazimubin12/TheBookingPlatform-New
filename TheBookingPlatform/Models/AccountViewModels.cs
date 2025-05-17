@@ -107,6 +107,7 @@ namespace TheBookingPlatform.Models
         public int NoOfUsers { get; set; }
         public int NoOfUserAllowed { get; set; }
         public User LoggedInUser { get;  set; }
+        public List<string> Countries { get;  set; }
     }
 
     public class ResetPasswordViewModel
