@@ -113,6 +113,11 @@ namespace TheBookingPlatform.Controllers
             if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 // Event deleted successfully
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(appointment.Business, appointment.EmployeeID);
+                webhooklock.IsLocked = true;
+                HookLockServices.Instance.UpdateHookLock(webhooklock);
+
+
                 appointment.GoogleCalendarEventID = null;
                 AppointmentServices.Instance.UpdateAppointment(appointment);
                 return "Event deleted successfully.";
@@ -7187,6 +7192,9 @@ namespace TheBookingPlatform.Controllers
                                     var response = restClient.Execute(request, Method.Patch);
                                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                     {
+                                        var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+                                        webhooklock.IsLocked = true;
+                                        HookLockServices.Instance.UpdateHookLock(webhooklock);
                                         JObject jsonObj = JObject.Parse(response.Content);
 
                                         appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();

@@ -709,7 +709,7 @@ namespace TheBookingPlatform.Services
         public void UpdateAppointment(Appointment Appointment)
         {
             try
-            {
+            {   
                 if (Appointment.Status == null || Appointment.Status == "")
                 {
                     Appointment.Status = "Pending";
@@ -727,6 +727,10 @@ namespace TheBookingPlatform.Services
                     context.Entry(Appointment).State = EntityState.Modified;
                     context.SaveChanges();
                 }
+
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(Appointment.Business, Appointment.EmployeeID);
+                webhooklock.IsLocked = false;
+                HookLockServices.Instance.UpdateHookLock(webhooklock);
             }
             catch (Exception ex)
             {
@@ -764,6 +768,10 @@ namespace TheBookingPlatform.Services
                     // Repeat for any other properties that need to be updated
 
                     context.SaveChanges();
+
+                    var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(appointment.Business, appointment.EmployeeID);
+                    webhooklock.IsLocked = false;
+                    HookLockServices.Instance.UpdateHookLock(webhooklock);
                 }
             }
             catch (Exception ex)

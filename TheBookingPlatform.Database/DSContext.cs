@@ -92,5 +92,6 @@ namespace TheBookingPlatform.Database
         public DbSet<ServiceSession> ServiceSessions { get; set; }
 
         public DbSet<EventDeletion> EventDeletions { get; set; }
+        public DbSet<HookLock> HookLocks { get; set; }
     }
 }

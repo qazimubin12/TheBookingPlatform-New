@@ -84,6 +84,8 @@
             .done(function (response) {
                 if (response.success) {
                     alert("Price Change are being notified in the background, You can start using the system.");
+                    $('.sendEmail[data-id="' + id + '"]').prop('disabled', true);
+
                 } else {
                     alert(response.Message);
                 }

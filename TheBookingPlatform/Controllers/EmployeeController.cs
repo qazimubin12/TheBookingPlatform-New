@@ -463,6 +463,7 @@ namespace TheBookingPlatform.Controllers
         [HttpPost]
         public ActionResult Action(EmployeeActionViewModel model)
         {
+            var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
             if (model.ID != 0)
             {
                 var Employee = EmployeeServices.Instance.GetEmployee(model.ID);
@@ -478,11 +479,20 @@ namespace TheBookingPlatform.Controllers
                 Employee.Experience = model.Experience;
                 Employee.LinkedEmployee = model.LinkedEmployee;
                 EmployeeServices.Instance.UpdateEmployee(Employee);
+
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(LoggedInUser.Company, Employee.ID);
+                if(webhooklock != null)
+                {
+                    webhooklock = new HookLock();
+                    webhooklock.EmployeeID = Employee.ID;
+                    webhooklock.IsLocked = false;
+                    webhooklock.Business = LoggedInUser.Company;
+                    HookLockServices.Instance.SaveHookLock(webhooklock);
+                }
             }
             else
             {
                 var Employee = new Employee();
-                var LoggedInUser = UserManager.FindById(User.Identity.GetUserId()); if (LoggedInUser == null) { return RedirectToAction("Login", "Account"); }
                 if (LoggedInUser.Role != "Super Admin")
                 {
                     Employee.Business = LoggedInUser.Company;
@@ -498,6 +508,15 @@ namespace TheBookingPlatform.Controllers
                 //Employee.Type = model.Type;
                 //Employee.Percentage = model.Percentage;
                 EmployeeServices.Instance.SaveEmployee(Employee);
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(LoggedInUser.Company, Employee.ID);
+                if (webhooklock != null)
+                {
+                    webhooklock = new HookLock();
+                    webhooklock.EmployeeID = Employee.ID;
+                    webhooklock.IsLocked = false;
+                    webhooklock.Business = LoggedInUser.Company;
+                    HookLockServices.Instance.SaveHookLock(webhooklock);
+                }
             }
             return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }

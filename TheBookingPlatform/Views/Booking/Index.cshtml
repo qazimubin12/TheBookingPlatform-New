@@ -223,7 +223,17 @@
                             <div  class="service-item" id="Category_@categoryGroup.ServiceCategory.ID">
                                 @if (categoryGroup.Services.Any())
                                 {
-                                    <h6 style="margin-bottom: 0px; margin-top: 0px; padding-bottom: 5px !important;" class="p-2 mx-2">@categoryGroup.ServiceCategory.Name</h6>
+                                    <h6 style="margin-bottom: 0px; margin-top: 0px; padding-bottom: 5px !important;" class="p-2 mx-2 d-flex gap-2 align-items-center">
+                                        @categoryGroup.ServiceCategory.Name
+                                        
+                                        @if (categoryGroup.Services.Where(x => x.BestSeller).Count() > 0)
+                                        {
+                                        <div class="d-flex gap-1">
+                                            <span class="badge text-bg-light rounded-pill" style="border: solid 1px gray;"><i style="color: coral; " class="fa fa-line-chart"></i> @categoryGroup.Monthlyand24hrs.Item1 this month</span>
+                                            <span class="badge text-bg-light rounded-pill" style="border: solid 1px gray;"><i style="color: gold; " class="fa fa-bolt"></i> @categoryGroup.Monthlyand24hrs.Item2 in 24h</span>
+                                        </div>
+                                        }
+                                    </h6>
                                 }
                                 @foreach (var service in categoryGroup.Services.Where(s => s.Service.CanBookOnline))
                                 {

@@ -235,6 +235,10 @@
     <Compile Include="Migrations\202505090801485_ikdnew.Designer.cs">
       <DependentUpon>202505090801485_ikdnew.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505191021230_webhooklockingmechanism.cs" />
+    <Compile Include="Migrations\202505191021230_webhooklockingmechanism.Designer.cs">
+      <DependentUpon>202505191021230_webhooklockingmechanism.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DSContext.cs" />
@@ -372,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202505090801485_ikdnew.resx">
       <DependentUpon>202505090801485_ikdnew.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505191021230_webhooklockingmechanism.resx">
+      <DependentUpon>202505191021230_webhooklockingmechanism.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

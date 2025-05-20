@@ -38,6 +38,7 @@ namespace TheBookingPlatform.ViewModels
         public List<ServiceModelFORBK> Services { get; set; }
         public Company Company { get; set; }
         public ServiceCategory ServiceCategory { get; set; }
+        public (int,int) Monthlyand24hrs { get; set; }
     }
     public class ServiceModelInServices
     {

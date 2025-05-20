@@ -46,7 +46,36 @@ namespace TheBookingPlatform.Controllers
 {
     public class BookingController : Controller
     {
-        
+
+        public static (int monthly, int last24h) GenerateBookingStats(int identifier)
+        {
+            int currentDay = DateTime.Now.Day;
+            int daysInMonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
+
+            int monthlyMax = 180;
+            int dailyMax = 25;
+
+            double progress = (double)currentDay / daysInMonth;
+
+            // Seed combines date and category ID for uniqueness
+            int seed = (DateTime.Now.Year * 10000 + DateTime.Now.Month * 100 + currentDay) + identifier * 9876;
+            Random rng = new Random(seed);
+
+            // Base progressive values (date-based)
+            int baseMonthly = (int)(monthlyMax * progress);
+            int base24h = (int)(dailyMax * progress);
+
+            // Add varied offsets (deterministic but spread out)
+            int monthlyOffset = rng.Next(-10, 15); // e.g. -10 to +14
+            int dailyOffset = rng.Next(-3, 5);     // e.g. -3 to +4
+
+            // Apply and ensure no negative values
+            int monthlyBookings = Math.Max(0, baseMonthly + monthlyOffset);
+            int last24hBookings = Math.Max(0, base24h + dailyOffset);
+
+            return (monthlyBookings, last24hBookings);
+        }
+
 
 
         [HttpGet]
@@ -589,6 +618,9 @@ namespace TheBookingPlatform.Controllers
             if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 // Event deleted successfully
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(appointment.Business, appointment.EmployeeID);
+                webhooklock.IsLocked = true;
+                HookLockServices.Instance.UpdateHookLock(webhooklock);
                 appointment.GoogleCalendarEventID = null;
                 AppointmentServices.Instance.UpdateAppointment(appointment);
                 return "Event deleted successfully.";
@@ -920,7 +952,6 @@ namespace TheBookingPlatform.Controllers
             var payload = uri;
             //WebhookQueue.Enqueue(payload);
 
-
             #region WEbhookWrok
 
             Employee employee = null;
@@ -936,372 +967,376 @@ namespace TheBookingPlatform.Controllers
             {
                 SaveHistoryError("Error fetching employee with Calendar ID", ex);
             }
-
-            GCalendarEventsRoot Events = null;
-            if (!gcal.Disabled)
+            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
+            if (webhooklock == null || !webhooklock.IsLocked)
             {
-                try
+                GCalendarEventsRoot Events = null;
+                if (!gcal.Disabled)
                 {
-                    Events = GetEvents(gcal?.ApiKEY, uri, DateTime.Now.Date);
-                }
-                catch (Exception ex)
-                {
-                    SaveHistoryError("Error fetching events from Google Calendar", ex);
-                }
-
-                int SavedAppointments = 1;
-                foreach (var item in Events.Items)
-                {
-
                     try
                     {
-                        if (item.Status == "confirmed")
-                        {
-                            if (item.Id != null && item.End != null && item.End.DateTime != null)
-                            {
-
-                                var fullEvent = GetEvent(gcal.ApiKEY, uri, item.Id);
-
-
-                                //string format = "MM/dd/yyyy hh:mm:ss tt";
-                                var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
-                                if (employee != null)
-                                {
-                                    RefreshToken(employee.Business);
-                                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    //foreach (var ee in employeeRequest)
-                                    //{
-
-                                    //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
-                                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-
-                                    //}
-                                }
-
-
-
-
-                                string Json = "";
-                                bool FoundOnce = false;
-                                // Reorder the dictionary to ensure the entry matching the 'uri' comes first.
-                                ToBeInputtedIDs = ToBeInputtedIDs
-                                    .OrderByDescending(pair => pair.Value == uri) // Matches to `uri` will come first
-                                    .ThenBy(pair => pair.Value)                  // Keep remaining order consistent
-                                    .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-                                foreach (var gg in ToBeInputtedIDs)
-                                {
-
-                                    var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
-                                    if (appointment == null)
-                                    {
-                                        foreach (var newgg in ToBeInputtedIDs)
-                                        {
-                                            appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
-                                            if (appointment != null)
-                                            {
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    if (appointment != null)
-                                    {
-                                        FoundOnce = true;
-                                    }
-                                    //var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
-
-                                    try
-                                    {
-
-                                        var againcheck = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
-                                        if (appointment != null)
-                                        {
-                                            try
-                                            {
-
-                                                var appointmentstobechanged = appointment.GoogleCalendarEventID.Split(',').ToList();
-
-
-                                                var Company = CompanyServices.Instance.GetCompanyByName(gg.Key.Business);
-                                                var timezone = Company.TimeZone;
-                                                var requestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{gg.Value}/events/{item.Id}?timeZone={timezone}";
-                                                var client = new RestClient(requestUrl);
-
-                                                // Create a new request
-                                                var request = new RestRequest();
-
-                                                // Add the Bearer token to the Authorization header
-                                                request.AddHeader("Authorization", $"Bearer {gg.Key.AccessToken}");
-
-                                                // Make the REST request asynchronously
-                                                var response = await client.ExecuteAsync(request, Method.Get);
-
-                                                // Check if the response is successful
-                                                if (response.IsSuccessful)
-                                                {
-                                                    try
-                                                    {
-                                                        NEvent calendarEvent = JsonConvert.DeserializeObject<NEvent>(response.Content);
-
-
-
-                                                        string startDateTime = calendarEvent.Start.DateTime.Substring(0, 19);
-                                                        string endDateTime = calendarEvent.End.DateTime.Substring(0, 19);
-
-                                                        appointment.Date = DateTime.ParseExact(startDateTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-                                                        appointment.Time = DateTime.ParseExact(startDateTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-                                                        appointment.EndTime = DateTime.ParseExact(endDateTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-                                                        if (item.Organizer != null)
-                                                        {
-                                                            var newem = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(item.Organizer.Email);
-
-                                                            appointment.EmployeeID = newem.ID;
-                                                        }
-                                                        AppointmentServices.Instance.UpdateAppointment(appointment);
-
-
-
-
-                                                        foreach (var tr in ToBeInputtedIDs)
-                                                        {
-                                                            if (tr.Value != gg.Value)
-                                                            {
-                                                                foreach (var ii in appointmentstobechanged)
-                                                                {
-                                                                    UpdateOnGCal(appointment, tr.Key, tr.Value, ii, calendarEvent.Start.TimeZone);
-                                                                }
-                                                            }
-
-
-                                                        }
-
-
-
-
-
-
-                                                    }
-                                                    catch (Exception ex)
-                                                    {
-
-                                                        string appointmentJson = JsonConvert.SerializeObject(appointment);
-                                                        var nhistory = new History();
-                                                        nhistory.Date = DateTime.Now;
-                                                        nhistory.Note = ex.Message + appointmentJson;
-                                                        nhistory.Type = "Error by Qmubin";
-                                                        HistoryServices.Instance.SaveHistory(nhistory);
-                                                    }
-                                                    // Deserialize the response content
-
-
-                                                }
-                                                else
-                                                {
-                                                    if (gg.Value != uri)
-                                                    {
-                                                        var checkTthe = appointment.GoogleCalendarEventID.Split(',').ToList();
-                                                        int Count = 0;
-                                                        foreach (var tt in checkTthe)
-                                                        {
-                                                            var ev = await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken);
-                                                            if (ev == null)
-                                                            {
-                                                                GenerateOnGCal(appointment, gg.Key, gg.Value, fullEvent.Start.TimeZone);
-                                                                Count++;
-
-
-                                                            }
-                                                           
-                                                        }
-
-
-                                                    }
-                                                }
-
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                string appointmentJson = JsonConvert.SerializeObject(appointment);
-                                                var nhistory = new History();
-                                                nhistory.Date = DateTime.Now;
-                                                nhistory.Note = ex.Message + appointmentJson;
-                                                nhistory.Type = "Error by Qmubin";
-                                                HistoryServices.Instance.SaveHistory(nhistory);
-                                            }
-
-
-
-
-                                        }
-                                        else
-                                        {
-
-                                            if (againcheck == null && FoundOnce == false)
-                                            {
-                                                if (uri == gg.Value)
-                                                {
-                                                    appointment = new Appointment();
-                                                    appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
-                                                    appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
-                                                    appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);
-                                                    appointment.DepositMethod = "Pin";
-                                                    appointment.Notes = fullEvent.Summary;
-                                                    TimeSpan duration = appointment.EndTime - appointment.Time;
-                                                    if (employee != null)
-                                                    {
-
-
-                                                        var service = ServiceServices.Instance.GetService(gg.Key.Business, "ABSENSE", "").FirstOrDefault();
-                                                        if (service != null)
-                                                        {
-                                                            appointment.Service = service.ID.ToString();
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        var service = ServiceServices.Instance.GetService(gg.Key.Business, "ABSENSE", "").FirstOrDefault();
-                                                        if (service != null)
-                                                        {
-                                                            appointment.Service = service.ID.ToString();
-                                                        }
-                                                    }
-                                                    appointment.Status = "Pending";
-                                                    appointment.Color = "#dff0e3";
-                                                    appointment.Business = gg.Key.Business;
-                                                    appointment.EmployeeID = employee.ID;
-                                                    appointment.FromGCAL = true;
-                                                    appointment.IsPaid = true;
-                                                    appointment.ServiceDuration = duration.TotalMinutes + "mins";
-                                                    appointment.BookingDate = DateTime.Now;
-                                                    appointment.GoogleCalendarEventID = item.Id;
-                                                    AppointmentServices.Instance.SaveAppointment(appointment);
-                                                    SavedAppointments++;
-
-                                                    CreateBuffer(appointment.ID);
-
-                                                }
-                                                if (gg.Value != uri)
-                                                {
-                                                    var ev = await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken);
-                                                    if (ev == null)
-                                                    {
-                                                        GenerateOnGCal(appointment, gg.Key, gg.Value,fullEvent.Start.TimeZone);
-
-                                                    }
-                                                }
-                                            }
-
-
-
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        string appointmentJson = JsonConvert.SerializeObject(appointment);
-                                        var nhistory = new History();
-                                        nhistory.Date = DateTime.Now;
-                                        nhistory.Note = ex.Message + appointmentJson;
-                                        nhistory.Type = "Error by Qmubin";
-                                        HistoryServices.Instance.SaveHistory(nhistory);
-                                    }
-                                }
-
-
-                            }
-
-                        }
-                        if (item.Status == "cancelled")
-                        {
-
-                            try
-                            {
-                                var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
-                                if (employee != null)
-                                {
-                                    RefreshToken(employee.Business);
-                                    var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
-                                    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-                                    //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
-                                    //foreach (var ee in employeeRequest)
-                                    //{
-
-                                    //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
-                                    //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
-                                    //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
-
-                                    //}
-                                }
-
-
-                                foreach (var gg in ToBeInputtedIDs)
-                                {
-                                    var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventIDs(gg.Key.Business, item.Id);
-                                    if (appointment != null)
-                                    {
-                                        if (appointment != null && appointment.Color == "#dff0e3") //From GCal is because it's deleting the appoiintment which was created on YBP
-                                        {
-                                            if (appointment.EmployeeID == employee.ID)
-                                            {
-
-                                                appointment.DELETED = true;
-                                                appointment.GoogleCalendarEventID = appointment.GoogleCalendarEventID.Replace(item.Id, "CANCELLED");
-                                                appointment.DeletedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-                                                AppointmentServices.Instance.UpdateAppointment(appointment);
-
-
-                                            }
-                                            foreach (var we in ToBeInputtedIDs)
-                                            {
-                                                if (appointment.GoogleCalendarEventID != null)
-                                                {
-                                                    foreach (var ii in appointment.GoogleCalendarEventID.Split(',').ToList())
-                                                    {
-                                                        DeleteFromGCal(appointment, we.Key, we.Value, ii);
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                }
-
-
-                            }
-                            catch (Exception ex)
-                            {
-
-                                history = new History();
-                                history.Date = DateTime.Now;
-                                history.Note = ex.Message + " " + JsonConvert.SerializeObject(item);
-                                history.Type = "NewStatus EX";
-                                HistoryServices.Instance.SaveHistory(history);
-                            }
-
-                        }
-                        //JustAChecking(uri, gg.Key.ApiKEY, company.TimeZone);
+                        Events = GetEvents(gcal?.ApiKEY, uri, DateTime.Now.Date);
                     }
                     catch (Exception ex)
                     {
-
-                        var nhistory = new History();
-                        nhistory.Date = DateTime.Now;
-                        nhistory.Note = ex.Message;
-                        nhistory.Business = JsonConvert.SerializeObject(item);
-                        nhistory.Type = "Error";
-                        HistoryServices.Instance.SaveHistory(nhistory);
+                        SaveHistoryError("Error fetching events from Google Calendar", ex);
                     }
 
+                    int SavedAppointments = 1;
+                    foreach (var item in Events.Items)
+                    {
+
+                        try
+                        {
+                            if (item.Status == "confirmed")
+                            {
+                                if (item.Id != null && item.End != null && item.End.DateTime != null)
+                                {
+
+                                    var fullEvent = GetEvent(gcal.ApiKEY, uri, item.Id);
 
 
+                                    //string format = "MM/dd/yyyy hh:mm:ss tt";
+                                    var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
+                                    if (employee != null)
+                                    {
+                                        RefreshToken(employee.Business);
+                                        var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
+                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                                        //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                                        //foreach (var ee in employeeRequest)
+                                        //{
+
+                                        //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                        //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                        //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
+                                        //}
+                                    }
+
+
+
+
+                                    string Json = "";
+                                    bool FoundOnce = false;
+                                    // Reorder the dictionary to ensure the entry matching the 'uri' comes first.
+                                    ToBeInputtedIDs = ToBeInputtedIDs
+                                        .OrderByDescending(pair => pair.Value == uri) // Matches to `uri` will come first
+                                        .ThenBy(pair => pair.Value)                  // Keep remaining order consistent
+                                        .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+                                    foreach (var gg in ToBeInputtedIDs)
+                                    {
+
+                                        var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
+                                        if (appointment == null)
+                                        {
+                                            foreach (var newgg in ToBeInputtedIDs)
+                                            {
+                                                appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
+                                                if (appointment != null)
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (appointment != null)
+                                        {
+                                            FoundOnce = true;
+                                        }
+                                        //var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
+
+                                        try
+                                        {
+
+                                            var againcheck = AppointmentServices.Instance.GetAppointmentWithGCalEventID(item.Id);
+                                            if (appointment != null)
+                                            {
+                                                try
+                                                {
+
+                                                    var appointmentstobechanged = appointment.GoogleCalendarEventID.Split(',').ToList();
+
+
+                                                    var Company = CompanyServices.Instance.GetCompanyByName(gg.Key.Business);
+                                                    var timezone = Company.TimeZone;
+                                                    var requestUrl = $"https://www.googleapis.com/calendar/v3/calendars/{gg.Value}/events/{item.Id}?timeZone={timezone}";
+                                                    var client = new RestClient(requestUrl);
+
+                                                    // Create a new request
+                                                    var request = new RestRequest();
+
+                                                    // Add the Bearer token to the Authorization header
+                                                    request.AddHeader("Authorization", $"Bearer {gg.Key.AccessToken}");
+
+                                                    // Make the REST request asynchronously
+                                                    var response = await client.ExecuteAsync(request, Method.Get);
+
+                                                    // Check if the response is successful
+                                                    if (response.IsSuccessful)
+                                                    {
+                                                        try
+                                                        {
+                                                            NEvent calendarEvent = JsonConvert.DeserializeObject<NEvent>(response.Content);
+
+
+
+                                                            string startDateTime = calendarEvent.Start.DateTime.Substring(0, 19);
+                                                            string endDateTime = calendarEvent.End.DateTime.Substring(0, 19);
+
+                                                            appointment.Date = DateTime.ParseExact(startDateTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                                                            appointment.Time = DateTime.ParseExact(startDateTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                                                            appointment.EndTime = DateTime.ParseExact(endDateTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                                                            if (item.Organizer != null)
+                                                            {
+                                                                var newem = EmployeeServices.Instance.GetEmployeeWithLinkedGoogleCalendarID(item.Organizer.Email);
+
+                                                                appointment.EmployeeID = newem.ID;
+                                                            }
+                                                            AppointmentServices.Instance.UpdateAppointment(appointment);
+
+
+
+
+                                                            foreach (var tr in ToBeInputtedIDs)
+                                                            {
+                                                                if (tr.Value != gg.Value)
+                                                                {
+                                                                    foreach (var ii in appointmentstobechanged)
+                                                                    {
+                                                                        UpdateOnGCal(appointment, tr.Key, tr.Value, ii, calendarEvent.Start.TimeZone);
+                                                                    }
+                                                                }
+
+
+                                                            }
+
+
+
+
+
+
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+
+                                                            string appointmentJson = JsonConvert.SerializeObject(appointment);
+                                                            var nhistory = new History();
+                                                            nhistory.Date = DateTime.Now;
+                                                            nhistory.Note = ex.Message + appointmentJson;
+                                                            nhistory.Type = "Error by Qmubin";
+                                                            HistoryServices.Instance.SaveHistory(nhistory);
+                                                        }
+                                                        // Deserialize the response content
+
+
+                                                    }
+                                                    else
+                                                    {
+                                                        if (gg.Value != uri)
+                                                        {
+                                                            var checkTthe = appointment.GoogleCalendarEventID.Split(',').ToList();
+                                                            int Count = 0;
+                                                            foreach (var tt in checkTthe)
+                                                            {
+                                                                var ev = await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken);
+                                                                if (ev == null)
+                                                                {
+                                                                    GenerateOnGCal(appointment, gg.Key, gg.Value, fullEvent.Start.TimeZone);
+                                                                    Count++;
+
+
+                                                                }
+
+                                                            }
+
+
+                                                        }
+                                                    }
+
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    string appointmentJson = JsonConvert.SerializeObject(appointment);
+                                                    var nhistory = new History();
+                                                    nhistory.Date = DateTime.Now;
+                                                    nhistory.Note = ex.Message + appointmentJson;
+                                                    nhistory.Type = "Error by Qmubin";
+                                                    HistoryServices.Instance.SaveHistory(nhistory);
+                                                }
+
+
+
+
+                                            }
+                                            else
+                                            {
+
+                                                if (againcheck == null && FoundOnce == false)
+                                                {
+                                                    if (uri == gg.Value)
+                                                    {
+                                                        
+                                                        appointment = new Appointment();
+                                                        appointment.Date = DateTime.Parse(fullEvent.Start.DateTime);
+                                                        appointment.Time = DateTime.Parse(fullEvent.Start.DateTime);
+                                                        appointment.EndTime = DateTime.Parse(fullEvent.End.DateTime);
+                                                        appointment.DepositMethod = "Pin";
+                                                        appointment.Notes = fullEvent.Summary;
+                                                        TimeSpan duration = appointment.EndTime - appointment.Time;
+                                                        if (employee != null)
+                                                        {
+
+
+                                                            var service = ServiceServices.Instance.GetService(gg.Key.Business, "ABSENSE", "").FirstOrDefault();
+                                                            if (service != null)
+                                                            {
+                                                                appointment.Service = service.ID.ToString();
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            var service = ServiceServices.Instance.GetService(gg.Key.Business, "ABSENSE", "").FirstOrDefault();
+                                                            if (service != null)
+                                                            {
+                                                                appointment.Service = service.ID.ToString();
+                                                            }
+                                                        }
+                                                        appointment.Status = "Pending";
+                                                        appointment.Color = "#dff0e3";
+                                                        appointment.Business = gg.Key.Business;
+                                                        appointment.EmployeeID = employee.ID;
+                                                        appointment.FromGCAL = true;
+                                                        appointment.IsPaid = true;
+                                                        appointment.ServiceDuration = duration.TotalMinutes + "mins";
+                                                        appointment.BookingDate = DateTime.Now;
+                                                        appointment.GoogleCalendarEventID = item.Id;
+                                                        AppointmentServices.Instance.SaveAppointment(appointment);
+                                                        SavedAppointments++;
+
+                                                        CreateBuffer(appointment.ID);
+
+                                                    }
+                                                    if (gg.Value != uri)
+                                                    {
+                                                        var ev = await CheckOnGCal(gg.Key.Business, gg.Value, item.Id, gg.Key.AccessToken);
+                                                        if (ev == null)
+                                                        {
+                                                            GenerateOnGCal(appointment, gg.Key, gg.Value, fullEvent.Start.TimeZone);
+
+                                                        }
+                                                    }
+                                                }
+
+
+
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            string appointmentJson = JsonConvert.SerializeObject(appointment);
+                                            var nhistory = new History();
+                                            nhistory.Date = DateTime.Now;
+                                            nhistory.Note = ex.Message + appointmentJson;
+                                            nhistory.Type = "Error by Qmubin";
+                                            HistoryServices.Instance.SaveHistory(nhistory);
+                                        }
+                                    }
+
+
+                                }
+
+                            }
+                            if (item.Status == "cancelled")
+                            {
+
+                                try
+                                {
+                                    var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
+                                    if (employee != null)
+                                    {
+                                        RefreshToken(employee.Business);
+                                        var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(employee.Business);
+                                        ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+                                        //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTEMPID(employee.ID);
+                                        //foreach (var ee in employeeRequest)
+                                        //{
+
+                                        //    var com = CompanyServices.Instance.GetCompany(ee.CompanyIDFrom);
+                                        //    googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(com.Business);
+                                        //    ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+
+                                        //}
+                                    }
+
+
+                                    foreach (var gg in ToBeInputtedIDs)
+                                    {
+                                        var appointment = AppointmentServices.Instance.GetAppointmentWithGCalEventIDs(gg.Key.Business, item.Id);
+                                        if (appointment != null)
+                                        {
+                                            if (appointment != null && appointment.Color == "#dff0e3") //From GCal is because it's deleting the appoiintment which was created on YBP
+                                            {
+                                                if (appointment.EmployeeID == employee.ID)
+                                                {
+
+                                                    appointment.DELETED = true;
+                                                    appointment.GoogleCalendarEventID = appointment.GoogleCalendarEventID.Replace(item.Id, "CANCELLED");
+                                                    appointment.DeletedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                                                    AppointmentServices.Instance.UpdateAppointment(appointment);
+
+
+                                                }
+                                                foreach (var we in ToBeInputtedIDs)
+                                                {
+                                                    if (appointment.GoogleCalendarEventID != null)
+                                                    {
+                                                        foreach (var ii in appointment.GoogleCalendarEventID.Split(',').ToList())
+                                                        {
+                                                            DeleteFromGCal(appointment, we.Key, we.Value, ii);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                    }
+
+
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    history = new History();
+                                    history.Date = DateTime.Now;
+                                    history.Note = ex.Message + " " + JsonConvert.SerializeObject(item);
+                                    history.Type = "NewStatus EX";
+                                    HistoryServices.Instance.SaveHistory(history);
+                                }
+
+                            }
+                            //JustAChecking(uri, gg.Key.ApiKEY, company.TimeZone);
+                        }
+                        catch (Exception ex)
+                        {
+
+                            var nhistory = new History();
+                            nhistory.Date = DateTime.Now;
+                            nhistory.Note = ex.Message;
+                            nhistory.Business = JsonConvert.SerializeObject(item);
+                            nhistory.Type = "Error";
+                            HistoryServices.Instance.SaveHistory(nhistory);
+                        }
+
+
+
+
+                    }
 
                 }
 
             }
-
 
 
             #endregion
@@ -1818,6 +1853,9 @@ namespace TheBookingPlatform.Controllers
             request.AddParameter("application/json", model, ParameterType.RequestBody);
 
             var response = restClient.Post(request);
+            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+            webhooklock.IsLocked = true;
+            HookLockServices.Instance.UpdateHookLock(webhooklock);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -1924,6 +1962,7 @@ namespace TheBookingPlatform.Controllers
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
+
                 // Event updated successfully
                 return "Event updated successfully.";
             }
@@ -2097,7 +2136,16 @@ namespace TheBookingPlatform.Controllers
 
                         }
                     }
-                    service.Add(new ServiceModelForBooking { ServiceCategory = item, Services = serviceModel, Company = model.Company });
+                    if(serviceModel.Where(x=>x.BestSeller == true).Count() > 0)
+                    {
+                        service.Add(new ServiceModelForBooking { ServiceCategory = item, Services = serviceModel, Company = model.Company,Monthlyand24hrs = GenerateBookingStats(item.ID) });
+
+                    }
+                    else
+                    {
+                        service.Add(new ServiceModelForBooking { ServiceCategory = item, Services = serviceModel, Company = model.Company });
+
+                    }
                 }
 
                 model.Services = service;
@@ -3974,6 +4022,9 @@ namespace TheBookingPlatform.Controllers
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
+                            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+                            webhooklock.IsLocked = true;
+                            HookLockServices.Instance.UpdateHookLock(webhooklock);
                             JObject jsonObj = JObject.Parse(response.Content);
                             //if (appointment.GoogleCalendarEventID != null)
                             //{
@@ -4159,13 +4210,16 @@ namespace TheBookingPlatform.Controllers
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
                         JObject jsonObj = JObject.Parse(response.Content);
+                        var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+                        webhooklock.IsLocked = true;
+                        HookLockServices.Instance.UpdateHookLock(webhooklock);
                         //if (appointment.GoogleCalendarEventID != null)
                         //{
                         //    appointment.GoogleCalendarEventID = appointment.GoogleCalendarEventID.Replace(appointment.GoogleCalendarEventID, jsonObj["id"]?.ToString());
                         //}
                         //else
                         //{
-                            appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+                        appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
 
 //                        }
                         AppointmentServices.Instance.UpdateAppointment(appointment);
@@ -6016,6 +6070,9 @@ namespace TheBookingPlatform.Controllers
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
                             JObject jsonObj = JObject.Parse(response.Content);
+                            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+                            webhooklock.IsLocked = true;
+                            HookLockServices.Instance.UpdateHookLock(webhooklock);
                             //if (appointment.GoogleCalendarEventID != null)
                             //{
                             //    appointment.GoogleCalendarEventID = String.Join(",",appointment.GoogleCalendarEventID, jsonObj["id"]?.ToString());
