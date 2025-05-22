@@ -2,32 +2,32 @@
 @using System.Globalization
 
 @{
-ViewBag.Title = "_CalendarPartial";
+    ViewBag.Title = "_CalendarPartial";
 
-var enUsCulture = new CultureInfo("en-US");
-DateTime goToDate = DateTime.Parse(Model.GoToDate, enUsCulture);
-var nextDate = goToDate.AddDays(1).ToString("yyyy-MM-dd", enUsCulture);
-var prevdate = goToDate.AddDays(-1).ToString("yyyy-MM-dd", enUsCulture);
-//var customTitle = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("ddd, MMM dd, yyyy");
+    var enUsCulture = new CultureInfo("en-US");
+    DateTime goToDate = DateTime.Parse(Model.GoToDate, enUsCulture);
+    var nextDate = goToDate.AddDays(1).ToString("yyyy-MM-dd", enUsCulture);
+    var prevdate = goToDate.AddDays(-1).ToString("yyyy-MM-dd", enUsCulture);
+    //var customTitle = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("ddd, MMM dd, yyyy");
 
-string customTitle = string.Empty;
+    string customTitle = string.Empty;
 
-if (DateTime.TryParse(Model.GoToDate, enUsCulture, DateTimeStyles.None, out goToDate))
-{
-    customTitle = goToDate.ToString("ddd, MMM dd, yyyy", enUsCulture);
-}
-else
-{
-    customTitle = "Invalid date";
-}
+    if (DateTime.TryParse(Model.GoToDate, enUsCulture, DateTimeStyles.None, out goToDate))
+    {
+        customTitle = goToDate.ToString("ddd, MMM dd, yyyy", enUsCulture);
+    }
+    else
+    {
+        customTitle = "Invalid date";
+    }
 
-var formattedDate = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("MM/dd/yyyy");
+    var formattedDate = DateTime.Parse(Model.GoToDate, enUsCulture).ToString("MM/dd/yyyy");
 
-string YesShow = "false";
-if (!User.IsInRole("Calendar"))
-{
-    YesShow = "true";
-}
+    string YesShow = "false";
+    if (!User.IsInRole("Calendar"))
+    {
+        YesShow = "true";
+    }
 
 
 
@@ -352,10 +352,35 @@ if (!User.IsInRole("Calendar"))
     .fc-timegrid-slot[data-time$=":00:00"] .fc-timegrid-slot-label-cushion {
         color: gray; /* Black or darker color */
     }
+
+
+  
+    .img-icon {
+        width: 60%;
+        height: auto;
+    }
 </style>
 
 <input type="hidden" value="@Model.LoggedInUser.IntervalCalendar" id="IntervalFinal" />
-<div style="background-color:white; padding:10px;border-radius:10px;" id="fullCalendar"></div>
+@if (Model.Employees != null && Model.Employees.Count() > 0)
+{
+    <div style="background-color:white; padding:10px;border-radius:10px;" id="fullCalendar"></div>
+}
+else
+{
+    <div class="container d-flex justify-content-center align-items-center center-container">
+        <div class="text-center">
+            <img src="~/Content/TBPContent/disabled.png" alt="No Schedule Icon" class="img-icon mb-3">
+            <div class="d-flex justify-content-center mt-3">
+                <a  href="@Url.Action("Index","Shift")" class="btn btn-primary me-2">
+                    <i class="bi bi-calendar-event"></i> Set up work schedule
+                </a>
+               
+            </div>
+        </div>
+    </div>  
+}
+
 <!-- Updated actionModal with modal-content -->
 <div class="modal fade center" id="actionModal" tabindex="-1">
     <div class="modal-dialog modal-xl custom-modal-dialog" role="document">
