@@ -884,11 +884,11 @@
                                             }
                                             @if (Model.Company.PaymentMethodIntegration)
                                             {
-                                                <p id="DepositText"> @Model.Deposit @Model.Company.Currency </p>
+                                                <p id="DepositText"> @Math.Round(Model.Deposit,2) @Model.Company.Currency </p>
                                             }
                                             else
                                             {
-                                                <p id="DepositText"> @Model.Deposit  @Model.Company.Currency </p>
+                                        <p id="DepositText"> @Math.Round(Model.Deposit, 2) @Model.Company.Currency </p>
                                             }
                                         </div>
                                         <h6 id="Percentage"></h6>
@@ -1831,8 +1831,32 @@
                     var depositAmount = (depositPercentage / 100) * UpdatedRemainder;
                     depositAmount = depositAmount.toFixed(2); // Round off to 2 decimal places
 
-                    $("#DepositText").html("<s>" + originalDepositText + "</s> " + depositAmount + " " + characterPart);
-                    $("#DepositText_").val(depositAmount);
+
+
+                    //////
+                    var calc1 = $("#DepositText").text();
+                    var match_cal = calc1.match(/[\d.]+/);
+                    var value_cal = match_cal ? parseFloat(match_cal[0]) : null; //Deposit
+                     
+
+                    var r_calc1 = $("#Remainder").text();
+                    var r_match_cal = r_calc1.match(/[\d.]+/);
+                    var r_value_cal = r_match_cal ? parseFloat(r_match_cal[0]) : null; //Remainder
+
+                    //Total = Deposit + Remainder
+
+
+                    var newcouponPercentageAmount = (couponPercentage / 100) * (r_value_cal + value_cal);
+                    var orig = (r_value_cal + value_cal) - parseFloat(newcouponPercentageAmount);
+                    var finaldeposit = (depositPercentage / 100) * orig;
+
+                    $("#Remainder").html("<s>" + originalRemainderText + "</s> " + orig.toFixed(2) + " " + characterPart);
+
+
+
+
+                    $("#DepositText").html("<s>" + originalDepositText + "</s> " + finaldeposit.toFixed(2) + " " + characterPart);
+                    $("#DepositText_").val(finaldeposit.toFixed(2));
                     $("#CouponID").val(response.CouponID);
                     $("#CouponAssignmentID").val(response.CouponAssignmentID);
                     $("#button-addon").attr("disabled", "disabled");
@@ -2298,7 +2322,7 @@
             var additionalDeposit = (percentage / 100) * price;
 
             var newDeposit = depositt - additionalDeposit;
-            $("#DepositText").text(newDeposit + " " + '@Model.Company.Currency');
+            $("#DepositText").text(newDeposit.toFixed(2) + " " + '@Model.Company.Currency');
             $('#' + rowId).remove();
 
             var currencySymbol = "@Model.Company.Currency";
