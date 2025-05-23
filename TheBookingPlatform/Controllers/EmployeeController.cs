@@ -94,6 +94,7 @@ namespace TheBookingPlatform.Controllers
                 var ListOfEmployeeModel = new List<EmployeeModel>();
                 foreach (var item in Employees)
                 {
+                   
                     var ServiceForEmployee = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(LoggedInUser.Company, item.ID).Select(x => x.ServiceID).ToList();
                     var ServiceList = new List<Service>();
                     foreach (var service in ServiceForEmployee)
@@ -133,7 +134,7 @@ namespace TheBookingPlatform.Controllers
                 var ListOfEmployeeModel = new List<EmployeeModel>();
                 foreach (var item in Employees)
                 {
-
+                   
                     var ServiceForEmployee = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(LoggedInUser.Company, item.ID).Select(x => x.ServiceID).ToList();
                     var ServiceList = new List<Service>();
 
@@ -281,16 +282,16 @@ namespace TheBookingPlatform.Controllers
             model.EmployeeID = employee.ID;
             //var ServiceEmployeeData = "";
 
-            var ServiceEmployees = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(employee.Business, employee.ID);
+            var ServiceEmployees = EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(LoggedInUser.Company, employee.ID);
 
-            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
-            foreach (var item in employeeRequest)
-            {
-                if (item.Accepted && item.Business == LoggedInUser.Company)
-                {
-                    ServiceEmployees.AddRange(EmployeeServiceServices.Instance.GetEmployeeServiceWRTEmployeeID(item.EmployeeID));
-                }
-            }
+            //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(company.ID);
+            //foreach (var item in employeeRequest)
+            //{
+            //    if (item.Accepted && item.Business == LoggedInUser.Company)
+            //    {
+            //        ServiceEmployees.AddRange(EmployeeServiceServices.Instance.GetEmployeeServiceWRTBusiness(LoggedInUser.Company,item.EmployeeID));
+            //    }
+            //}
             //var AssignedServiceList = new List<AsingServiceViewModel>();
             //foreach (var item in ServicesList)
             //{

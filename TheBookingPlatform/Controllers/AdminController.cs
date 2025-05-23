@@ -974,8 +974,26 @@ namespace TheBookingPlatform.Controllers
         {
             AnalysisViewModel model = new AnalysisViewModel();
             var loggedInUser = UserManager.FindById(User.Identity.GetUserId());
-
+            var Company = CompanyServices.Instance.GetCompanyByName(loggedInUser.Company);
+            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(Company.ID).ToList();
             model.Employees = EmployeeServices.Instance.GetEmployeeWRTBusiness(loggedInUser.Company, true);
+
+            foreach (var item in employeeRequest)
+            {
+                if (item.Accepted)
+                {
+                    if (Company.ID == item.CompanyIDFor || Company.ID == item.CompanyIDFrom)
+                    {
+                        var employee = EmployeeServices.Instance.GetEmployee(item.EmployeeID);
+                        if (!model.Employees.Select(x => x.ID).ToList().Contains(employee.ID))
+                        {
+                            model.Employees.Add(employee);
+                        }
+                    }
+
+
+                }
+            }
             var listOfStrings = new List<string>
             {
                 "",
@@ -989,13 +1007,11 @@ namespace TheBookingPlatform.Controllers
             model.IsCancelled = IsCancelled;
             model.StartDate = StartDate;
             model.EndDate = EndDate;
-            var Company = CompanyServices.Instance.GetCompanyByName(loggedInUser.Company);
 
             var selectedEmployees = SelectedEmployeeIDs.Select(x => int.Parse(x)).ToList();
             var AbsenseServiceIds = ServiceServices.Instance.GetAbsenseServiceIDs(loggedInUser.Company);
 
             var AllAppointmentsWithabsenceIDsFilters = AppointmentServices.Instance.GetAllAppointmentWRTBusiness(StartDate, EndDate, loggedInUser.Company, IsCancelled, selectedEmployees);
-            var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestByBusiness(Company.ID).ToList();
             foreach (var item in employeeRequest)
             {
                 if (item.Accepted)

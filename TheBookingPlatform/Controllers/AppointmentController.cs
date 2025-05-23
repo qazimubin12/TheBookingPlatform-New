@@ -7195,10 +7195,10 @@ namespace TheBookingPlatform.Controllers
                                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                     {
 
-                                        employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
-                                        var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
-                                        webhooklock.IsLocked = true;
-                                        HookLockServices.Instance.UpdateHookLock(webhooklock);
+                                        //employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                                        //var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
+                                        //webhooklock.IsLocked = true;
+                                        //HookLockServices.Instance.UpdateHookLock(webhooklock);
                                         JObject jsonObj = JObject.Parse(response.Content);
 
                                         appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
@@ -7208,13 +7208,50 @@ namespace TheBookingPlatform.Controllers
 
                                         // Event successfully updated
                                     }
-                                    else
+                                    else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                                     {
-                                        // Log error response
-                                        SaveErrorHistory(response.Content);
-                                    }
-                                }
+                                        // Handle 404 Not Found here
+                                        //Console.WriteLine("Resource not found.");
 
+                                        var url = $"https://www.googleapis.com/calendar/v3/calendars/{item.Value}/events";
+                                        var finalUrl = new Uri(url);
+
+                                        restClient = new RestClient(finalUrl);
+                                        request = new RestRequest();
+
+
+
+
+                                        request.AddQueryParameter("key", "AIzaSyASKpY6I08IVKFMw3muX39uMzPc5sBDaSc");
+                                        request.AddHeader("Authorization", "Bearer " + item.Key.AccessToken);
+                                        request.AddHeader("Accept", "application/json");
+                                        request.AddHeader("Content-Type", "application/json");
+                                        request.AddParameter("application/json", model, ParameterType.RequestBody);
+
+                                        response = restClient.Post(request);
+                                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                                        {
+                                            employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                                            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
+                                            webhooklock.IsLocked = true;
+                                            HookLockServices.Instance.UpdateHookLock(webhooklock);
+
+                                            JObject jsonObj = JObject.Parse(response.Content);
+
+                                            appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
+
+
+                                            AppointmentServices.Instance.UpdateAppointment(appointment);
+                                        }
+                                        else
+                                        {
+                                            // Log error response
+
+                                            SaveErrorHistory(response.Content);
+                                        }
+                                    }
+
+                                }
                             }
                             else
                             {
@@ -7238,6 +7275,11 @@ namespace TheBookingPlatform.Controllers
                                 var response = restClient.Post(request);
                                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                 {
+                                    //employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                                    //var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
+                                    //webhooklock.IsLocked = true;
+                                    //HookLockServices.Instance.UpdateHookLock(webhooklock);
+
                                     JObject jsonObj = JObject.Parse(response.Content);
 
                                     appointment.GoogleCalendarEventID = jsonObj["id"]?.ToString();
