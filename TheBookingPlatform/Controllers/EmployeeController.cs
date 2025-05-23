@@ -480,7 +480,8 @@ namespace TheBookingPlatform.Controllers
                 Employee.LinkedEmployee = model.LinkedEmployee;
                 EmployeeServices.Instance.UpdateEmployee(Employee);
 
-                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(LoggedInUser.Company, Employee.ID);
+
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(Employee.Business, Employee.ID);
                 if(webhooklock != null)
                 {
                     webhooklock = new HookLock();
@@ -508,7 +509,7 @@ namespace TheBookingPlatform.Controllers
                 //Employee.Type = model.Type;
                 //Employee.Percentage = model.Percentage;
                 EmployeeServices.Instance.SaveEmployee(Employee);
-                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(LoggedInUser.Company, Employee.ID);
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(Employee.Business, Employee.ID);
                 if (webhooklock != null)
                 {
                     webhooklock = new HookLock();

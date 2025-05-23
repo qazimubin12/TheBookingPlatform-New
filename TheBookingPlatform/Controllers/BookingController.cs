@@ -618,7 +618,8 @@ namespace TheBookingPlatform.Controllers
             if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 // Event deleted successfully
-                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(appointment.Business, appointment.EmployeeID);
+                var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
                 webhooklock.IsLocked = true;
                 HookLockServices.Instance.UpdateHookLock(webhooklock);
                 appointment.GoogleCalendarEventID = null;
@@ -1853,7 +1854,8 @@ namespace TheBookingPlatform.Controllers
             request.AddParameter("application/json", model, ParameterType.RequestBody);
 
             var response = restClient.Post(request);
-            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+            var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
             webhooklock.IsLocked = true;
             HookLockServices.Instance.UpdateHookLock(webhooklock);
 
@@ -4210,7 +4212,8 @@ namespace TheBookingPlatform.Controllers
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
                         JObject jsonObj = JObject.Parse(response.Content);
-                        var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+                         employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                        var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
                         webhooklock.IsLocked = true;
                         HookLockServices.Instance.UpdateHookLock(webhooklock);
                         //if (appointment.GoogleCalendarEventID != null)
@@ -6070,7 +6073,8 @@ namespace TheBookingPlatform.Controllers
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
                             JObject jsonObj = JObject.Parse(response.Content);
-                            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+                            employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                            var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
                             webhooklock.IsLocked = true;
                             HookLockServices.Instance.UpdateHookLock(webhooklock);
                             //if (appointment.GoogleCalendarEventID != null)

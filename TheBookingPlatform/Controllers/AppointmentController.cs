@@ -112,8 +112,10 @@ namespace TheBookingPlatform.Controllers
 
             if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
+
+                var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
                 // Event deleted successfully
-                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(appointment.Business, appointment.EmployeeID);
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
                 webhooklock.IsLocked = true;
                 HookLockServices.Instance.UpdateHookLock(webhooklock);
 
@@ -7192,7 +7194,9 @@ namespace TheBookingPlatform.Controllers
                                     var response = restClient.Execute(request, Method.Patch);
                                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                     {
-                                        var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(company.Business, appointment.EmployeeID);
+
+                                        employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                                        var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
                                         webhooklock.IsLocked = true;
                                         HookLockServices.Instance.UpdateHookLock(webhooklock);
                                         JObject jsonObj = JObject.Parse(response.Content);

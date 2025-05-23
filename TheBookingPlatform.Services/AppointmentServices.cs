@@ -727,8 +727,8 @@ namespace TheBookingPlatform.Services
                     context.Entry(Appointment).State = EntityState.Modified;
                     context.SaveChanges();
                 }
-
-                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(Appointment.Business, Appointment.EmployeeID);
+                var employee = EmployeeServices.Instance.GetEmployee(Appointment.EmployeeID);
+                var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
                 webhooklock.IsLocked = false;
                 HookLockServices.Instance.UpdateHookLock(webhooklock);
             }
@@ -768,8 +768,8 @@ namespace TheBookingPlatform.Services
                     // Repeat for any other properties that need to be updated
 
                     context.SaveChanges();
-
-                    var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(appointment.Business, appointment.EmployeeID);
+                    var employee = EmployeeServices.Instance.GetEmployee(appointment.EmployeeID);
+                    var webhooklock = HookLockServices.Instance.GetHookLockWRTBusiness(employee.Business, employee.ID);
                     webhooklock.IsLocked = false;
                     HookLockServices.Instance.UpdateHookLock(webhooklock);
                 }
