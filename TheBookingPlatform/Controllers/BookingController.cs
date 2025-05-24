@@ -3485,7 +3485,10 @@ namespace TheBookingPlatform.Controllers
             var ToBeInputtedIDs = new Dictionary<GoogleCalendarIntegration, string>();
             //delete previous one
             var googleKey = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(appointment.Business);
-            ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+            if (googleKey != null && !googleKey.Disabled)
+            {
+                ToBeInputtedIDs.Add(googleKey, employee.GoogleCalendarID);
+            }
             //var employeeRequest = EmployeeRequestServices.Instance.GetEmployeeRequestsWRTBusiness(appointment.Business);
             //foreach (var item in employeeRequest)
             //{

@@ -8525,7 +8525,7 @@ namespace TheBookingPlatform.Controllers
             var googleCalendar = GoogleCalendarServices.Instance.GetGoogleCalendarServicesWRTBusiness(loggedInUser.Company);
             if (googleCalendar != null && !googleCalendar.Disabled)
             {
-                string googleMessage = GenerateonGoogleCalendar(appointment.ID, service.Name,9,company.TimeZone);
+                string googleMessage = GenerateonGoogleCalendar(appointment.ID, service.Name,0,company.TimeZone);
                 // Handle the Google Calendar integration messages as needed
             }
             return appointment.ID;

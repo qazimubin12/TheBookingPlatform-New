@@ -240,16 +240,17 @@
                                     <div class="service-card">
                                         <div style="width:75%;">
                                             <h6 class="mb-1 fs-14">
-                                                @service.Service.Name 
-                                                @if (service.BestSeller)
-                                                {
-                                                    <span class="badge text-bg-light rounded-pill" style="border: solid 1px gray;"><i style="color: gold; " class="fa fa-star"></i> MOST BOOKED</span>
-                                                }
+                                                @service.Service.Name
+
                                                 @if (categoryGroup.ServiceCategory.Type == "Package Service")
                                                 {
                                                     <text>
                                                         (@(service.Service.NumberofSessions)x)
                                                     </text>
+                                                }
+                                                @if (service.BestSeller)
+                                                {
+                                                    <span class="badge text-bg-light rounded-pill" style="border: solid 1px gray;"><i style="color: gold; " class="fa fa-star"></i> MOST BOOKED</span>
                                                 }
                                             </h6>
                                             <small class="text-muted">
